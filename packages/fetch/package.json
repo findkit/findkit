@@ -1,0 +1,39 @@
+{
+    "name": "@findkit/fetch",
+    "version": "2.0.0",
+    "description": "minimal fetch for findkit",
+    "main": "dist/index.js",
+    "scripts": {
+        "test": "findkit-tsc && jest && findkit-eslint",
+        "prettier-write": "findkit-prettier-write",
+        "prettier-check": "findkit-prettier-check",
+        "release": "valu-npm-release",
+        "prerelease": "valu-npm-prerelease",
+        "tsc": "findkit-tsc",
+        "turbo-build": "findkit-turbo-build",
+        "eslint": "findkit-eslint",
+        "jest": "findkit-jest",
+        "watch": "tsc -w --noEmit false --project tsconfig.build.json",
+        "build": "tsc --noEmit false --project tsconfig.build.json"
+    },
+    "author": "Valu Digital Oy",
+    "license": "ISC",
+    "devDependencies": {
+        "@findkit/dev": "workspace:*",
+        "@findkit/eslint-config": "workspace:^0.0.0",
+        "@types/jsonwebtoken": "^8.5.8",
+        "@valu/npm-tools": "^1.0.0",
+        "eslint": "8.7.0",
+        "eslint-plugin-react": "^7.28.0",
+        "eslint-plugin-react-hooks": "^4.3.0",
+        "jest": "^27.5.1",
+        "jsonwebtoken": "^8.5.1",
+        "msw": "^0.41.0",
+        "node-fetch": "2",
+        "prettier": "~2.4.1",
+        "typescript": "^4.4.3"
+    },
+    "volta": {
+        "node": "14.19.2"
+    }
+}

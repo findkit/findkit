@@ -1,0 +1,19 @@
+{
+    "include": ["src", "example", "types", "__tests__", "classnames.d.ts"],
+    "compilerOptions": {
+        "target": "es2020",
+        "module": "esnext",
+        "lib": ["dom", "esnext", "DOM.Iterable"],
+        "noEmit": true,
+        "strict": true,
+        "declaration": true,
+        "noUncheckedIndexedAccess": true,
+        "noFallthroughCasesInSwitch": true,
+        "moduleResolution": "node",
+        "jsx": "react",
+        "types": ["node"],
+        "esModuleInterop": true,
+        "useUnknownInCatchVariables": false,
+        "skipLibCheck": true
+    }
+}

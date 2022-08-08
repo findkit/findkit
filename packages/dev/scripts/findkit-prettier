@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -eu
+
+args=
+
+# Workaround for https://github.com/prettier/prettier/issues/4081
+
+monorepo_ignore="$(git rev-parse --show-toplevel)/.prettierignore"
+
+if [ -f "$monorepo_ignore" ] && [ ! -f .prettierignore ]; then
+    args="--ignore-path $monorepo_ignore"
+fi
+
+exec ./node_modules/.bin/prettier $args $@ "**/*.{ts,tsx,js}"

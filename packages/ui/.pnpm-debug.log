@@ -1,0 +1,31 @@
+{
+  "0 info pnpm": {
+    "message": "Using hooks from: /Users/esamatti1/code/valu-playbooks/sites/valu-search-manager/.pnpmfile.cjs",
+    "prefix": "/Users/esamatti1/code/valu-playbooks/sites/valu-search-manager"
+  },
+  "1 info pnpm": {
+    "message": "readPackage hook is declared. Manifests of dependencies might get overridden",
+    "prefix": "/Users/esamatti1/code/valu-playbooks/sites/valu-search-manager"
+  },
+  "2 debug pnpm:scope": {
+    "selected": 1,
+    "workspacePrefix": "/Users/esamatti1/code/valu-playbooks/sites/valu-search-manager"
+  },
+  "3 error pnpm": {
+    "code": "ELIFECYCLE",
+    "errno": "ENOENT",
+    "syscall": "spawn",
+    "file": "sh",
+    "pkgid": "@findkit/novus@0.0.1",
+    "stage": "dev",
+    "script": "run-p 'dev:*'",
+    "pkgname": "@findkit/novus",
+    "err": {
+      "name": "pnpm",
+      "message": "@findkit/novus@0.0.1 dev: `run-p 'dev:*'`\nspawn ENOENT",
+      "code": "ELIFECYCLE",
+      "stack": "pnpm: @findkit/novus@0.0.1 dev: `run-p 'dev:*'`\nspawn ENOENT\n    at ChildProcess.<anonymous> (/Users/esamatti1/.volta/tools/image/node/14.18.3/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.3/node_modules/pnpm/dist/pnpm.cjs:92278:22)\n    at ChildProcess.emit (events.js:400:28)\n    at maybeClose (internal/child_process.js:1088:16)\n    at Process.ChildProcess._handle.onexit (internal/child_process.js:296:5)"
+    }
+  },
+  "4 warn pnpm:global": " Local package.json exists, but node_modules missing, did you mean to install?"
+}

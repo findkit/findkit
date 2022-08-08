@@ -1,0 +1,7 @@
+{
+    "extends": "./tsconfig.json",
+    "include": ["src", "types", "test-app", "cypress", "__tests__"],
+    "compilerOptions": {
+        "sourceRoot": "."
+    }
+}

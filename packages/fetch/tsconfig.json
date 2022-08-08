@@ -1,0 +1,10 @@
+{
+    "extends": "@findkit/dev/tsconfig",
+    "compilerOptions": {
+        "target": "es5",
+        "declaration": true,
+        "declarationDir": "./dist",
+        "skipLibCheck": true,
+        "outDir": "dist"
+    }
+}

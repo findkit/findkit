@@ -1,0 +1,8 @@
+#!/bin/sh
+
+
+set -eu
+
+cd ../..
+
+exec node_modules/.bin/turbo "$@"

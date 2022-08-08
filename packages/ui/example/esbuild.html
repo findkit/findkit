@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Esbuild Novus</title>
+
+        <style>
+            button,
+            input {
+                background-color: aqua;
+            }
+        </style>
+
+        <script type="module" id="test">
+            import {
+                LazyModal,
+                css,
+                html,
+                useState,
+            } from "http://localhost:28104/dist/lazy.js";
+            // import {
+            //     LazyModal,
+            //     css,
+            //     html,
+            //     useState,
+            // } from "https://cdn.findkit.com/novus/8e04fc61fbdcfc1f38da64d99446ef3b71a04d4a/lazy.js";
+
+            function MyComponent(props) {
+                const [num, setNum] = useState(0);
+                return html`<button
+                    onClick=${() => {
+                        setNum(num + 1);
+                    }}
+                >
+                    ${props.title}: ${num}
+                </button>`;
+            }
+
+            function Hit(props) {
+                return html`<div>
+                    wat :D
+                    <${MyComponent} title="lalalaladdd" />
+                    <small>${props.hit.title}</small>
+                </div>`;
+            }
+
+            const lazy = new LazyModal({
+                projectId: "pJMDjQvEq",
+                shadowDom: true,
+                css: css`
+                    h1 {
+                        color: yellow;
+                    }
+                `,
+                slots: {
+                    Hit,
+                },
+                groups: [
+                    {
+                        id: "valu",
+                        title: "Valu.fi",
+                        filters: {
+                            tagQuery: [["domain/valu.fi"]],
+                            highlightLength: 10,
+                        },
+                        scoreBoost: 1,
+                        previewSize: 5,
+                    },
+                    {
+                        id: "statement",
+                        title: "Statement.fi",
+                        filters: {
+                            tagQuery: [["domain/statement.fi"]],
+                            highlightLength: 10,
+                        },
+                        scoreBoost: 1,
+                        previewSize: 5,
+                    },
+                ],
+            });
+
+            lazy.openFrom("button");
+            // lazy.open("ding");
+        </script>
+    </head>
+    <body>
+        <h1>Novus dev</h1>
+        <div class="findkit--ding">HEHE</div>
+
+        <a href="?ding=dong">jsadfdsa</a>
+        <a href="?fdk_q=hakusana">hea</a>
+        <button id="open-button" type="button">open</button>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+        <p>
+            sadfk sdalfksad jfdsak jfaslkdf jaskl jfsaldk fjdsalkfj dfk sadafs
+            lfdsa fd
+        </p>
+    </body>
+</html>
