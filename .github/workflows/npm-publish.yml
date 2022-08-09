@@ -33,7 +33,6 @@ jobs:
       - name: Test AWS creds
         run: |
           set -eu
-          aws sts get-caller-identity
           aws s3 ls s3://${{ secrets.FINDKIT_CDN_S3 }}
 
       - name: Publish
