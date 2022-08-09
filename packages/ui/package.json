@@ -2,10 +2,13 @@
 	"name": "@findkit/ui",
 	"version": "0.0.1",
 	"description": "Findkit Search UI",
-	"main": "npm-dist/lazy.js",
-	"typings": "npm-dist/lazy.d.ts",
+	"main": "cjs/lazy.js",
+	"typings": "main.d.ts",
 	"files": [
-		"npm-dist",
+		"styles.css",
+		"main.d.ts",
+		"cjs",
+		"esm",
 		"src"
 	],
 	"scripts": {
@@ -23,11 +26,11 @@
 	"author": "Valu Digital Oy",
 	"size-limit": [
 		{
-			"path": "cdn-dist/modal.js",
+			"path": "esm/modal.js",
 			"limit": "30kb"
 		},
 		{
-			"path": "cdn-dist/lazy.js",
+			"path": "esm/lazy.js",
 			"limit": "2kb"
 		}
 	],

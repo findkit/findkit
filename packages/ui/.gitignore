@@ -1,4 +1,6 @@
 findkit-novus-*.tgz
-npm-dist
-cdn-dist
+esm
+cjs
 playwright-report
+styles.css
+main.d.ts

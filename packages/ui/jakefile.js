@@ -68,24 +68,24 @@ async function runEsbuild(options = {}) {
 
 task("size-limit", sh`size-limit`);
 
-task("clean", sh`rm -rf dist temp docs npm-dist`);
+task("clean", sh`rm -rf dist temp docs cjs esm`);
 
 task("esbuild-esm", async () => {
 	await runEsbuild({
 		format: "esm",
 		minify: true,
-		outdir: "./cdn-dist",
+		outdir: "./esm",
 	});
 });
 
 task("esbuild-cjs", async () => {
-	await runEsbuild({ format: "cjs", outdir: "./npm-dist", minify: false });
+	await runEsbuild({ format: "cjs", outdir: "./cjs", minify: false });
 });
 
 task("analyze", ["clean"], async () => {
 	const res = await runEsbuild({
 		metafile: true,
-		outdir: "./cdn-dist",
+		outdir: "./esm",
 		format: "esm",
 	});
 	if (!res) {
@@ -105,12 +105,15 @@ task(
 
 task("upload", async () => {
 	const version = await getVersion();
-	await sh`aws s3 cp --recursive cdn-dist "s3://\${FINDKIT_CDN_S3}/ui/${version}"`();
+	await sh`
+        aws s3 cp --recursive esm "s3://\${FINDKIT_CDN_S3}/ui/${version}"
+        aws s3 cp styles.css "s3://\${FINDKIT_CDN_S3}/ui/${version}/styles.css"
+    `();
 });
 
 task(
 	"css",
-	sh`NODE_ENV=production postcss styles/index.css --output cdn-dist/styles.css`
+	sh`NODE_ENV=production postcss styles/index.css --output styles.css`
 );
 
 task(
