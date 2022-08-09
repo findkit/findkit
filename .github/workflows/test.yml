@@ -29,6 +29,14 @@ jobs:
           restore-keys: |
             pnpm-${{ runner.os }}-
 
+      - name: Cache pnpm modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/ms-playwright
+          key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-${{ runner.os }}-
+
       - name: Build all
         run: ./node_modules/.bin/turbo run build
 
