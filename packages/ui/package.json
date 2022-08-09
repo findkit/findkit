@@ -13,6 +13,7 @@
 		"dev:css": "jake watch-css",
 		"dev:serve": "serve -p 28104 tests",
 		"tsc": "tsc",
+		"build": "jake build-all",
 		"publish-build": "cd ../../ && ./node_modules/.bin/turbo run build",
 		"dev": "run-p 'dev:*'"
 	},

@@ -160,11 +160,11 @@ steps:
 
           echo "//registry.npmjs.org/:_authToken=${{ inputs.npm_token }}" > "$HOME/.npmrc"
 
-          if [ "$is_pnpm" = "1" ]; then
-              pnpm publish --access public --no-git-checks
-          else
-              npm publish --access public
-          fi
+          # if [ "$is_pnpm" = "1" ]; then
+          #     pnpm publish --access public --no-git-checks
+          # else
+          #     npm publish --access public
+          # fi
 
           rm "$HOME/.npmrc"
 
@@ -183,11 +183,11 @@ steps:
 
           echo "//registry.npmjs.org/:_authToken=${{ inputs.npm_token }}" > "$HOME/.npmrc"
 
-          if [ "$is_pnpm" = "1" ]; then
-              pnpm publish --tag dev --access public --no-git-checks
-          else
-              npm publish --tag dev --access public
-          fi
+          # if [ "$is_pnpm" = "1" ]; then
+          #     pnpm publish --tag dev --access public --no-git-checks
+          # else
+          #     npm publish --tag dev --access public
+          # fi
 
           rm "$HOME/.npmrc"
 
