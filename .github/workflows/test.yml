@@ -33,9 +33,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/ms-playwright
-          key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            pnpm-${{ runner.os }}-
+            playwright-${{ runner.os }}-
 
       - name: Build all
         run: ./node_modules/.bin/turbo run build
