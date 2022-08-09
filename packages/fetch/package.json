@@ -15,7 +15,7 @@
 	"license": "ISC",
 	"devDependencies": {
 		"@types/jsonwebtoken": "^8.5.8",
-		"@valu/npm-tools": "^1.0.0",
+		"@valu/npm-tools": "^1.1.2",
 		"eslint": "8.21.0",
 		"eslint-plugin-react": "^7.28.0",
 		"eslint-plugin-react-hooks": "^4.3.0",
@@ -25,7 +25,7 @@
 		"node-fetch": "^3.2.10",
 		"prettier": "~2.7.1",
 		"typescript": "^4.4.3",
-		"vitest": "^0.21.0"
+		"vitest": "^0.21.1"
 	},
 	"volta": {
 		"node": "14.19.2"
