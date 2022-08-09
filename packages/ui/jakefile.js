@@ -43,9 +43,10 @@ async function runEsbuild(options = {}) {
 				"process.env.NODE_ENV": options.dev ? "'production'" : "'development'",
 				__DEV__: options.dev ?? false,
 				FINDKIT_VERSION: JSON.stringify(version),
+				FINDKIT_MODULE_FORMAT: JSON.stringify(format),
 				FINDKIT_CDN_ROOT: options.dev
 					? `"http://localhost:28104/build"`
-					: `"https://cdn.findkit.com/ui/${version}"`,
+					: `"https://cdn.findkit.com/ui/${version}/${format}"`,
 			},
 			plugins: [
 				alias({
@@ -106,7 +107,8 @@ task(
 task("upload", async () => {
 	const version = await getVersion();
 	await sh`
-        aws s3 cp --recursive esm "s3://\${FINDKIT_CDN_S3}/ui/${version}"
+        aws s3 cp --recursive esm "s3://\${FINDKIT_CDN_S3}/ui/${version}/esm"
+        aws s3 cp --recursive cjs "s3://\${FINDKIT_CDN_S3}/ui/${version}/cjs"
         aws s3 cp styles.css "s3://\${FINDKIT_CDN_S3}/ui/${version}/styles.css"
     `();
 });
