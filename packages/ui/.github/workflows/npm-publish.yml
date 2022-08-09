@@ -1,0 +1,19 @@
+name: Publish npm package
+
+on:
+  push:
+    branches:
+      - release/*/*
+jobs:
+  publish:
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # Fetch full history to get all tags so we can get PREV_VERSION
+          fetch-depth: 0
+
+    - name: Publish
+        uses: ./.github/publish-action
+        with:
+            slack_access_token: "${{ secrets.SLACK_ACCESS_TOKEN }}"
+            npm_token: "${{ secrets.NPM_TOKEN }}"

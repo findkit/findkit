@@ -1,4 +1,0 @@
-#!/bin/sh
-set -eu
-
-exec ./node_modules/.bin/findkit-prettier --write

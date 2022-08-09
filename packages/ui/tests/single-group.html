@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>Search UI Test</title>
+	<head>
+		<meta charset="utf-8" />
+		<title>Search UI Test</title>
 
-        <script type="module">
-            import { LazyModal } from "https://cdn.findkit.com/v1.0.0/lazy.js";
+		<script type="module">
+			import { LazyModal } from "http://localhost:28104/build/lazy.js";
 
-            const lazy = new LazyModal({
-                projectId: "pJMDjQvEq",
-                shadowDom: true,
-                groups: [
-                    {
-                        id: "valu",
-                        title: "Valu.fi",
-                        filters: {
-                            tagQuery: [["domain/valu.fi"]],
-                            highlightLength: 10,
-                        },
-                        scoreBoost: 1,
-                        previewSize: 5,
-                    },
-                ],
-            });
+			const lazy = new LazyModal({
+				projectId: "pJMDjQvEq",
+				shadowDom: true,
+				groups: [
+					{
+						id: "valu",
+						title: "Valu.fi",
+						filters: {
+							tagQuery: [["domain/valu.fi"]],
+							highlightLength: 10,
+						},
+						scoreBoost: 1,
+						previewSize: 5,
+					},
+				],
+			});
 
-            lazy.openFrom("button");
-        </script>
-    </head>
-    <body>
-        <button id="open-button" type="button">open</button>
-    </body>
+			lazy.openFrom("button");
+		</script>
+	</head>
+	<body>
+		<button id="open-button" type="button">open</button>
+	</body>
 </html>

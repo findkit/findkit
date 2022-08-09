@@ -1,4 +1,0 @@
-{
-    "elasticsearchEndpoint": "localhost:9200",
-    "index": "cypress"
-}
