@@ -30,7 +30,7 @@ interface JwtToken {
 export interface FindkitFetchOptions
 	extends FindkitSearchParams,
 		FindKitDeveloperOptions {
-	projectId?: string;
+	publicToken?: string;
 	searchEndpoint?: string;
 }
 
@@ -68,6 +68,13 @@ export interface PostRequestInit {
 	body: string;
 }
 
+let logResponseTimes = false;
+
+if (typeof window !== "undefined") {
+	logResponseTimes =
+		window.localStorage.getItem("findkit-log-response-times") === "true";
+}
+
 /**
  * @public
  */
@@ -87,7 +94,7 @@ export function createFindkitFetcher(props?: { getJwtToken?: GetJwtToken }) {
 		}
 	}
 
-	const findkitFetch: FindkitFetch = (options: FindkitFetchOptions) => {
+	const findkitFetch: FindkitFetch = async (options: FindkitFetchOptions) => {
 		// new implementation
 		const fetchUrl = getSearchEndpoint(options);
 		const started = Date.now();
@@ -97,70 +104,66 @@ export function createFindkitFetcher(props?: { getJwtToken?: GetJwtToken }) {
 			refresh();
 		}
 
-		return Promise.resolve(currentJwtTokenPromise).then((token) => {
-			const fetchOptions: PostRequestInit = {
-				method: "POST",
-				mode: "cors",
-				credentials: "omit",
-				headers: {
-					// This looks wrong but is intentional. We want to make "Simple CORS
-					// requests" eg. requests without the OPTIONS preflight and
-					// application/json is not allowed for those. So we just have to use
-					// one of the allowed ones.
-					// See https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#simple_requests
-					"Content-Type": "text/plain",
-				},
-				body: JSON.stringify(requestBody),
-			};
+		const token = await currentJwtTokenPromise;
 
-			if (token && fetchOptions.headers) {
-				fetchOptions.headers["authorization"] = "Bearer " + token.jwt;
+		const fetchOptions: PostRequestInit = {
+			method: "POST",
+			mode: "cors",
+			credentials: "omit",
+			headers: {
+				// This looks wrong but is intentional. We want to make "Simple CORS
+				// requests" eg. requests without the OPTIONS preflight and
+				// application/json is not allowed for those. So we just have to use
+				// one of the allowed ones.
+				// See https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#simple_requests
+				"Content-Type": "text/plain",
+			},
+			body: JSON.stringify(requestBody),
+		};
+
+		if (token && fetchOptions.headers) {
+			fetchOptions.headers["authorization"] = "Bearer " + token.jwt;
+		}
+
+		const res = await fetch(fetchUrl, fetchOptions);
+
+		if (res.status === 403) {
+			const error: JwtErrorResponse = await res.json();
+
+			if (error.error.type === "jwt-expired") {
+				refresh();
+				return findkitFetch(options);
 			}
 
-			return fetch(fetchUrl, fetchOptions).then((res) => {
-				if (res.status === 403) {
-					return res.json().then((error: JwtErrorResponse) => {
-						if (error.error.type === "jwt-expired") {
-							// Generate new promise of the new token and retry the fetchh
-							refresh();
-							return findkitFetch(options);
-						}
+			throw new Error("[findkit] Permission denied: " + error.error.type);
+		}
 
-						throw new Error("[findkit] Permission denied: " + error.error.type);
-					});
-				}
+		if (!res.ok) {
+			throw new Error("[findkit] Bad response from search: " + res.status);
+		}
 
-				if (!res.ok) {
-					throw new Error("[findkit] Bad response from search: " + res.status);
-				}
+		const responses: FindkitSearchResponse = await res.json();
 
-				const searchResponses = res.json() as Promise<FindkitSearchResponse>;
+		if (options.logResponseTimes || logResponseTimes) {
+			const total = Date.now() - started;
+			const backendDuration = responses.duration;
 
-				return searchResponses.then((resolvedJson) => {
-					if (options.logResponseTimes) {
-						const total = Date.now() - started;
-						const backendDuration =
-							Number(res.headers.get("x-findkit-search-duration")) || 0;
+			console.log(
+				`[findkit] Response total ${total}ms, backend ${backendDuration}ms, network ${
+					total - backendDuration
+				}ms`
+			);
 
-						console.log(
-							`[findkit] Response total ${total}ms, backend ${backendDuration}ms, network ${
-								total - backendDuration
-							}ms`
-						);
-
-						options.groups.forEach((group, index) => {
-							const duration = resolvedJson.groups[index]?.duration ?? 0;
-							console.log(
-								`[findkit] Group response ${duration}ms for group "${index}"`,
-								group
-							);
-						});
-					}
-
-					return resolvedJson;
-				});
+			options.groups.forEach((group, index) => {
+				const duration = responses.groups[index]?.duration ?? 0;
+				console.log(
+					`[findkit] Group response ${duration}ms for group "${index}"`,
+					group
+				);
 			});
-		});
+		}
+
+		return responses;
 	};
 
 	return {
@@ -182,15 +185,15 @@ export function getRequestBody(
 function getSearchEndpoint(options: FindkitFetchOptions) {
 	if (options.searchEndpoint) {
 		return options.searchEndpoint;
-	} else if (options.projectId) {
-		return getProjectSearchEndpoint(options.projectId);
+	} else if (options.publicToken) {
+		return getProjectSearchEndpoint(options.publicToken);
 	} else {
 		throw new Error("Unable to determine search endpoint");
 	}
 }
 
-export function getProjectSearchEndpoint(projectId: string) {
-	return `https://search.findkit.com/c/${projectId}/search?p=${projectId}`;
+export function getProjectSearchEndpoint(publicToken: string) {
+	return `https://search.findkit.com/c/${publicToken}/search?p=${publicToken}`;
 }
 
 /**

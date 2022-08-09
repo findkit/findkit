@@ -3,203 +3,203 @@ import React, { StrictMode, useRef, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { Results, FindkitProvider } from "./components";
 import {
-    useSearchEngineState,
-    useSearchEngine,
-    useInput,
-    Slots,
+	useSearchEngineState,
+	useSearchEngine,
+	useInput,
+	Slots,
 } from "./core-hooks";
 
 import { SearchEngine, GroupDefinition } from "./search-engine";
 import { View } from "./utils";
 
 function useScrollLock(lock: boolean) {
-    useEffect(() => {
-        if (!lock) {
-            return;
-        }
+	useEffect(() => {
+		if (!lock) {
+			return;
+		}
 
-        const origHeight = window.document.documentElement.style.height;
-        const origOverflow = window.document.documentElement.style.overflow;
+		const origHeight = window.document.documentElement.style.height;
+		const origOverflow = window.document.documentElement.style.overflow;
 
-        window.document.documentElement.style.height = "100%;";
-        window.document.documentElement.style.overflow = "hidden";
+		window.document.documentElement.style.height = "100%;";
+		window.document.documentElement.style.overflow = "hidden";
 
-        return () => {
-            window.document.documentElement.style.height = origHeight;
-            window.document.documentElement.style.overflow = origOverflow;
-        };
-    }, [lock]);
+		return () => {
+			window.document.documentElement.style.height = origHeight;
+			window.document.documentElement.style.overflow = origOverflow;
+		};
+	}, [lock]);
 }
 
 function useFocusTrap() {
-    const state = useSearchEngineState();
-    const engine = useSearchEngine();
-    const isOpen = state.status !== "closed";
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const trapRef = useRef<FocusTrap | null>(null);
+	const state = useSearchEngineState();
+	const engine = useSearchEngine();
+	const isOpen = state.status !== "closed";
+	const containerRef = useRef<HTMLDivElement | null>(null);
+	const trapRef = useRef<FocusTrap | null>(null);
 
-    useEffect(() => {
-        if (!isOpen) {
-            return;
-        }
+	useEffect(() => {
+		if (!isOpen) {
+			return;
+		}
 
-        if (!trapRef.current && containerRef.current) {
-            trapRef.current = new FocusTrap({
-                containers: [containerRef.current],
-                escDisables: true,
-                outsideClickDisables: true,
-                onAfterEnable() {
-                    containerRef.current?.querySelector("input")?.focus();
-                },
-                onAfterDisable() {
-                    if (trapRef.current) {
-                        engine.close();
-                    }
-                },
-            });
-            trapRef.current.enable();
-        }
+		if (!trapRef.current && containerRef.current) {
+			trapRef.current = new FocusTrap({
+				containers: [containerRef.current],
+				escDisables: true,
+				outsideClickDisables: true,
+				onAfterEnable() {
+					containerRef.current?.querySelector("input")?.focus();
+				},
+				onAfterDisable() {
+					if (trapRef.current) {
+						engine.close();
+					}
+				},
+			});
+			trapRef.current.enable();
+		}
 
-        return () => {
-            const trap = trapRef.current;
-            trapRef.current = null;
-            trap?.disable();
-        };
-    }, [engine, isOpen]);
+		return () => {
+			const trap = trapRef.current;
+			trapRef.current = null;
+			trap?.disable();
+		};
+	}, [engine, isOpen]);
 
-    return containerRef;
+	return containerRef;
 }
 
 function useDelay(show: boolean, ms: number) {
-    const [status, setStatus] = useState(false);
+	const [status, setStatus] = useState(false);
 
-    useEffect(() => {
-        if (show) {
-            setStatus(show);
-        } else {
-            const timer = setTimeout(() => {
-                setStatus(false);
-            }, ms);
+	useEffect(() => {
+		if (show) {
+			setStatus(show);
+		} else {
+			const timer = setTimeout(() => {
+				setStatus(false);
+			}, ms);
 
-            return () => {
-                clearTimeout(timer);
-            };
-        }
-    }, [ms, show]);
+			return () => {
+				clearTimeout(timer);
+			};
+		}
+	}, [ms, show]);
 
-    return status;
+	return status;
 }
 
 function ModalResult() {
-    const engine = useSearchEngine();
-    const state = useSearchEngineState();
-    const inputRef = useInput();
-    const containerRef = useFocusTrap();
+	const engine = useSearchEngine();
+	const state = useSearchEngineState();
+	const inputRef = useInput();
+	const containerRef = useFocusTrap();
 
-    const show = state.status !== "closed";
-    const duration = 150;
-    const delayed = useDelay(show, duration);
-    const unmount = !delayed && !show;
+	const show = state.status !== "closed";
+	const duration = 150;
+	const delayed = useDelay(show, duration);
+	const unmount = !delayed && !show;
 
-    useScrollLock(!unmount);
+	useScrollLock(!unmount);
 
-    if (unmount) {
-        return null;
-    }
+	if (unmount) {
+		return null;
+	}
 
-    const visible = show && delayed;
+	const visible = show && delayed;
 
-    return (
-        <View
-            ref={containerRef}
-            cn={["modal", visible && "modal-visible"]}
-            style={{
-                ["--findkit--modal-animation-duration"]: `${duration}ms`,
-            }}
-        >
-            <View cn="header">
-                <View
-                    cn="close-button"
-                    as="button"
-                    type="button"
-                    onClick={() => {
-                        engine.close();
-                    }}
-                >
-                    x
-                </View>
-                <View as="input" cn="search-input" type="text" ref={inputRef} />
-            </View>
+	return (
+		<View
+			ref={containerRef}
+			cn={["modal", visible && "modal-visible"]}
+			style={{
+				["--findkit--modal-animation-duration"]: `${duration}ms`,
+			}}
+		>
+			<View cn="header">
+				<View
+					cn="close-button"
+					as="button"
+					type="button"
+					onClick={() => {
+						engine.close();
+					}}
+				>
+					x
+				</View>
+				<View as="input" cn="search-input" type="text" ref={inputRef} />
+			</View>
 
-            <Results />
-        </View>
-    );
+			<Results />
+		</View>
+	);
 }
 export function Modal(props: {
-    projectId?: string;
-    engine?: SearchEngine;
-    groups: GroupDefinition[];
-    slots?: Partial<Slots>;
+	publicToken?: string;
+	engine?: SearchEngine;
+	groups: GroupDefinition[];
+	slots?: Partial<Slots>;
 }) {
-    return (
-        <FindkitProvider
-            projectId={props.projectId}
-            slots={props.slots}
-            groups={props.groups}
-            engine={props.engine}
-        >
-            <ModalResult />
-        </FindkitProvider>
-    );
+	return (
+		<FindkitProvider
+			publicToken={props.publicToken}
+			slots={props.slots}
+			groups={props.groups}
+			engine={props.engine}
+		>
+			<ModalResult />
+		</FindkitProvider>
+	);
 }
 
 function createContainer(options: { shadowDom?: boolean }) {
-    const container = document.createElement("div");
-    container.id = "findkit-container";
-    document.body.appendChild(container);
+	const container = document.createElement("div");
+	container.id = "findkit-container";
+	document.body.appendChild(container);
 
-    if (options.shadowDom) {
-        container.id = "findkit-shadow";
-        return container.attachShadow({ mode: "open" });
-    }
+	if (options.shadowDom) {
+		container.id = "findkit-shadow";
+		return container.attachShadow({ mode: "open" });
+	}
 
-    return container;
+	return container;
 }
 
 /**
  * @public
  */
 export function initModal(options: {
-    projectId: string;
-    instanceId?: string;
-    shadowDom?: boolean;
-    css?: string;
-    styleSheets: string[];
-    groups: GroupDefinition[];
-    slots?: Partial<Slots>;
+	publicToken: string;
+	instanceId?: string;
+	shadowDom?: boolean;
+	css?: string;
+	styleSheets: string[];
+	groups: GroupDefinition[];
+	slots?: Partial<Slots>;
 }) {
-    const container = createContainer({ shadowDom: options.shadowDom });
+	const container = createContainer({ shadowDom: options.shadowDom });
 
-    const engine = new SearchEngine({
-        projectId: options.projectId,
-        instanceId: options.instanceId,
-    });
+	const engine = new SearchEngine({
+		publicToken: options.publicToken,
+		instanceId: options.instanceId,
+	});
 
-    const elements = (
-        <StrictMode>
-            <>
-                {options.styleSheets.map((href) => (
-                    <link key={href} rel="stylesheet" href={href} />
-                ))}
-                {options.css ? (
-                    <style dangerouslySetInnerHTML={{ __html: options.css }} />
-                ) : null}
+	const elements = (
+		<StrictMode>
+			<>
+				{options.styleSheets.map((href) => (
+					<link key={href} rel="stylesheet" href={href} />
+				))}
+				{options.css ? (
+					<style dangerouslySetInnerHTML={{ __html: options.css }} />
+				) : null}
 
-                <Modal {...options} engine={engine} />
-            </>
-        </StrictMode>
-    );
+				<Modal {...options} engine={engine} />
+			</>
+		</StrictMode>
+	);
 
-    ReactDOM.render(elements, container);
-    return engine;
+	ReactDOM.render(elements, container);
+	return engine;
 }

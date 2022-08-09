@@ -134,7 +134,7 @@ task("watch-js", async () => {
 	const opts = {
 		dev: true,
 		format: "esm",
-		outdir: "./example/dist",
+		outdir: "./tests/build",
 		minify: false,
 	};
 
