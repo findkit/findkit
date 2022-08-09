@@ -22,11 +22,11 @@
 	"size-limit": [
 		{
 			"path": "cdn-dist/modal.js",
-			"limit": "20kb"
+			"limit": "30kb"
 		},
 		{
 			"path": "cdn-dist/lazy.js",
-			"limit": "1kb"
+			"limit": "2kb"
 		}
 	],
 	"browserslist": [

@@ -128,7 +128,7 @@ task("build-test", async () => {
 	});
 });
 
-task("build-all", ["clean", "css", "esbuild-esm", "build-npm"]);
+task("build-all", ["clean", "css", "esbuild-esm", "build-npm", "size-limit"]);
 
 task("watch-js", async () => {
 	const opts = {

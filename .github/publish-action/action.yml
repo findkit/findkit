@@ -9,6 +9,14 @@ inputs:
   npm_token:
     description: "npm token"
     required: true
+  node_version:
+    description: "node.js version"
+    required: false
+    default: "16.x"
+  pnpm_version:
+    description: "pnpm version"
+    required: false
+    default: "7.9.0"
 runs:
   using: composite
   steps:
@@ -120,12 +128,12 @@ runs:
     - name: Use Node.js
       uses: actions/setup-node@v1
       with:
-        node-version: "14.x"
+        node-version: "${{ inputs.node_version }}"
 
     - name: Setup pnpm
       uses: pnpm/action-setup@v2.0.1
-      with:
-        version: 6.25.1
+      with: "${{ inputs.pnpm_version }}"
+      version: 6.25.1
       if: ${{ env.is_pnpm == '1' }}
 
     - name: "Install node modules"
