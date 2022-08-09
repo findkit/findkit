@@ -15,6 +15,7 @@
 		"tsc": "tsc",
 		"build": "jake build-all",
 		"test": "echo noop",
+		"playwright-test": "playwright test",
 		"publish-build": "(cd ../../ && ./node_modules/.bin/turbo run build) && jake upload",
 		"dev": "run-p 'dev:*'"
 	},
