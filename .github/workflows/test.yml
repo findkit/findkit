@@ -18,9 +18,6 @@ jobs:
         with:
           version: 7.9.0
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Cache pnpm modules
         uses: actions/cache@v2
         with:
@@ -36,6 +33,9 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             playwright-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Build all
         run: ./node_modules/.bin/turbo run build
