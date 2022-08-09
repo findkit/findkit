@@ -34,11 +34,17 @@ const doc = document;
  */
 declare const FINDKIT_CDN_ROOT: string;
 declare const FINDKIT_VERSION: string;
+declare const FINDKIT_MODULE_FORMAT: "esm" | "cjs";
 
 export const VERSION = FINDKIT_VERSION;
 
 function cdnFile(path: string) {
-	return `${FINDKIT_CDN_ROOT}/${path}`;
+	const root = FINDKIT_CDN_ROOT;
+	if (path.endsWith(".js")) {
+		return `${root}/${FINDKIT_MODULE_FORMAT}/${path}`;
+	} else {
+		return `${root}/${path}`;
+	}
 }
 
 let preconnected = false;
