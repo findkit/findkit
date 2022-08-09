@@ -37,14 +37,14 @@ test("can load more results when using only one group", async ({ page }) => {
 		.waitFor({ state: "detached" });
 });
 
-test("focus management", async ({ page }) => {
-	await page.goto("http://localhost:28104/single-group");
+// test("focus management", async ({ page }) => {
+// 	await page.goto("http://localhost:28104/single-group");
 
-	const button = page.locator("text=open");
+// 	const button = page.locator("text=open");
 
-	await button.click();
+// 	await button.click();
 
-	const input = page.locator("input:visible");
-	await input.waitFor({ state: "visible" });
-	expect(input).toBeFocused();
-});
+// 	const input = page.locator("input:visible");
+// 	await input.waitFor({ state: "visible" });
+// 	expect(input).toBeFocused();
+// });
