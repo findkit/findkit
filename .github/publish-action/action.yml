@@ -133,7 +133,7 @@ runs:
     - name: Setup pnpm
       uses: pnpm/action-setup@v2.0.1
       with:
-        node-version: "${{ inputs.pnpm_version }}"
+        version: "${{ inputs.pnpm_version }}"
       if: ${{ env.is_pnpm == '1' }}
 
     - name: "Install node modules"
