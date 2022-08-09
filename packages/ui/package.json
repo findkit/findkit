@@ -14,7 +14,8 @@
 		"dev:serve": "serve -p 28104 tests",
 		"tsc": "tsc",
 		"build": "jake build-all",
-		"publish-build": "cd ../../ && ./node_modules/.bin/turbo run build",
+		"test": "echo noop",
+		"publish-build": "(cd ../../ && ./node_modules/.bin/turbo run build) && jake upload",
 		"dev": "run-p 'dev:*'"
 	},
 	"author": "Valu Digital Oy",

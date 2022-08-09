@@ -92,13 +92,12 @@ task(
 
 task(
 	"upload",
-	["build-all"],
 	sh`
 
         if [ "\${GITHUB_REF:-}" = "" ]; then
             version="local-$(git rev-parse HEAD)"
         else
-            version="v$(jq .version package.json)"
+            version="v$(jq -r .version package.json)"
         fi
 
         aws s3 cp --recursive cdn-dist "s3://\${FINDKIT_CDN_S3}/ui/$version"
