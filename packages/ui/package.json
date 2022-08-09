@@ -14,7 +14,7 @@
 		"dev:serve": "serve -p 28104 tests",
 		"tsc": "tsc",
 		"build": "jake build-all",
-		"test": "echo noop",
+		"test": "tsc && size-limit",
 		"playwright-test": "playwright test",
 		"publish-build": "(cd ../../ && ./node_modules/.bin/turbo run build) && jake upload",
 		"dev": "run-p 'dev:*'"
