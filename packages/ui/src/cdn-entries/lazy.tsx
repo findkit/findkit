@@ -33,6 +33,9 @@ const doc = document;
  * Variable created by the esbuild config in jakefile.js
  */
 declare const FINDKIT_CDN_ROOT: string;
+declare const FINDKIT_VERSION: string;
+
+export const VERSION = FINDKIT_VERSION;
 
 function cdnFile(path: string) {
 	return `${FINDKIT_CDN_ROOT}/${path}`;
@@ -137,7 +140,7 @@ async function preloadStylesheet(href: string) {
 	return promise;
 }
 
-async function loadScriptModule<T>(
+async function loadScriptFromGlobal<T>(
 	globalName: string,
 	src: string
 ): Promise<T> {
@@ -158,7 +161,9 @@ async function loadScriptModule<T>(
 
 	const output = (window as any)[globalName];
 	if (!output) {
-		throw new Error(`[findkit] Module "${globalName}" was not in ${src}`);
+		throw new Error(
+			`[findkit] Global "${globalName}" was not defined by ${src}`
+		);
 	}
 
 	return output;
@@ -218,8 +223,8 @@ export class LazyModal {
 		if (this.#options.load) {
 			this.#implementationPromise = this.#options.load();
 		} else {
-			this.#implementationPromise = loadScriptModule<ModalImplementation>(
-				"NOVUS",
+			this.#implementationPromise = loadScriptFromGlobal<ModalImplementation>(
+				"FINDKIT_" + FINDKIT_VERSION,
 				cdnFile("modal.js")
 			);
 		}
@@ -293,12 +298,10 @@ export class LazyModal {
 
 	#bindOpeners(elements: Element[] | NodeListOf<Element>) {
 		for (const el of elements) {
-			if (el instanceof HTMLButtonElement) {
-				el.addEventListener("click", this.#handleButtonClick);
-				el.addEventListener("mouseover", this.#handleButtonHover, {
-					once: true,
-				});
-			}
+			el.addEventListener("click", this.#handleButtonClick);
+			el.addEventListener("mouseover", this.#handleButtonHover, {
+				once: true,
+			});
 		}
 	}
 

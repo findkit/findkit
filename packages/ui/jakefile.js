@@ -1,4 +1,5 @@
 const { task } = require("jake");
+const fs = require("fs/promises");
 const { sh } = require("sh-thunk");
 const watcher = require("@parcel/watcher");
 const { execSync } = require("child_process");
@@ -10,8 +11,19 @@ const gitRev = execSync("git rev-parse HEAD").toString().trim();
 
 const preactPath = require.resolve("preact/compat");
 
+async function getVersion() {
+	if (!process.env.GITHUB_REF) {
+		return `local-${gitRev}`;
+	}
+
+	const pkg = await fs.readFile("./package.json");
+	const json = JSON.parse(pkg.toString());
+	return "v" + json.version;
+}
+
 async function runEsbuild(options = {}) {
 	const format = options?.format ?? "esm";
+	const version = await getVersion();
 
 	const result = await esbuild
 		.build({
@@ -30,9 +42,10 @@ async function runEsbuild(options = {}) {
 			define: {
 				"process.env.NODE_ENV": options.dev ? "'production'" : "'development'",
 				__DEV__: options.dev ?? false,
+				FINDKIT_VERSION: JSON.stringify(version),
 				FINDKIT_CDN_ROOT: options.dev
 					? `"http://localhost:28104/build"`
-					: `"https://cdn.findkit.com/novus/${gitRev}"`,
+					: `"https://cdn.findkit.com/ui/${version}"`,
 			},
 			plugins: [
 				alias({
@@ -90,19 +103,10 @@ task(
     `
 );
 
-task(
-	"upload",
-	sh`
-
-        if [ "\${GITHUB_REF:-}" = "" ]; then
-            version="local-$(git rev-parse HEAD)"
-        else
-            version="v$(jq -r .version package.json)"
-        fi
-
-        aws s3 cp --recursive cdn-dist "s3://\${FINDKIT_CDN_S3}/ui/$version"
-    `
-);
+task("upload", async () => {
+	const version = await getVersion();
+	await sh`aws s3 cp --recursive cdn-dist "s3://\${FINDKIT_CDN_S3}/ui/${version}"`();
+});
 
 task(
 	"css",
