@@ -40,10 +40,10 @@ jobs:
 
       - name: Run Playwright tests
         run: |
-        set -eu
-        cd packages/ui
-        pnpm run build-test
-        pnpm run playwright-test
+          set -eu
+          cd packages/ui
+          pnpm run build-test
+          pnpm run playwright-test
 
       - uses: actions/upload-artifact@v2
         if: always()
