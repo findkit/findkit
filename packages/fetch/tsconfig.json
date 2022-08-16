@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "es2020",
+        "strict": true,
+        "moduleResolution": "node",
+        "noUncheckedIndexedAccess": true,
+        "declaration": true,
+        "declarationDir": "./dist",
+        "skipLibCheck": true,
+        "outDir": "dist"
+    }
+}

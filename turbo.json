@@ -1,0 +1,10 @@
+{
+	"$schema": "https://turborepo.org/schema.json",
+	"baseBranch": "origin/master",
+	"pipeline": {
+		"test": {},
+		"build": {
+			"dependsOn": ["^build"]
+		}
+	}
+}
