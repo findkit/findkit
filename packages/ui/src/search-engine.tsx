@@ -430,6 +430,7 @@ export class SearchEngine {
 		this.#statusTransition("fetching");
 
 		const response = await this.fetcher(fullParams).catch((error: any) => {
+			console.error("[findkit] fetch failed", error);
 			this.state.error = {
 				source: "fetch",
 				message: error.message,
