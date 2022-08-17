@@ -1,5 +1,4 @@
 import { expect, test, describe, beforeEach, afterEach, vi } from "vitest";
-import { findkitFetch } from "..";
 import { rest } from "msw";
 import { sign } from "jsonwebtoken";
 
@@ -7,6 +6,7 @@ import fetch from "node-fetch";
 
 import { setupServer } from "msw/node";
 import {
+	findkitFetch,
 	createFindkitFetcher,
 	getRequestBody,
 	JwtErrorResponse,
@@ -140,6 +140,27 @@ describe("fetch", () => {
 			searchEndpoint: "https://test.invalid/multi-search2",
 			q: "",
 			groups: [],
+		});
+
+		expect(res).toEqual({ duration: 123, groups: [] });
+	});
+
+	test("when no groups are defined add a default that searches everything", async () => {
+		server.use(
+			rest.post("https://test.invalid/multi-search2", async (req, res, ctx) => {
+				const requestBody = await req.json();
+				expect(requestBody).toEqual({ q: "test", groups: [{ tagQuery: [] }] });
+
+				const resData: FindkitFetchResponse = {
+					groups: [],
+					duration: 123,
+				};
+				return res(ctx.json(resData));
+			})
+		);
+		const res = await findkitFetch({
+			searchEndpoint: "https://test.invalid/multi-search2",
+			q: "test",
 		});
 
 		expect(res).toEqual({ duration: 123, groups: [] });

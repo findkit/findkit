@@ -95,6 +95,17 @@ export function createFindkitFetcher(props?: { getJwtToken?: GetJwtToken }) {
 	}
 
 	const findkitFetch: FindkitFetch = async (options: FindkitFetchOptions) => {
+		if (!options.groups) {
+			options = {
+				...options,
+				groups: [
+					{
+						tagQuery: [],
+					},
+				],
+			};
+		}
+
 		// new implementation
 		const fetchUrl = getSearchEndpoint(options);
 		const started = Date.now();
@@ -154,7 +165,7 @@ export function createFindkitFetcher(props?: { getJwtToken?: GetJwtToken }) {
 				}ms`
 			);
 
-			options.groups.forEach((group, index) => {
+			options.groups?.forEach((group, index) => {
 				const duration = responses.groups[index]?.duration ?? 0;
 				console.log(
 					`[findkit] Group response ${duration}ms for group "${index}"`,
@@ -206,7 +217,7 @@ export const findkitFetch: FindkitFetch = createFindkitFetcher().findkitFetch;
  */
 export interface FindkitSearchParams {
 	q: string;
-	groups: FindkitSearchGroupParams[];
+	groups?: FindkitSearchGroupParams[];
 }
 
 /**
