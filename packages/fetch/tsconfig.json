@@ -2,6 +2,7 @@
     "compilerOptions": {
         "target": "es2020",
         "strict": true,
+        "module": "commonjs",
         "moduleResolution": "node",
         "noUncheckedIndexedAccess": true,
         "declaration": true,
