@@ -41,5 +41,5 @@ jobs:
           FINDKIT_CDN_S3: "${{ secrets.FINDKIT_CDN_S3 }}"
         with:
           slack_access_token: "${{ secrets.SLACK_ACCESS_TOKEN }}"
-          slack_channel: "#esa-test"
+          slack_channel: "${{ secrets.SLACK_CHANNEL }}"
           npm_token: "${{ secrets.NPM_TOKEN }}"
