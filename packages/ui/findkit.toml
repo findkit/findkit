@@ -1,0 +1,16 @@
+## Unique id of the project
+id = "findkit-ui-tests"
+
+name = "Findkit UI Tests"
+description = "Project description"
+#full_crawl_schedule = "weekly"
+
+[[targets]]
+host = "www.valu.fi"
+use_sitemap = true
+content_selector = "main,.content,#main,.post"
+
+[[targets]]
+host = "www.statement.fi"
+use_sitemap = true
+content_selector = "main,.content,#main,.post"
