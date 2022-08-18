@@ -1,13 +1,21 @@
 .modal {
 	z-index: 100000;
-	position: fixed;
 	overflow: auto;
-	inset: var(--space-5);
-	padding: var(--space-5);
+	position: fixed;
+	inset: 0;
 	transform: translateY(-100%);
+	background-color: white;
+	align-items: center;
 	opacity: 0;
 	transition: opacity var(--modal-animation-duration) ease,
 		transform var(--modal-animation-duration) ease;
+}
+
+.header,
+.content {
+	max-width: 800px;
+	width: 100%;
+	flex: 1;
 }
 
 .modal-visible {
@@ -16,15 +24,20 @@
 }
 
 .header {
-	/* height: var(--space-16); */
+	top: 0;
+	z-index: 1;
+	position: sticky;
+	background-color: white;
+	transition: transform 500ms ease;
+}
+
+.header-hidden {
+	transform: translateY(-110%);
 }
 
 .search-input {
 	position: absolute;
-	top: 0;
-	right: 0;
-	left: 0;
-	bottom: 0;
+	inset: 0;
 
 	padding: var(--space-3);
 	padding-left: var(--space-14);
@@ -66,6 +79,7 @@
 }
 
 .hit {
+	padding: var(--space-3);
 }
 
 .group-title {
