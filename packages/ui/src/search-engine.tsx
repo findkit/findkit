@@ -223,19 +223,19 @@ export class SearchEngine {
 		this.searchMoreSize = options.searchMoreSize ?? 20;
 		this.minSearchTermsLength = options.minSearchTermsLength ?? 2;
 
-		this.syncInputs(initialSearchParams.getTerms());
+		this.#syncInputs(initialSearchParams.getTerms());
 
 		this.unbindAddressBarListeners = this.addressBar.listen(
-			this.handleAddressChange
+			this.#handleAddressChange
 		);
-		this.handleAddressChange();
+		this.#handleAddressChange();
 	}
 
 	get findkitParams() {
 		return new FindkitURLSearchParams(this.instanceId, this.state.searchParams);
 	}
 
-	private handleAddressChange = () => {
+	#handleAddressChange = () => {
 		this.state.searchParams = this.addressBar.getSearchParamsString();
 		const nextParams = this.findkitParams;
 		if (!this.findkitParams.isActive()) {
@@ -254,10 +254,10 @@ export class SearchEngine {
 		this.state.terms = terms;
 		this.state.currentGroupId = nextParams.getGroupId();
 
-		void this.fetch({ reset });
+		void this.#fetch({ reset });
 	};
 
-	private clearTimeout = () => {
+	#clearTimeout = () => {
 		if (this.throttleTimerID) {
 			clearTimeout(this.throttleTimerID);
 			this.throttleTimerID = undefined;
@@ -271,7 +271,7 @@ export class SearchEngine {
 		this.addressBar.update(params.toURLSearchParams(), options);
 	};
 
-	private handleInputChange(terms: string, options?: { force?: boolean }) {
+	#handleInputChange(terms: string, options?: { force?: boolean }) {
 		if (this.pendingTerms === terms.trim()) {
 			return;
 		}
@@ -293,7 +293,7 @@ export class SearchEngine {
 	}
 
 	setTerms(terms: string) {
-		this.clearTimeout();
+		this.#clearTimeout();
 		this.updateAddressBar(this.findkitParams.setTerms(terms));
 	}
 
@@ -305,22 +305,26 @@ export class SearchEngine {
 
 		this.state.groupDefinitions = ref(groups);
 
-		this.clearTimeout();
-		void this.fetch({ reset: true });
+		this.#clearTimeout();
+		void this.#fetch({ reset: true });
 	};
 
 	searchMore() {
-		void this.fetch({ reset: false });
+		void this.#fetch({ reset: false });
+	}
+
+	retry() {
+		void this.#fetch({ reset: true });
 	}
 
 	/**
 	 * Aka the "from" value for append requests
 	 */
-	private getGroupTotal(groupId: string): number {
+	#getGroupTotal(groupId: string): number {
 		return this.state.resultGroups[groupId]?.hits.length ?? 0;
 	}
 
-	private getFullParams(options: {
+	#getFullParams(options: {
 		groups: GroupDefinition[];
 		lang: string | undefined;
 		terms: string;
@@ -343,7 +347,7 @@ export class SearchEngine {
 
 				let from = 0;
 				if (options.appendGroupId && !options.reset) {
-					from = this.getGroupTotal(options.appendGroupId);
+					from = this.#getGroupTotal(options.appendGroupId);
 				}
 
 				return cleanUndefined({
@@ -398,7 +402,7 @@ export class SearchEngine {
 		}
 	}
 
-	fetch = async (options: { reset: boolean }) => {
+	#fetch = async (options: { reset: boolean }) => {
 		this.requestId += 1;
 		const requestId = this.requestId;
 
@@ -419,7 +423,7 @@ export class SearchEngine {
 
 		const appendGroupId = this.getCurrentGroupId();
 
-		const fullParams = this.getFullParams({
+		const fullParams = this.#getFullParams({
 			groups: this.state.groupDefinitions,
 			terms: this.state.terms,
 			appendGroupId,
@@ -513,7 +517,7 @@ export class SearchEngine {
 		});
 
 		if (appendGroupId && !options?.reset) {
-			this.addAllResults(resWithIds);
+			this.#addAllResults(resWithIds);
 		} else {
 			this.state.resultGroups = resWithIds;
 		}
@@ -524,7 +528,7 @@ export class SearchEngine {
 			this.#statusTransition("ready");
 		}
 
-		this.syncInputs(fullParams.q);
+		this.#syncInputs(fullParams.q);
 	};
 
 	/**
@@ -542,7 +546,7 @@ export class SearchEngine {
 		return groups.find((group) => group.id === id)?.id;
 	}
 
-	private syncInputs = (terms: string) => {
+	#syncInputs = (terms: string) => {
 		for (const input of this.inputs) {
 			// only change input value if it does not have focus
 			const activeElement = document.activeElement?.shadowRoot?.activeElement;
@@ -577,18 +581,18 @@ export class SearchEngine {
 			// before this is called, use that value to make a search. This is
 			// mainly for lazy loading when the input can be interacted with
 			// before this .addInput() call
-			this.handleInputChange(input.value);
+			this.#handleInputChange(input.value);
 		}
 
 		const onChange = (e: { target: unknown }): any => {
 			assertInputEvent(e);
-			this.handleInputChange(e.target.value);
+			this.#handleInputChange(e.target.value);
 		};
 
 		const onEnter = (e: KeyboardEvent) => {
 			if (e.key === "Enter") {
 				assertInputEvent(e);
-				this.handleInputChange(e.target.value, { force: true });
+				this.#handleInputChange(e.target.value, { force: true });
 			}
 		};
 
@@ -617,7 +621,7 @@ export class SearchEngine {
 		return this.inputs.map((input) => input.input);
 	}
 
-	private addAllResults(res: State["resultGroups"]) {
+	#addAllResults(res: State["resultGroups"]) {
 		for (const key in res) {
 			const more = res[key];
 
