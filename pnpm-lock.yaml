@@ -1,4 +1,4 @@
-lockfileVersion: 5.4
+lockfileVersion: 5.3
 
 importers:
 
@@ -55,6 +55,7 @@ importers:
       '@valu/npm-tools': ^1.1.2
       esbuild: ^0.14.54
       esbuild-plugin-alias: ^0.2.1
+      findkit: 0.0.0-dev.cf0ec780d0
       htm: ^3.1.1
       jake: 10.8.5
       npm-run-all: ^4.1.5
@@ -88,11 +89,12 @@ importers:
       '@types/react': 18.0.17
       '@types/react-dom': 18.0.6
       '@types/react-redux': 7.1.24
-      '@typescript-eslint/eslint-plugin': 5.33.0_b5rzqffo2svu4zcpd5pxzblnza
+      '@typescript-eslint/eslint-plugin': 5.33.0_0f639814aed4ab4e644f1f5f7c856dc8
       '@typescript-eslint/parser': 5.33.0_typescript@4.7.4
       '@valu/npm-tools': 1.1.2
       esbuild: 0.14.54
       esbuild-plugin-alias: 0.2.1
+      findkit: 0.0.0-dev.cf0ec780d0
       htm: 3.1.1
       jake: 10.8.5
       npm-run-all: 4.1.5
@@ -1032,7 +1034,7 @@ packages:
       - '@parcel/core'
     dev: true
 
-  /@parcel/config-default/2.7.0_shdqhynvzslzlpwcunisasy46q:
+  /@parcel/config-default/2.7.0_91c703e1b5cc9795bec2a351204b1cf4:
     resolution: {integrity: sha512-ZzsLr97AYrz8c9k6qn3DlqPzifi3vbP7q3ynUrAFxmt0L4+K0H9N508ZkORYmCgaFjLIQ8Y3eWpwCJ0AewPNIg==}
     peerDependencies:
       '@parcel/core': ^2.7.0
@@ -1042,7 +1044,7 @@ packages:
       '@parcel/core': 2.7.0
       '@parcel/namer-default': 2.7.0_@parcel+core@2.7.0
       '@parcel/optimizer-css': 2.7.0_@parcel+core@2.7.0
-      '@parcel/optimizer-htmlnano': 2.7.0_shdqhynvzslzlpwcunisasy46q
+      '@parcel/optimizer-htmlnano': 2.7.0_91c703e1b5cc9795bec2a351204b1cf4
       '@parcel/optimizer-image': 2.7.0_@parcel+core@2.7.0
       '@parcel/optimizer-svgo': 2.7.0_@parcel+core@2.7.0
       '@parcel/optimizer-terser': 2.7.0_@parcel+core@2.7.0
@@ -1297,7 +1299,7 @@ packages:
       - '@parcel/core'
     dev: true
 
-  /@parcel/optimizer-htmlnano/2.7.0_shdqhynvzslzlpwcunisasy46q:
+  /@parcel/optimizer-htmlnano/2.7.0_91c703e1b5cc9795bec2a351204b1cf4:
     resolution: {integrity: sha512-5QrGdWS5Hi4VXE3nQNrGqugmSXt68YIsWwKRAdarOxzyULSJS3gbCiQOXqIPRJobfZjnSIcdtkyxSiCUe1inIA==}
     engines: {node: '>= 12.0.0', parcel: ^2.7.0}
     dependencies:
@@ -2018,7 +2020,7 @@ packages:
       '@types/yargs-parser': 21.0.0
     dev: true
 
-  /@typescript-eslint/eslint-plugin/5.33.0_b5rzqffo2svu4zcpd5pxzblnza:
+  /@typescript-eslint/eslint-plugin/5.33.0_0f639814aed4ab4e644f1f5f7c856dc8:
     resolution: {integrity: sha512-jHvZNSW2WZ31OPJ3enhLrEKvAZNyAFWZ6rx9tUwaessTc4sx9KmgMNhVcqVAl1ETnT5rU5fpXTLmY9YvC1DCNg==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -3634,6 +3636,12 @@ packages:
     dependencies:
       locate-path: 6.0.0
       path-exists: 4.0.0
+    dev: true
+
+  /findkit/0.0.0-dev.cf0ec780d0:
+    resolution: {integrity: sha512-iMcajYCf8L2HbLMFBDeDecHPFXsR2eBpcKN6Udu4ibtE72GX+QVU+L8osKk6E+3mgSG8HyVyRay1IYMFR4UFug==}
+    engines: {node: '>=14'}
+    hasBin: true
     dev: true
 
   /flat-cache/3.0.4:
@@ -5466,7 +5474,7 @@ packages:
       '@parcel/core':
         optional: true
     dependencies:
-      '@parcel/config-default': 2.7.0_shdqhynvzslzlpwcunisasy46q
+      '@parcel/config-default': 2.7.0_91c703e1b5cc9795bec2a351204b1cf4
       '@parcel/core': 2.7.0
       '@parcel/diagnostic': 2.7.0
       '@parcel/events': 2.7.0

@@ -50,6 +50,8 @@ jobs:
         run: |
           set -eu
           cd packages/ui
+          # Sanity check
+          ./node_modules/.bin/findkit search -t po8GK3G0r valu
           pnpm run build-test
           pnpm run playwright-test
 

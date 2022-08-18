@@ -101,6 +101,7 @@ const config: PlaywrightTestConfig = {
 	webServer: {
 		command: "npm run dev:serve",
 		url: "http://localhost:28104/",
+		reuseExistingServer: !process.env.CI,
 	},
 };
 
