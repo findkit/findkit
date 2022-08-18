@@ -117,23 +117,26 @@ export function createFindkitFetcher(props?: { getJwtToken?: GetJwtToken }) {
 
 		const token = await currentJwtTokenPromise;
 
-		const fetchOptions: PostRequestInit = {
+		const headers: Record<string, string> = {
+			// This looks wrong but is intentional. We want to make "Simple CORS
+			// requests" eg. requests without the OPTIONS preflight and
+			// application/json is not allowed for those. So we just have to use
+			// one of the allowed ones.
+			// See https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#simple_requests
+			"Content-Type": "text/plain",
+		};
+
+		const fetchOptions: RequestInit = {
 			method: "POST",
+			signal: options.signal ?? null,
 			mode: "cors",
 			credentials: "omit",
-			headers: {
-				// This looks wrong but is intentional. We want to make "Simple CORS
-				// requests" eg. requests without the OPTIONS preflight and
-				// application/json is not allowed for those. So we just have to use
-				// one of the allowed ones.
-				// See https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#simple_requests
-				"Content-Type": "text/plain",
-			},
+			headers,
 			body: JSON.stringify(requestBody),
 		};
 
-		if (token && fetchOptions.headers) {
-			fetchOptions.headers["authorization"] = "Bearer " + token.jwt;
+		if (token) {
+			headers["authorization"] = "Bearer " + token.jwt;
 		}
 
 		const res = await fetch(fetchUrl, fetchOptions);
@@ -218,6 +221,7 @@ export const findkitFetch: FindkitFetch = createFindkitFetcher().findkitFetch;
 export interface FindkitSearchParams {
 	q: string;
 	groups?: FindkitSearchGroupParams[];
+	signal?: AbortSignal;
 }
 
 /**

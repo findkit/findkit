@@ -156,7 +156,7 @@ const instanceIds = new Set<string>();
  */
 export class SearchEngine {
 	private requestId = 0;
-	private pendingRequestIds: Set<number> = new Set();
+	private pendingRequestIds: Map<number, AbortController> = new Map();
 	private currentRequestId?: number;
 	private inputs = [] as {
 		input: HTMLInputElement;
@@ -429,15 +429,28 @@ export class SearchEngine {
 
 		this.#statusTransition("fetching");
 
-		this.pendingRequestIds.add(requestId);
+		const abortController = new AbortController();
+		this.pendingRequestIds.set(requestId, abortController);
 
-		const response = await this.fetcher(fullParams).catch((error: any) => {
-			console.error("[findkit] fetch failed", error);
-			this.state.error = {
-				source: "fetch",
-				message: error.message,
-			};
-		});
+		const response = await this.fetcher({
+			...fullParams,
+			signal: abortController.signal,
+		}).then(
+			(res) => {
+				return {
+					ok: true as const,
+					value: res,
+				};
+			},
+			(error: any) => {
+				return {
+					ok: false as const,
+					error,
+				};
+			}
+		);
+
+		this.pendingRequestIds.delete(requestId);
 
 		// there are newer search results already displayed. We can ignore this
 		// response.
@@ -445,14 +458,26 @@ export class SearchEngine {
 			return;
 		}
 
+		if (!response.ok) {
+			console.error("[findkit] fetch failed", response.error);
+			this.state.error = {
+				source: "fetch",
+				message: response.error.message,
+			};
+			// On error just bail out and do not clear the previous results
+			// so the user can see the previus results
+			return;
+		}
+
 		this.currentRequestId = requestId;
 
 		// remove id and all smaller ids from pending requests
-		this.pendingRequestIds.forEach((pendingRequestId) => {
+		for (const [pendingRequestId, abortController] of this.pendingRequestIds) {
 			if (pendingRequestId <= requestId) {
+				abortController.abort();
 				this.pendingRequestIds.delete(pendingRequestId);
 			}
-		});
+		}
 
 		if (!response) {
 			return;
@@ -466,7 +491,7 @@ export class SearchEngine {
 		const resWithIds: State["resultGroups"] = {};
 
 		fullParams.groups.forEach((group, index) => {
-			const res = response.groups[index];
+			const res = response.value.groups[index];
 			if (!res) {
 				return;
 			}
@@ -492,6 +517,8 @@ export class SearchEngine {
 		} else {
 			this.state.resultGroups = resWithIds;
 		}
+
+		this.state.error = undefined;
 
 		if (this.pendingRequestIds.size === 0) {
 			this.#statusTransition("ready");
