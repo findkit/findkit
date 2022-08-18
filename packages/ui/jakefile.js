@@ -118,6 +118,9 @@ task(
 	sh`NODE_ENV=production postcss styles/index.css --output styles.css`
 );
 
+// XXX Does not work due to
+// https://github.com/postcss/postcss-cli/issues/370
+// The issue is closed but the issue still remains.
 task(
 	"watch-css",
 	sh`postcss --watch styles/index.css --output tests/build/styles.css`

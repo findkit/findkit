@@ -13,7 +13,7 @@
 	],
 	"scripts": {
 		"dev:js": "jake watch-js",
-		"dev:css": "jake watch-css",
+		"dev:css": "postcss --watch styles/index.css --output tests/build/styles.css",
 		"dev:serve": "serve -p 28104 tests",
 		"tsc": "tsc",
 		"build": "jake build-all",
