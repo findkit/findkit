@@ -155,27 +155,26 @@ const instanceIds = new Set<string>();
  * @public
  */
 export class SearchEngine {
-	private requestId = 0;
-	private pendingRequestIds: Map<number, AbortController> = new Map();
-	private inputs = [] as {
+	#requestId = 0;
+	#pendingRequestIds: Map<number, AbortController> = new Map();
+	#inputs = [] as {
 		input: HTMLInputElement;
 		onChange: (e: { target: unknown }) => void;
 		onEnter: (e: KeyboardEvent) => void;
 	}[];
 
 	readonly addressBar: AddressBar;
-	private fetcher: FindkitFetcher;
+	#fetcher: FindkitFetcher;
 	readonly instanceId: string;
 	readonly state: State;
 	readonly publicToken: string;
-	private searchEndpoint: string | undefined;
-	private throttleTime: number;
-	private searchMoreSize: number;
-	private minSearchTermsLength: number;
-	private unbindAddressBarListeners: () => void;
-	private pendingTerms = "";
-
-	private throttleTimerID?: ReturnType<typeof setTimeout>;
+	#searchEndpoint: string | undefined;
+	#throttleTime: number;
+	#searchMoreSize: number;
+	#minSearchTermsLength: number;
+	#unbindAddressBarListeners: () => void;
+	#pendingTerms = "";
+	#throttleTimerID?: ReturnType<typeof setTimeout>;
 
 	constructor(options: {
 		instanceId?: string;
@@ -215,16 +214,16 @@ export class SearchEngine {
 		devtools(this.state);
 
 		this.publicToken = options.publicToken;
-		this.searchEndpoint = options.searchEndpoint;
+		this.#searchEndpoint = options.searchEndpoint;
 
-		this.fetcher = findkitFetch;
-		this.throttleTime = options.throttleTime ?? 200;
-		this.searchMoreSize = options.searchMoreSize ?? 20;
-		this.minSearchTermsLength = options.minSearchTermsLength ?? 2;
+		this.#fetcher = findkitFetch;
+		this.#throttleTime = options.throttleTime ?? 200;
+		this.#searchMoreSize = options.searchMoreSize ?? 20;
+		this.#minSearchTermsLength = options.minSearchTermsLength ?? 2;
 
 		this.#syncInputs(initialSearchParams.getTerms());
 
-		this.unbindAddressBarListeners = this.addressBar.listen(
+		this.#unbindAddressBarListeners = this.addressBar.listen(
 			this.#handleAddressChange
 		);
 		this.#handleAddressChange();
@@ -240,7 +239,7 @@ export class SearchEngine {
 		if (!this.findkitParams.isActive()) {
 			this.#statusTransition("closed");
 			this.state.terms = "";
-			this.pendingTerms = "";
+			this.#pendingTerms = "";
 			this.state.currentGroupId = undefined;
 			return;
 		}
@@ -257,9 +256,9 @@ export class SearchEngine {
 	};
 
 	#clearTimeout = () => {
-		if (this.throttleTimerID) {
-			clearTimeout(this.throttleTimerID);
-			this.throttleTimerID = undefined;
+		if (this.#throttleTimerID) {
+			clearTimeout(this.#throttleTimerID);
+			this.#throttleTimerID = undefined;
 		}
 	};
 
@@ -271,24 +270,24 @@ export class SearchEngine {
 	};
 
 	#handleInputChange(terms: string, options?: { force?: boolean }) {
-		if (this.pendingTerms === terms.trim()) {
+		if (this.#pendingTerms === terms.trim()) {
 			return;
 		}
 
-		this.pendingTerms = terms.trim();
+		this.#pendingTerms = terms.trim();
 
 		if (options?.force === true) {
-			this.setTerms(this.pendingTerms);
+			this.setTerms(this.#pendingTerms);
 			return;
 		}
 
-		if (this.throttleTimerID) {
+		if (this.#throttleTimerID) {
 			return;
 		}
 
-		this.throttleTimerID = setTimeout(() => {
-			this.setTerms(this.pendingTerms);
-		}, this.throttleTime);
+		this.#throttleTimerID = setTimeout(() => {
+			this.setTerms(this.#pendingTerms);
+		}, this.#throttleTime);
 	}
 
 	setTerms(terms: string) {
@@ -342,7 +341,7 @@ export class SearchEngine {
 			.map((group) => {
 				let size = group.previewSize;
 				if (options.appendGroupId) {
-					size = this.searchMoreSize;
+					size = this.#searchMoreSize;
 				}
 
 				let from = 0;
@@ -367,7 +366,7 @@ export class SearchEngine {
 			q: options.terms,
 			groups,
 			publicToken: this.publicToken,
-			searchEndpoint: this.searchEndpoint,
+			searchEndpoint: this.#searchEndpoint,
 		};
 
 		return fullParams;
@@ -403,15 +402,15 @@ export class SearchEngine {
 	}
 
 	#fetch = async (options: { reset: boolean }) => {
-		this.requestId += 1;
-		const requestId = this.requestId;
+		this.#requestId += 1;
+		const requestId = this.#requestId;
 
 		if (this.state.status === "closed") {
 			return;
 		}
 
 		const noGroups = this.state.groupDefinitions.length === 0;
-		const tooFewTems = this.state.terms.length < this.minSearchTermsLength;
+		const tooFewTems = this.state.terms.length < this.#minSearchTermsLength;
 
 		if (tooFewTems || noGroups) {
 			this.state.resultGroups = {};
@@ -432,11 +431,11 @@ export class SearchEngine {
 		this.#statusTransition("fetching");
 
 		const abortController = new AbortController();
-		this.pendingRequestIds.set(requestId, abortController);
+		this.#pendingRequestIds.set(requestId, abortController);
 
 		// await new Promise((resolve) => setTimeout(resolve, Math.random() * 4000));
 
-		const response = await this.fetcher({
+		const response = await this.#fetcher({
 			...fullParams,
 			signal: abortController.signal,
 		}).then(
@@ -456,11 +455,11 @@ export class SearchEngine {
 
 		// This request was already cleared as there are newer requests ready
 		// before this was
-		if (!this.pendingRequestIds.has(requestId)) {
+		if (!this.#pendingRequestIds.has(requestId)) {
 			return;
 		}
 
-		this.pendingRequestIds.delete(requestId);
+		this.#pendingRequestIds.delete(requestId);
 
 		if (!response.ok) {
 			console.error("[findkit] fetch failed", response.error);
@@ -474,10 +473,10 @@ export class SearchEngine {
 		}
 
 		// Remove all pending requests that were made before this one
-		for (const [pendingRequestId, abortController] of this.pendingRequestIds) {
+		for (const [pendingRequestId, abortController] of this.#pendingRequestIds) {
 			if (pendingRequestId < requestId) {
 				abortController.abort();
-				this.pendingRequestIds.delete(pendingRequestId);
+				this.#pendingRequestIds.delete(pendingRequestId);
 			}
 		}
 
@@ -518,7 +517,7 @@ export class SearchEngine {
 
 		this.state.error = undefined;
 
-		if (this.pendingRequestIds.size === 0) {
+		if (this.#pendingRequestIds.size === 0) {
 			this.#statusTransition("ready");
 		}
 
@@ -541,7 +540,7 @@ export class SearchEngine {
 	}
 
 	#syncInputs = (terms: string) => {
-		for (const input of this.inputs) {
+		for (const input of this.#inputs) {
 			// only change input value if it does not have focus
 			const activeElement = document.activeElement?.shadowRoot?.activeElement;
 			// this.shadowRoot?.activeElement ?? document.activeElement;
@@ -556,7 +555,7 @@ export class SearchEngine {
 	 * the given input was already added
 	 */
 	addInput = (input: HTMLInputElement) => {
-		const prev = this.inputs.find((o) => o.input === input);
+		const prev = this.#inputs.find((o) => o.input === input);
 		if (prev) {
 			return false;
 		}
@@ -593,26 +592,26 @@ export class SearchEngine {
 		input.addEventListener("input", onChange, { passive: true });
 		input.addEventListener("keydown", onEnter, { passive: true });
 
-		this.inputs.push({ input, onChange, onEnter });
+		this.#inputs.push({ input, onChange, onEnter });
 
 		return true;
 	};
 
 	removeInput = (rmInput: HTMLInputElement) => {
-		const input = this.inputs.find((input) => input?.input === rmInput);
+		const input = this.#inputs.find((input) => input?.input === rmInput);
 
 		input?.input.removeEventListener("keydown", input.onEnter);
 
 		input?.input.removeEventListener("change", input.onChange);
 
-		const inputIndex = this.inputs.findIndex((obj) => obj === input);
+		const inputIndex = this.#inputs.findIndex((obj) => obj === input);
 		if (inputIndex !== -1) {
-			this.inputs.splice(inputIndex, 1);
+			this.#inputs.splice(inputIndex, 1);
 		}
 	};
 
 	getInputs() {
-		return this.inputs.map((input) => input.input);
+		return this.#inputs.map((input) => input.input);
 	}
 
 	#addAllResults(res: State["resultGroups"]) {
@@ -642,7 +641,7 @@ export class SearchEngine {
 	dispose = () => {
 		instanceIds.delete(this.instanceId);
 		this.close();
-		this.unbindAddressBarListeners();
+		this.#unbindAddressBarListeners();
 	};
 
 	close = () => {
