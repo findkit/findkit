@@ -157,7 +157,6 @@ const instanceIds = new Set<string>();
 export class SearchEngine {
 	private requestId = 0;
 	private pendingRequestIds: Map<number, AbortController> = new Map();
-	private currentRequestId?: number;
 	private inputs = [] as {
 		input: HTMLInputElement;
 		onChange: (e: { target: unknown }) => void;
@@ -408,7 +407,6 @@ export class SearchEngine {
 		const requestId = this.requestId;
 
 		if (this.state.status === "closed") {
-			this.currentRequestId = requestId;
 			return;
 		}
 
@@ -416,7 +414,6 @@ export class SearchEngine {
 		const tooFewTems = this.state.terms.length < this.minSearchTermsLength;
 
 		if (tooFewTems || noGroups) {
-			this.currentRequestId = requestId;
 			this.state.resultGroups = {};
 			this.#statusTransition("ready");
 			return;
@@ -437,6 +434,8 @@ export class SearchEngine {
 		const abortController = new AbortController();
 		this.pendingRequestIds.set(requestId, abortController);
 
+		// await new Promise((resolve) => setTimeout(resolve, Math.random() * 4000));
+
 		const response = await this.fetcher({
 			...fullParams,
 			signal: abortController.signal,
@@ -455,13 +454,13 @@ export class SearchEngine {
 			}
 		);
 
-		this.pendingRequestIds.delete(requestId);
-
-		// there are newer search results already displayed. We can ignore this
-		// response.
-		if (this.currentRequestId && requestId < this.currentRequestId) {
+		// This request was already cleared as there are newer requests ready
+		// before this was
+		if (!this.pendingRequestIds.has(requestId)) {
 			return;
 		}
+
+		this.pendingRequestIds.delete(requestId);
 
 		if (!response.ok) {
 			console.error("[findkit] fetch failed", response.error);
@@ -474,18 +473,12 @@ export class SearchEngine {
 			return;
 		}
 
-		this.currentRequestId = requestId;
-
-		// remove id and all smaller ids from pending requests
+		// Remove all pending requests that were made before this one
 		for (const [pendingRequestId, abortController] of this.pendingRequestIds) {
-			if (pendingRequestId <= requestId) {
+			if (pendingRequestId < requestId) {
 				abortController.abort();
 				this.pendingRequestIds.delete(pendingRequestId);
 			}
-		}
-
-		if (!response) {
-			return;
 		}
 
 		if ((this.state.status as string) === "closed") {
