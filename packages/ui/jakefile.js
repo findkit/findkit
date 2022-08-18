@@ -132,7 +132,7 @@ task("build-test", async () => {
 	await runEsbuild({
 		dev: true,
 		format: "esm",
-		outdir: "./tests/build",
+		outdir: "./tests/build/esm",
 		minify: false,
 	});
 });
@@ -143,7 +143,7 @@ task("watch-js", async () => {
 	const opts = {
 		dev: true,
 		format: "esm",
-		outdir: "./tests/build",
+		outdir: "./tests/build/esm",
 		minify: false,
 	};
 
