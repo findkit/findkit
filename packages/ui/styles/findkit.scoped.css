@@ -1,38 +1,45 @@
 .modal {
-    z-index: 100000;
-    position: fixed;
-    overflow: auto;
-    inset: var(--space-5);
-    background-color: red;
-    padding: var(--space-5);
-    transform: translateY(-100%);
-    opacity: 0;
-    transition: opacity var(--modal-animation-duration) ease,
-        transform var(--modal-animation-duration) ease;
+	z-index: 100000;
+	position: fixed;
+	overflow: auto;
+	inset: var(--space-5);
+	background-color: red;
+	padding: var(--space-5);
+	transform: translateY(-100%);
+	opacity: 0;
+	transition: opacity var(--modal-animation-duration) ease,
+		transform var(--modal-animation-duration) ease;
 }
 
 .modal-visible {
-    transform: translateY(0);
-    opacity: 1;
+	transform: translateY(0);
+	opacity: 1;
 }
 
 .header {
-    flex-direction: row-reverse;
-    height: var(--space-16);
+	flex-direction: row-reverse;
+	height: var(--space-16);
 }
 
 .search-input {
-    flex: 1;
-    padding: var(--space-3);
+	flex: 1;
+	padding: var(--space-3);
+}
+
+.search-input-wrap {
+	flex: 1;
 }
 
 .close-button {
-    border: none;
-    background-color: yellow;
-    align-items: center;
-    justify-content: center;
-    width: var(--space-16);
-    font-size: var(--space-10);
+	border: none;
+	background-color: yellow;
+	align-items: center;
+	justify-content: center;
+	width: var(--space-16);
+	font-size: var(--space-10);
+}
+
+.logo {
 }
 
 .hit {
