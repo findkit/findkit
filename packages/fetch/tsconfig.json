@@ -1,13 +1,13 @@
 {
-    "compilerOptions": {
-        "target": "es2020",
-        "strict": true,
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "noUncheckedIndexedAccess": true,
-        "declaration": true,
-        "declarationDir": "./dist",
-        "skipLibCheck": true,
-        "outDir": "dist"
-    }
+	"compilerOptions": {
+		"target": "es2019",
+		"strict": true,
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"noUncheckedIndexedAccess": true,
+		"declaration": true,
+		"declarationDir": "./dist",
+		"skipLibCheck": true,
+		"outDir": "dist"
+	}
 }
