@@ -563,8 +563,8 @@ export class SearchEngine {
 			}
 		};
 
-		input.addEventListener("input", onChange);
-		input.addEventListener("keydown", onEnter);
+		input.addEventListener("input", onChange, { passive: true });
+		input.addEventListener("keydown", onEnter, { passive: true });
 
 		this.inputs.push({ input, onChange, onEnter });
 
