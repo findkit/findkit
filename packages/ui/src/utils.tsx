@@ -57,3 +57,4 @@ export const { scopeClassNames, scopeView } =
 	createClassNameScoper<ClassNames>();
 
 export const View = scopeView("findkit");
+export const cn = scopeClassNames("findkit");

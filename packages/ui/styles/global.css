@@ -14,11 +14,16 @@
 	--space-8: 2rem; /* 32px */
 	--space-9: 2.25rem; /* 36px */
 	--space-10: 2.5rem; /* 40px */
+	--space-11: 2.75rem; /* 44px */
+	--space-12: 3rem; /* 48px */
+	--space-14: 3.5rem; /* 56px */
 	--space-16: 4rem; /* 64px */
 	--space-32: 8rem; /* 128px */
 	--space-64: 16rem; /* 256px */
 	--space-96: 24rem; /* 384px */
 	/* More from https://tailwindcss.com/docs/width */
+
+	--input-bg: rgb(249, 248, 248);
 }
 
 /*

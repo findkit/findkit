@@ -1,7 +1,7 @@
 import { FocusTrap } from "./focus-trap";
 import React, { StrictMode, useRef, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { Results, FindkitProvider } from "./components";
+import { Results, FindkitProvider, Logo } from "./components";
 import {
 	useSearchEngineState,
 	useSearchEngine,
@@ -10,7 +10,7 @@ import {
 } from "./core-hooks";
 
 import { SearchEngine, GroupDefinition } from "./search-engine";
-import { View } from "./utils";
+import { cn, View } from "./utils";
 
 function useScrollLock(lock: boolean) {
 	useEffect(() => {
@@ -90,6 +90,27 @@ function useDelay(show: boolean, ms: number) {
 	return status;
 }
 
+function Cross() {
+	return (
+		<svg
+			stroke="currentColor"
+			fill="currentColor"
+			className={cn("cross")}
+			strokeWidth={0}
+			viewBox="0 0 24 24"
+			height={28}
+			width={28}
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<path
+				fillRule="evenodd"
+				clipRule="evenodd"
+				d="M13.4119 12.0002L17.7119 7.71019C18.104 7.31806 18.104 6.68231 17.7119 6.29019C17.3198 5.89806 16.684 5.89806 16.2919 6.29019L12.0019 10.5902L7.71189 6.29019L7.71189 6.29019C7.31977 5.89806 6.68401 5.89806 6.29189 6.29019C5.89977 6.68231 5.89977 7.31807 6.29189 7.71019L10.5919 12.0002L6.29189 16.2902C5.89977 16.6791 5.89717 17.3123 6.28609 17.7044C6.28802 17.7063 6.28995 17.7083 6.29189 17.7102H6.29189C6.68081 18.1023 7.31397 18.1049 7.70609 17.716C7.70803 17.7141 7.70997 17.7121 7.71189 17.7102L12.0019 13.4102L16.2919 17.7102V17.7102C16.6808 18.1023 17.314 18.1049 17.7061 17.716C17.708 17.7141 17.71 17.7121 17.7119 17.7102C18.104 17.3213 18.1066 16.6881 17.7177 16.296C17.7158 16.294 17.7138 16.2921 17.7119 16.2902L13.4119 12.0002Z"
+			/>
+		</svg>
+	);
+}
+
 function ModalResult() {
 	const engine = useSearchEngine();
 	const state = useSearchEngineState();
@@ -126,9 +147,13 @@ function ModalResult() {
 						engine.close();
 					}}
 				>
-					x
+					Close <Cross />
 				</View>
-				<View as="input" cn="search-input" type="text" ref={inputRef} />
+
+				<View cn="search-input-wrap">
+					<View as="input" cn="search-input" type="text" ref={inputRef} />
+					<Logo />
+				</View>
 			</View>
 
 			<Results />
