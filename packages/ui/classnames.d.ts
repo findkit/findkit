@@ -12,6 +12,7 @@ type ClassNames =
   | "findkit--load-more-button"
   | "findkit--loading"
   | "findkit--logo"
+  | "findkit--logo-animating"
   | "findkit--modal"
   | "findkit--modal-visible"
   | "findkit--more-link"

@@ -242,36 +242,24 @@ function SingleGroupResults(props: { groupId: string }) {
 export function Results() {
 	const state = useSearchEngineState();
 
-	let results;
-
 	if (state.groupDefinitions.length === 1 && state.groupDefinitions[0]) {
-		results = <SingleGroupResults groupId={state.groupDefinitions[0].id} />;
+		return <SingleGroupResults groupId={state.groupDefinitions[0].id} />;
 	} else if (state.currentGroupId === undefined) {
-		results = <AllGroupResults />;
-	} else {
-		results = <SingleGroupResults groupId={state.currentGroupId} />;
+		return <AllGroupResults />;
 	}
 
-	return (
-		<div>
-			<View
-				cn="loading"
-				style={{
-					visibility: state.status === "fetching" ? "visible" : "hidden",
-				}}
-			>
-				Loading...
-			</View>
-
-			{results}
-		</div>
-	);
+	return <SingleGroupResults groupId={state.currentGroupId} />;
 }
 
 export function Logo() {
+	const state = useSearchEngineState();
+
 	return (
 		<svg
-			className={cn("logo")}
+			className={cn({
+				logo: true,
+				"logo-animating": state.status === "fetching",
+			})}
 			xmlns="http://www.w3.org/2000/svg"
 			width={24}
 			height={24}
