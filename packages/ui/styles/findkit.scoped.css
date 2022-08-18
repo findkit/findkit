@@ -2,7 +2,7 @@
 	z-index: 100000;
 	overflow: auto;
 	position: fixed;
-	inset: 0;
+	inset: 1rem;
 	transform: translateY(-100%);
 	background-color: white;
 	align-items: center;
@@ -15,7 +15,6 @@
 .content {
 	max-width: 800px;
 	width: 100%;
-	flex: 1;
 }
 
 .modal-visible {
@@ -68,14 +67,15 @@
 	flex-direction: row;
 	align-self: flex-end;
 	margin-right: var(--space-3);
+	padding: var(--space-2);
 	justify-content: center;
 	align-items: center;
-	font-size: var(--space-5);
+	font-size: var(--space-4);
 	background-color: transparent;
 }
 
 .cross {
-	transform: scale(1.2);
+	transform: scale(1);
 }
 
 .hit {
