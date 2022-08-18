@@ -156,6 +156,34 @@ function Cross() {
 	);
 }
 
+function FetchError() {
+	const state = useSearchEngineState();
+	const engine = useSearchEngine();
+
+	if (!state.error) {
+		return null;
+	}
+
+	return (
+		<View cn="error-container">
+			<View cn="error-title" as="h1">
+				Oops, something went wrong 🤦‍♂️
+			</View>
+			<View cn="error-message" as="pre">
+				{state.error?.message}
+			</View>
+			<View
+				as="button"
+				cn="retry-button"
+				type="button"
+				onClick={() => engine.retry()}
+			>
+				Try again
+			</View>
+		</View>
+	);
+}
+
 function ModalResult() {
 	const engine = useSearchEngine();
 	const state = useSearchEngineState();
@@ -203,6 +231,7 @@ function ModalResult() {
 				</View>
 			</View>
 			<View cn="content">
+				<FetchError />
 				<Results />
 			</View>
 		</View>

@@ -314,6 +314,7 @@ export class SearchEngine {
 	}
 
 	retry() {
+		this.state.error = undefined;
 		void this.#fetch({ reset: true });
 	}
 

@@ -78,6 +78,30 @@
 	height: var(--space-14);
 }
 
+.error-container {
+	border: var(--space-1) dashed red;
+	margin-top: var(--space-4);
+	margin-bottom: var(--space-4);
+	padding: var(--space-3);
+}
+
+.error-title {
+	font-size: var(--space-4);
+	padding: 0;
+	margin: 0;
+}
+
+.error-message {
+	color: red;
+	padding: 0;
+	margin: 0;
+	padding: var(--space-4);
+}
+
+.retry-button {
+	align-self: flex-start;
+}
+
 .close-button {
 	border: none;
 	flex-direction: row;

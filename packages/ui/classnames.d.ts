@@ -5,6 +5,9 @@ type ClassNames =
   | "findkit--close-button"
   | "findkit--content"
   | "findkit--cross"
+  | "findkit--error-container"
+  | "findkit--error-message"
+  | "findkit--error-title"
   | "findkit--group-title"
   | "findkit--header"
   | "findkit--header-hidden"
@@ -16,5 +19,6 @@ type ClassNames =
   | "findkit--modal"
   | "findkit--modal-visible"
   | "findkit--more-link"
+  | "findkit--retry-button"
   | "findkit--search-input"
   | "findkit--search-input-wrap";
