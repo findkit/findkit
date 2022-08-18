@@ -424,10 +424,12 @@ export class SearchEngine {
 			terms: this.state.terms,
 			appendGroupId,
 			lang: this.state.lang,
-			reset: false,
+			reset: options.reset,
 		});
 
 		this.#statusTransition("fetching");
+
+		this.pendingRequestIds.add(requestId);
 
 		const response = await this.fetcher(fullParams).catch((error: any) => {
 			console.error("[findkit] fetch failed", error);
