@@ -72,12 +72,17 @@ function useFocusTrap(
 }
 
 function useIsScrollingDown(
-	containerRef: React.MutableRefObject<HTMLDivElement | null>
+	containerRef: React.MutableRefObject<HTMLDivElement | null>,
+	isActive: boolean
 ) {
 	const [scrollingDown, setScrollingDown] = useState(false);
-
 	const prev = useRef(0);
+
 	useEffect(() => {
+		if (!isActive) {
+			return;
+		}
+
 		const handleScroll = (e: Event) => {
 			if (!(e.target instanceof HTMLDivElement)) {
 				return;
@@ -105,7 +110,7 @@ function useIsScrollingDown(
 		return () => {
 			containerRef.current?.removeEventListener("scroll", handleScroll);
 		};
-	}, []);
+	}, [isActive]);
 
 	return scrollingDown;
 }
@@ -157,12 +162,12 @@ function ModalResult() {
 	const inputRef = useInput();
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	useFocusTrap(containerRef);
-	const isScrollingDown = useIsScrollingDown(containerRef);
 
 	const show = state.status !== "closed";
 	const duration = 150;
 	const delayed = useDelay(show, duration);
 	const unmount = !delayed && !show;
+	const isScrollingDown = useIsScrollingDown(containerRef, !unmount);
 
 	useScrollLock(!unmount);
 
