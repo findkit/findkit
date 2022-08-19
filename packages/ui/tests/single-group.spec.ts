@@ -55,14 +55,18 @@ test("the input is cleared when the modal is closed", async ({ page }) => {
 	);
 });
 
-// test("focus management", async ({ page }) => {
-// 	await page.goto("http://localhost:28104/single-group");
+test("search input is focused on open and restored back to opening element when closing", async ({
+	page,
+}) => {
+	await page.goto("/single-group");
 
-// 	const button = page.locator("text=open");
+	const button = page.locator("text=open");
 
-// 	await button.click();
+	await button.click();
 
-// 	const input = page.locator("input:visible");
-// 	await input.waitFor({ state: "visible" });
-// 	expect(input).toBeFocused();
-// });
+	await expect(page.locator('[aria-label="Search input"]')).toBeFocused();
+
+	await page.keyboard.press("Escape");
+
+	await expect(button).toBeFocused();
+});
