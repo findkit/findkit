@@ -26,11 +26,11 @@
 	"author": "Valu Digital Oy",
 	"size-limit": [
 		{
-			"path": "esm/modal.js",
+			"path": "esm/implementation.js",
 			"limit": "30kb"
 		},
 		{
-			"path": "esm/lazy.js",
+			"path": "esm/index.js",
 			"limit": "2kb"
 		}
 	],
