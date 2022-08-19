@@ -32,7 +32,7 @@ export {
 	SearchEngine,
 };
 
-const doc = document;
+const doc = () => document;
 
 /**
  * Variable created by the esbuild config in jakefile.js
@@ -63,10 +63,10 @@ function preconnect() {
 
 	preconnected = true;
 
-	const dnsPreconnect = doc.createElement("link");
+	const dnsPreconnect = doc().createElement("link");
 	dnsPreconnect.rel = "preconnect";
 	dnsPreconnect.href = "https://search.findkit.com";
-	doc.head?.appendChild(dnsPreconnect);
+	doc().head?.appendChild(dnsPreconnect);
 }
 
 /**
@@ -88,10 +88,10 @@ export function css(strings: TemplateStringsArray, ...expr: string[]) {
  * bound after the actual event
  */
 function onDomContentLoaded(cb: () => any) {
-	if (/complete|interactive|loaded/.test(doc.readyState)) {
+	if (/complete|interactive|loaded/.test(doc().readyState)) {
 		cb();
 	} else {
-		doc.addEventListener(
+		doc().addEventListener(
 			"DOMContentLoaded",
 			() => {
 				cb();
@@ -137,17 +137,17 @@ export const h = createShellFunction("h");
 export const useState = createShellFunction("useState");
 
 async function preloadStylesheet(href: string) {
-	const link = doc.createElement("link");
+	const link = doc().createElement("link");
 	link.rel = "preload";
 	link.as = "style";
 	link.href = href;
 	const promise = new Promise<void>((resolve) => {
 		link.addEventListener("load", () => {
-			doc.head?.removeChild(link);
+			doc().head?.removeChild(link);
 			resolve();
 		});
 	});
-	doc.head?.appendChild(link);
+	doc().head?.appendChild(link);
 	return promise;
 }
 
@@ -155,18 +155,18 @@ async function loadScriptFromGlobal<T>(
 	globalName: string,
 	src: string
 ): Promise<T> {
-	const script = doc.createElement("script");
+	const script = doc().createElement("script");
 	script.type = "module";
 
 	const promise = new Promise<void>((resolve) => {
 		script.addEventListener("load", () => {
-			doc.head?.removeChild(script);
+			doc().head?.removeChild(script);
 			resolve();
 		});
 	});
 
 	script.src = src;
-	doc.head?.appendChild(script);
+	doc().head?.appendChild(script);
 
 	await promise;
 
@@ -198,7 +198,7 @@ export interface FindkitUIOptions {
 }
 
 /**
- * The Lazy Modal
+ * The Lazy loading Findkit UI
  *
  * @public
  */
@@ -304,6 +304,12 @@ export class FindkitUI {
 		engine?.close();
 	}
 
+	async dispose() {
+		if (this.#enginePromise) {
+			(await this.#enginePromise).dispose();
+		}
+	}
+
 	#handleButtonHover = () => {
 		void this.preload();
 	};
@@ -324,7 +330,7 @@ export class FindkitUI {
 	openFrom(elements: string | NodeListOf<Element> | Element[]) {
 		if (typeof elements === "string") {
 			onDomContentLoaded(() => {
-				this.#bindOpeners(doc.querySelectorAll(elements));
+				this.#bindOpeners(doc().querySelectorAll(elements));
 			});
 		} else {
 			this.#bindOpeners(elements);

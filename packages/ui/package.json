@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"description": "Findkit Search UI",
 	"main": "cjs/index.js",
-	"typings": "index.d.ts",
+	"typings": "main.d.ts",
 	"files": [
 		"styles.css",
 		"main.d.ts",
