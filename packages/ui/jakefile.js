@@ -110,6 +110,9 @@ task("upload", async () => {
         aws s3 cp --recursive esm "s3://\${FINDKIT_CDN_S3}/ui/${version}/esm"
         aws s3 cp --recursive cjs "s3://\${FINDKIT_CDN_S3}/ui/${version}/cjs"
         aws s3 cp styles.css "s3://\${FINDKIT_CDN_S3}/ui/${version}/styles.css"
+
+        aws s3 cp demo.html "s3://\${FINDKIT_CDN_S3}/ui/${version}/demo.html"
+        aws s3 cp tests/shared.css "s3://\${FINDKIT_CDN_S3}/ui/${version}/demo.css"
     `();
 });
 

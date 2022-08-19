@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Findkit UI Demo</title>
+		<link rel="stylesheet" href="./demo.css" />
+
+		<script type="module" ">
+			import { FindkitUI } from "./esm/index.js";
+
+			const ui = new FindkitUI({
+				publicToken: "po8GK3G0r",
+				groups: [
+					{
+						id: "valu",
+						title: "Valu.fi",
+						filters: {
+							tagQuery: [["domain/valu.fi"]],
+							highlightLength: 10,
+						},
+						scoreBoost: 1,
+						previewSize: 5,
+					},
+					{
+						id: "statement",
+						title: "Statement.fi",
+						filters: {
+							tagQuery: [["domain/statement.fi"]],
+							highlightLength: 10,
+						},
+						scoreBoost: 1,
+						previewSize: 5,
+					},
+				],
+			});
+
+			ui.openFrom("button");
+		</script>
+	</head>
+	<body>
+		<button id="open-button" type="button">open</button>
+	</body>
+</html>
