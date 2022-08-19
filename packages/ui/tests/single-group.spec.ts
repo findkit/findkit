@@ -37,6 +37,24 @@ test("can load more results when using only one group", async ({ page }) => {
 		.waitFor({ state: "detached" });
 });
 
+test("the input is cleared when the modal is closed", async ({ page }) => {
+	await page.goto("/single-group");
+	const hits = page.locator(".findkit--hit");
+
+	await page.locator("text=open").click();
+	await page.locator("input:visible").type("mikko");
+
+	await hits.first().waitFor({ state: "visible" });
+
+	await page.keyboard.press("Escape");
+
+	await page.locator("text=open").click();
+
+	expect(await page.locator('[aria-label="Search input"]').inputValue()).toBe(
+		""
+	);
+});
+
 // test("focus management", async ({ page }) => {
 // 	await page.goto("http://localhost:28104/single-group");
 

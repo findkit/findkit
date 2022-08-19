@@ -226,7 +226,13 @@ function ModalResult() {
 				</View>
 
 				<View cn="search-input-wrap">
-					<View as="input" cn="search-input" type="text" ref={inputRef} />
+					<View
+						as="input"
+						cn="search-input"
+						type="text"
+						ref={inputRef}
+						aria-label="Search input"
+					/>
 					<Logo />
 				</View>
 			</View>
