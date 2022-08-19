@@ -233,6 +233,9 @@ export class SearchEngine {
 		this.#handleAddressChange();
 	}
 
+	/**
+	 * Access the current params in the url bar
+	 */
 	get findkitParams() {
 		return new FindkitURLSearchParams(this.instanceId, this.state.searchParams);
 	}
@@ -249,11 +252,11 @@ export class SearchEngine {
 	}
 
 	#handleAddressChange = () => {
+		const currentTerms = this.findkitParams.getTerms();
 		this.state.searchParams = this.addressBar.getSearchParamsString();
 		const nextParams = this.findkitParams;
 		if (!this.findkitParams.isActive()) {
 			this.#statusTransition("closed");
-			this.state.terms = "";
 			this.#pendingTerms = "";
 			this.state.currentGroupId = undefined;
 			return;
@@ -262,12 +265,11 @@ export class SearchEngine {
 		this.#statusTransition("waiting");
 
 		const terms = nextParams.getTerms();
-		const reset = terms !== this.state.terms;
+		const reset = terms !== currentTerms;
 
-		this.state.terms = terms;
 		this.state.currentGroupId = nextParams.getGroupId();
 
-		void this.#fetch({ reset });
+		void this.#fetch({ terms, reset });
 	};
 
 	#clearTimeout = () => {
@@ -319,16 +321,16 @@ export class SearchEngine {
 		this.state.groupDefinitions = ref(groups);
 
 		this.#clearTimeout();
-		void this.#fetch({ reset: true });
+		void this.#fetch({ reset: true, terms: this.state.terms });
 	};
 
 	searchMore() {
-		void this.#fetch({ reset: false });
+		void this.#fetch({ reset: false, terms: this.state.terms });
 	}
 
 	retry() {
 		this.state.error = undefined;
-		void this.#fetch({ reset: true });
+		void this.#fetch({ reset: true, terms: this.state.terms });
 	}
 
 	/**
@@ -423,7 +425,7 @@ export class SearchEngine {
 		}
 	}
 
-	#fetch = async (options: { reset: boolean }) => {
+	#fetch = async (options: { terms: string; reset: boolean }) => {
 		this.#requestId += 1;
 		const requestId = this.#requestId;
 
@@ -432,9 +434,9 @@ export class SearchEngine {
 		}
 
 		const noGroups = this.state.groupDefinitions.length === 0;
-		const tooFewTems = this.state.terms.length < this.#minSearchTermsLength;
+		const tooFewTerms = options.terms.length < this.#minSearchTermsLength;
 
-		if (tooFewTems || noGroups) {
+		if (tooFewTerms || noGroups) {
 			this.state.resultGroups = {};
 			this.#statusTransition("ready");
 			return;
@@ -444,7 +446,7 @@ export class SearchEngine {
 
 		const fullParams = this.#getFullParams({
 			groups: this.state.groupDefinitions,
-			terms: this.state.terms,
+			terms: options.terms,
 			appendGroupId,
 			lang: this.state.lang,
 			reset: options.reset,
@@ -531,11 +533,14 @@ export class SearchEngine {
 			};
 		});
 
+		// Update the state terms to match the results
+		this.state.terms = options.terms;
+
 		if (appendGroupId && !options?.reset) {
 			this.#addAllResults(resWithIds);
 		} else {
 			this.state.resultGroups = resWithIds;
-			this.#emitDebouncedSearchEvent(fullParams.q);
+			this.#emitDebouncedSearchEvent(options.terms);
 		}
 
 		this.state.error = undefined;
@@ -544,7 +549,7 @@ export class SearchEngine {
 			this.#statusTransition("ready");
 		}
 
-		this.#syncInputs(fullParams.q);
+		this.#syncInputs(options.terms);
 	};
 
 	/**
@@ -583,7 +588,7 @@ export class SearchEngine {
 			return false;
 		}
 
-		const currentTerms = this.state.terms;
+		const currentTerms = this.findkitParams.getTerms();
 
 		if (currentTerms) {
 			// Enable search results linking by copying the terms to the input
