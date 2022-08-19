@@ -7,7 +7,11 @@ import type {
 } from "../search-engine";
 import type { AddressBar, FindkitURLSearchParams } from "../address-bar";
 import type { Slots } from "../core-hooks";
-import type { ModalImplementation, Dispatch, SetStateAction } from "./modal";
+import type {
+	ModalImplementation,
+	Dispatch,
+	SetStateAction,
+} from "./implementation";
 import type { initModal } from "../modal";
 import type { CustomFields } from "@findkit/fetch";
 
@@ -180,7 +184,7 @@ async function loadScriptFromGlobal<T>(
  *
  * @public
  */
-export interface LazyModalOptions {
+export interface FindkitUIOptions {
 	publicToken: string;
 	instanceId?: string;
 	groups: GroupDefinition[];
@@ -196,12 +200,12 @@ export interface LazyModalOptions {
  *
  * @public
  */
-export class LazyModal {
+export class FindkitUI {
 	#implementationPromise?: Promise<ModalImplementation>;
 	#enginePromise?: Promise<SearchEngine>;
-	#options: LazyModalOptions;
+	#options: FindkitUIOptions;
 
-	constructor(options: LazyModalOptions) {
+	constructor(options: FindkitUIOptions) {
 		this.#options = options;
 		if (this.#isAlreadyOpened()) {
 			void this.open();
@@ -231,7 +235,7 @@ export class LazyModal {
 		} else {
 			this.#implementationPromise = loadScriptFromGlobal<ModalImplementation>(
 				"FINDKIT_" + FINDKIT_VERSION,
-				cdnFile("modal.js")
+				cdnFile("implementation.js")
 			);
 		}
 

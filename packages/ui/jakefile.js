@@ -35,8 +35,8 @@ async function runEsbuild(options = {}) {
 			sourcemap: true,
 			metafile: options.metafile ?? false,
 			entryPoints: [
-				"./src/cdn-entries/lazy.tsx",
-				"./src/cdn-entries/modal.tsx",
+				"./src/cdn-entries/index.tsx",
+				"./src/cdn-entries/implementation.tsx",
 			],
 			outdir: options.outdir,
 			define: {

@@ -266,7 +266,7 @@ function createContainer(options: { shadowDom?: boolean }) {
 	container.id = "findkit-container";
 	document.body.appendChild(container);
 
-	if (options.shadowDom) {
+	if (options.shadowDom !== false) {
 		container.id = "findkit-shadow";
 		return container.attachShadow({ mode: "open" });
 	}
