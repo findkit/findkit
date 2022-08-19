@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test("can navigate to full group results and back", async ({ page }) => {
-	await page.goto("http://localhost:28104/two-groups");
+	await page.goto("/two-groups");
 	const hits = page.locator(".findkit--hit");
 	const groupTitles = page.locator(".findkit--group-title");
 	const loading = page.locator(".findkit--logo-animating");
@@ -40,7 +40,7 @@ test("can navigate to full group results and back", async ({ page }) => {
 });
 
 test("refresh restores search results", async ({ page }) => {
-	await page.goto("http://localhost:28104/two-groups");
+	await page.goto("/two-groups");
 	const hits = page.locator(".findkit--hit");
 
 	await page.locator("text=open").click();
@@ -56,7 +56,7 @@ test("refresh restores search results", async ({ page }) => {
 });
 
 test("can navigate directly to a group results", async ({ page }) => {
-	await page.goto("http://localhost:28104/two-groups?fdk_q=mikko&fdk_id=valu");
+	await page.goto("/two-groups?fdk_q=mikko&fdk_id=valu");
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
@@ -67,7 +67,7 @@ test("can navigate directly to a group results", async ({ page }) => {
 });
 
 test("back button works", async ({ page }) => {
-	await page.goto("http://localhost:28104/two-groups");
+	await page.goto("/two-groups");
 	const hits = page.locator(".findkit--hit");
 	const groupTitles = page.locator(".findkit--group-title");
 	const loading = page.locator(".findkit--logo-animating");
@@ -97,7 +97,7 @@ test("back button works", async ({ page }) => {
 });
 
 test("forward button restores search terms", async ({ page }) => {
-	await page.goto("http://localhost:28104/two-groups");
+	await page.goto("/two-groups");
 	const hits = page.locator(".findkit--hit");
 	const input = page.locator("input:visible");
 
@@ -116,7 +116,7 @@ test("forward button restores search terms", async ({ page }) => {
 });
 
 test("escape closes the modal", async ({ page }) => {
-	await page.goto("http://localhost:28104/two-groups");
+	await page.goto("/two-groups");
 	const hits = page.locator(".findkit--hit");
 	const input = page.locator("input:visible");
 

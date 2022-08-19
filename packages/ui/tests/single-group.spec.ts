@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test("can load more results when using only one group", async ({ page }) => {
-	await page.goto("http://localhost:28104/single-group");
+	await page.goto("/single-group");
 	const hits = page.locator(".findkit--hit");
 	const groupTitles = page.locator(".findkit--group-title");
 	const loading = page.locator(".findkit--logo-animating");
