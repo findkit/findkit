@@ -188,7 +188,7 @@ async function loadScriptFromGlobal<T>(
 export interface FindkitUIOptions {
 	publicToken: string;
 	instanceId?: string;
-	groups: GroupDefinition[];
+	groups?: GroupDefinition[];
 	shadowDom?: boolean;
 	css?: string;
 	styleSheet?: string;

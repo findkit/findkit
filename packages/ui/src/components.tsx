@@ -24,7 +24,7 @@ import { cn, View } from "./utils";
 
 export function FindkitProvider(props: {
 	publicToken?: string;
-	groups: GroupDefinition[];
+	groups?: GroupDefinition[];
 	children: ReactNode;
 	engine?: SearchEngine;
 	slots?: Partial<Slots>;
@@ -145,11 +145,16 @@ function HitList(props: {
 	title: string;
 	hits: ReadonlyArray<SearchResultHit>;
 }) {
+	const state = useSearchEngineState();
+	const multipleGroups = state.groupDefinitions.length > 1;
+
 	return (
 		<>
-			<View as="h1" cn="group-title">
-				{props.title}
-			</View>
+			{props.title && multipleGroups ? (
+				<View as="h1" cn="group-title">
+					{props.title}
+				</View>
+			) : null}
 
 			{props.hits.map((hit) => {
 				return (

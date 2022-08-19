@@ -247,7 +247,7 @@ function ModalResult() {
 export function Modal(props: {
 	publicToken?: string;
 	engine?: SearchEngine;
-	groups: GroupDefinition[];
+	groups?: GroupDefinition[];
 	slots?: Partial<Slots>;
 	events: Emitter<FindkitUIEvents>;
 }) {
@@ -286,7 +286,7 @@ export function initModal(options: {
 	shadowDom?: boolean;
 	css?: string;
 	styleSheets: string[];
-	groups: GroupDefinition[];
+	groups?: GroupDefinition[];
 	slots?: Partial<Slots>;
 	events: Emitter<FindkitUIEvents>;
 	searchEndpoint?: string;

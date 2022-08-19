@@ -312,13 +312,26 @@ export class SearchEngine {
 		this.updateAddressBar(this.findkitParams.setTerms(terms));
 	}
 
-	setGroups = (groups: GroupDefinition[]) => {
+	setGroups = (groups: GroupDefinition[] | undefined) => {
 		const isEqual = isDeepEqual(groups, this.state.groupDefinitions);
 		if (isEqual) {
 			return;
 		}
 
-		this.state.groupDefinitions = ref(groups);
+		this.state.groupDefinitions = ref(
+			groups ?? [
+				{
+					id: "default",
+					title: "Default",
+					filters: {
+						tagQuery: [],
+						highlightLength: 10,
+					},
+					scoreBoost: 1,
+					previewSize: 5,
+				},
+			]
+		);
 
 		this.#clearTimeout();
 		void this.#fetch({ reset: true, terms: this.state.terms });
