@@ -14,6 +14,7 @@ import {
 	useSearchEngineState,
 	useFindkitContext,
 } from "./core-hooks";
+import { Emitter, FindkitUIEvents } from "./emitter";
 import {
 	GroupDefinition,
 	SearchEngine,
@@ -28,6 +29,7 @@ export function FindkitProvider(props: {
 	engine?: SearchEngine;
 	slots?: Partial<Slots>;
 	shadowRoot?: ShadowRoot;
+	events: Emitter<FindkitUIEvents>;
 }) {
 	const [engine, setEngine] = useState<SearchEngine | undefined>(
 		props.engine || undefined
@@ -47,6 +49,7 @@ export function FindkitProvider(props: {
 
 			const nextEngine = new SearchEngine({
 				publicToken: props.publicToken,
+				events: props.events,
 			});
 			oldEngine = engine;
 			setEngine(nextEngine);
@@ -55,7 +58,7 @@ export function FindkitProvider(props: {
 		return () => {
 			oldEngine?.dispose();
 		};
-	}, [engine, props.engine, props.publicToken]);
+	}, [engine, props.engine, props.publicToken, props.events]);
 
 	useEffect(() => {
 		engine?.setGroups(props.groups);

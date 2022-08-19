@@ -11,6 +11,7 @@ import {
 
 import { SearchEngine, GroupDefinition } from "./search-engine";
 import { cn, View } from "./utils";
+import type { Emitter, FindkitUIEvents } from "./emitter";
 
 function useScrollLock(lock: boolean) {
 	useEffect(() => {
@@ -248,9 +249,11 @@ export function Modal(props: {
 	engine?: SearchEngine;
 	groups: GroupDefinition[];
 	slots?: Partial<Slots>;
+	events: Emitter<FindkitUIEvents>;
 }) {
 	return (
 		<FindkitProvider
+			events={props.events}
 			publicToken={props.publicToken}
 			slots={props.slots}
 			groups={props.groups}
@@ -285,12 +288,14 @@ export function initModal(options: {
 	styleSheets: string[];
 	groups: GroupDefinition[];
 	slots?: Partial<Slots>;
+	events: Emitter<FindkitUIEvents>;
 }) {
 	const container = createContainer({ shadowDom: options.shadowDom });
 
 	const engine = new SearchEngine({
 		publicToken: options.publicToken,
 		instanceId: options.instanceId,
+		events: options.events,
 	});
 
 	const elements = (

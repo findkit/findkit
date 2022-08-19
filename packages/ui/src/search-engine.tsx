@@ -15,6 +15,7 @@ import {
 	createAddressBar,
 	FindkitURLSearchParams,
 } from "./address-bar";
+import { Emitter, FindkitUIEvents } from "./emitter";
 
 /**
  * Like the findkit result but real dates instead of the string dates
@@ -175,6 +176,7 @@ export class SearchEngine {
 	#unbindAddressBarListeners: () => void;
 	#pendingTerms = "";
 	#throttleTimerID?: ReturnType<typeof setTimeout>;
+	events: Emitter<FindkitUIEvents>;
 
 	constructor(options: {
 		instanceId?: string;
@@ -183,10 +185,12 @@ export class SearchEngine {
 		throttleTime?: number;
 		searchMoreSize?: number;
 		minSearchTermsLength?: number;
+		events: Emitter<FindkitUIEvents>;
 	}) {
 		this.addressBar = createAddressBar();
 		this.instanceId = options.instanceId ?? "fdk";
 		this.publicToken = options.publicToken;
+		this.events = options.events;
 
 		if (instanceIds.has(this.instanceId)) {
 			throw new Error(
@@ -231,6 +235,17 @@ export class SearchEngine {
 
 	get findkitParams() {
 		return new FindkitURLSearchParams(this.instanceId, this.state.searchParams);
+	}
+
+	#debouncedSearchTimer?: ReturnType<typeof setTimeout>;
+
+	#emitDebouncedSearchEvent(terms: string) {
+		clearTimeout(this.#debouncedSearchTimer);
+		this.#debouncedSearchTimer = setTimeout(() => {
+			this.events.emit("debounced-search", {
+				terms,
+			});
+		}, 2000);
 	}
 
 	#handleAddressChange = () => {
@@ -391,13 +406,20 @@ export class SearchEngine {
 				this.state.status = next;
 			}
 		} else if (next === "waiting") {
-			// Initial waint state can only appear when the modal opens and no
+			// Initial waiting state can only appear when the modal opens and no
 			// searches are made yet
 			if (current === "closed") {
 				this.state.status = next;
 			}
 		} else {
 			const _: never = next;
+		}
+
+		if (current !== this.state.status) {
+			this.events.emit("status-change", {
+				previous: current,
+				next: this.state.status,
+			});
 		}
 	}
 
@@ -513,6 +535,7 @@ export class SearchEngine {
 			this.#addAllResults(resWithIds);
 		} else {
 			this.state.resultGroups = resWithIds;
+			this.#emitDebouncedSearchEvent(fullParams.q);
 		}
 
 		this.state.error = undefined;

@@ -14,6 +14,7 @@ import type {
 } from "./implementation";
 import type { initModal } from "../modal";
 import type { CustomFields } from "@findkit/fetch";
+import { Emitter, FindkitUIEvents } from "../emitter";
 
 export {
 	FindkitURLSearchParams,
@@ -204,9 +205,11 @@ export class FindkitUI {
 	#implementationPromise?: Promise<ModalImplementation>;
 	#enginePromise?: Promise<SearchEngine>;
 	#options: FindkitUIOptions;
+	readonly events: Emitter<FindkitUIEvents>;
 
 	constructor(options: FindkitUIOptions) {
 		this.#options = options;
+		this.events = new Emitter(this.#instanceId);
 		if (this.#isAlreadyOpened()) {
 			void this.open();
 		}
@@ -285,6 +288,7 @@ export class FindkitUI {
 						...rest,
 						styleSheets: this.#getStyleSheets(),
 						instanceId: this.#instanceId,
+						events: this.events,
 					})
 				);
 			});
