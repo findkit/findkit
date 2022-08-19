@@ -2,8 +2,8 @@
 	"name": "@findkit/ui",
 	"version": "0.0.1",
 	"description": "Findkit Search UI",
-	"main": "cjs/lazy.js",
-	"typings": "main.d.ts",
+	"main": "cjs/index.js",
+	"typings": "index.d.ts",
 	"files": [
 		"styles.css",
 		"main.d.ts",
