@@ -46,7 +46,7 @@ export const VERSION = FINDKIT_VERSION;
 function cdnFile(path: string) {
 	const root = FINDKIT_CDN_ROOT;
 	if (path.endsWith(".js")) {
-		return `${root}/${FINDKIT_MODULE_FORMAT}/${path}`;
+		return `${root}/esm/${path}`;
 	} else {
 		return `${root}/${path}`;
 	}
