@@ -4,7 +4,7 @@ test("can load more results when using only one group", async ({ page }) => {
 	await page.goto("http://localhost:28104/single-group");
 	const hits = page.locator(".findkit--hit");
 	const groupTitles = page.locator(".findkit--group-title");
-	const loading = page.locator(".findkit--loading");
+	const loading = page.locator(".findkit--logo-animating");
 
 	const button = page.locator("text=open");
 

@@ -13,7 +13,6 @@ type ClassNames =
   | "findkit--header-hidden"
   | "findkit--hit"
   | "findkit--load-more-button"
-  | "findkit--loading"
   | "findkit--logo"
   | "findkit--logo-animating"
   | "findkit--modal"
