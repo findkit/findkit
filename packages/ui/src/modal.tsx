@@ -289,6 +289,7 @@ export function initModal(options: {
 	groups: GroupDefinition[];
 	slots?: Partial<Slots>;
 	events: Emitter<FindkitUIEvents>;
+	searchEndpoint?: string;
 }) {
 	const container = createContainer({ shadowDom: options.shadowDom });
 
@@ -296,6 +297,7 @@ export function initModal(options: {
 		publicToken: options.publicToken,
 		instanceId: options.instanceId,
 		events: options.events,
+		searchEndpoint: options.searchEndpoint,
 	});
 
 	const elements = (

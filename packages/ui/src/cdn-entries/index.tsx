@@ -194,6 +194,7 @@ export interface FindkitUIOptions {
 	styleSheet?: string;
 	slots?: Partial<Slots>;
 	load?: () => Promise<ModalImplementation>;
+	searchEndpoint?: string;
 }
 
 /**
@@ -289,6 +290,7 @@ export class FindkitUI {
 						styleSheets: this.#getStyleSheets(),
 						instanceId: this.#instanceId,
 						events: this.events,
+						searchEndpoint: this.#options.searchEndpoint,
 					})
 				);
 			});
