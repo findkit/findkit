@@ -31,11 +31,12 @@ function useScrollLock(lock: boolean) {
 	}, [lock]);
 }
 
-function useFocusTrap() {
+function useFocusTrap(
+	containerRef: React.MutableRefObject<HTMLDivElement | null>
+) {
 	const state = useSearchEngineState();
 	const engine = useSearchEngine();
 	const isOpen = state.status !== "closed";
-	const containerRef = useRef<HTMLDivElement | null>(null);
 	const trapRef = useRef<FocusTrap | null>(null);
 
 	useEffect(() => {
@@ -68,6 +69,45 @@ function useFocusTrap() {
 	}, [engine, isOpen]);
 
 	return containerRef;
+}
+
+function useIsScrollingDown(
+	containerRef: React.MutableRefObject<HTMLDivElement | null>
+) {
+	const [scrollingDown, setScrollingDown] = useState(false);
+
+	const prev = useRef(0);
+	useEffect(() => {
+		const handleScroll = (e: Event) => {
+			if (!(e.target instanceof HTMLDivElement)) {
+				return;
+			}
+
+			const next = e.target.scrollTop;
+			const diff = prev.current - next;
+			const threshold = 30;
+
+			if (diff < -threshold) {
+				setScrollingDown(true);
+				prev.current = next;
+			}
+
+			if (diff > threshold) {
+				setScrollingDown(false);
+				prev.current = next;
+			}
+		};
+
+		containerRef.current?.addEventListener("scroll", handleScroll, {
+			passive: true,
+		});
+
+		return () => {
+			containerRef.current?.removeEventListener("scroll", handleScroll);
+		};
+	}, []);
+
+	return scrollingDown;
 }
 
 function useDelay(show: boolean, ms: number) {
@@ -115,7 +155,9 @@ function ModalResult() {
 	const engine = useSearchEngine();
 	const state = useSearchEngineState();
 	const inputRef = useInput();
-	const containerRef = useFocusTrap();
+	const containerRef = useRef<HTMLDivElement | null>(null);
+	useFocusTrap(containerRef);
+	const isScrollingDown = useIsScrollingDown(containerRef);
 
 	const show = state.status !== "closed";
 	const duration = 150;
@@ -138,7 +180,7 @@ function ModalResult() {
 				["--findkit--modal-animation-duration"]: `${duration}ms`,
 			}}
 		>
-			<View cn="header">
+			<View cn={{ header: true, "header-hidden": isScrollingDown }}>
 				<View
 					cn="close-button"
 					as="button"
@@ -155,8 +197,9 @@ function ModalResult() {
 					<Logo />
 				</View>
 			</View>
-
-			<Results />
+			<View cn="content">
+				<Results />
+			</View>
 		</View>
 	);
 }
