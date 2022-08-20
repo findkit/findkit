@@ -117,8 +117,6 @@ test("can open the search progmatically", async ({ page }) => {
 		await ui.open("mikko");
 	});
 
-	await page.waitForTimeout(1000);
-
 	const input = page.locator('[aria-label="Search input"]');
 
 	await input.waitFor({ state: "visible" });
@@ -126,4 +124,15 @@ test("can open the search progmatically", async ({ page }) => {
 
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
+});
+
+test("can open the search progmatically without terms", async ({ page }) => {
+	await page.goto("/single-group");
+	await page.evaluate(async () => {
+		await ui.open();
+	});
+
+	const input = page.locator('[aria-label="Search input"]');
+
+	await input.waitFor({ state: "visible" });
 });
