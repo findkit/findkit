@@ -176,6 +176,7 @@ export class SearchEngine {
 	#unbindAddressBarListeners: () => void;
 	#pendingTerms = "";
 	#throttleTimerID?: ReturnType<typeof setTimeout>;
+	#initialGroupsSet = false;
 	events: Emitter<FindkitUIEvents>;
 
 	constructor(options: {
@@ -334,7 +335,18 @@ export class SearchEngine {
 		);
 
 		this.#clearTimeout();
-		void this.#fetch({ reset: true, terms: this.state.terms });
+		const terms = this.findkitParams.getTerms();
+
+		// We cannot make requests before the groups are set but .open("terms")
+		// can happen before that. Se we must retry the previous search without
+		// reset when the groups are initial set to make .open("terms") work
+		// when called immediately after FindkitUI creation.
+		if (!this.#initialGroupsSet) {
+			this.#initialGroupsSet = true;
+			void this.#fetch({ reset: false, terms });
+		} else {
+			void this.#fetch({ reset: true, terms });
+		}
 	};
 
 	searchMore() {
@@ -439,9 +451,6 @@ export class SearchEngine {
 	}
 
 	#fetch = async (options: { terms: string; reset: boolean }) => {
-		this.#requestId += 1;
-		const requestId = this.#requestId;
-
 		if (this.state.status === "closed") {
 			return;
 		}
@@ -466,6 +475,9 @@ export class SearchEngine {
 		});
 
 		this.#statusTransition("fetching");
+
+		this.#requestId += 1;
+		const requestId = this.#requestId;
 
 		const abortController = new AbortController();
 		this.#pendingRequestIds.set(requestId, abortController);
@@ -659,24 +671,30 @@ export class SearchEngine {
 		for (const key in res) {
 			const more = res[key];
 
-			let existing = this.state.resultGroups[key];
-			if (!existing) {
-				existing = {
+			let resultGroup = this.state.resultGroups[key];
+
+			if (!resultGroup) {
+				resultGroup = {
 					hits: [],
 					total: more?.total ?? 0,
 				};
 			}
 
-			existing.hits.push(...(more?.hits ?? []));
+			resultGroup.hits.push(...(more?.hits ?? []));
+
+			// Update resultsGroups in the case it was just created so Valtio
+			// can detect it
+			this.state.resultGroups[key] = resultGroup;
 		}
 	}
 
 	open = (terms?: string) => {
-		if (!this.findkitParams.isActive()) {
-			this.updateAddressBar(this.findkitParams.setTerms(terms ?? ""), {
-				push: true,
-			});
-		}
+		const nextTerms =
+			terms === undefined ? this.findkitParams.getTerms() : terms;
+
+		this.updateAddressBar(this.findkitParams.setTerms(nextTerms), {
+			push: !this.findkitParams.isActive(),
+		});
 	};
 
 	dispose = () => {

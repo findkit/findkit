@@ -1,4 +1,7 @@
 import { test, expect } from "@playwright/test";
+import type { FindkitUI } from "../src/cdn-entries/index";
+
+declare const ui: FindkitUI;
 
 test("can load more results when using only one group", async ({ page }) => {
 	await page.goto("/single-group");
@@ -106,4 +109,21 @@ test.describe("small window", () => {
 		await page.locator("text=open").click();
 		await expect(header).not.toHaveClass(/hidden/);
 	});
+});
+
+test("can open the search progmatically", async ({ page }) => {
+	await page.goto("/single-group");
+	await page.evaluate(async () => {
+		await ui.open("mikko");
+	});
+
+	await page.waitForTimeout(1000);
+
+	const input = page.locator('[aria-label="Search input"]');
+
+	await input.waitFor({ state: "visible" });
+	expect(await input.inputValue()).toBe("mikko");
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
 });
