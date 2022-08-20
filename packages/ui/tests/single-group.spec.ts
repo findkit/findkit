@@ -3,7 +3,6 @@ import { test, expect } from "@playwright/test";
 test("can load more results when using only one group", async ({ page }) => {
 	await page.goto("/single-group");
 	const hits = page.locator(".findkit--hit");
-	const groupTitles = page.locator(".findkit--group-title");
 	const loading = page.locator(".findkit--logo-animating");
 
 	const button = page.locator("text=open");
@@ -14,7 +13,6 @@ test("can load more results when using only one group", async ({ page }) => {
 
 	await input.type("mikko");
 
-	expect(await groupTitles.count()).toBe(1);
 	await hits.first().waitFor({ state: "visible" });
 
 	await page.locator(".findkit--more-link").first().waitFor({
@@ -69,4 +67,43 @@ test("search input is focused on open and restored back to opening element when 
 	await page.keyboard.press("Escape");
 
 	await expect(button).toBeFocused();
+});
+
+test.describe("small window", () => {
+	test.use({
+		viewport: {
+			width: 600,
+			height: 600,
+		},
+	});
+
+	test("hides the search input on scroll", async ({ page }) => {
+		await page.goto("/single-group", {});
+
+		const button = page.locator("text=open");
+		const input = page.locator('[aria-label="Search input"]');
+		const header = page.locator(".findkit--header");
+
+		await button.click();
+		await input.type("mikko");
+
+		const hits = page.locator(".findkit--hit");
+		await hits.first().waitFor({ state: "visible" });
+
+		// Should hide when scrolling down
+		await page.mouse.wheel(0, 300);
+		await expect(header).toHaveClass(/hidden/);
+
+		// Restores on scroll up
+		await page.mouse.wheel(0, -200);
+		await expect(header).not.toHaveClass(/hidden/);
+
+		// Hide and close
+		await page.mouse.wheel(0, 300);
+		await page.keyboard.press("Escape");
+
+		// Should be visible again when opening again
+		await page.locator("text=open").click();
+		await expect(header).not.toHaveClass(/hidden/);
+	});
 });

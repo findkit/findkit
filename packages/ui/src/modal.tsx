@@ -81,6 +81,8 @@ function useIsScrollingDown(
 
 	useEffect(() => {
 		if (!isActive) {
+			prev.current = 0;
+			setScrollingDown(false);
 			return;
 		}
 
@@ -196,7 +198,7 @@ function ModalResult() {
 	const duration = 150;
 	const delayed = useDelay(show, duration);
 	const unmount = !delayed && !show;
-	const isScrollingDown = useIsScrollingDown(containerRef, !unmount);
+	const isScrollingDown = useIsScrollingDown(containerRef, show);
 
 	useScrollLock(!unmount);
 
