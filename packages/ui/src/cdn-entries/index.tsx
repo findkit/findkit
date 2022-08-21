@@ -137,6 +137,13 @@ export const h = createShellFunction("h");
  */
 export const useState = createShellFunction("useState");
 
+/**
+ * Use the UI state
+ *
+ * @public
+ */
+export const useUIState = createShellFunction("useUIState");
+
 async function preloadStylesheet(href: string) {
 	const link = doc().createElement("link");
 	link.rel = "preload";

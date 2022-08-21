@@ -1,7 +1,9 @@
 import { html } from "htm/preact";
 import { createElement, useState } from "react";
+import { useSearchEngineState } from "../core-hooks";
 
 import { initModal } from "../modal";
+import { State } from "../search-engine";
 
 /**
  * @public
@@ -21,6 +23,7 @@ export interface ModalImplementation {
 	h: (...args: any[]) => any;
 	html: (strings: TemplateStringsArray, ...values: any[]) => any;
 	useState<S>(initialState: S | (() => S)): [S, Dispatch<SetStateAction<S>>];
+	useUIState(): ReturnType<typeof useSearchEngineState>;
 }
 
 export const implementation: ModalImplementation = {
@@ -28,6 +31,7 @@ export const implementation: ModalImplementation = {
 	html,
 	h: createElement,
 	useState,
+	useUIState: useSearchEngineState,
 };
 
 declare const FINDKIT_VERSION: string;

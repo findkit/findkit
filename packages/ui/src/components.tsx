@@ -38,7 +38,7 @@ export function FindkitProvider(props: {
 	);
 }
 
-function Slot<Name extends keyof Slots>(props: {
+export function Slot<Name extends keyof Slots>(props: {
 	name: Name;
 	props: ComponentProps<Slots[Name]>;
 	children: ReactNode;
