@@ -246,21 +246,9 @@ function ModalResult() {
 		</View>
 	);
 }
-export function Modal(props: {
-	publicToken?: string;
-	engine?: SearchEngine;
-	groups?: GroupDefinition[];
-	slots?: Partial<Slots>;
-	events: Emitter<FindkitUIEvents>;
-}) {
+export function Modal(props: { engine: SearchEngine; slots: Partial<Slots> }) {
 	return (
-		<FindkitProvider
-			events={props.events}
-			publicToken={props.publicToken}
-			slots={props.slots}
-			groups={props.groups}
-			engine={props.engine}
-		>
+		<FindkitProvider slots={props.slots} engine={props.engine}>
 			<ModalResult />
 		</FindkitProvider>
 	);
@@ -302,6 +290,8 @@ export function initModal(options: {
 		searchEndpoint: options.searchEndpoint,
 	});
 
+	engine.setGroups(options.groups);
+
 	const elements = (
 		<StrictMode>
 			<>
@@ -312,7 +302,7 @@ export function initModal(options: {
 					<style dangerouslySetInnerHTML={{ __html: options.css }} />
 				) : null}
 
-				<Modal {...options} engine={engine} />
+				<Modal engine={engine} slots={options.slots ?? {}} />
 			</>
 		</StrictMode>
 	);
