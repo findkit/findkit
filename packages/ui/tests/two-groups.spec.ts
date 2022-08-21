@@ -7,6 +7,10 @@ test("can navigate to full group results and back", async ({ page }) => {
 	const loading = page.locator(".findkit--logo-animating");
 
 	await page.locator("text=open").click();
+
+	await groupTitles.first().waitFor({ state: "visible" });
+	expect(await groupTitles.count()).toBe(2);
+
 	await page.locator("input:visible").type("mikko");
 
 	expect(await groupTitles.count()).toBe(2);

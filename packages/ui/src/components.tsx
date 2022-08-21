@@ -140,6 +140,7 @@ function HitList(props: {
 							}}
 						>
 							<a href={hit.url}>{hit.title}</a>
+							<span>{hit.url}</span>
 						</Slot>
 					</View>
 				);
