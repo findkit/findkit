@@ -9,7 +9,11 @@ import {
 	Slots,
 } from "./core-hooks";
 
-import { SearchEngine, GroupDefinition } from "./search-engine";
+import {
+	SearchEngine,
+	GroupDefinition,
+	SearchEngineParams,
+} from "./search-engine";
 import { cn, View } from "./utils";
 import type { Emitter, FindkitUIEvents } from "./emitter";
 
@@ -278,10 +282,11 @@ export function initModal(options: {
 	shadowDom?: boolean;
 	css?: string;
 	styleSheets: string[];
-	groups?: GroupDefinition[];
 	slots?: Partial<Slots>;
 	events: Emitter<FindkitUIEvents>;
 	searchEndpoint?: string;
+	params?: SearchEngineParams;
+	groups?: GroupDefinition[];
 }) {
 	const container = createContainer({ shadowDom: options.shadowDom });
 
@@ -290,9 +295,9 @@ export function initModal(options: {
 		instanceId: options.instanceId,
 		events: options.events,
 		searchEndpoint: options.searchEndpoint,
+		groups: options.groups,
+		params: options.params,
 	});
-
-	engine.setGroups(options.groups ?? null);
 
 	const elements = (
 		<StrictMode>

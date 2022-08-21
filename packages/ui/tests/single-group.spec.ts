@@ -235,14 +235,12 @@ test("can update groups on the fly", async ({ page }) => {
 	expect(await getHitHosts(page)).toEqual(["www.valu.fi"]);
 
 	await page.evaluate(async () => {
-		await ui.setGroups([
+		await ui.updateGroups([
 			{
 				id: "statement",
 				title: "statement.fi",
-				filters: {
-					tagQuery: [["domain/statement.fi"]],
-					highlightLength: 10,
-				},
+				tagQuery: [["domain/statement.fi"]],
+				highlightLength: 10,
 				scoreBoost: 1,
 				previewSize: 5,
 			},
@@ -255,7 +253,7 @@ test("can update groups on the fly", async ({ page }) => {
 	expect(await getHitHosts(page)).toEqual(["statement.fi"]);
 });
 
-test("can update groups on the fly with updated function", async ({ page }) => {
+test("can update groups on the fly with update function", async ({ page }) => {
 	await page.goto("/single-group");
 	await page.locator("text=open").click();
 
@@ -267,10 +265,10 @@ test("can update groups on the fly with updated function", async ({ page }) => {
 	expect(await getHitHosts(page)).toEqual(["www.valu.fi"]);
 
 	await page.evaluate(async () => {
-		await ui.setGroups((groups) => {
-			const filters = groups[0]?.filters;
-			if (filters) {
-				filters.tagQuery = [["domain/statement.fi"]];
+		await ui.updateGroups((groups) => {
+			const group = groups[0];
+			if (group) {
+				group.tagQuery = [["domain/statement.fi"]];
 			}
 		});
 	});

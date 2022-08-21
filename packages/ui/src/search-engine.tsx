@@ -1,13 +1,12 @@
 import { devtools, subscribeKey } from "valtio/utils";
 import { cleanUndefined } from "./utils";
-import { CustomFields, findkitFetch } from "@findkit/fetch";
-
 import {
-	FindkitFetchOptions,
+	CustomFields,
+	findkitFetch,
 	FindkitSearchGroupParams,
-	FindkitSearchParams,
-	FindkitSearchResponse,
 } from "@findkit/fetch";
+
+import { FindkitFetchOptions, FindkitSearchResponse } from "@findkit/fetch";
 import { proxy } from "valtio";
 import {
 	AddressBar,
@@ -40,34 +39,17 @@ export interface ResultsWithTotal {
 }
 
 /**
- * @public
+ * Same as FindkitSearchGroupParams but without "from" field since it is managed
+ * by the SearchEngine
  */
-export interface GroupFilters {
-	/**
-	 * Queries search results that match the tag query
-	 * [[tagA, tagB]] tagA OR tagB
-	 * [[tagA], [tagB]] tagA AND tagB
-	 */
+export interface SearchEngineParams {
 	tagQuery: string[][];
-	/**
-	 * 0-1 numerical value for demoting old pages
-	 */
 	createdDecay?: number;
-	/**
-	 * 0-1 numerical value for demoting stagnant pages
-	 */
 	modifiedDecay?: number;
-	/**
-	 * String type time expression
-	 * Used with createdDecay or modifiedDecay
-	 * Defines in which timeframe decay filter is applied, e.g. "7d"
-	 */
 	decayScale?: string;
-	/**
-	 * Defines highlight length
-	 * Use 0 for blocking highlight query (performance boost)
-	 */
 	highlightLength?: number;
+	size?: number;
+	lang?: string;
 }
 
 /**
@@ -75,12 +57,12 @@ export interface GroupFilters {
  *
  * @public
  */
-export interface GroupDefinition {
+export interface GroupDefinition extends SearchEngineParams {
 	id: string;
 	title: string;
-	scoreBoost: number;
-	filters: GroupFilters;
-	previewSize: number;
+
+	previewSize?: number;
+	scoreBoost?: number;
 }
 
 /**
@@ -91,7 +73,7 @@ export interface State {
 	nextGroupDefinitions: GroupDefinition[];
 
 	/**
-	 * urlbar query string
+	 * URLbar query string
 	 */
 	searchParams: string;
 
@@ -119,16 +101,6 @@ export interface State {
 	};
 }
 
-export interface EngineSearchGroupParams extends FindkitSearchGroupParams {
-	id: string;
-}
-export interface EngineFullSearchParams
-	extends Omit<FindkitSearchParams, "groups"> {
-	groups: EngineSearchGroupParams[];
-	publicToken?: string;
-	searchEndpoint?: string;
-}
-
 /**
  * Fethcer is almost like ResultsWithTotal but it does not have the
  * "tagGroupId" property which is added on the client-side
@@ -150,15 +122,40 @@ function assertInputEvent(e: {
 	}
 }
 
-export type SetGroupsArgument =
-	| null
+/**
+ * @public
+ */
+export type UpdateGroupsArgument =
 	| GroupDefinition[]
 	| GroupDefinition
 	| ((
 			groups: GroupDefinition[]
 	  ) => GroupDefinition[] | GroupDefinition | undefined | void);
 
+/**
+ * @public
+ */
+export type UpdateParamsArgument =
+	| SearchEngineParams
+	| ((params: SearchEngineParams) => SearchEngineParams | undefined | void);
+
 const instanceIds = new Set<string>();
+
+/**
+ * Object clone with poor man's fallback for old browsers
+ */
+function clone<T>(obj: T): T {
+	if (typeof structuredClone === "function") {
+		return structuredClone(obj);
+	}
+
+	return JSON.parse(JSON.stringify(obj));
+}
+
+const SINGLE_GROUP_NAME = Object.freeze({
+	id: "default",
+	title: "Default",
+});
 
 /**
  * @public
@@ -184,7 +181,6 @@ export class SearchEngine {
 	#unbindAddressBarListeners: () => void;
 	#pendingTerms = "";
 	#throttleTimerID?: ReturnType<typeof setTimeout>;
-	#initialGroupsSet = false;
 	events: Emitter<FindkitUIEvents>;
 
 	constructor(options: {
@@ -195,6 +191,8 @@ export class SearchEngine {
 		searchMoreSize?: number;
 		minSearchTermsLength?: number;
 		events: Emitter<FindkitUIEvents>;
+		groups?: GroupDefinition[];
+		params?: SearchEngineParams;
 	}) {
 		this.addressBar = createAddressBar();
 		this.instanceId = options.instanceId ?? "fdk";
@@ -214,6 +212,21 @@ export class SearchEngine {
 			this.addressBar.getSearchParamsString()
 		);
 
+		let groups = options.groups;
+
+		if (!groups) {
+			groups = [
+				{
+					...SINGLE_GROUP_NAME,
+					tagQuery: [],
+					highlightLength: 10,
+					scoreBoost: 1,
+					previewSize: 5,
+					...options.params,
+				},
+			];
+		}
+
 		this.state = proxy<State>({
 			terms: initialSearchParams.getTerms(),
 			currentGroupId: initialSearchParams.getGroupId(),
@@ -222,8 +235,11 @@ export class SearchEngine {
 			status: "closed",
 			error: undefined,
 			resultGroups: {},
-			groupDefinitions: [],
-			nextGroupDefinitions: [],
+
+			// Ensure groups are unique so mutating one does not mutate the
+			// other
+			groupDefinitions: clone(groups),
+			nextGroupDefinitions: clone(groups),
 		});
 		devtools(this.state);
 		subscribeKey(this.state, "nextGroupDefinitions", this.#handleGroupsChange);
@@ -323,7 +339,7 @@ export class SearchEngine {
 		this.updateAddressBar(this.findkitParams.setTerms(terms));
 	}
 
-	setGroups = (groups: SetGroupsArgument) => {
+	updateGroups = (groups: UpdateGroupsArgument) => {
 		let nextGroups: GroupDefinition[] = [];
 
 		if (Array.isArray(groups)) {
@@ -335,46 +351,33 @@ export class SearchEngine {
 			} else {
 				nextGroups = this.state.nextGroupDefinitions;
 			}
-		} else if (groups === null) {
-			nextGroups = [
-				{
-					id: "default",
-					title: "Default",
-					filters: {
-						tagQuery: [],
-						highlightLength: 10,
-					},
-					scoreBoost: 1,
-					previewSize: 5,
-				},
-			];
 		} else {
 			nextGroups = [groups];
 		}
 
 		this.state.nextGroupDefinitions = nextGroups;
+	};
 
-		// On first group set, set the groupDefitions too so the groups will
-		// render on the screen before the first search in performed
-		if (!this.#initialGroupsSet) {
-			this.state.groupDefinitions = this.state.nextGroupDefinitions;
+	updateParams = (params: UpdateParamsArgument) => {
+		if (typeof params === "function") {
+			this.updateGroups((groups) => {
+				const group = groups[0];
+				if (group) {
+					params(group);
+				}
+			});
+		} else {
+			this.updateGroups({
+				...SINGLE_GROUP_NAME,
+				...params,
+			});
 		}
 	};
 
 	#handleGroupsChange = () => {
 		this.#clearTimeout();
 		const terms = this.findkitParams.getTerms();
-
-		// We cannot make requests before the groups are set but .open("terms")
-		// can happen before that. Se we must retry the previous search without
-		// reset when the groups are initially set to make .open("terms") work
-		// when called immediately after FindkitUI creation.
-		if (!this.#initialGroupsSet) {
-			this.#initialGroupsSet = true;
-			void this.#fetch({ reset: false, terms });
-		} else {
-			void this.#fetch({ reset: true, terms });
-		}
+		void this.#fetch({ reset: true, terms });
 	};
 
 	searchMore() {
@@ -393,14 +396,14 @@ export class SearchEngine {
 		return this.state.resultGroups[groupId]?.hits.length ?? 0;
 	}
 
-	#getFullParams(options: {
+	#getFindkitFetchOptions(options: {
 		groups: GroupDefinition[];
 		lang: string | undefined;
 		terms: string;
 		reset: boolean | undefined;
 		appendGroupId: string | undefined;
-	}): EngineFullSearchParams {
-		const groups: EngineSearchGroupParams[] = options.groups
+	}): FindkitFetchOptions {
+		const groups: FindkitSearchGroupParams[] = options.groups
 			.filter((group) => {
 				if (!options.appendGroupId) {
 					return true;
@@ -409,7 +412,7 @@ export class SearchEngine {
 				return group.id === options.appendGroupId;
 			})
 			.map((group) => {
-				let size = group.previewSize;
+				let size = group.previewSize ?? 10;
 				if (options.appendGroupId) {
 					size = this.#searchMoreSize;
 				}
@@ -420,19 +423,18 @@ export class SearchEngine {
 				}
 
 				return cleanUndefined({
-					id: group.id,
-					tagQuery: group.filters.tagQuery,
-					createdDecay: group.filters.createdDecay,
-					modifiedDecay: group.filters.modifiedDecay,
-					decayScale: group.filters.decayScale,
-					highlightLength: group.filters.highlightLength,
+					tagQuery: group.tagQuery,
+					createdDecay: group.createdDecay,
+					modifiedDecay: group.modifiedDecay,
+					decayScale: group.decayScale,
+					highlightLength: group.highlightLength ?? 10,
 					lang: options.lang,
 					size,
 					from,
 				});
 			});
 
-		const fullParams: EngineFullSearchParams = {
+		const fullParams: FindkitFetchOptions = {
 			q: options.terms,
 			groups,
 			publicToken: this.publicToken,
@@ -495,7 +497,7 @@ export class SearchEngine {
 
 		const appendGroupId = this.#getNextCurrentGroupId();
 
-		const fullParams = this.#getFullParams({
+		const fullParams = this.#getFindkitFetchOptions({
 			groups,
 			terms: options.terms,
 			appendGroupId,
@@ -565,7 +567,7 @@ export class SearchEngine {
 		// Combine responses with the search groups and re-assign the ids for them
 		const resWithIds: State["resultGroups"] = {};
 
-		fullParams.groups.forEach((group, index) => {
+		fullParams.groups?.forEach((group, index) => {
 			const res = response.value.groups[index];
 			if (!res) {
 				return;
@@ -580,7 +582,12 @@ export class SearchEngine {
 				};
 			});
 
-			resWithIds[group.id] = {
+			const groupId = groups[index]?.id;
+			if (groupId === undefined) {
+				throw new Error("[findkit] Bug? Inknown group index: " + index);
+			}
+
+			resWithIds[groupId] = {
 				hits,
 				total: res.total,
 				duration: res.duration,
