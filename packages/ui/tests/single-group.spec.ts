@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, Page } from "@playwright/test";
 import type { FindkitUI } from "../src/cdn-entries/index";
 
 declare const ui: FindkitUI;
@@ -204,4 +204,53 @@ test("emits hit-click events and can prevent default", async ({ page }) => {
 
 	const click = await clickPromise;
 	expect(click.url).toEqual(hitUrl);
+});
+
+async function getHitHosts(page: Page) {
+	const hits = page.locator(".findkit--hit a");
+	await hits.first().waitFor({ state: "visible" });
+
+	const hrefs = await hits.evaluateAll((list) => {
+		return list.flatMap((el) => {
+			if (el instanceof HTMLAnchorElement) {
+				return el.href;
+			}
+			return [];
+		});
+	});
+
+	const hosts = new Set(hrefs.map((url) => new URL(url).hostname));
+	return Array.from(hosts);
+}
+
+test.only("can update groups on the fly", async ({ page }) => {
+	await page.goto("/single-group");
+	await page.locator("text=open").click();
+
+	const hits = page.locator(".findkit--hit a");
+	const input = page.locator('[aria-label="Search input"]');
+	await input.type("valu");
+	await hits.first().waitFor({ state: "visible" });
+
+	expect(await getHitHosts(page)).toEqual(["www.valu.fi"]);
+
+	await page.evaluate(async () => {
+		await ui.setGroups([
+			{
+				id: "statement",
+				title: "statement.fi",
+				filters: {
+					tagQuery: [["domain/statement.fi"]],
+					highlightLength: 10,
+				},
+				scoreBoost: 1,
+				previewSize: 5,
+			},
+		]);
+	});
+
+	const loading = page.locator(".findkit--logo-animating");
+	await loading.waitFor({ state: "hidden" });
+
+	expect(await getHitHosts(page)).toEqual(["statement.fi"]);
 });

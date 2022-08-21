@@ -339,7 +339,7 @@ export class SearchEngine {
 
 		// We cannot make requests before the groups are set but .open("terms")
 		// can happen before that. Se we must retry the previous search without
-		// reset when the groups are initial set to make .open("terms") work
+		// reset when the groups are initially set to make .open("terms") work
 		// when called immediately after FindkitUI creation.
 		if (!this.#initialGroupsSet) {
 			this.#initialGroupsSet = true;
