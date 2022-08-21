@@ -305,7 +305,7 @@ export class FindkitUI {
 		});
 
 		const engine = await this.#enginePromise;
-		if (this.#pendingGroups) {
+		if (this.#pendingGroups !== undefined) {
 			engine.setGroups(this.#pendingGroups);
 		}
 
