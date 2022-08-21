@@ -508,8 +508,8 @@ export class SearchEngine {
 		const abortController = new AbortController();
 		this.#pendingRequestIds.set(requestId, abortController);
 
+		this.events.emit("fetch", { terms: options.terms });
 		// await new Promise((resolve) => setTimeout(resolve, Math.random() * 4000));
-
 		const response = await this.#fetcher({
 			...fullParams,
 			signal: abortController.signal,
