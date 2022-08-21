@@ -150,6 +150,13 @@ function assertInputEvent(e: {
 	}
 }
 
+export type SetGroupsArgument =
+	| GroupDefinition[]
+	| GroupDefinition
+	| ((
+			groups: GroupDefinition[]
+	  ) => GroupDefinition[] | GroupDefinition | undefined | void);
+
 const instanceIds = new Set<string>();
 
 /**
@@ -315,8 +322,23 @@ export class SearchEngine {
 		this.updateAddressBar(this.findkitParams.setTerms(terms));
 	}
 
-	setGroups = (groups: GroupDefinition[] | undefined) => {
-		this.state.nextGroupDefinitions = groups ?? [
+	setGroups = (groups: SetGroupsArgument) => {
+		let nextGroups: GroupDefinition[] | undefined = undefined;
+
+		if (Array.isArray(groups)) {
+			nextGroups = groups;
+		} else if (typeof groups === "function") {
+			const replace = groups(this.state.nextGroupDefinitions);
+			if (replace) {
+				nextGroups = Array.isArray(replace) ? replace : [replace];
+			} else {
+				nextGroups = this.state.nextGroupDefinitions;
+			}
+		} else {
+			nextGroups = [groups];
+		}
+
+		this.state.nextGroupDefinitions = nextGroups ?? [
 			{
 				id: "default",
 				title: "Default",

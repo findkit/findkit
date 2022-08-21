@@ -1,5 +1,5 @@
 {
-	"include": ["src", "example", "types", "__tests__", "classnames.d.ts"],
+	"include": ["src", "example", "types", "tests", "classnames.d.ts"],
 	"compilerOptions": {
 		"target": "es2020",
 		"module": "esnext",

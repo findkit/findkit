@@ -4,6 +4,7 @@ import type {
 	State,
 	SearchResultHit,
 	GroupFilters,
+	SetGroupsArgument,
 } from "../search-engine";
 import type { AddressBar, FindkitURLSearchParams } from "../address-bar";
 import type { Slots } from "../core-hooks";
@@ -275,10 +276,10 @@ export class FindkitUI {
 		// return engine;
 	}
 
-	#groups?: GroupDefinition[];
+	#pendingGroups?: SetGroupsArgument;
 
-	async setGroups(groups: GroupDefinition[]) {
-		this.#groups = groups;
+	async setGroups(groups: SetGroupsArgument) {
+		this.#pendingGroups = groups;
 		(await this.#enginePromise)?.setGroups(groups);
 	}
 
@@ -289,12 +290,11 @@ export class FindkitUI {
 
 		this.#enginePromise = new Promise<SearchEngine>((resolve) => {
 			void this.#loadImplementation().then((impl) => {
-				const { groups, styleSheet: _1, load: _2, ...rest } = this.#options;
+				const { styleSheet: _1, load: _2, ...rest } = this.#options;
 
 				resolve(
 					impl.initModal({
 						...rest,
-						groups: this.#groups ?? groups,
 						styleSheets: this.#getStyleSheets(),
 						instanceId: this.#instanceId,
 						events: this.events,
@@ -304,7 +304,12 @@ export class FindkitUI {
 			});
 		});
 
-		return await this.#enginePromise;
+		const engine = await this.#enginePromise;
+		if (this.#pendingGroups) {
+			engine.setGroups(this.#pendingGroups);
+		}
+
+		return engine;
 	}
 
 	async close() {
