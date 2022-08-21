@@ -638,8 +638,9 @@ export class SearchEngine {
 	#syncInputs = (terms: string) => {
 		for (const input of this.#inputs) {
 			// only change input value if it does not have focus
-			const activeElement = document.activeElement?.shadowRoot?.activeElement;
-			// this.shadowRoot?.activeElement ?? document.activeElement;
+			const activeElement =
+				document.activeElement?.shadowRoot?.activeElement ??
+				document.activeElement;
 			if (input && input.input !== activeElement) {
 				input.input.value = terms;
 			}
