@@ -1,5 +1,6 @@
 import React, {
 	ComponentProps,
+	MouseEventHandler,
 	ReactNode,
 	useEffect,
 	useMemo,
@@ -146,6 +147,7 @@ function HitList(props: {
 	hits: ReadonlyArray<SearchResultHit>;
 }) {
 	const state = useSearchEngineState();
+	const engine = useSearchEngine();
 	const multipleGroups = state.groupDefinitions.length > 1;
 
 	return (
@@ -157,18 +159,37 @@ function HitList(props: {
 			) : null}
 
 			{props.hits.map((hit) => {
+				const handleLinkClick: MouseEventHandler<HTMLDivElement> = (e) => {
+					if (!(e.target instanceof HTMLAnchorElement)) {
+						return;
+					}
+
+					if (e.target.href !== hit.url) {
+						return;
+					}
+
+					engine.events.emit("hit-click", {
+						hit,
+						target: e.target,
+						terms: engine.state.terms,
+						preventDefault: () => {
+							e.preventDefault();
+						},
+					});
+				};
+
 				return (
-					<Slot
-						name="Hit"
-						key={hit.url}
-						props={{
-							hit: hit,
-						}}
-					>
-						<View key={hit.url} cn="hit">
+					<View key={hit.url} cn="hit" onClick={handleLinkClick}>
+						<Slot
+							name="Hit"
+							key={hit.url}
+							props={{
+								hit: hit,
+							}}
+						>
 							<a href={hit.url}>{hit.title}</a>
-						</View>
-					</Slot>
+						</Slot>
+					</View>
 				);
 			})}
 		</>
