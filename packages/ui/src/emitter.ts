@@ -64,9 +64,14 @@ export interface FindkitUIEvents {
 		instanceId: string;
 		terms: string;
 	};
+	"hit-click": {
+		instanceId: string;
+		hit: SearchResultHit;
+		preventDefault: () => void;
+		target: HTMLElement;
+		terms: string;
+	};
 }
-
-type Ding = Emitter<FindkitUIEvents>;
 
 interface MyEvents {
 	ding: {
