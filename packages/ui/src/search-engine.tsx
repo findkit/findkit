@@ -179,6 +179,7 @@ export class SearchEngine {
 	#searchMoreSize: number;
 	#minSearchTermsLength: number;
 	#unbindAddressBarListeners: () => void;
+	#unbindValtio: () => void;
 	#pendingTerms = "";
 	#throttleTimerID?: ReturnType<typeof setTimeout>;
 	events: Emitter<FindkitUIEvents>;
@@ -242,7 +243,11 @@ export class SearchEngine {
 			nextGroupDefinitions: clone(groups),
 		});
 		devtools(this.state);
-		subscribeKey(this.state, "nextGroupDefinitions", this.#handleGroupsChange);
+		this.#unbindValtio = subscribeKey(
+			this.state,
+			"nextGroupDefinitions",
+			this.#handleGroupsChange
+		);
 
 		this.publicToken = options.publicToken;
 		this.#searchEndpoint = options.searchEndpoint;
@@ -739,6 +744,10 @@ export class SearchEngine {
 		instanceIds.delete(this.instanceId);
 		this.close();
 		this.#unbindAddressBarListeners();
+		this.#unbindValtio();
+		for (const input of this.#inputs) {
+			this.removeInput(input.input);
+		}
 	};
 
 	close = () => {
