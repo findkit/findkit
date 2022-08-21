@@ -254,3 +254,29 @@ test("can update groups on the fly", async ({ page }) => {
 
 	expect(await getHitHosts(page)).toEqual(["statement.fi"]);
 });
+
+test("can update groups on the fly with updated function", async ({ page }) => {
+	await page.goto("/single-group");
+	await page.locator("text=open").click();
+
+	const hits = page.locator(".findkit--hit a");
+	const input = page.locator('[aria-label="Search input"]');
+	await input.type("valu");
+	await hits.first().waitFor({ state: "visible" });
+
+	expect(await getHitHosts(page)).toEqual(["www.valu.fi"]);
+
+	await page.evaluate(async () => {
+		await ui.setGroups((groups) => {
+			const filters = groups[0]?.filters;
+			if (filters) {
+				filters.tagQuery = [["domain/statement.fi"]];
+			}
+		});
+	});
+
+	const loading = page.locator(".findkit--logo-animating");
+	await loading.waitFor({ state: "hidden" });
+
+	expect(await getHitHosts(page)).toEqual(["statement.fi"]);
+});
