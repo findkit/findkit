@@ -64,6 +64,10 @@ export interface FindkitUIEvents {
 		instanceId: string;
 		terms: string;
 	};
+	fetch: {
+		instanceId: string;
+		terms: string;
+	};
 	"hit-click": {
 		instanceId: string;
 		hit: SearchResultHit;

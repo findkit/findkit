@@ -1,4 +1,7 @@
 import { test, expect } from "@playwright/test";
+import type { FindkitUI } from "../src/cdn-entries";
+
+declare const ui: FindkitUI;
 
 test("can navigate to full group results and back", async ({ page }) => {
 	await page.goto("/two-groups");
@@ -132,4 +135,57 @@ test("escape closes the modal", async ({ page }) => {
 	await page.keyboard.press("Escape");
 
 	await hits.first().waitFor({ state: "hidden" });
+});
+
+test("fetch counts", async ({ page }) => {
+	const hits = page.locator(".findkit--hit");
+
+	await page.goto("/two-groups");
+
+	await page.evaluate(async () => {
+		const anyWindow = window as any;
+		anyWindow.COUNT = 0;
+		ui.events.on("fetch", () => {
+			anyWindow.COUNT++;
+		});
+	});
+
+	async function getCount() {
+		return await page.evaluate(async () => {
+			const anyWindow = window as any;
+			return anyWindow.COUNT as number;
+		});
+	}
+
+	const loading = page.locator(".findkit--logo-animating");
+
+	await page.locator("text=open").click();
+
+	await page.waitForLoadState("networkidle");
+	expect(await getCount()).toBe(0);
+
+	await page.locator("input:visible").type("mikko");
+
+	await hits.first().waitFor({ state: "visible" });
+
+	expect(await getCount()).toBe(1);
+
+	await page.locator(".findkit--more-link").first().click();
+
+	await loading.waitFor({ state: "hidden" });
+
+	expect(await getCount()).toBe(2);
+
+	await page.locator(".findkit--load-more-button").first().click();
+
+	await loading.waitFor({ state: "hidden" });
+
+	expect(await getCount()).toBe(3);
+
+	await page.locator(".findkit--back-link").first().click();
+
+	await loading.waitFor({ state: "hidden" });
+
+	// Eh, could optimize and remove this fetch
+	expect(await getCount()).toBe(4);
 });
