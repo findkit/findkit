@@ -3,8 +3,9 @@ import type {
 	SearchEngine,
 	State,
 	SearchResultHit,
-	GroupFilters,
-	SetGroupsArgument,
+	UpdateGroupsArgument,
+	UpdateParamsArgument,
+	SearchEngineParams,
 } from "../search-engine";
 import type { AddressBar, FindkitURLSearchParams } from "../address-bar";
 import type { Slots } from "../core-hooks";
@@ -20,7 +21,6 @@ import { Emitter, FindkitUIEvents } from "../emitter";
 export {
 	FindkitURLSearchParams,
 	AddressBar,
-	GroupFilters,
 	GroupDefinition,
 	Slots,
 	ModalImplementation,
@@ -31,6 +31,8 @@ export {
 	SetStateAction,
 	CustomFields,
 	SearchEngine,
+	UpdateGroupsArgument,
+	UpdateParamsArgument,
 };
 
 const doc = () => document;
@@ -197,6 +199,7 @@ export interface FindkitUIOptions {
 	publicToken: string;
 	instanceId?: string;
 	groups?: GroupDefinition[];
+	params?: SearchEngineParams;
 	shadowDom?: boolean;
 	css?: string;
 	styleSheet?: string;
@@ -283,11 +286,17 @@ export class FindkitUI {
 		// return engine;
 	}
 
-	#pendingGroups?: SetGroupsArgument;
+	#pendingGroups?: UpdateGroupsArgument;
 
-	async setGroups(groups: SetGroupsArgument) {
+	async updateGroups(groups: UpdateGroupsArgument) {
 		this.#pendingGroups = groups;
-		(await this.#enginePromise)?.setGroups(groups);
+		(await this.#enginePromise)?.updateGroups(groups);
+	}
+
+	#pendingParams?: UpdateParamsArgument;
+	async updateParams(params: UpdateParamsArgument) {
+		this.#pendingParams = params;
+		(await this.#enginePromise)?.updateParams(params);
 	}
 
 	async #getEngine() {
@@ -298,6 +307,7 @@ export class FindkitUI {
 		this.#enginePromise = new Promise<SearchEngine>((resolve) => {
 			void this.#loadImplementation().then((impl) => {
 				const { styleSheet: _1, load: _2, ...rest } = this.#options;
+				this.#options.slots;
 
 				resolve(
 					impl.initModal({
@@ -312,8 +322,13 @@ export class FindkitUI {
 		});
 
 		const engine = await this.#enginePromise;
-		if (this.#pendingGroups !== undefined) {
-			engine.setGroups(this.#pendingGroups);
+
+		if (this.#pendingGroups) {
+			engine.updateGroups(this.#pendingGroups);
+		}
+
+		if (this.#pendingParams) {
+			engine.updateParams(this.#pendingParams);
 		}
 
 		return engine;
