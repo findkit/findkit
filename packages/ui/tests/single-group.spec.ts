@@ -136,3 +136,23 @@ test("can open the search progmatically without terms", async ({ page }) => {
 
 	await input.waitFor({ state: "visible" });
 });
+
+test("emits debounced-search event", async ({ page }) => {
+	await page.goto("/single-group");
+	await page.locator("text=open").click();
+
+	const termsPromise = page.evaluate(async () => {
+		return await new Promise<string>((resolve) => {
+			ui.events.on("debounced-search", (e) => {
+				resolve(e.terms);
+			});
+		});
+	});
+
+	const input = page.locator('[aria-label="Search input"]');
+	await input.type("valu ");
+	await page.waitForTimeout(500);
+	await input.type("wordpress");
+
+	expect(await termsPromise).toEqual("valu wordpress");
+});
