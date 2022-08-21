@@ -275,6 +275,13 @@ export class FindkitUI {
 		// return engine;
 	}
 
+	#groups?: GroupDefinition[];
+
+	async setGroups(groups: GroupDefinition[]) {
+		this.#groups = groups;
+		(await this.#enginePromise)?.setGroups(groups);
+	}
+
 	async #getEngine() {
 		if (this.#enginePromise) {
 			return this.#enginePromise;
@@ -282,11 +289,12 @@ export class FindkitUI {
 
 		this.#enginePromise = new Promise<SearchEngine>((resolve) => {
 			void this.#loadImplementation().then((impl) => {
-				const { styleSheet: _1, load: _2, ...rest } = this.#options;
+				const { groups, styleSheet: _1, load: _2, ...rest } = this.#options;
 
 				resolve(
 					impl.initModal({
 						...rest,
+						groups: this.#groups ?? groups,
 						styleSheets: this.#getStyleSheets(),
 						instanceId: this.#instanceId,
 						events: this.events,
