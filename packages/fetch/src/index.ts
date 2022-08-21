@@ -71,8 +71,13 @@ export interface PostRequestInit {
 let logResponseTimes = false;
 
 if (typeof window !== "undefined") {
-	logResponseTimes =
-		window.localStorage.getItem("findkit-log-response-times") === "true";
+	try {
+		logResponseTimes =
+			window.localStorage.getItem("findkit-log-response-times") === "true";
+	} catch {
+		// local storage access can throw in some enviroments such a
+		// codesandox.io due to permission issues
+	}
 }
 
 /**
