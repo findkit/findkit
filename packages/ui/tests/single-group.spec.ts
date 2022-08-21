@@ -157,6 +157,27 @@ test("emits debounced-search event", async ({ page }) => {
 	expect(await termsPromise).toEqual("valu wordpress");
 });
 
+test("can navigate to hit and come back retaining url and input value", async ({
+	page,
+}) => {
+	await page.goto("/single-group");
+	const hits = page.locator(".findkit--hit a");
+	await page.locator("text=open").click();
+
+	const input = page.locator('[aria-label="Search input"]');
+	await input.type("wordpress");
+	const hitUrl = await hits.first().getAttribute("href");
+	await hits.first().click();
+
+	await page.waitForLoadState("domcontentloaded");
+	expect(page.url()).toContain(hitUrl);
+
+	await page.goBack();
+
+	expect(page.url()).toContain("wordpress");
+	expect(await input.inputValue()).toBe("wordpress");
+});
+
 test("emits hit-click events and can prevent default", async ({ page }) => {
 	await page.goto("/single-group");
 	const hits = page.locator(".findkit--hit a");
