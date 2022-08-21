@@ -2,9 +2,7 @@ import React, {
 	ComponentProps,
 	MouseEventHandler,
 	ReactNode,
-	useEffect,
 	useMemo,
-	useState,
 } from "react";
 import {
 	FindkitContext,
@@ -15,69 +13,23 @@ import {
 	useSearchEngineState,
 	useFindkitContext,
 } from "./core-hooks";
-import { Emitter, FindkitUIEvents } from "./emitter";
-import {
-	GroupDefinition,
-	SearchEngine,
-	SearchResultHit,
-} from "./search-engine";
+import { SearchEngine, SearchResultHit } from "./search-engine";
 import { cn, View } from "./utils";
 
 export function FindkitProvider(props: {
-	publicToken?: string;
-	groups?: GroupDefinition[];
 	children: ReactNode;
-	engine?: SearchEngine;
+	engine: SearchEngine;
 	slots?: Partial<Slots>;
-	shadowRoot?: ShadowRoot;
-	events: Emitter<FindkitUIEvents>;
 }) {
-	const [engine, setEngine] = useState<SearchEngine | undefined>(
-		props.engine || undefined
-	);
-
-	useEffect(() => {
-		if (props.engine) {
-			return;
-		}
-
-		let oldEngine: SearchEngine | undefined = undefined;
-
-		if (!engine || engine.publicToken !== props.publicToken) {
-			if (!props.publicToken) {
-				throw new Error("No project id provided to FindkitProvider!");
-			}
-
-			const nextEngine = new SearchEngine({
-				publicToken: props.publicToken,
-				events: props.events,
-			});
-			oldEngine = engine;
-			setEngine(nextEngine);
-		}
-
-		return () => {
-			oldEngine?.dispose();
-		};
-	}, [engine, props.engine, props.publicToken, props.events]);
-
-	useEffect(() => {
-		engine?.setGroups(props.groups);
-	}, [engine, props.groups]);
-
 	const context = useMemo(() => {
 		const value: FindkitContextType = {
-			engine,
+			engine: props.engine,
 			translations: {} as any,
 			slots: props.slots ?? {},
 		};
 
 		return value;
-	}, [engine, props.slots]);
-
-	if (!context.engine) {
-		return null;
-	}
+	}, [props.engine, props.slots]);
 
 	return (
 		<FindkitContext.Provider value={context}>
