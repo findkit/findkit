@@ -290,7 +290,7 @@ export function initModal(options: {
 		searchEndpoint: options.searchEndpoint,
 	});
 
-	engine.setGroups(options.groups);
+	engine.setGroups(options.groups ?? null);
 
 	const elements = (
 		<StrictMode>

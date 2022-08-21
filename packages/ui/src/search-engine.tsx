@@ -151,6 +151,7 @@ function assertInputEvent(e: {
 }
 
 export type SetGroupsArgument =
+	| null
 	| GroupDefinition[]
 	| GroupDefinition
 	| ((
@@ -323,7 +324,7 @@ export class SearchEngine {
 	}
 
 	setGroups = (groups: SetGroupsArgument) => {
-		let nextGroups: GroupDefinition[] | undefined = undefined;
+		let nextGroups: GroupDefinition[] = [];
 
 		if (Array.isArray(groups)) {
 			nextGroups = groups;
@@ -334,22 +335,24 @@ export class SearchEngine {
 			} else {
 				nextGroups = this.state.nextGroupDefinitions;
 			}
+		} else if (groups === null) {
+			nextGroups = [
+				{
+					id: "default",
+					title: "Default",
+					filters: {
+						tagQuery: [],
+						highlightLength: 10,
+					},
+					scoreBoost: 1,
+					previewSize: 5,
+				},
+			];
 		} else {
 			nextGroups = [groups];
 		}
 
-		this.state.nextGroupDefinitions = nextGroups ?? [
-			{
-				id: "default",
-				title: "Default",
-				filters: {
-					tagQuery: [],
-					highlightLength: 10,
-				},
-				scoreBoost: 1,
-				previewSize: 5,
-			},
-		];
+		this.state.nextGroupDefinitions = nextGroups;
 
 		// On first group set, set the groupDefitions too so the groups will
 		// render on the screen before the first search in performed
