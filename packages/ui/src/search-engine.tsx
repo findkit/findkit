@@ -1,7 +1,6 @@
-import { devtools } from "valtio/utils";
-import { cleanUndefined, isDeepEqual } from "./utils";
-import { CustomFields } from "@findkit/fetch";
-import { findkitFetch } from "@findkit/fetch";
+import { devtools, subscribeKey } from "valtio/utils";
+import { cleanUndefined } from "./utils";
+import { CustomFields, findkitFetch } from "@findkit/fetch";
 
 import {
 	FindkitFetchOptions,
@@ -9,7 +8,7 @@ import {
 	FindkitSearchParams,
 	FindkitSearchResponse,
 } from "@findkit/fetch";
-import { proxy, ref } from "valtio";
+import { proxy } from "valtio";
 import {
 	AddressBar,
 	createAddressBar,
@@ -89,6 +88,7 @@ export interface GroupDefinition {
  */
 export interface State {
 	groupDefinitions: GroupDefinition[];
+	nextGroupDefinitions: GroupDefinition[];
 
 	/**
 	 * urlbar query string
@@ -214,9 +214,11 @@ export class SearchEngine {
 			status: "closed",
 			error: undefined,
 			resultGroups: {},
-			groupDefinitions: ref([]),
+			groupDefinitions: [],
+			nextGroupDefinitions: [],
 		});
 		devtools(this.state);
+		subscribeKey(this.state, "nextGroupDefinitions", this.#handleGroupsChange);
 
 		this.publicToken = options.publicToken;
 		this.#searchEndpoint = options.searchEndpoint;
@@ -314,26 +316,27 @@ export class SearchEngine {
 	}
 
 	setGroups = (groups: GroupDefinition[] | undefined) => {
-		const isEqual = isDeepEqual(groups, this.state.groupDefinitions);
-		if (isEqual) {
-			return;
-		}
-
-		this.state.groupDefinitions = ref(
-			groups ?? [
-				{
-					id: "default",
-					title: "Default",
-					filters: {
-						tagQuery: [],
-						highlightLength: 10,
-					},
-					scoreBoost: 1,
-					previewSize: 5,
+		this.state.nextGroupDefinitions = groups ?? [
+			{
+				id: "default",
+				title: "Default",
+				filters: {
+					tagQuery: [],
+					highlightLength: 10,
 				},
-			]
-		);
+				scoreBoost: 1,
+				previewSize: 5,
+			},
+		];
 
+		// On first group set, set the groupDefitions too so the groups will
+		// render on the screen before the first search in performed
+		if (!this.#initialGroupsSet) {
+			this.state.groupDefinitions = this.state.nextGroupDefinitions;
+		}
+	};
+
+	#handleGroupsChange = () => {
 		this.#clearTimeout();
 		const terms = this.findkitParams.getTerms();
 
@@ -455,7 +458,8 @@ export class SearchEngine {
 			return;
 		}
 
-		const noGroups = this.state.groupDefinitions.length === 0;
+		const groups = this.state.nextGroupDefinitions;
+		const noGroups = groups.length === 0;
 		const tooFewTerms = options.terms.length < this.#minSearchTermsLength;
 
 		if (tooFewTerms || noGroups) {
@@ -464,10 +468,10 @@ export class SearchEngine {
 			return;
 		}
 
-		const appendGroupId = this.getCurrentGroupId();
+		const appendGroupId = this.#getNextCurrentGroupId();
 
 		const fullParams = this.#getFullParams({
-			groups: this.state.groupDefinitions,
+			groups,
 			terms: options.terms,
 			appendGroupId,
 			lang: this.state.lang,
@@ -560,6 +564,7 @@ export class SearchEngine {
 
 		// Update the state terms to match the results
 		this.state.terms = options.terms;
+		this.state.groupDefinitions = groups;
 
 		if (appendGroupId && !options?.reset) {
 			this.#addAllResults(resWithIds);
@@ -580,8 +585,9 @@ export class SearchEngine {
 	/**
 	 * Get group id from the address bar if it is an existing group
 	 */
-	getCurrentGroupId(): string | undefined {
-		const groups = this.state.groupDefinitions;
+	#getNextCurrentGroupId(): string | undefined {
+		const groups =
+			this.state.nextGroupDefinitions ?? this.state.groupDefinitions;
 
 		// When using only one group we can just use the id of the first group
 		if (groups.length === 1 && groups[0]) {

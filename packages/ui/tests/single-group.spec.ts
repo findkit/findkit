@@ -223,7 +223,7 @@ async function getHitHosts(page: Page) {
 	return Array.from(hosts);
 }
 
-test.only("can update groups on the fly", async ({ page }) => {
+test("can update groups on the fly", async ({ page }) => {
 	await page.goto("/single-group");
 	await page.locator("text=open").click();
 

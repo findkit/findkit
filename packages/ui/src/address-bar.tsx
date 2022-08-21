@@ -96,11 +96,12 @@ export function createAddressBar(): AddressBar {
 	return {
 		getSearchParamsString: () => location.search,
 		update: (params, options) => {
-			const args = [
-				undefined,
-				"",
-				"?" + params.toString() + location.hash,
-			] as const;
+			const next = "?" + params.toString();
+			if (location.search === next) {
+				return;
+			}
+
+			const args = [undefined, "", next + location.hash] as const;
 
 			if (options?.push) {
 				history.pushState(...args);
