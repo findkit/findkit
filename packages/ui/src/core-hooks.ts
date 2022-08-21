@@ -8,6 +8,7 @@ import { FindkitURLSearchParams } from "./address-bar";
  */
 export interface Slots {
 	Hit: React.FC<{ hit: SearchResultHit }>;
+	Header: React.FC<{}>;
 }
 
 export interface FindkitContextType {

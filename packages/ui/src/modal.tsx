@@ -1,7 +1,7 @@
 import { FocusTrap } from "./focus-trap";
 import React, { StrictMode, useRef, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { Results, FindkitProvider, Logo } from "./components";
+import { Results, FindkitProvider, Logo, Slot } from "./components";
 import {
 	useSearchEngineState,
 	useSearchEngine,
@@ -217,27 +217,29 @@ function ModalResult() {
 			}}
 		>
 			<View cn={{ header: true, "header-hidden": isScrollingDown }}>
-				<View
-					cn="close-button"
-					as="button"
-					type="button"
-					onClick={() => {
-						engine.close();
-					}}
-				>
-					Close <Cross />
-				</View>
-
-				<View cn="search-input-wrap">
+				<Slot name="Header" props={{}}>
 					<View
-						as="input"
-						cn="search-input"
-						type="text"
-						ref={inputRef}
-						aria-label="Search input"
-					/>
-					<Logo />
-				</View>
+						cn="close-button"
+						as="button"
+						type="button"
+						onClick={() => {
+							engine.close();
+						}}
+					>
+						Close <Cross />
+					</View>
+
+					<View cn="search-input-wrap">
+						<View
+							as="input"
+							cn="search-input"
+							type="text"
+							ref={inputRef}
+							aria-label="Search input"
+						/>
+						<Logo />
+					</View>
+				</Slot>
 			</View>
 			<View cn="content">
 				<FetchError />
