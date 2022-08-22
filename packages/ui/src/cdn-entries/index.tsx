@@ -182,10 +182,14 @@ async function loadScriptFromGlobal<T>(
 	const script = doc().createElement("script");
 	script.type = "module";
 
-	const promise = new Promise<void>((resolve) => {
+	const promise = new Promise<void>((resolve, reject) => {
 		script.addEventListener("load", () => {
 			doc().head?.removeChild(script);
 			resolve();
+		});
+
+		script.addEventListener("error", () => {
+			reject(new Error("[findkit] Failed to implementation from: " + src));
 		});
 	});
 
