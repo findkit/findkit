@@ -191,7 +191,7 @@ function FetchError() {
 	);
 }
 
-function ModalResult() {
+function ModalContent() {
 	const engine = useSearchEngine();
 	const state = useSearchEngineState();
 	const inputRef = useInput();
@@ -212,6 +212,41 @@ function ModalResult() {
 
 	const visible = show && delayed;
 
+	const header = (
+		<View cn={{ header: true, "header-hidden": isScrollingDown }}>
+			<Slot name="Header" props={{}}>
+				<View
+					cn="close-button"
+					as="button"
+					type="button"
+					onClick={() => {
+						engine.close();
+					}}
+				>
+					Close <Cross />
+				</View>
+
+				<View cn="search-input-wrap">
+					<View
+						as="input"
+						cn="search-input"
+						type="text"
+						ref={inputRef}
+						aria-label="Search input"
+					/>
+					<Logo />
+				</View>
+			</Slot>
+		</View>
+	);
+
+	const content = (
+		<View cn="content">
+			<FetchError />
+			<Results />
+		</View>
+	);
+
 	return (
 		<View
 			ref={containerRef}
@@ -220,42 +255,23 @@ function ModalResult() {
 				["--findkit--modal-animation-duration"]: `${duration}ms`,
 			}}
 		>
-			<View cn={{ header: true, "header-hidden": isScrollingDown }}>
-				<Slot name="Header" props={{}}>
-					<View
-						cn="close-button"
-						as="button"
-						type="button"
-						onClick={() => {
-							engine.close();
-						}}
-					>
-						Close <Cross />
-					</View>
-
-					<View cn="search-input-wrap">
-						<View
-							as="input"
-							cn="search-input"
-							type="text"
-							ref={inputRef}
-							aria-label="Search input"
-						/>
-						<Logo />
-					</View>
-				</Slot>
-			</View>
-			<View cn="content">
-				<FetchError />
-				<Results />
-			</View>
+			<Slot
+				name="ModalContent"
+				props={{
+					header,
+					content,
+				}}
+			>
+				{header}
+				{content}
+			</Slot>
 		</View>
 	);
 }
 export function Modal(props: { engine: SearchEngine; slots: Partial<Slots> }) {
 	return (
 		<FindkitProvider slots={props.slots} engine={props.engine}>
-			<ModalResult />
+			<ModalContent />
 		</FindkitProvider>
 	);
 }
