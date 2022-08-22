@@ -107,7 +107,7 @@ function onDomContentLoaded(cb: () => any) {
 const lazyImplementation: Partial<ModalImplementation> = {};
 
 function createShellFunction<Key extends keyof ModalImplementation>(name: Key) {
-	return (...args: any[]) => {
+	return (...args: any[]): ReturnType<ModalImplementation[Key]> => {
 		const fn = lazyImplementation[name] as any;
 		if (!fn) {
 			throw new Error(`[findkit] Implementation for "${name}" not loaded yet!`);
