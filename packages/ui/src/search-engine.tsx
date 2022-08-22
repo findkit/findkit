@@ -619,9 +619,6 @@ export class SearchEngine {
 		this.#syncInputs(options.terms);
 	};
 
-	/**
-	 * Get group id from the address bar if it is an existing group
-	 */
 	#getNextCurrentGroupId(): string | undefined {
 		const groups =
 			this.state.nextGroupDefinitions ?? this.state.groupDefinitions;
