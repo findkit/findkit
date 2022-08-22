@@ -281,6 +281,7 @@ export function initModal(options: {
 	instanceId?: string;
 	shadowDom?: boolean;
 	css?: string;
+	minTerms?: number;
 	styleSheets: string[];
 	slots?: Partial<Slots>;
 	events: Emitter<FindkitUIEvents>;
@@ -293,6 +294,7 @@ export function initModal(options: {
 	const engine = new SearchEngine({
 		publicToken: options.publicToken,
 		instanceId: options.instanceId,
+		minTerms: options.minTerms,
 		events: options.events,
 		searchEndpoint: options.searchEndpoint,
 		groups: options.groups,
