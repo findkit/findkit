@@ -27,6 +27,7 @@ export interface SearchResultHit {
 	title: string;
 	url: string;
 	highlight: string;
+	tags: ReadonlyArray<string>;
 	customFields: CustomFields;
 }
 
