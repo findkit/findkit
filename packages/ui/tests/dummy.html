@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Search UI Test</title>
+
+		<link rel="stylesheet" href="/shared.css" />
+		<style id="custom-css"></style>
+
+		<script type="module">
+			import * as MOD from "/build/esm/index.js";
+			// Expose the module as global so Playwright tests can access it.
+			Object.assign(window, { MOD });
+		</script>
+	</head>
+	<body>
+		<button id="open-button" type="button">open</button>
+	</body>
+</html>
