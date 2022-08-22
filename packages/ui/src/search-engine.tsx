@@ -177,7 +177,7 @@ export class SearchEngine {
 	#searchEndpoint: string | undefined;
 	#throttleTime: number;
 	#searchMoreSize: number;
-	#minSearchTermsLength: number;
+	#minTerms: number;
 	#unbindAddressBarListeners: () => void;
 	#unbindValtio: () => void;
 	#pendingTerms = "";
@@ -190,7 +190,7 @@ export class SearchEngine {
 		searchEndpoint?: string;
 		throttleTime?: number;
 		searchMoreSize?: number;
-		minSearchTermsLength?: number;
+		minTerms?: number;
 		events: Emitter<FindkitUIEvents>;
 		groups?: GroupDefinition[];
 		params?: SearchEngineParams;
@@ -255,7 +255,7 @@ export class SearchEngine {
 		this.#fetcher = findkitFetch;
 		this.#throttleTime = options.throttleTime ?? 200;
 		this.#searchMoreSize = options.searchMoreSize ?? 20;
-		this.#minSearchTermsLength = options.minSearchTermsLength ?? 2;
+		this.#minTerms = options.minTerms ?? 2;
 
 		this.#syncInputs(initialSearchParams.getTerms());
 
@@ -492,7 +492,7 @@ export class SearchEngine {
 
 		const groups = this.state.nextGroupDefinitions;
 		const noGroups = groups.length === 0;
-		const tooFewTerms = options.terms.length < this.#minSearchTermsLength;
+		const tooFewTerms = options.terms.length < this.#minTerms;
 
 		if (tooFewTerms || noGroups) {
 			this.state.resultGroups = {};

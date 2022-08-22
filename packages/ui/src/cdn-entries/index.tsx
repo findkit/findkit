@@ -215,6 +215,7 @@ export interface FindkitUIOptions {
 	groups?: GroupDefinition[];
 	params?: SearchEngineParams;
 	shadowDom?: boolean;
+	minTerms?: number;
 	css?: string;
 	styleSheet?: string;
 	slots?: Partial<Slots>;
