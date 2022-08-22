@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Search UI Test</title>
+
+		<link rel="stylesheet" href="/shared.css" />
+
+		<script type="module">
+			import { FindkitUI, html, css, useParams } from "/build/esm/index.js";
+
+			function SelectTagButton(props) {
+				const [params, setParams] = useParams();
+				const tag = params.tagQuery?.[0]?.[0];
+				const setTag = (tag) => {
+					setParams((params) => {
+						params.tagQuery = [[tag]];
+					});
+				};
+
+				return html`<button
+					type="button"
+					onClick=${() => setTag(props.tag)}
+					disabled="${tag === props.tag}"
+				>
+					${props.title}
+				</button>`;
+			}
+
+			const ui = new FindkitUI({
+				publicToken: "po8GK3G0r",
+				groups: [
+					{
+						id: "valu",
+						title: "Valu.fi",
+						tagQuery: [["domain/valu.fi"]],
+						highlightLength: 10,
+						scoreBoost: 1,
+						previewSize: 5,
+					},
+				],
+				css: css`
+					.buttons {
+						flext-direction: row;
+						padding: 1rem;
+					}
+					.buttons button {
+						margin-left: 1rem;
+					}
+				`,
+				slots: {
+					Header(props) {
+						return html`
+							${props.children}
+							<div className="buttons">
+								Filter:
+								<${SelectTagButton} tag="domain/valu.fi" title="Valu.fi" />
+								<${SelectTagButton}
+									tag="domain/statement.fi"
+									title="Statement.fi"
+								/>
+							</div>
+						`;
+					},
+				},
+			});
+
+			Object.assign(window, { ui });
+
+			ui.openFrom("button");
+		</script>
+	</head>
+	<body>
+		<button id="open-button" type="button">open</button>
+	</body>
+</html>

@@ -1,5 +1,6 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import type { FindkitUI } from "../src/cdn-entries/index";
+import { getHitHosts } from "./helpers";
 
 declare const ui: FindkitUI;
 
@@ -205,23 +206,6 @@ test("emits hit-click events and can prevent default", async ({ page }) => {
 	const click = await clickPromise;
 	expect(click.url).toEqual(hitUrl);
 });
-
-async function getHitHosts(page: Page) {
-	const hits = page.locator(".findkit--hit a");
-	await hits.first().waitFor({ state: "visible" });
-
-	const hrefs = await hits.evaluateAll((list) => {
-		return list.flatMap((el) => {
-			if (el instanceof HTMLAnchorElement) {
-				return el.href;
-			}
-			return [];
-		});
-	});
-
-	const hosts = new Set(hrefs.map((url) => new URL(url).hostname));
-	return Array.from(hosts);
-}
 
 test("can update groups on the fly", async ({ page }) => {
 	await page.goto("/single-group");

@@ -140,11 +140,25 @@ export const h = createShellFunction("h");
 export const useState = createShellFunction("useState");
 
 /**
- * Use the UI state
+ * Use the full UI state
  *
  * @public
  */
 export const useUIState = createShellFunction("useUIState");
+
+/**
+ * Read or update the search params
+ *
+ * @public
+ */
+export const useParams = createShellFunction("useParams");
+
+/**
+ * Read or update the search groups
+ *
+ * @public
+ */
+export const useGroups = createShellFunction("useGroups");
 
 async function preloadStylesheet(href: string) {
 	const link = doc().createElement("link");
