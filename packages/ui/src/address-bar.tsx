@@ -114,6 +114,8 @@ function monitorMethod<Target extends {}, Method extends keyof Target>(
 	};
 }
 
+// Move to Navigation API once possible
+// https://caniuse.com/mdn-api_navigation_navigate_event
 monitorMethod(history, "pushState", dispatchFindkitURLChange);
 monitorMethod(history, "replaceState", dispatchFindkitURLChange);
 
