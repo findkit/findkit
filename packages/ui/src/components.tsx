@@ -9,6 +9,7 @@ import {
 	useSearchEngineState,
 	useFindkitContext,
 	SlotProps,
+	useTranslator,
 } from "./core-hooks";
 import { SearchEngine, SearchResultHit } from "./search-engine";
 import { createTranslator } from "./translations";
@@ -152,6 +153,7 @@ function HitList(props: {
 
 function AllGroupResults() {
 	const state = useSearchEngineState();
+	const t = useTranslator();
 
 	return (
 		<div>
@@ -171,8 +173,10 @@ function AllGroupResults() {
 							title={def.title}
 							hits={group.hits.slice(0, def.previewSize)}
 						/>
-						<p>total: {group.total}</p>
-						<SingleGroupLink groupId={def.id}>Show all</SingleGroupLink>
+						<p>
+							{t("total")}: {group.total}
+						</p>
+						<SingleGroupLink groupId={def.id}>{t("show-all")}</SingleGroupLink>
 					</div>
 				);
 			})}
@@ -182,6 +186,7 @@ function AllGroupResults() {
 
 function SingleGroupResults(props: { groupId: string }) {
 	const state = useSearchEngineState();
+	const t = useTranslator();
 	const engine = useSearchEngine();
 	let group = state.resultGroups[props.groupId];
 
@@ -215,7 +220,7 @@ function SingleGroupResults(props: { groupId: string }) {
 						engine.searchMore();
 					}}
 				>
-					load more
+					{t("load-more")}
 				</View>
 			</p>
 		</div>

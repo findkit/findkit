@@ -226,6 +226,7 @@ function ModalContent() {
 					cn="close-button"
 					as="button"
 					type="button"
+					aria-label={t("aria-label-close-search")}
 					onClick={() => {
 						engine.close();
 					}}
@@ -239,7 +240,7 @@ function ModalContent() {
 						cn="search-input"
 						type="text"
 						ref={inputRef}
-						aria-label="Search input"
+						aria-label={t("aria-label-search-input")}
 					/>
 					<Logo />
 				</View>

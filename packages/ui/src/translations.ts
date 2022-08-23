@@ -1,6 +1,10 @@
 export const BASE_TRANSLATIONS = {
 	close: "Close",
 	total: "Total",
+	"show-all": "Show all",
+	"load-more": "Load more",
+	"aria-label-close-search": "Close search",
+	"aria-label-search-input": "Search input",
 };
 
 export type TranslationStrings = typeof BASE_TRANSLATIONS;
@@ -10,6 +14,10 @@ export const TRANSLATIONS: Record<string, TranslationStrings> = {
 	fi: {
 		close: "Sulje",
 		total: "Yhteensä",
+		"show-all": "Näytä kaikki",
+		"load-more": "Lataa lisää",
+		"aria-label-close-search": "Sulje haku",
+		"aria-label-search-input": "Hakukenttä",
 	},
 };
 
