@@ -12,6 +12,7 @@ import {
 	useFindkitURLSearchParams,
 	useSearchEngineState,
 	useFindkitContext,
+	SlotProps,
 } from "./core-hooks";
 import { SearchEngine, SearchResultHit } from "./search-engine";
 import { cn, View } from "./utils";
@@ -38,9 +39,9 @@ export function FindkitProvider(props: {
 	);
 }
 
-export function Slot<Name extends keyof Slots>(props: {
+export function Slot<Name extends keyof SlotProps>(props: {
 	name: Name;
-	props: ComponentProps<Slots[Name]>;
+	props: SlotProps[Name];
 	children: ReactNode;
 }) {
 	const context = useFindkitContext();

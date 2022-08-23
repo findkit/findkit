@@ -6,14 +6,28 @@ import { FindkitURLSearchParams } from "./address-bar";
 /**
  * @public
  */
-export interface Slots {
-	Hit: React.FC<{ hit: SearchResultHit }>;
-	Header: React.FC<{}>;
-	ModalContent: React.FC<{
+export interface SlotProps {
+	Hit: { hit: SearchResultHit };
+	Header: {};
+	ModalContent: {
 		header: React.ReactNode;
 		content: React.ReactNode;
-	}>;
+	};
 }
+
+/**
+ * @public
+ */
+export type MakeSlotComponents<Type> = {
+	[Property in keyof Type]: (
+		props: Type[Property] & { children: unknown }
+	) => any;
+};
+
+/**
+ * @public
+ */
+export type Slots = MakeSlotComponents<SlotProps>;
 
 export interface FindkitContextType {
 	engine: SearchEngine | undefined;
