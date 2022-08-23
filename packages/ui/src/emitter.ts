@@ -24,7 +24,6 @@ export class Emitter<Events extends EventsConstraint> {
 		eventName: EventName,
 		handler: (event: Events[EventName]) => void
 	) {
-		type wat = Events[EventName];
 		const set = this.#handlers.get(eventName) || new Set();
 		this.#handlers.set(eventName, set);
 		set.add(handler);
@@ -39,6 +38,10 @@ export class Emitter<Events extends EventsConstraint> {
 	) {
 		const set = this.#handlers.get(eventName);
 		set?.delete(handler);
+	}
+
+	dispose() {
+		this.#handlers.clear();
 	}
 
 	emit<EventName extends keyof Events>(
@@ -67,6 +70,9 @@ export interface FindkitUIEvents {
 	fetch: {
 		instanceId: string;
 		terms: string;
+	};
+	dispose: {
+		instanceId: string;
 	};
 	"hit-click": {
 		instanceId: string;

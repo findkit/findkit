@@ -321,6 +321,14 @@ export function initModal(options: {
 		params: options.params,
 	});
 
+	options.events.on("dispose", () => {
+		if (container instanceof HTMLDivElement) {
+			container.remove();
+		} else {
+			container.host.remove();
+		}
+	});
+
 	const elements = (
 		<StrictMode>
 			<>

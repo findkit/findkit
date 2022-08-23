@@ -754,6 +754,7 @@ export class SearchEngine {
 	};
 
 	dispose = () => {
+		this.events.emit("dispose", {});
 		instanceIds.delete(this.instanceId);
 		this.close();
 		this.#unbindAddressBarListeners();
@@ -761,6 +762,7 @@ export class SearchEngine {
 		for (const input of this.#inputs) {
 			this.removeInput(input.input);
 		}
+		this.events.dispose();
 	};
 
 	close = () => {
