@@ -40,6 +40,8 @@ export interface ResultsWithTotal {
 }
 
 /**
+ * @public
+ *
  * Same as FindkitSearchGroupParams but without "from" field since it is managed
  * by the SearchEngine
  */

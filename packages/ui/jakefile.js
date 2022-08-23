@@ -96,13 +96,9 @@ task("analyze", ["clean"], async () => {
 	console.log(text);
 });
 
-task(
-	"build-npm",
-	["build-ts", "esbuild-cjs"],
-	sh`
-      api-extractor run --local --verbose
-    `
-);
+task("build-npm", ["build-ts", "esbuild-cjs", "api-extractor"]);
+
+task("api-extractor", sh`api-extractor run --local --verbose`);
 
 task("upload", async () => {
 	const version = await getVersion();

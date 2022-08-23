@@ -3,7 +3,6 @@ import { createElement, useState } from "react";
 import { useSearchEngine, useSearchEngineState } from "../core-hooks";
 
 import { initModal } from "../modal";
-import { State } from "../search-engine";
 import { assertNonNullable } from "../utils";
 
 /**
@@ -19,9 +18,8 @@ export type Dispatch<A> = (value: A) => void;
 /**
  * Read and update the search params
  *
- * @public
  */
-function useParams() {
+function useParamsImplementation() {
 	const state = useSearchEngineState();
 	const engine = useSearchEngine();
 	const group = state.nextGroupDefinitions[0];
@@ -35,7 +33,7 @@ function useParams() {
  *
  * @public
  */
-function useGroups() {
+function useGroupsImplementation() {
 	const state = useSearchEngineState();
 	const engine = useSearchEngine();
 	return [state.nextGroupDefinitions, engine.updateGroups] as const;
@@ -50,8 +48,8 @@ export interface ModalImplementation {
 	html: (strings: TemplateStringsArray, ...values: any[]) => any;
 	useState<S>(initialState: S | (() => S)): [S, Dispatch<SetStateAction<S>>];
 	useUIState(): ReturnType<typeof useSearchEngineState>;
-	useParams: typeof useParams;
-	useGroups: typeof useGroups;
+	useParams: typeof useParamsImplementation;
+	useGroups: typeof useGroupsImplementation;
 }
 
 export const implementation: ModalImplementation = {
@@ -60,8 +58,8 @@ export const implementation: ModalImplementation = {
 	h: createElement,
 	useState,
 	useUIState: useSearchEngineState,
-	useGroups,
-	useParams,
+	useGroups: useGroupsImplementation,
+	useParams: useParamsImplementation,
 };
 
 declare const FINDKIT_VERSION: string;

@@ -8,7 +8,7 @@ import type {
 	SearchEngineParams,
 } from "../search-engine";
 import type { AddressBar, FindkitURLSearchParams } from "../address-bar";
-import type { Slots, SlotProps } from "../core-hooks";
+import type { Slots, SlotProps, MakeSlotComponents } from "../core-hooks";
 import type {
 	ModalImplementation,
 	Dispatch,
@@ -19,6 +19,10 @@ import type { CustomFields } from "@findkit/fetch";
 import { Emitter, FindkitUIEvents } from "../emitter";
 
 export {
+	Emitter,
+	MakeSlotComponents,
+	SearchEngineParams,
+	FindkitUIEvents,
 	FindkitURLSearchParams,
 	AddressBar,
 	GroupDefinition,
@@ -45,6 +49,11 @@ declare const FINDKIT_CDN_ROOT: string;
 declare const FINDKIT_VERSION: string;
 declare const FINDKIT_MODULE_FORMAT: "esm" | "cjs";
 
+/**
+ * @public
+ *
+ * The package version
+ */
 export const VERSION = FINDKIT_VERSION;
 
 function cdnFile(path: string) {

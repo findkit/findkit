@@ -1,9 +1,5 @@
 import type { SearchResultHit, State } from "./search-engine";
 
-export interface EventsConstraint {
-	// [key: string | number | symbol]: EventObject;
-}
-
 export interface Handler {
 	(event: any): void;
 }
@@ -12,7 +8,12 @@ export interface EventObject {
 	instanceId: string;
 }
 
-export class Emitter<Events extends EventsConstraint> {
+/**
+ * @public
+ *
+ * Simple event emitter
+ */
+export class Emitter<Events extends {}> {
 	#handlers = new Map<keyof Events, Set<Handler>>();
 	#instanceId: string;
 
@@ -57,6 +58,11 @@ export class Emitter<Events extends EventsConstraint> {
 	}
 }
 
+/**
+ * @public
+ *
+ * FindkitUI event definitions
+ */
 export interface FindkitUIEvents {
 	"status-change": {
 		instanceId: string;
