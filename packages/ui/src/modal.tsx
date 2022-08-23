@@ -55,7 +55,11 @@ function useFocusTrap(
 				escDisables: true,
 				outsideClickDisables: true,
 				onAfterEnable() {
-					containerRef.current?.querySelector("input")?.focus();
+					for (const input of engine.getInputs()) {
+						if (containerRef.current?.contains(input)) {
+							input.focus();
+						}
+					}
 				},
 				onAfterDisable() {
 					if (trapRef.current) {

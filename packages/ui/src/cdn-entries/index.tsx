@@ -8,7 +8,7 @@ import type {
 	SearchEngineParams,
 } from "../search-engine";
 import type { AddressBar, FindkitURLSearchParams } from "../address-bar";
-import type { Slots } from "../core-hooks";
+import type { Slots, SlotProps } from "../core-hooks";
 import type {
 	ModalImplementation,
 	Dispatch,
@@ -23,6 +23,7 @@ export {
 	AddressBar,
 	GroupDefinition,
 	Slots,
+	SlotProps,
 	ModalImplementation,
 	State,
 	initModal,
