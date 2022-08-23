@@ -15,17 +15,19 @@ import {
 	SlotProps,
 } from "./core-hooks";
 import { SearchEngine, SearchResultHit } from "./search-engine";
+import { Translator } from "./translations";
 import { cn, View } from "./utils";
 
 export function FindkitProvider(props: {
 	children: ReactNode;
 	engine: SearchEngine;
+	translator: Translator;
 	slots?: Partial<Slots>;
 }) {
 	const context = useMemo(() => {
 		const value: FindkitContextType = {
 			engine: props.engine,
-			translations: {} as any,
+			translator: props.translator,
 			slots: props.slots ?? {},
 		};
 

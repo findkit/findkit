@@ -7,6 +7,7 @@ import {
 	useSearchEngine,
 	useInput,
 	Slots,
+	useTranslator,
 } from "./core-hooks";
 
 import {
@@ -16,6 +17,11 @@ import {
 } from "./search-engine";
 import { cn, View } from "./utils";
 import type { Emitter, FindkitUIEvents } from "./emitter";
+import {
+	createTranslator,
+	TranslationStrings,
+	Translator,
+} from "./translations";
 
 function useScrollLock(lock: boolean) {
 	useEffect(() => {
@@ -200,6 +206,7 @@ function ModalContent() {
 	const state = useSearchEngineState();
 	const inputRef = useInput();
 	const containerRef = useRef<HTMLDivElement | null>(null);
+	const t = useTranslator();
 	useFocusTrap(containerRef);
 
 	const show = state.status !== "closed";
@@ -227,7 +234,7 @@ function ModalContent() {
 						engine.close();
 					}}
 				>
-					Close <Cross />
+					{t("close")} <Cross />
 				</View>
 
 				<View cn="search-input-wrap">
@@ -272,9 +279,13 @@ function ModalContent() {
 		</View>
 	);
 }
-export function Modal(props: { engine: SearchEngine; slots: Partial<Slots> }) {
+export function Modal(props: {
+	engine: SearchEngine;
+	slots: Partial<Slots>;
+	translator: Translator;
+}) {
 	return (
-		<FindkitProvider slots={props.slots} engine={props.engine}>
+		<FindkitProvider {...props}>
 			<ModalContent />
 		</FindkitProvider>
 	);
@@ -308,6 +319,9 @@ export function initModal(options: {
 	searchEndpoint?: string;
 	params?: SearchEngineParams;
 	groups?: GroupDefinition[];
+
+	uiLang?: string;
+	uiStrings?: Partial<TranslationStrings>;
 }) {
 	const container = createContainer({ shadowDom: options.shadowDom });
 
@@ -320,6 +334,11 @@ export function initModal(options: {
 		groups: options.groups,
 		params: options.params,
 	});
+
+	const translator = createTranslator(
+		options.uiLang ?? "en",
+		options.uiStrings
+	);
 
 	options.events.on("dispose", () => {
 		if (container instanceof HTMLDivElement) {
@@ -339,7 +358,11 @@ export function initModal(options: {
 					<style dangerouslySetInnerHTML={{ __html: options.css }} />
 				) : null}
 
-				<Modal engine={engine} slots={options.slots ?? {}} />
+				<Modal
+					engine={engine}
+					slots={options.slots ?? {}}
+					translator={translator}
+				/>
 			</>
 		</StrictMode>
 	);

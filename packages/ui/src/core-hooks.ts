@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useMemo, useRef } from "react";
 import { SearchEngine, SearchResultHit } from "./search-engine";
 import { useSnapshot } from "valtio";
 import { FindkitURLSearchParams } from "./address-bar";
+import { TranslationStrings, Translator } from "./translations";
 
 /**
  * @public
@@ -32,7 +33,7 @@ export type Slots = MakeSlotComponents<SlotProps>;
 export interface FindkitContextType {
 	engine: SearchEngine | undefined;
 	slots: Partial<Slots>;
-	translations: unknown;
+	translator: Translator;
 }
 
 export const FindkitContext = createContext<FindkitContextType | null>(null);
@@ -43,6 +44,10 @@ export function useFindkitContext() {
 		throw new Error("No findkit context provided!");
 	}
 	return context;
+}
+
+export function useTranslator() {
+	return useFindkitContext().translator;
 }
 
 export function useSearchEngine(): SearchEngine {
