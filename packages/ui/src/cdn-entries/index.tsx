@@ -241,8 +241,10 @@ export interface FindkitUIOptions {
 	slots?: Partial<Slots>;
 	load?: () => Promise<ModalImplementation>;
 	searchEndpoint?: string;
-	uiLang?: string;
-	uiStrings?: Partial<TranslationStrings>;
+	ui?: {
+		lang: string;
+		overrides?: Partial<TranslationStrings>;
+	};
 }
 
 /**
@@ -366,7 +368,7 @@ export class FindkitUI {
 	}
 
 	async setUIStrings(lang: string, overrides?: Partial<TranslationStrings>) {
-		(await this.#enginePromise).setUIString(lang, overrides);
+		(await this.#enginePromise).setUIStrings(lang, overrides);
 	}
 
 	#handleButtonHover = () => {

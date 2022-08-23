@@ -311,9 +311,10 @@ export function initModal(options: {
 	searchEndpoint?: string;
 	params?: SearchEngineParams;
 	groups?: GroupDefinition[];
-
-	uiLang?: string;
-	uiStrings?: Partial<TranslationStrings>;
+	ui?: {
+		lang: string;
+		overrides?: Partial<TranslationStrings>;
+	};
 }) {
 	const container = createContainer({ shadowDom: options.shadowDom });
 

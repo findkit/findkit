@@ -102,15 +102,17 @@ export interface State {
 	 */
 	lang: string | undefined;
 
-	/**
-	 * Language of the UI
-	 */
-	uiLang: string;
+	ui: {
+		/**
+		 * Language of the UI
+		 */
+		lang: string;
 
-	/**
-	 * UI translations overrides
-	 */
-	uiStrings?: Partial<TranslationStrings>;
+		/**
+		 * UI string overrides
+		 */
+		strings: { [lang: string]: Partial<TranslationStrings> };
+	};
 
 	error:
 		| {
@@ -225,8 +227,10 @@ export class SearchEngine {
 		events: Emitter<FindkitUIEvents>;
 		groups?: GroupDefinition[];
 		params?: SearchEngineParams;
-		uiLang?: string;
-		uiStrings?: Partial<TranslationStrings>;
+		ui?: {
+			lang: string;
+			overrides?: Partial<TranslationStrings>;
+		};
 	}) {
 		this.addressBar = createAddressBar();
 		this.instanceId = options.instanceId ?? "fdk";
@@ -261,6 +265,8 @@ export class SearchEngine {
 			];
 		}
 
+		const lang = options.ui?.lang ?? "en";
+
 		this.state = proxy<State>({
 			usedTerms: initialSearchParams.getTerms(),
 			currentGroupId: initialSearchParams.getGroupId(),
@@ -269,8 +275,12 @@ export class SearchEngine {
 			status: "closed",
 			error: undefined,
 			resultGroups: {},
-			uiLang: options.uiLang ?? "en",
-			uiStrings: ref(options.uiStrings ?? {}),
+			ui: {
+				lang,
+				strings: {
+					[lang]: ref(options.ui?.overrides ?? {}),
+				},
+			},
 
 			// Ensure groups are unique so mutating one does not mutate the
 			// other
@@ -300,9 +310,9 @@ export class SearchEngine {
 		this.#handleAddressChange();
 	}
 
-	setUIString(lang: string, overrides?: Partial<TranslationStrings>) {
-		this.state.uiLang = lang;
-		this.state.uiStrings = ref(overrides ?? {});
+	setUIStrings(lang: string, overrides?: Partial<TranslationStrings>) {
+		this.state.ui.lang = lang;
+		this.state.ui.strings[lang] = ref(overrides ?? {});
 	}
 
 	/**
