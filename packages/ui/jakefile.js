@@ -18,7 +18,7 @@ async function getVersion() {
 
 	const pkg = await fs.readFile("./package.json");
 	const json = JSON.parse(pkg.toString());
-	return "v" + json.version;
+	return json.version;
 }
 
 async function runEsbuild(options = {}) {
@@ -46,7 +46,7 @@ async function runEsbuild(options = {}) {
 				FINDKIT_MODULE_FORMAT: JSON.stringify(format),
 				FINDKIT_CDN_ROOT: options.dev
 					? `"http://localhost:28104/build"`
-					: `"https://cdn.findkit.com/ui/${version}"`,
+					: `"https://cdn.findkit.com/ui/v${version}"`,
 			},
 			plugins: [
 				alias({
@@ -107,12 +107,12 @@ task(
 task("upload", async () => {
 	const version = await getVersion();
 	await sh`
-        aws s3 cp --recursive esm "s3://\${FINDKIT_CDN_S3}/ui/${version}/esm"
-        aws s3 cp --recursive cjs "s3://\${FINDKIT_CDN_S3}/ui/${version}/cjs"
-        aws s3 cp styles.css "s3://\${FINDKIT_CDN_S3}/ui/${version}/styles.css"
+        aws s3 cp --recursive esm "s3://\${FINDKIT_CDN_S3}/ui/v${version}/esm"
+        aws s3 cp --recursive cjs "s3://\${FINDKIT_CDN_S3}/ui/v${version}/cjs"
+        aws s3 cp styles.css "s3://\${FINDKIT_CDN_S3}/ui/v${version}/styles.css"
 
-        aws s3 cp demo.html "s3://\${FINDKIT_CDN_S3}/ui/${version}/demo.html"
-        aws s3 cp tests/shared.css "s3://\${FINDKIT_CDN_S3}/ui/${version}/demo.css"
+        aws s3 cp demo.html "s3://\${FINDKIT_CDN_S3}/ui/v${version}/demo.html"
+        aws s3 cp tests/shared.css "s3://\${FINDKIT_CDN_S3}/ui/v${version}/demo.css"
     `();
 });
 
