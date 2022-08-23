@@ -386,6 +386,7 @@ export class FindkitUI {
 			el.addEventListener("click", this.#handleButtonClick);
 			el.addEventListener("mouseover", this.#handleButtonHover, {
 				once: true,
+				passive: true,
 			});
 		}
 	}
