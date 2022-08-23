@@ -180,6 +180,11 @@ async function loadScriptFromGlobal<T>(
 	globalName: string,
 	src: string
 ): Promise<T> {
+	const existing = (window as any)[globalName];
+	if (existing) {
+		return existing;
+	}
+
 	const script = doc().createElement("script");
 	script.type = "module";
 
