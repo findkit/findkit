@@ -249,7 +249,10 @@ export interface FindkitUIOptions {
  */
 export class FindkitUI {
 	#implementationPromise?: Promise<ModalImplementation>;
-	#enginePromise?: Promise<SearchEngine>;
+	#enginePromise: Promise<SearchEngine>;
+	#engineLoading = false;
+	#resolveEngine!: (engine: SearchEngine) => void;
+
 	#options: FindkitUIOptions;
 	readonly events: Emitter<FindkitUIEvents>;
 
@@ -259,6 +262,10 @@ export class FindkitUI {
 		if (this.#isAlreadyOpened()) {
 			void this.open();
 		}
+
+		this.#enginePromise = new Promise<SearchEngine>((resolve) => {
+			this.#resolveEngine = resolve;
+		});
 	}
 
 	get #instanceId() {
@@ -274,10 +281,6 @@ export class FindkitUI {
 		if (this.#implementationPromise) {
 			return await this.#implementationPromise;
 		}
-
-		// const modulePromise = import(
-		//     cdnFile("modal.js")
-		// ) as Promise<ModalModule>;
 
 		if (this.#options.load) {
 			this.#implementationPromise = this.#options.load();
@@ -317,66 +320,46 @@ export class FindkitUI {
 		preconnect();
 		const engine = await this.#getEngine();
 		engine.open(terms);
-		// return engine;
 	}
-
-	#pendingGroups?: UpdateGroupsArgument;
 
 	async updateGroups(groups: UpdateGroupsArgument) {
-		this.#pendingGroups = groups;
-		(await this.#enginePromise)?.updateGroups(groups);
+		(await this.#enginePromise).updateGroups(groups);
 	}
 
-	#pendingParams?: UpdateParamsArgument;
 	async updateParams(params: UpdateParamsArgument) {
-		this.#pendingParams = params;
-		(await this.#enginePromise)?.updateParams(params);
+		(await this.#enginePromise).updateParams(params);
 	}
 
 	async #getEngine() {
-		if (this.#enginePromise) {
+		if (this.#engineLoading) {
 			return this.#enginePromise;
 		}
 
-		this.#enginePromise = new Promise<SearchEngine>((resolve) => {
-			void this.#loadImplementation().then((impl) => {
-				const { styleSheet: _1, load: _2, ...rest } = this.#options;
-				this.#options.slots;
+		this.#engineLoading = true;
 
-				resolve(
-					impl.initModal({
-						...rest,
-						styleSheets: this.#getStyleSheets(),
-						instanceId: this.#instanceId,
-						events: this.events,
-						searchEndpoint: this.#options.searchEndpoint,
-					})
-				);
-			});
+		const impl = await this.#loadImplementation();
+		const { styleSheet: _1, load: _2, ...rest } = this.#options;
+		const engine = impl.initModal({
+			...rest,
+			styleSheets: this.#getStyleSheets(),
+			instanceId: this.#instanceId,
+			events: this.events,
+			searchEndpoint: this.#options.searchEndpoint,
 		});
 
-		const engine = await this.#enginePromise;
-
-		if (this.#pendingGroups) {
-			engine.updateGroups(this.#pendingGroups);
-		}
-
-		if (this.#pendingParams) {
-			engine.updateParams(this.#pendingParams);
-		}
+		this.#resolveEngine(engine);
 
 		return engine;
 	}
 
 	async close() {
-		const engine = await this.#enginePromise;
-		engine?.close();
+		if (this.#engineLoading) {
+			(await this.#enginePromise).close();
+		}
 	}
 
 	async dispose() {
-		if (this.#enginePromise) {
-			(await this.#enginePromise).dispose();
-		}
+		(await this.#enginePromise).dispose();
 	}
 
 	#handleButtonHover = () => {
