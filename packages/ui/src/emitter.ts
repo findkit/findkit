@@ -1,4 +1,9 @@
-import type { SearchResultHit, State } from "./search-engine";
+import type {
+	GroupDefinition,
+	SearchEngineParams,
+	SearchResultHit,
+	State,
+} from "./search-engine";
 
 export interface Handler {
 	(event: any): void;
@@ -79,6 +84,14 @@ export interface FindkitUIEvents {
 	};
 	dispose: {
 		instanceId: string;
+	};
+	"groups-change": {
+		instanceId: string;
+		groups: GroupDefinition[];
+	};
+	"params-change": {
+		instanceId: string;
+		params: SearchEngineParams;
 	};
 	"hit-click": {
 		instanceId: string;

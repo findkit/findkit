@@ -2,7 +2,7 @@ import { html } from "htm/preact";
 import { createElement, useState } from "react";
 import { useSearchEngine, useSearchEngineState } from "../core-hooks";
 
-import { initModal } from "../modal";
+import { init } from "../modal";
 import { assertNonNullable } from "../utils";
 
 /**
@@ -43,7 +43,7 @@ function useGroupsImplementation() {
  * @public
  */
 export interface ModalImplementation {
-	initModal: typeof initModal;
+	init: typeof init;
 	h: (...args: any[]) => any;
 	html: (strings: TemplateStringsArray, ...values: any[]) => any;
 	useState<S>(initialState: S | (() => S)): [S, Dispatch<SetStateAction<S>>];
@@ -53,7 +53,7 @@ export interface ModalImplementation {
 }
 
 export const implementation: ModalImplementation = {
-	initModal,
+	init,
 	html,
 	h: createElement,
 	useState,

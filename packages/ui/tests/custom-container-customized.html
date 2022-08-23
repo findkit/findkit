@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Search UI Test</title>
+
+		<link rel="stylesheet" href="/shared.css" />
+		<style>
+			#custom-search-input {
+				border: 5px dashed yellowgreen;
+				margin-bottom: 5px;
+				background-color: white;
+				padding: 20px;
+				width: 100%;
+				box-sizing: border-box;
+			}
+		</style>
+	</head>
+	<body>
+		<input type="text" id="custom-search-input" />
+
+		<div class="buttons">
+			<button type="button" value="domain/valu.fi">valu.fi</button>
+			<button type="button" value="domain/statement.fi">statement.fi</button>
+		</div>
+
+		<div id="container"></div>
+
+		<script type="module">
+			import { FindkitUI } from "/build/esm/index.js";
+
+			const ui = new FindkitUI({
+				publicToken: "po8GK3G0r",
+				container: document.querySelector("#container"),
+				slots: {
+					Layout(props) {
+						// Without the default header with the input
+						return props.content;
+					},
+				},
+			});
+
+			ui.bindInput(document.querySelector("#custom-search-input"));
+
+			document.querySelector(".buttons").addEventListener("click", (e) => {
+				ui.updateParams((params) => {
+					params.tagQuery = [[e.target.value]];
+				});
+			});
+
+			ui.events.on("params-change", (e) => {
+				const tag = e.params.tagQuery[0][0];
+				for (const button of document.querySelectorAll(".buttons button")) {
+					button.disabled = button.value === tag;
+				}
+			});
+
+			Object.assign(window, { ui });
+		</script>
+	</body>
+</html>

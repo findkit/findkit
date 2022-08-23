@@ -18,6 +18,7 @@ type ClassNames =
   | "findkit--modal"
   | "findkit--modal-visible"
   | "findkit--more-link"
+  | "findkit--plain"
   | "findkit--retry-button"
   | "findkit--search-input"
   | "findkit--search-input-wrap";

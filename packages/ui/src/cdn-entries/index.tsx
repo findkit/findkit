@@ -14,7 +14,7 @@ import type {
 	Dispatch,
 	SetStateAction,
 } from "./implementation";
-import type { initModal } from "../modal";
+import type { init } from "../modal";
 import type { CustomFields } from "@findkit/fetch";
 import { Emitter, FindkitUIEvents } from "../emitter";
 import type { TranslationStrings } from "../translations";
@@ -32,7 +32,7 @@ export {
 	SlotProps,
 	ModalImplementation,
 	State,
-	initModal,
+	init as initModal,
 	Dispatch,
 	SearchResultHit,
 	SetStateAction,
@@ -242,6 +242,7 @@ export interface FindkitUIOptions {
 	slots?: Partial<Slots>;
 	load?: () => Promise<ModalImplementation>;
 	searchEndpoint?: string;
+	container?: Element;
 	monitorDocumentElementChanges?: boolean;
 	ui?: {
 		lang: string;
@@ -266,7 +267,8 @@ export class FindkitUI {
 	constructor(options: FindkitUIOptions) {
 		this.#options = options;
 		this.events = new Emitter(this.#instanceId);
-		if (this.#isAlreadyOpened()) {
+
+		if (this.#isAlreadyOpened() || options.container) {
 			void this.open();
 		}
 
@@ -337,6 +339,10 @@ export class FindkitUI {
 		(await this.#enginePromise).updateParams(params);
 	}
 
+	async bindInput(input: HTMLInputElement) {
+		(await this.#enginePromise).bindInput(input);
+	}
+
 	async #getEngine() {
 		if (this.#engineLoading) {
 			return this.#enginePromise;
@@ -346,7 +352,7 @@ export class FindkitUI {
 
 		const impl = await this.#loadImplementation();
 		const { styleSheet: _1, load: _2, ...rest } = this.#options;
-		const engine = impl.initModal({
+		const engine = impl.init({
 			...rest,
 			styleSheets: this.#getStyleSheets(),
 			instanceId: this.#instanceId,

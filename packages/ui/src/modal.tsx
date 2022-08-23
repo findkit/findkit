@@ -197,10 +197,27 @@ function FetchError() {
 	);
 }
 
-function ModalContent() {
+function SearchInput() {
+	const inputRef = useInput();
+	const t = useTranslator();
+
+	return (
+		<View cn="search-input-wrap">
+			<View
+				as="input"
+				cn="search-input"
+				type="text"
+				ref={inputRef}
+				aria-label={t("aria-label-search-input")}
+			/>
+			<Logo />
+		</View>
+	);
+}
+
+function Modal() {
 	const engine = useSearchEngine();
 	const state = useSearchEngineState();
-	const inputRef = useInput();
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const t = useTranslator();
 	useFocusTrap(containerRef);
@@ -234,16 +251,7 @@ function ModalContent() {
 					{t("close")} <Cross />
 				</View>
 
-				<View cn="search-input-wrap">
-					<View
-						as="input"
-						cn="search-input"
-						type="text"
-						ref={inputRef}
-						aria-label={t("aria-label-search-input")}
-					/>
-					<Logo />
-				</View>
+				<SearchInput />
 			</Slot>
 		</View>
 	);
@@ -264,7 +272,7 @@ function ModalContent() {
 			}}
 		>
 			<Slot
-				name="ModalContent"
+				name="Layout"
 				props={{
 					header,
 					content,
@@ -276,21 +284,36 @@ function ModalContent() {
 		</View>
 	);
 }
-export function Modal(props: { engine: SearchEngine; slots: Partial<Slots> }) {
+
+export function Plain() {
+	const header = <SearchInput />;
+	const content = (
+		<View cn="content">
+			<FetchError />
+			<Results />
+		</View>
+	);
+
 	return (
-		<FindkitProvider {...props}>
-			<ModalContent />
-		</FindkitProvider>
+		<View cn="plain">
+			<Slot name="Layout" props={{ header, content }}>
+				{header}
+				{content}
+			</Slot>
+		</View>
 	);
 }
 
-function createContainer(options: { shadowDom?: boolean }) {
+function createModalContainer(options: {
+	shadowDom?: boolean;
+	instaceId: string;
+}) {
 	const container = document.createElement("div");
-	container.id = "findkit-container";
+	container.id = "findkit--modal-container-" + options.instaceId;
 	document.body.appendChild(container);
 
 	if (options.shadowDom !== false) {
-		container.id = "findkit-shadow";
+		container.className = "findkit--shadow-host";
 		return container.attachShadow({ mode: "open" });
 	}
 
@@ -300,9 +323,9 @@ function createContainer(options: { shadowDom?: boolean }) {
 /**
  * @public
  */
-export function initModal(options: {
+export function init(options: {
 	publicToken: string;
-	instanceId?: string;
+	instanceId: string;
 	shadowDom?: boolean;
 	css?: string;
 	minTerms?: number;
@@ -312,24 +335,46 @@ export function initModal(options: {
 	searchEndpoint?: string;
 	params?: SearchEngineParams;
 	groups?: GroupDefinition[];
+	container?: Element;
 	ui?: {
 		lang: string;
 		overrides?: Partial<TranslationStrings>;
 	};
 }) {
-	const container = createContainer({ shadowDom: options.shadowDom });
+	const plainContainer = Boolean(options.container);
+
+	let container =
+		options.shadowDom !== false
+			? options.container?.attachShadow({ mode: "open" })
+			: options.container;
+
+	if (!container) {
+		container = createModalContainer({
+			shadowDom: options.shadowDom,
+			instaceId: options.instanceId,
+		});
+	}
 
 	const engine = new SearchEngine(options);
 
 	options.events.on("dispose", () => {
-		if (container instanceof HTMLDivElement) {
+		if (container) {
+			ReactDOM.unmountComponentAtNode(container);
+		}
+
+		if (plainContainer) {
+			return;
+		}
+
+		// Remove the element from the DOM only if we created it
+		if (container instanceof Element) {
 			container.remove();
 		} else {
-			container.host.remove();
+			container?.host.remove();
 		}
 	});
 
-	const elements = (
+	ReactDOM.render(
 		<StrictMode>
 			<>
 				{options.styleSheets.map((href) => (
@@ -338,12 +383,13 @@ export function initModal(options: {
 				{options.css ? (
 					<style dangerouslySetInnerHTML={{ __html: options.css }} />
 				) : null}
-
-				<Modal engine={engine} slots={options.slots ?? {}} />
+				<FindkitProvider engine={engine} slots={options.slots ?? {}}>
+					{plainContainer ? <Plain /> : <Modal />}
+				</FindkitProvider>
 			</>
-		</StrictMode>
+		</StrictMode>,
+		container
 	);
 
-	ReactDOM.render(elements, container);
 	return engine;
 }

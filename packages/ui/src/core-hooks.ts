@@ -10,7 +10,7 @@ import { TranslationStrings, Translator } from "./translations";
 export interface SlotProps {
 	Hit: { hit: SearchResultHit };
 	Header: {};
-	ModalContent: {
+	Layout: {
 		header: React.ReactNode;
 		content: React.ReactNode;
 	};
@@ -97,7 +97,7 @@ export function useInput() {
 			// Add new input
 			if (input) {
 				ref.current = input;
-				engine.addInput(input);
+				engine.bindInput(input);
 			}
 		},
 		[engine]

@@ -1,5 +1,5 @@
 import { devtools, subscribeKey } from "valtio/utils";
-import { cleanUndefined } from "./utils";
+import { assertNonNullable, cleanUndefined } from "./utils";
 import {
 	CustomFields,
 	findkitFetch,
@@ -466,6 +466,16 @@ export class SearchEngine {
 	};
 
 	#handleGroupsChange = () => {
+		this.events.emit("groups-change", {
+			groups: this.state.nextGroupDefinitions,
+		});
+
+		const params = this.state.nextGroupDefinitions[0];
+		assertNonNullable(params, "first group missing");
+
+		this.events.emit("params-change", {
+			params,
+		});
 		this.#clearTimeout();
 		const terms = this.findkitParams.getTerms();
 		void this.#fetch({ reset: true, terms });
@@ -734,7 +744,7 @@ export class SearchEngine {
 	 * Bind input to search. Returns true when is new input is added. False if
 	 * the given input was already added
 	 */
-	addInput = (input: HTMLInputElement) => {
+	bindInput = (input: HTMLInputElement) => {
 		const prev = this.#inputs.find((o) => o.input === input);
 		if (prev) {
 			return false;

@@ -13,11 +13,18 @@
 
 .header,
 .content {
-	max-width: 800px;
-	width: 100%;
 	padding-left: var(--space-2);
 	padding-right: var(--space-2);
+}
+
+.modal .content,
+.modal .header {
 	background-color: var(--background-color);
+	max-width: 800px;
+	width: 100%;
+}
+
+.plain {
 }
 
 .modal-visible {
