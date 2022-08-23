@@ -7,9 +7,9 @@ export interface AddressBar {
 	update: (params: URLSearchParams, options?: { push?: boolean }) => void;
 }
 
-const CUSTOM_EVENT_NAME = "findkit-change";
+const CUSTOM_EVENT_NAME = "findkit-url-change";
 
-function dispatchFindkitHistoryEvent() {
+function dispatchFindkitURLChange() {
 	dispatchEvent(new CustomEvent(CUSTOM_EVENT_NAME));
 }
 
@@ -84,6 +84,39 @@ export class FindkitURLSearchParams {
 	}
 }
 
+function monitorMethod<Target extends {}, Method extends keyof Target>(
+	targetObject: Target,
+	method: Method,
+	cb: () => void
+) {
+	const anyTarget = targetObject as any;
+	const orginalMethod = anyTarget[method] as any;
+	let disposed = false;
+
+	const proxy = new Proxy(anyTarget[method], {
+		apply: (target: any, thisArg, argArray) => {
+			const res = target.apply(thisArg, argArray);
+			if (!disposed) {
+				cb();
+			}
+			return res;
+		},
+	});
+
+	anyTarget[method] = proxy;
+
+	return () => {
+		disposed = true;
+		// can restore old back only when no one else has overwritten it since
+		if (anyTarget[method] === proxy) {
+			anyTarget[method] = orginalMethod;
+		}
+	};
+}
+
+monitorMethod(history, "pushState", dispatchFindkitURLChange);
+monitorMethod(history, "replaceState", dispatchFindkitURLChange);
+
 export function createAddressBar(): AddressBar {
 	if (typeof window === "undefined") {
 		return {
@@ -108,7 +141,6 @@ export function createAddressBar(): AddressBar {
 			} else {
 				history.replaceState(...args);
 			}
-			dispatchFindkitHistoryEvent();
 		},
 		listen: (cb: Parameters<AddressBar["listen"]>[0]) => {
 			if (typeof window === "undefined") {
@@ -119,16 +151,12 @@ export function createAddressBar(): AddressBar {
 				cb();
 			};
 
-			const onPopState = () => {
-				dispatchFindkitHistoryEvent();
-			};
-
 			// Convert browser back/forward button presses to Valu Search History events
-			window.addEventListener("popstate", onPopState);
+			window.addEventListener("popstate", dispatchFindkitURLChange);
 			window.addEventListener(CUSTOM_EVENT_NAME, onSearchChange);
 
 			return () => {
-				window.removeEventListener("popstate", onPopState);
+				window.removeEventListener("popstate", dispatchFindkitURLChange);
 				window.removeEventListener(CUSTOM_EVENT_NAME, onSearchChange);
 			};
 		},

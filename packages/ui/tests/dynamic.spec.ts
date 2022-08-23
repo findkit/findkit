@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
+import type { FindkitUI } from "../src/cdn-entries/index";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
+declare const ui: FindkitUI;
 
 test("can set required terms lenght to zero", async ({ page }) => {
 	await page.goto("/dummy");
@@ -97,4 +99,43 @@ test("custom inputs does not mess up the focus management", async ({
 		await ui.open();
 	});
 	await expect(page.locator('[aria-label="Search input"]')).toBeFocused();
+});
+
+test("updates from history.pushState()", async ({ page }) => {
+	await page.goto("/dummy");
+
+	const hits = page.locator(".findkit--hit a");
+	const loading = page.locator(".findkit--logo-animating");
+	const input = page.locator('[aria-label="Search input"]');
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "po8GK3G0r",
+			params: {
+				tagQuery: [],
+			},
+		});
+
+		await ui.open("valu");
+	});
+
+	await hits.first().waitFor({ state: "visible" });
+	const result1 = await hits
+		.first()
+		.evaluate((e: HTMLElement) => e.getAttribute("href"));
+
+	await page.keyboard.press("Tab");
+
+	await page.evaluate(async () => {
+		history.pushState(undefined, "", "?fdk_q=wordpress");
+	});
+	await loading.waitFor({ state: "hidden" });
+
+	const result2 = await hits
+		.first()
+		.evaluate((e: any) => e.getAttribute("href"));
+
+	await expect(input).toHaveValue("wordpress");
+
+	expect(result1).not.toBe(result2);
 });
