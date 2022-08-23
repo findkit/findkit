@@ -75,3 +75,26 @@ test("shadown dom is enabled by default", async ({ page }) => {
 
 	await expect(input).not.toHaveCSS("background-color", "rgb(255, 0, 0)");
 });
+
+test("custom inputs does not mess up the focus management", async ({
+	page,
+}) => {
+	await page.goto("/dummy");
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "po8GK3G0r",
+			params: {
+				tagQuery: [],
+			},
+			slots: {
+				Header: (props) => {
+					return MOD.html`<input name="extra-input" />${props.children}`;
+				},
+			},
+		});
+
+		await ui.open();
+	});
+	await expect(page.locator('[aria-label="Search input"]')).toBeFocused();
+});
