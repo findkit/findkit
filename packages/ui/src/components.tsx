@@ -101,7 +101,7 @@ function HitList(props: {
 }) {
 	const state = useSearchEngineState();
 	const engine = useSearchEngine();
-	const multipleGroups = state.groupDefinitions.length > 1;
+	const multipleGroups = state.usedGroupDefinitions.length > 1;
 
 	return (
 		<>
@@ -124,7 +124,7 @@ function HitList(props: {
 					engine.events.emit("hit-click", {
 						hit,
 						target: e.target,
-						terms: engine.state.terms,
+						terms: engine.state.usedTerms,
 						preventDefault: () => {
 							e.preventDefault();
 						},
@@ -155,7 +155,7 @@ function AllGroupResults() {
 
 	return (
 		<div>
-			{state.groupDefinitions.map((def) => {
+			{state.usedGroupDefinitions.map((def) => {
 				let group = state.resultGroups[def.id];
 				if (!group) {
 					group = {
@@ -185,8 +185,8 @@ function SingleGroupResults(props: { groupId: string }) {
 	const engine = useSearchEngine();
 	let group = state.resultGroups[props.groupId];
 
-	const groupCount = state.groupDefinitions.length;
-	const title = state.groupDefinitions.find((group) => {
+	const groupCount = state.usedGroupDefinitions.length;
+	const title = state.usedGroupDefinitions.find((group) => {
 		return group.id === props.groupId;
 	})?.title;
 
@@ -225,8 +225,11 @@ function SingleGroupResults(props: { groupId: string }) {
 export function Results() {
 	const state = useSearchEngineState();
 
-	if (state.groupDefinitions.length === 1 && state.groupDefinitions[0]) {
-		return <SingleGroupResults groupId={state.groupDefinitions[0].id} />;
+	if (
+		state.usedGroupDefinitions.length === 1 &&
+		state.usedGroupDefinitions[0]
+	) {
+		return <SingleGroupResults groupId={state.usedGroupDefinitions[0].id} />;
 	} else if (state.currentGroupId === undefined) {
 		return <AllGroupResults />;
 	}

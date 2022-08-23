@@ -70,15 +70,25 @@ export interface GroupDefinition extends SearchEngineParams {
  * @public
  */
 export interface State {
-	groupDefinitions: GroupDefinition[];
+	/**
+	 * Search terms used on the last completed search
+	 */
+	usedTerms: string;
+
+	/**
+	 * Search groups used on the last completed search
+	 */
+	usedGroupDefinitions: GroupDefinition[];
+
+	/**
+	 * Search to be used on the next search
+	 */
 	nextGroupDefinitions: GroupDefinition[];
 
 	/**
-	 * URLbar query string
+	 * URLbar query string aka window.location.search
 	 */
 	searchParams: string;
-
-	terms: string;
 
 	status: "closed" | "waiting" | "fetching" | "ready";
 
@@ -181,7 +191,11 @@ export class SearchEngine {
 	#minTerms: number;
 	#unbindAddressBarListeners: () => void;
 	#unbindValtio: () => void;
-	#pendingTerms = "";
+	/**
+	 * Search terms from the input that are throttle to be used as the search
+	 * terms
+	 */
+	#throttlingTerms = "";
 	#throttleTimerID?: ReturnType<typeof setTimeout>;
 	events: Emitter<FindkitUIEvents>;
 
@@ -230,7 +244,7 @@ export class SearchEngine {
 		}
 
 		this.state = proxy<State>({
-			terms: initialSearchParams.getTerms(),
+			usedTerms: initialSearchParams.getTerms(),
 			currentGroupId: initialSearchParams.getGroupId(),
 			searchParams: this.addressBar.getSearchParamsString(),
 			lang: undefined,
@@ -240,7 +254,7 @@ export class SearchEngine {
 
 			// Ensure groups are unique so mutating one does not mutate the
 			// other
-			groupDefinitions: clone(groups),
+			usedGroupDefinitions: clone(groups),
 			nextGroupDefinitions: clone(groups),
 		});
 		devtools(this.state);
@@ -290,7 +304,7 @@ export class SearchEngine {
 		const nextParams = this.findkitParams;
 		if (!this.findkitParams.isActive()) {
 			this.#statusTransition("closed");
-			this.#pendingTerms = "";
+			this.#throttlingTerms = "";
 			this.state.currentGroupId = undefined;
 			return;
 		}
@@ -320,14 +334,14 @@ export class SearchEngine {
 	};
 
 	#handleInputChange(terms: string, options?: { force?: boolean }) {
-		if (this.#pendingTerms === terms.trim()) {
+		if (this.#throttlingTerms === terms.trim()) {
 			return;
 		}
 
-		this.#pendingTerms = terms.trim();
+		this.#throttlingTerms = terms.trim();
 
 		if (options?.force === true) {
-			this.setTerms(this.#pendingTerms);
+			this.setTerms(this.#throttlingTerms);
 			return;
 		}
 
@@ -336,7 +350,7 @@ export class SearchEngine {
 		}
 
 		this.#throttleTimerID = setTimeout(() => {
-			this.setTerms(this.#pendingTerms);
+			this.setTerms(this.#throttlingTerms);
 		}, this.#throttleTime);
 	}
 
@@ -387,12 +401,12 @@ export class SearchEngine {
 	};
 
 	searchMore() {
-		void this.#fetch({ reset: false, terms: this.state.terms });
+		void this.#fetch({ reset: false, terms: this.state.usedTerms });
 	}
 
 	retry() {
 		this.state.error = undefined;
-		void this.#fetch({ reset: true, terms: this.state.terms });
+		void this.#fetch({ reset: true, terms: this.state.usedTerms });
 	}
 
 	/**
@@ -601,8 +615,8 @@ export class SearchEngine {
 		});
 
 		// Update the state terms to match the results
-		this.state.terms = options.terms;
-		this.state.groupDefinitions = groups;
+		this.state.usedTerms = options.terms;
+		this.state.usedGroupDefinitions = groups;
 
 		if (appendGroupId && !options?.reset) {
 			this.#addAllResults(resWithIds);
@@ -622,7 +636,7 @@ export class SearchEngine {
 
 	#getNextCurrentGroupId(): string | undefined {
 		const groups =
-			this.state.nextGroupDefinitions ?? this.state.groupDefinitions;
+			this.state.nextGroupDefinitions ?? this.state.usedGroupDefinitions;
 
 		// When using only one group we can just use the id of the first group
 		if (groups.length === 1 && groups[0]) {
