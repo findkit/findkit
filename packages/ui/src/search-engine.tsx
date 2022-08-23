@@ -207,14 +207,15 @@ export class SearchEngine {
 	#throttleTime: number;
 	#searchMoreSize: number;
 	#minTerms: number;
-	#unbindAddressBarListeners: () => void;
-	#unbindValtio: () => void;
 	/**
 	 * Search terms from the input that are throttle to be used as the search
 	 * terms
 	 */
 	#throttlingTerms = "";
 	#throttleTimerID?: ReturnType<typeof setTimeout>;
+
+	#cleaners = new Set<() => void>();
+
 	events: Emitter<FindkitUIEvents>;
 
 	constructor(options: {
@@ -227,6 +228,10 @@ export class SearchEngine {
 		events: Emitter<FindkitUIEvents>;
 		groups?: GroupDefinition[];
 		params?: SearchEngineParams;
+		/**
+		 * Monitor <html lang> changes
+		 */
+		monitorDocumentElementChanges?: boolean;
 		ui?: {
 			lang: string;
 			overrides?: Partial<TranslationStrings>;
@@ -265,7 +270,7 @@ export class SearchEngine {
 			];
 		}
 
-		const lang = options.ui?.lang ?? "en";
+		const lang = options.ui?.lang ?? this.#getDocumentLang();
 
 		this.state = proxy<State>({
 			usedTerms: initialSearchParams.getTerms(),
@@ -288,11 +293,13 @@ export class SearchEngine {
 			nextGroupDefinitions: clone(groups),
 		});
 		devtools(this.state);
-		this.#unbindValtio = subscribeKey(
-			this.state,
-			"nextGroupDefinitions",
-			this.#handleGroupsChange
+		this.#cleaners.add(
+			subscribeKey(this.state, "nextGroupDefinitions", this.#handleGroupsChange)
 		);
+
+		if (options.monitorDocumentElementChanges !== false) {
+			this.#monitorDocumentElementLang();
+		}
 
 		this.publicToken = options.publicToken;
 		this.#searchEndpoint = options.searchEndpoint;
@@ -304,15 +311,44 @@ export class SearchEngine {
 
 		this.#syncInputs(initialSearchParams.getTerms());
 
-		this.#unbindAddressBarListeners = this.addressBar.listen(
-			this.#handleAddressChange
-		);
+		this.#cleaners.add(this.addressBar.listen(this.#handleAddressChange));
 		this.#handleAddressChange();
 	}
 
 	setUIStrings(lang: string, overrides?: Partial<TranslationStrings>) {
 		this.state.ui.lang = lang;
-		this.state.ui.strings[lang] = ref(overrides ?? {});
+		if (overrides) {
+			this.state.ui.strings[lang] = ref(overrides);
+		}
+	}
+
+	/**
+	 * SPA frameworks update the <html lang> when doing client side routing with
+	 * the History API. Listen to those changes
+	 */
+	#monitorDocumentElementLang() {
+		if (typeof window === "undefined") {
+			return;
+		}
+
+		const observer = new MutationObserver(() => {
+			this.state.ui.lang = this.#getDocumentLang();
+		});
+
+		observer.observe(document.documentElement, {
+			attributeFilter: ["lang"],
+			subtree: false,
+		});
+
+		this.#cleaners.add(() => observer.disconnect());
+	}
+
+	#getDocumentLang() {
+		if (typeof document === "undefined") {
+			return "en";
+		}
+
+		return document.documentElement.lang.slice(0, 2).toLowerCase();
 	}
 
 	/**
@@ -792,8 +828,10 @@ export class SearchEngine {
 		this.events.emit("dispose", {});
 		instanceIds.delete(this.instanceId);
 		this.close();
-		this.#unbindAddressBarListeners();
-		this.#unbindValtio();
+		for (const cleanup of this.#cleaners) {
+			cleanup();
+		}
+
 		for (const input of this.#inputs) {
 			this.removeInput(input.input);
 		}

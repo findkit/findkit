@@ -241,6 +241,7 @@ export interface FindkitUIOptions {
 	slots?: Partial<Slots>;
 	load?: () => Promise<ModalImplementation>;
 	searchEndpoint?: string;
+	monitorDocumentElementChanges?: boolean;
 	ui?: {
 		lang: string;
 		overrides?: Partial<TranslationStrings>;
