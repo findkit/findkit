@@ -17,6 +17,7 @@ import type {
 import type { initModal } from "../modal";
 import type { CustomFields } from "@findkit/fetch";
 import { Emitter, FindkitUIEvents } from "../emitter";
+import type { TranslationStrings } from "../translations";
 
 export {
 	Emitter,
@@ -240,6 +241,8 @@ export interface FindkitUIOptions {
 	slots?: Partial<Slots>;
 	load?: () => Promise<ModalImplementation>;
 	searchEndpoint?: string;
+	uiLang?: string;
+	uiStrings?: Partial<TranslationStrings>;
 }
 
 /**
@@ -360,6 +363,10 @@ export class FindkitUI {
 
 	async dispose() {
 		(await this.#enginePromise).dispose();
+	}
+
+	async setUIStrings(lang: string, overrides?: Partial<TranslationStrings>) {
+		(await this.#enginePromise).setUIString(lang, overrides);
 	}
 
 	#handleButtonHover = () => {

@@ -17,11 +17,7 @@ import {
 } from "./search-engine";
 import { cn, View } from "./utils";
 import type { Emitter, FindkitUIEvents } from "./emitter";
-import {
-	createTranslator,
-	TranslationStrings,
-	Translator,
-} from "./translations";
+import { TranslationStrings } from "./translations";
 
 function useScrollLock(lock: boolean) {
 	useEffect(() => {
@@ -279,11 +275,7 @@ function ModalContent() {
 		</View>
 	);
 }
-export function Modal(props: {
-	engine: SearchEngine;
-	slots: Partial<Slots>;
-	translator: Translator;
-}) {
+export function Modal(props: { engine: SearchEngine; slots: Partial<Slots> }) {
 	return (
 		<FindkitProvider {...props}>
 			<ModalContent />
@@ -325,20 +317,7 @@ export function initModal(options: {
 }) {
 	const container = createContainer({ shadowDom: options.shadowDom });
 
-	const engine = new SearchEngine({
-		publicToken: options.publicToken,
-		instanceId: options.instanceId,
-		minTerms: options.minTerms,
-		events: options.events,
-		searchEndpoint: options.searchEndpoint,
-		groups: options.groups,
-		params: options.params,
-	});
-
-	const translator = createTranslator(
-		options.uiLang ?? "en",
-		options.uiStrings
-	);
+	const engine = new SearchEngine(options);
 
 	options.events.on("dispose", () => {
 		if (container instanceof HTMLDivElement) {
@@ -358,11 +337,7 @@ export function initModal(options: {
 					<style dangerouslySetInnerHTML={{ __html: options.css }} />
 				) : null}
 
-				<Modal
-					engine={engine}
-					slots={options.slots ?? {}}
-					translator={translator}
-				/>
+				<Modal engine={engine} slots={options.slots ?? {}} />
 			</>
 		</StrictMode>
 	);

@@ -1,9 +1,5 @@
-import React, {
-	ComponentProps,
-	MouseEventHandler,
-	ReactNode,
-	useMemo,
-} from "react";
+import React, { MouseEventHandler, ReactNode, useMemo } from "react";
+import { useSnapshot } from "valtio";
 import {
 	FindkitContext,
 	FindkitContextType,
@@ -15,24 +11,25 @@ import {
 	SlotProps,
 } from "./core-hooks";
 import { SearchEngine, SearchResultHit } from "./search-engine";
-import { Translator } from "./translations";
+import { createTranslator } from "./translations";
 import { cn, View } from "./utils";
 
 export function FindkitProvider(props: {
 	children: ReactNode;
 	engine: SearchEngine;
-	translator: Translator;
 	slots?: Partial<Slots>;
 }) {
+	const state = useSnapshot(props.engine.state);
+
 	const context = useMemo(() => {
 		const value: FindkitContextType = {
 			engine: props.engine,
-			translator: props.translator,
+			translator: createTranslator(state.uiLang, state.uiStrings),
 			slots: props.slots ?? {},
 		};
 
 		return value;
-	}, [props.engine, props.slots]);
+	}, [props.engine, props.slots, state.uiLang, state.uiStrings]);
 
 	return (
 		<FindkitContext.Provider value={context}>

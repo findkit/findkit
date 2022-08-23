@@ -7,13 +7,14 @@ import {
 } from "@findkit/fetch";
 
 import { FindkitFetchOptions, FindkitSearchResponse } from "@findkit/fetch";
-import { proxy } from "valtio";
+import { proxy, ref } from "valtio";
 import {
 	AddressBar,
 	createAddressBar,
 	FindkitURLSearchParams,
 } from "./address-bar";
 import { Emitter, FindkitUIEvents } from "./emitter";
+import { TranslationStrings } from "./translations";
 
 /**
  * Like the findkit result but real dates instead of the string dates
@@ -96,7 +97,20 @@ export interface State {
 
 	currentGroupId: string | undefined;
 
+	/**
+	 * Search params lang filter
+	 */
 	lang: string | undefined;
+
+	/**
+	 * Language of the UI
+	 */
+	uiLang: string;
+
+	/**
+	 * UI translations overrides
+	 */
+	uiStrings?: Partial<TranslationStrings>;
 
 	error:
 		| {
@@ -211,6 +225,8 @@ export class SearchEngine {
 		events: Emitter<FindkitUIEvents>;
 		groups?: GroupDefinition[];
 		params?: SearchEngineParams;
+		uiLang?: string;
+		uiStrings?: Partial<TranslationStrings>;
 	}) {
 		this.addressBar = createAddressBar();
 		this.instanceId = options.instanceId ?? "fdk";
@@ -253,6 +269,8 @@ export class SearchEngine {
 			status: "closed",
 			error: undefined,
 			resultGroups: {},
+			uiLang: options.uiLang ?? "en",
+			uiStrings: ref(options.uiStrings ?? {}),
 
 			// Ensure groups are unique so mutating one does not mutate the
 			// other
@@ -280,6 +298,11 @@ export class SearchEngine {
 			this.#handleAddressChange
 		);
 		this.#handleAddressChange();
+	}
+
+	setUIString(lang: string, overrides?: Partial<TranslationStrings>) {
+		this.state.uiLang = lang;
+		this.state.uiStrings = ref(overrides ?? {});
 	}
 
 	/**
