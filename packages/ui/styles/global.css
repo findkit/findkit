@@ -24,6 +24,7 @@
 	/* More from https://tailwindcss.com/docs/width */
 
 	--input-bg: rgb(249, 248, 248);
+	--background-color: white;
 }
 
 /*

@@ -2,9 +2,8 @@
 	z-index: 100000;
 	overflow: auto;
 	position: fixed;
-	inset: 1rem;
+	inset: 0;
 	transform: translateY(-100%);
-	padding: var(--space-2);
 	background-color: white;
 	align-items: center;
 	opacity: 0;
@@ -16,6 +15,9 @@
 .content {
 	max-width: 800px;
 	width: 100%;
+	padding-left: var(--space-2);
+	padding-right: var(--space-2);
+	background-color: var(--background-color);
 }
 
 .modal-visible {
@@ -27,7 +29,7 @@
 	top: 0;
 	z-index: 1;
 	position: sticky;
-	background-color: white;
+	padding-top: var(--space-2);
 	transition: transform 500ms ease;
 }
 
