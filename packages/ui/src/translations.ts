@@ -7,6 +7,12 @@ export const BASE_TRANSLATIONS = {
 	"aria-label-search-input": "Search input",
 };
 
+/**
+ * @public
+ *
+ * Avaialable translations strings
+ *
+ */
 export type TranslationStrings = typeof BASE_TRANSLATIONS;
 
 export const TRANSLATIONS: Record<string, TranslationStrings> = {

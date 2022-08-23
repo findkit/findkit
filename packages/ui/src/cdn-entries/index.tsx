@@ -20,6 +20,7 @@ import { Emitter, FindkitUIEvents } from "../emitter";
 import type { TranslationStrings } from "../translations";
 
 export {
+	TranslationStrings,
 	Emitter,
 	MakeSlotComponents,
 	SearchEngineParams,
