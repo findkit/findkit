@@ -194,6 +194,29 @@ const SINGLE_GROUP_NAME = Object.freeze({
 	title: "Default",
 });
 
+class MultiListener {
+	#cleaners = new Set<() => void>();
+
+	on<EventName extends keyof HTMLElementEventMap>(
+		target: any,
+		eventName: EventName,
+		listener: (e: HTMLElementEventMap[EventName]) => void,
+		options?: AddEventListenerOptions
+	) {
+		target.addEventListener(eventName as any, listener, options);
+		this.#cleaners.add(() => {
+			target.removeEventListener(eventName as any, listener);
+		});
+	}
+
+	off = () => {
+		for (const clean of this.#cleaners) {
+			clean();
+		}
+		this.#cleaners.clear();
+	};
+}
+
 /**
  * @public
  */
@@ -202,8 +225,7 @@ export class SearchEngine {
 	#pendingRequestIds: Map<number, AbortController> = new Map();
 	#inputs = [] as {
 		input: HTMLInputElement;
-		onChange: (e: { target: unknown }) => void;
-		onEnter: (e: KeyboardEvent) => void;
+		dispose: () => void;
 	}[];
 
 	readonly addressBar: AddressBar;
@@ -896,17 +918,27 @@ export class SearchEngine {
 			this.#handleInputChange(input.value);
 		}
 
-		const onChange = (e: { target: unknown }): any => {
-			assertInputEvent(e);
-			this.#handleInputChange(e.target.value);
-		};
+		const multi = new MultiListener();
 
-		const onKeyDown = (e: KeyboardEvent) => {
+		multi.on(
+			input,
+			"input",
+			(e) => {
+				assertInputEvent(e);
+				this.#handleInputChange(e.target.value);
+			},
+			{ passive: true }
+		);
+
+
+		multi.on(input, "keydown", (e) => {
 			if (e.key === "ArrowDown") {
+				e.preventDefault();
 				this.#navigateHits("down");
 			}
 
 			if (e.key === "ArrowUp") {
+				e.preventDefault();
 				this.#navigateHits("up");
 			}
 
@@ -914,22 +946,16 @@ export class SearchEngine {
 				assertInputEvent(e);
 				this.#handleInputChange(e.target.value, { force: true });
 			}
-		};
+		});
 
-		input.addEventListener("input", onChange, { passive: true });
-		input.addEventListener("keydown", onKeyDown);
-
-		this.#inputs.push({ input, onChange, onEnter: onKeyDown });
+		this.#inputs.push({ input, dispose: multi.off });
 
 		return true;
 	};
 
 	removeInput = (rmInput: HTMLInputElement) => {
 		const input = this.#inputs.find((input) => input?.input === rmInput);
-
-		input?.input.removeEventListener("keydown", input.onEnter);
-
-		input?.input.removeEventListener("change", input.onChange);
+		input?.dispose();
 
 		const inputIndex = this.#inputs.findIndex((obj) => obj === input);
 		if (inputIndex !== -1) {
