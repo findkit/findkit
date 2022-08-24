@@ -123,14 +123,16 @@ function getScrollContainer(node: HTMLElement | null): HTMLElement | null {
 }
 
 function scrollIntoViewIfNeeded(el: HTMLElement, offsetSelector?: string) {
-	// el = el.querySelector("a")!;
 	const scrollContainer = getScrollContainer(el);
 	let headerOffset = 0;
 	const margin = 30;
 
 	if (!scrollContainer) {
+		console.log("no parent");
 		return;
 	}
+
+	console.log("container", scrollContainer);
 
 	if (offsetSelector) {
 		const header = scrollContainer.querySelector(offsetSelector);
@@ -141,47 +143,21 @@ function scrollIntoViewIfNeeded(el: HTMLElement, offsetSelector?: string) {
 
 	const rect = el.getBoundingClientRect();
 
-	let offset = 0;
-
-	let parent = el;
-	while (parent !== scrollContainer) {
-		offset += parent.offsetTop;
-		console.log("part", parent.className, parent.offsetTop, parent);
-		break;
-
-		if (!parent.parentElement) {
-			break;
-		}
-		parent = parent.parentElement;
-	}
-
-	// offset -= headerOffset
-	// offset += margin;
-
 	if (rect.top < headerOffset) {
 		scrollContainer.scrollTo({
-			top: offset,
+			top: scrollContainer.scrollTop + rect.top - headerOffset - margin,
 			behavior: "smooth",
 		});
-		return;
-	}
-
-	if (rect.bottom > scrollContainer.offsetHeight) {
+	} else if (rect.bottom > scrollContainer.offsetHeight) {
 		scrollContainer.scrollTo({
-			top: offset,
+			top:
+				scrollContainer.scrollTop +
+				rect.bottom -
+				scrollContainer.offsetHeight +
+				margin,
 			behavior: "smooth",
 		});
 	}
-	console.log(
-		"hmm",
-		offset,
-		headerOffset,
-		margin,
-		"=",
-		offset,
-		",",
-		scrollContainer.scrollTop,
-	);
 }
 
 function Hit(props: { hit: SearchResultHit; selected: boolean }) {
