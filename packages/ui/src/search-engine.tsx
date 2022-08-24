@@ -953,15 +953,24 @@ export class SearchEngine {
 			if (e.key === "ArrowDown") {
 				e.preventDefault();
 				this.#navigateHits("down");
+				return;
 			}
 
 			if (e.key === "ArrowUp") {
 				e.preventDefault();
 				this.#navigateHits("up");
+				return;
 			}
 
 			if (e.key === "Enter") {
 				assertInputEvent(e);
+
+				if (this.state.selectedHit) {
+					e.preventDefault();
+					this.#navigateToSelectedHit();
+					return;
+				}
+
 				this.#handleInputChange(e.target.value, { force: true });
 			}
 		});
@@ -970,6 +979,21 @@ export class SearchEngine {
 
 		return true;
 	};
+
+	#navigateToSelectedHit() {
+		const groupIndex = this.state.selectedHit?.groupIndex ?? 0;
+		const hitIndex = this.state.selectedHit?.hitIndex ?? 0;
+
+		const group = this.state.usedGroupDefinitions[groupIndex];
+
+		if (group) {
+			const hit = this.state.resultGroups[group.id]?.hits[hitIndex];
+
+			if (hit) {
+				window.location.href = hit.url;
+			}
+		}
+	}
 
 	removeInput = (rmInput: HTMLInputElement) => {
 		const input = this.#inputs.find((input) => input?.input === rmInput);
