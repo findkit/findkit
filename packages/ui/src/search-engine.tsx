@@ -449,7 +449,8 @@ export class SearchEngine {
 
 		const groups = selectedGroup
 			? [selectedGroup]
-			: // otherwise we naviage between all groups
+			: // otherwise we navigate between all groups
+			  // XXX use the sorted groups once it is implemented
 			  this.state.usedGroupDefinitions;
 
 		type HitPosition = { hitIndex: number; groupIndex: number };
@@ -556,25 +557,31 @@ export class SearchEngine {
 		this.updateAddressBar(this.findkitParams.setTerms(terms));
 	}
 
-	updateGroups = (groups: UpdateGroupsArgument) => {
+	updateGroups = (groupsOrFn: UpdateGroupsArgument) => {
 		let nextGroups: GroupDefinition[] = [];
 
-		if (Array.isArray(groups)) {
-			nextGroups = groups;
-		} else if (typeof groups === "function") {
-			const replace = groups(this.state.nextGroupDefinitions);
+		if (Array.isArray(groupsOrFn)) {
+			nextGroups = groupsOrFn;
+		} else if (typeof groupsOrFn === "function") {
+			const replace = groupsOrFn(this.state.nextGroupDefinitions);
+			// The function can return a completely new set of groups which are
+			// used to replace the old ones
 			if (replace) {
 				nextGroups = Array.isArray(replace) ? replace : [replace];
 			} else {
 				nextGroups = this.state.nextGroupDefinitions;
 			}
 		} else {
-			nextGroups = [groups];
+			nextGroups = [groupsOrFn];
 		}
 
 		this.state.nextGroupDefinitions = nextGroups;
 	};
 
+	/**
+	 * Convenience method for updating on the first group in single group
+	 * scenarios
+	 */
 	updateParams = (params: UpdateParamsArgument) => {
 		if (typeof params === "function") {
 			this.updateGroups((groups) => {
