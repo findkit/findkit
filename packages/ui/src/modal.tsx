@@ -241,7 +241,12 @@ function Modal() {
 	const visible = show && delayed;
 
 	const header = (
-		<View cn={{ header: true, "header-hidden": isScrollingDown }}>
+		<View
+			cn={{
+				header: true,
+				"header-hidden": isScrollingDown && !state.selectedHit,
+			}}
+		>
 			<Slot name="Header" props={{}}>
 				<View
 					cn="close-button"
