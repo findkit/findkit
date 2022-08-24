@@ -151,8 +151,10 @@
 	box-sizing: border-box;
 }
 
+.group {
+}
+
 .group-title {
-	height: 100px;
 }
 
 .more-link {

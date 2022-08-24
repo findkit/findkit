@@ -212,10 +212,8 @@ function Hit(props: { hit: SearchResultHit; selected: boolean }) {
 					hit: props.hit,
 				}}
 			>
-				<div className="boo">
-					<a href={props.hit.url}>{props.hit.title}</a>
-					<span>{props.hit.url}</span>
-				</div>
+				<a href={props.hit.url}>{props.hit.title}</a>
+				<span>{props.hit.url}</span>
 			</Slot>
 		</View>
 	);
@@ -243,12 +241,12 @@ function HitList(props: {
 	);
 }
 
-function AllGroupResults() {
+function MultiGroupResults() {
 	const state = useSearchEngineState();
 	const t = useTranslator();
 
 	return (
-		<div>
+		<>
 			{state.usedGroupDefinitions.map((def, groupIndex) => {
 				let group = state.resultGroups[def.id];
 				if (!group) {
@@ -260,7 +258,7 @@ function AllGroupResults() {
 				}
 
 				return (
-					<div key={def.id}>
+					<View key={def.id} cn="group">
 						{def.title ? (
 							<GroupTitle title={def.title} total={group.total} />
 						) : null}
@@ -273,10 +271,10 @@ function AllGroupResults() {
 							{t("total")}: {group.total}
 						</p>
 						<SingleGroupLink groupId={def.id}>{t("show-all")}</SingleGroupLink>
-					</div>
+					</View>
 				);
 			})}
-		</div>
+		</>
 	);
 }
 
@@ -324,7 +322,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	}, [engine, state.infiniteScroll]);
 
 	return (
-		<div>
+		<>
 			{groupCount > 1 && <AllResultsLink>go back</AllResultsLink>}
 
 			<HitList
@@ -351,7 +349,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 					{t("load-more")}
 				</View>
 			</p>
-		</div>
+		</>
 	);
 }
 
@@ -369,7 +367,7 @@ export function Results() {
 			/>
 		);
 	} else if (state.currentGroupId === undefined) {
-		return <AllGroupResults />;
+		return <MultiGroupResults />;
 	}
 
 	const index = state.usedGroupDefinitions.findIndex(

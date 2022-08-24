@@ -8,6 +8,7 @@ type ClassNames =
   | "findkit--error-container"
   | "findkit--error-message"
   | "findkit--error-title"
+  | "findkit--group"
   | "findkit--group-title"
   | "findkit--header"
   | "findkit--header-hidden"
