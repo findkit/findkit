@@ -110,12 +110,17 @@ function GroupTitle(props: { title: string; total: number }) {
 	);
 }
 
-function HitList(props: { hits: ReadonlyArray<SearchResultHit> }) {
+function HitList(props: {
+	groupId: string;
+	groupIndex: number;
+	hits: ReadonlyArray<SearchResultHit>;
+}) {
 	const engine = useSearchEngine();
+	const selectedHit = useSearchEngineState().selectedHit;
 
 	return (
 		<>
-			{props.hits.map((hit) => {
+			{props.hits.map((hit, index) => {
 				const handleLinkClick: MouseEventHandler<HTMLDivElement> = (e) => {
 					if (!(e.target instanceof HTMLAnchorElement)) {
 						return;
@@ -134,6 +139,9 @@ function HitList(props: { hits: ReadonlyArray<SearchResultHit> }) {
 						},
 					});
 				};
+				const selected =
+					props.groupIndex === selectedHit?.groupIndex &&
+					selectedHit?.index === index;
 
 				return (
 					<View key={hit.url} cn="hit" onClick={handleLinkClick}>
@@ -145,6 +153,7 @@ function HitList(props: { hits: ReadonlyArray<SearchResultHit> }) {
 							}}
 						>
 							<a href={hit.url}>{hit.title}</a>
+							{selected && <span>&#x25cf;</span>}
 							<span>{hit.url}</span>
 						</Slot>
 					</View>
@@ -160,7 +169,7 @@ function AllGroupResults() {
 
 	return (
 		<div>
-			{state.usedGroupDefinitions.map((def) => {
+			{state.usedGroupDefinitions.map((def, groupIndex) => {
 				let group = state.resultGroups[def.id];
 				if (!group) {
 					group = {
@@ -175,7 +184,11 @@ function AllGroupResults() {
 						{def.title ? (
 							<GroupTitle title={def.title} total={group.total} />
 						) : null}
-						<HitList hits={group.hits.slice(0, def.previewSize)} />
+						<HitList
+							groupId={def.id}
+							groupIndex={groupIndex}
+							hits={group.hits.slice(0, def.previewSize)}
+						/>
 						<p>
 							{t("total")}: {group.total}
 						</p>
@@ -187,7 +200,7 @@ function AllGroupResults() {
 	);
 }
 
-function SingleGroupResults(props: { groupId: string }) {
+function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	const state = useSearchEngineState();
 	const t = useTranslator();
 	const engine = useSearchEngine();
@@ -234,7 +247,11 @@ function SingleGroupResults(props: { groupId: string }) {
 		<div>
 			{groupCount > 1 && <AllResultsLink>go back</AllResultsLink>}
 
-			<HitList hits={group.hits} />
+			<HitList
+				groupIndex={props.groupIndex}
+				groupId={props.groupId}
+				hits={group.hits}
+			/>
 
 			<p>total: {group.total}</p>
 
@@ -265,12 +282,23 @@ export function Results() {
 		state.usedGroupDefinitions.length === 1 &&
 		state.usedGroupDefinitions[0]
 	) {
-		return <SingleGroupResults groupId={state.usedGroupDefinitions[0].id} />;
+		return (
+			<SingleGroupResults
+				groupIndex={0}
+				groupId={state.usedGroupDefinitions[0].id}
+			/>
+		);
 	} else if (state.currentGroupId === undefined) {
 		return <AllGroupResults />;
 	}
 
-	return <SingleGroupResults groupId={state.currentGroupId} />;
+	const index = state.usedGroupDefinitions.findIndex(
+		(group) => group.id === state.currentGroupId
+	);
+
+	return (
+		<SingleGroupResults groupIndex={index} groupId={state.currentGroupId} />
+	);
 }
 
 export function Logo() {

@@ -99,6 +99,11 @@ export interface State {
 
 	infiniteScroll: boolean;
 
+	selectedHit?: {
+		index: number;
+		groupIndex?: number;
+	};
+
 	/**
 	 * Search params lang filter
 	 */
@@ -282,6 +287,7 @@ export class SearchEngine {
 			lang: undefined,
 			status: "closed",
 			infiniteScroll: options.infiniteScroll ?? true,
+			selectedHit: undefined,
 			error: undefined,
 			resultGroups: {},
 			ui: {
@@ -394,6 +400,72 @@ export class SearchEngine {
 		void this.#fetch({ terms, reset });
 	};
 
+	#navigateHits = (direction: "down" | "up") => {
+		const selectedGroup = this.#getSelectedGroup("used");
+
+		const group = selectedGroup ?? this.state.usedGroupDefinitions[0];
+
+		let hitCount = group?.previewSize ?? 5;
+		const groupCount = this.state.usedGroupDefinitions.length;
+
+		let nextHitIndex = this.state.selectedHit?.index;
+		let nextGroupIndex = this.state.selectedHit?.groupIndex ?? 0;
+
+		if (selectedGroup) {
+			hitCount =
+				this.state.resultGroups[selectedGroup.id]?.hits.length ?? hitCount;
+		}
+
+		if (nextHitIndex === undefined) {
+			nextHitIndex = 0;
+		} else if (direction === "down") {
+			nextHitIndex++;
+		} else {
+			nextHitIndex--;
+		}
+
+		if (!selectedGroup) {
+			// if (selectedGroup) {
+			// 	hitCount =
+			// 		this.state.resultGroups[selectedGroup.id]?.hits.length ?? hitCount;
+			// }
+
+			if (
+				direction === "up" &&
+				nextHitIndex + 1 === 0 &&
+				nextGroupIndex === 0
+			) {
+				return;
+			}
+
+			if (
+				direction === "down" &&
+				nextHitIndex === hitCount &&
+				nextGroupIndex === groupCount - 1
+			) {
+				return;
+			}
+
+			if (nextHitIndex >= hitCount) {
+				nextGroupIndex = Math.min(nextGroupIndex + 1, groupCount - 1);
+				nextHitIndex = 0;
+			}
+			if (nextHitIndex < 0) {
+				nextGroupIndex = Math.max(0, nextGroupIndex - 1);
+				nextHitIndex = hitCount - 1;
+			}
+
+			if (!this.state.usedGroupDefinitions[nextGroupIndex]) {
+				return;
+			}
+		}
+
+		this.state.selectedHit = {
+			index: nextHitIndex,
+			groupIndex: nextGroupIndex,
+		};
+	};
+
 	#clearTimeout = () => {
 		if (this.#throttleTimerID) {
 			clearTimeout(this.#throttleTimerID);
@@ -497,7 +569,7 @@ export class SearchEngine {
 	}
 
 	#actualSearchMore = () => {
-		if (this.state.status === "ready" && this.#getNextCurrentGroupId()) {
+		if (this.state.status === "ready" && this.#getSelectedGroup("next")) {
 			void this.#fetch({ reset: false, terms: this.state.usedTerms });
 		}
 	};
@@ -613,15 +685,14 @@ export class SearchEngine {
 			return;
 		}
 
-		const appendGroupId = this.#getNextCurrentGroupId();
+		const appendGroup = this.#getSelectedGroup("next");
 
-		if (appendGroupId) {
-			const group = this.state.resultGroups[appendGroupId];
+		if (appendGroup) {
+			const group = this.state.resultGroups[appendGroup.id];
 			if (group) {
 				const fetched = group.hits.length;
 				const total = group.total;
 				if (fetched >= total) {
-					console.log("already fetched all");
 					return;
 				}
 			}
@@ -630,7 +701,7 @@ export class SearchEngine {
 		const fullParams = this.#getFindkitFetchOptions({
 			groups,
 			terms: options.terms,
-			appendGroupId,
+			appendGroupId: appendGroup?.id,
 			lang: this.state.lang,
 			reset: options.reset,
 		});
@@ -728,7 +799,7 @@ export class SearchEngine {
 		this.state.usedTerms = options.terms;
 		this.state.usedGroupDefinitions = groups;
 
-		if (appendGroupId && !options?.reset) {
+		if (appendGroup && !options.reset) {
 			this.#addAllResults(resWithIds);
 		} else {
 			this.state.resultGroups = resWithIds;
@@ -737,6 +808,10 @@ export class SearchEngine {
 
 		this.state.error = undefined;
 
+		if (options.reset && this.state.selectedHit !== undefined) {
+			this.state.selectedHit = { index: 0 };
+		}
+
 		if (this.#pendingRequestIds.size === 0) {
 			this.#statusTransition("ready");
 		}
@@ -744,17 +819,19 @@ export class SearchEngine {
 		this.#syncInputs(options.terms);
 	};
 
-	#getNextCurrentGroupId(): string | undefined {
+	#getSelectedGroup(source: "next" | "used"): GroupDefinition | undefined {
 		const groups =
-			this.state.nextGroupDefinitions ?? this.state.usedGroupDefinitions;
+			source === "next"
+				? this.state.nextGroupDefinitions
+				: this.state.usedGroupDefinitions;
 
 		// When using only one group we can just use the id of the first group
 		if (groups.length === 1 && groups[0]) {
-			return groups[0].id;
+			return groups[0];
 		}
 
 		const id = this.findkitParams.getGroupId();
-		return groups.find((group) => group.id === id)?.id;
+		return groups.find((group) => group.id === id);
 	}
 
 	#syncInputs = (terms: string) => {
@@ -801,7 +878,15 @@ export class SearchEngine {
 			this.#handleInputChange(e.target.value);
 		};
 
-		const onEnter = (e: KeyboardEvent) => {
+		const onKeyDown = (e: KeyboardEvent) => {
+			if (e.key === "ArrowDown") {
+				this.#navigateHits("down");
+			}
+
+			if (e.key === "ArrowUp") {
+				this.#navigateHits("up");
+			}
+
 			if (e.key === "Enter") {
 				assertInputEvent(e);
 				this.#handleInputChange(e.target.value, { force: true });
@@ -809,9 +894,9 @@ export class SearchEngine {
 		};
 
 		input.addEventListener("input", onChange, { passive: true });
-		input.addEventListener("keydown", onEnter, { passive: true });
+		input.addEventListener("keydown", onKeyDown);
 
-		this.#inputs.push({ input, onChange, onEnter });
+		this.#inputs.push({ input, onChange, onEnter: onKeyDown });
 
 		return true;
 	};
