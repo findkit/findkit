@@ -930,6 +930,14 @@ export class SearchEngine {
 			{ passive: true }
 		);
 
+		multi.on(
+			input,
+			"blur",
+			() => {
+				this.state.selectedHit = undefined;
+			},
+			{ passive: true }
+		);
 
 		multi.on(input, "keydown", (e) => {
 			if (e.key === "ArrowDown") {
