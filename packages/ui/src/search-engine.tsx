@@ -944,6 +944,12 @@ export class SearchEngine {
 		);
 
 		multi.on(input, "keydown", (e) => {
+			if (this.state.selectedHit && e.key === "Escape") {
+				this.state.selectedHit = undefined;
+				e.preventDefault();
+				e.stopImmediatePropagation();
+			}
+
 			if (e.key === "ArrowDown") {
 				e.preventDefault();
 				this.#navigateHits("down");
