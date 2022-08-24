@@ -737,7 +737,7 @@ export class SearchEngine {
 
 		const appendGroup = this.#getSelectedGroup("next");
 
-		if (appendGroup) {
+		if (appendGroup && !options.reset) {
 			const group = this.state.resultGroups[appendGroup.id];
 			if (group) {
 				const fetched = group.hits.length;
