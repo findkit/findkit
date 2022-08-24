@@ -205,7 +205,11 @@ function SingleGroupResults(props: { groupId: string }) {
 	}
 
 	useEffect(() => {
+		if (!state.infiniteScroll) {
+			return;
+		}
 		const el = ref.current;
+
 		if (!el) {
 			return;
 		}
@@ -224,14 +228,15 @@ function SingleGroupResults(props: { groupId: string }) {
 		return () => {
 			observer.unobserve(el);
 		};
-	}, [engine]);
+	}, [engine, state.infiniteScroll]);
 
 	return (
 		<div>
-			<HitList title={title ?? ""} hits={group.hits} />
+			{groupCount > 1 && <AllResultsLink>go back</AllResultsLink>}
+
+			<HitList hits={group.hits} />
 
 			<p>total: {group.total}</p>
-			{groupCount > 1 && <AllResultsLink>go back</AllResultsLink>}
 
 			<p>
 				<View
@@ -239,7 +244,9 @@ function SingleGroupResults(props: { groupId: string }) {
 					cn="load-more-button"
 					ref={ref}
 					type="button"
-					disabled={group.hits.length === group.total}
+					disabled={
+						group.hits.length === group.total || state.status === "fetching"
+					}
 					onClick={() => {
 						engine.searchMore({ force: true });
 					}}

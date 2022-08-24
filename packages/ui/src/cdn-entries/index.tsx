@@ -239,6 +239,7 @@ export interface FindkitUIOptions {
 	shadowDom?: boolean;
 	minTerms?: number;
 	css?: string;
+	infiniteScroll?: boolean;
 	styleSheet?: string;
 	slots?: Partial<Slots>;
 	load?: () => Promise<ModalImplementation>;

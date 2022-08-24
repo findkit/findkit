@@ -340,6 +340,7 @@ export function init(options: {
 	params?: SearchEngineParams;
 	groups?: GroupDefinition[];
 	container?: Element;
+	infiniteScroll?: boolean;
 	ui?: {
 		lang: string;
 		overrides?: Partial<TranslationStrings>;
