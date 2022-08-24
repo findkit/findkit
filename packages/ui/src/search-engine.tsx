@@ -455,7 +455,7 @@ export class SearchEngine {
 		type HitPosition = { hitIndex: number; groupIndex: number };
 
 		/**
-		 * Mapping of iteration index to hit positions in side groups
+		 * Mapping of cursor indices to the actual hit positions within the groups
 		 */
 		const hitPositions = groups.flatMap(
 			(group, groupIndex): HitPosition | HitPosition[] => {
