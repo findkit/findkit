@@ -137,3 +137,36 @@ test("updates from history.pushState()", async ({ page }) => {
 
 	expect(result1).not.toBe(result2);
 });
+
+test("can change terms after fetching all", async ({ page }) => {
+	await page.goto("/dummy");
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "po8GK3G0r",
+			params: {
+				tagQuery: [],
+			},
+		});
+
+		await ui.open();
+		Object.assign(window, { ui });
+	});
+
+	const hits = page.locator(".findkit--hit");
+	const input = page.locator('[aria-label="Search input"]');
+
+	// Something that has only page of results eg. triggers "all hits fetched"
+	await input.fill("esa-matti");
+
+	await hits.first().waitFor({ state: "visible" });
+	const initialContent = await hits.first().textContent();
+
+	expect(await hits.count()).toBeLessThan(5);
+	expect(await hits.count()).toBeGreaterThan(1);
+
+	await input.fill("valu");
+
+	// Expect results to change
+	await expect(hits.first()).not.toHaveText(initialContent!);
+});
