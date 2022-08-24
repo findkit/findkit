@@ -116,6 +116,9 @@ function getScrollContainer(node: HTMLElement | null): HTMLElement | null {
 	}
 
 	if (node.scrollHeight > node.clientHeight) {
+		if (node === document.body) {
+			return document.documentElement;
+		}
 		return node;
 	}
 
@@ -128,16 +131,13 @@ function scrollIntoViewIfNeeded(el: HTMLElement, offsetSelector?: string) {
 	const margin = 30;
 
 	if (!scrollContainer) {
-		console.log("no parent");
 		return;
 	}
-
-	console.log("container", scrollContainer);
 
 	if (offsetSelector) {
 		const header = scrollContainer.querySelector(offsetSelector);
 		if (header instanceof HTMLElement) {
-			headerOffset = header.offsetHeight;
+			headerOffset = header.clientHeight;
 		}
 	}
 
@@ -148,12 +148,12 @@ function scrollIntoViewIfNeeded(el: HTMLElement, offsetSelector?: string) {
 			top: scrollContainer.scrollTop + rect.top - headerOffset - margin,
 			behavior: "smooth",
 		});
-	} else if (rect.bottom > scrollContainer.offsetHeight) {
+	} else if (rect.bottom > scrollContainer.clientHeight) {
 		scrollContainer.scrollTo({
 			top:
 				scrollContainer.scrollTop +
 				rect.bottom -
-				scrollContainer.offsetHeight +
+				scrollContainer.clientHeight +
 				margin,
 			behavior: "smooth",
 		});
