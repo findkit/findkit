@@ -130,7 +130,6 @@
 
 .hit {
 	padding: var(--space-3);
-
 	transition: opacity 200ms ease;
 }
 
@@ -139,8 +138,8 @@
 }
 
 .hit-selected {
-	/* border: 5px dashed salmon;
-	background-color: blanchedalmond; */
+	border: 5px dashed salmon;
+	background-color: blanchedalmond;
 }
 
 .hit-selected::before {
@@ -153,6 +152,7 @@
 }
 
 .group-title {
+	height: 100px;
 }
 
 .more-link {

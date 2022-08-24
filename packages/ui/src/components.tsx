@@ -110,6 +110,80 @@ function GroupTitle(props: { title: string; total: number }) {
 	);
 }
 
+function getScrollContainer(node: HTMLElement | null): HTMLElement | null {
+	if (!node) {
+		return null;
+	}
+
+	if (node.scrollHeight > node.clientHeight) {
+		return node;
+	}
+
+	return getScrollContainer(node.parentElement);
+}
+
+function scrollIntoViewIfNeeded(el: HTMLElement, offsetSelector?: string) {
+	// el = el.querySelector("a")!;
+	const scrollContainer = getScrollContainer(el);
+	let headerOffset = 0;
+	const margin = 30;
+
+	if (!scrollContainer) {
+		return;
+	}
+
+	if (offsetSelector) {
+		const header = scrollContainer.querySelector(offsetSelector);
+		if (header instanceof HTMLElement) {
+			headerOffset = header.offsetHeight;
+		}
+	}
+
+	const rect = el.getBoundingClientRect();
+
+	let offset = 0;
+
+	let parent = el;
+	while (parent !== scrollContainer) {
+		offset += parent.offsetTop;
+		console.log("part", parent.className, parent.offsetTop, parent);
+		break;
+
+		if (!parent.parentElement) {
+			break;
+		}
+		parent = parent.parentElement;
+	}
+
+	// offset -= headerOffset
+	// offset += margin;
+
+	if (rect.top < headerOffset) {
+		scrollContainer.scrollTo({
+			top: offset,
+			behavior: "smooth",
+		});
+		return;
+	}
+
+	if (rect.bottom > scrollContainer.offsetHeight) {
+		scrollContainer.scrollTo({
+			top: offset,
+			behavior: "smooth",
+		});
+	}
+	console.log(
+		"hmm",
+		offset,
+		headerOffset,
+		margin,
+		"=",
+		offset,
+		",",
+		scrollContainer.scrollTop,
+	);
+}
+
 function Hit(props: { hit: SearchResultHit; selected: boolean }) {
 	const engine = useSearchEngine();
 	const state = useSearchEngineState();
@@ -135,7 +209,10 @@ function Hit(props: { hit: SearchResultHit; selected: boolean }) {
 
 	const ref = useRef<HTMLElement>(null);
 	useEffect(() => {
-		if (props.selected) {
+		if (props.selected && ref.current) {
+			const el = ref.current;
+			scrollIntoViewIfNeeded(el, ".findkit--header");
+
 			// XXX Goes under the header...
 			// ref.current?.scrollIntoView({ behavior: "smooth" });
 		}
@@ -159,8 +236,10 @@ function Hit(props: { hit: SearchResultHit; selected: boolean }) {
 					hit: props.hit,
 				}}
 			>
-				<a href={props.hit.url}>{props.hit.title}</a>
-				<span>{props.hit.url}</span>
+				<div className="boo">
+					<a href={props.hit.url}>{props.hit.title}</a>
+					<span>{props.hit.url}</span>
+				</div>
 			</Slot>
 		</View>
 	);
@@ -179,7 +258,7 @@ function HitList(props: {
 				const selected = Boolean(
 					selectedHit &&
 						props.groupIndex === selectedHit.groupIndex &&
-						selectedHit.hitIndex === hitIndex
+						selectedHit.hitIndex === hitIndex,
 				);
 
 				return <Hit hit={hit} selected={selected} />;
@@ -258,7 +337,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 			},
 			{
 				threshold: 0.5,
-			}
+			},
 		);
 
 		observer.observe(el);
@@ -318,7 +397,7 @@ export function Results() {
 	}
 
 	const index = state.usedGroupDefinitions.findIndex(
-		(group) => group.id === state.currentGroupId
+		(group) => group.id === state.currentGroupId,
 	);
 
 	return (
