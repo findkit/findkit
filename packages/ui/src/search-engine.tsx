@@ -100,7 +100,7 @@ export interface State {
 	infiniteScroll: boolean;
 
 	selectedHit?: {
-		iter: number;
+		cursor: number;
 		hitIndex: number;
 		groupIndex: number;
 	};
@@ -436,17 +436,21 @@ export class SearchEngine {
 		return false;
 	}
 
+	/**
+	 * Navigate between results hits. Only applicable when the search input is focused
+	 */
 	#navigateHits = (direction: "down" | "up") => {
 		if (!this.#hasHits()) {
 			return;
 		}
 
-		// If we have a selected group it means we are in single group view
+		// If we have a selected group it means we are in the single group view
 		const selectedGroup = this.#getSelectedGroup("used");
 
 		const groups = selectedGroup
 			? [selectedGroup]
-			: this.state.usedGroupDefinitions;
+			: // otherwise we naviage between all groups
+			  this.state.usedGroupDefinitions;
 
 		type HitPosition = { hitIndex: number; groupIndex: number };
 
@@ -462,6 +466,8 @@ export class SearchEngine {
 
 				let hits = resultGroup.hits ?? [];
 
+				// If we are in the multi group view we only display the hits
+				// according to the preview size. So we must use it here too.
 				if (!selectedGroup) {
 					hits = hits.slice(0, group.previewSize);
 				}
@@ -475,33 +481,36 @@ export class SearchEngine {
 			}
 		);
 
+		// On the first down key press go to the first hit
 		if (!this.state.selectedHit) {
 			this.state.selectedHit = {
-				iter: 0,
+				cursor: 0,
 				hitIndex: 0,
 				groupIndex: 0,
 			};
 			return;
 		}
 
-		let nextIter = this.state.selectedHit.iter;
+		let nextCursorPosition = this.state.selectedHit.cursor;
 
 		if (direction === "down") {
-			nextIter++;
+			nextCursorPosition++;
 		} else {
-			nextIter--;
+			nextCursorPosition--;
 		}
 
-		if (nextIter < 0) {
-			nextIter = hitPositions.length - 1;
+		// Going backwards from the first item: Jump to the last item
+		if (nextCursorPosition < 0) {
+			nextCursorPosition = hitPositions.length - 1;
 		}
 
-		nextIter = nextIter % hitPositions.length;
+		// Going past the last item: Jump to the first item
+		nextCursorPosition = nextCursorPosition % hitPositions.length;
 
-		const next = hitPositions[nextIter];
+		const next = hitPositions[nextCursorPosition];
 		if (next) {
 			this.state.selectedHit = {
-				iter: nextIter,
+				cursor: nextCursorPosition,
 				...next,
 			};
 		}
@@ -851,7 +860,7 @@ export class SearchEngine {
 
 		if (options.reset && this.state.selectedHit !== undefined) {
 			this.state.selectedHit = {
-				iter: 0,
+				cursor: 0,
 				hitIndex: 0,
 				groupIndex: 0,
 			};
@@ -981,6 +990,9 @@ export class SearchEngine {
 		return true;
 	};
 
+	/**
+	 * Navigate to the selected hit or the first if none is selected
+	 */
 	#navigateToSelectedHit() {
 		const groupIndex = this.state.selectedHit?.groupIndex ?? 0;
 		const hitIndex = this.state.selectedHit?.hitIndex ?? 0;
