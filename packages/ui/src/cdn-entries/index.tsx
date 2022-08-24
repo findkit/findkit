@@ -49,6 +49,7 @@ const doc = () => document;
  */
 declare const FINDKIT_CDN_ROOT: string;
 declare const FINDKIT_VERSION: string;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare const FINDKIT_MODULE_FORMAT: "esm" | "cjs";
 
 /**
@@ -305,7 +306,7 @@ export class FindkitUI {
 		});
 
 		const preloadStylesPromise = Promise.all(
-			this.#getStyleSheets().map((href) => preloadStylesheet(href))
+			this.#getStyleSheets().map(async (href) => preloadStylesheet(href))
 		);
 
 		await preloadStylesPromise;

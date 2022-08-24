@@ -492,7 +492,7 @@ export class SearchEngine {
 		}
 	}
 
-	#actualSearchMore = async () => {
+	#actualSearchMore = () => {
 		if (this.state.status === "ready" && this.#getNextCurrentGroupId()) {
 			void this.#fetch({ reset: false, terms: this.state.usedTerms });
 		}

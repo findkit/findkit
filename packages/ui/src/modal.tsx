@@ -77,7 +77,7 @@ function useFocusTrap(
 			trapRef.current = null;
 			trap?.disable();
 		};
-	}, [engine, isOpen]);
+	}, [containerRef, engine, isOpen]);
 
 	return containerRef;
 }
@@ -93,6 +93,10 @@ function useIsScrollingDown(
 		if (!isActive) {
 			prev.current = 0;
 			setScrollingDown(false);
+			return;
+		}
+		const el = containerRef.current;
+		if (!el) {
 			return;
 		}
 
@@ -116,14 +120,14 @@ function useIsScrollingDown(
 			}
 		};
 
-		containerRef.current?.addEventListener("scroll", handleScroll, {
+		el.addEventListener("scroll", handleScroll, {
 			passive: true,
 		});
 
 		return () => {
-			containerRef.current?.removeEventListener("scroll", handleScroll);
+			el.removeEventListener("scroll", handleScroll);
 		};
-	}, [isActive]);
+	}, [containerRef, isActive]);
 
 	return scrollingDown;
 }

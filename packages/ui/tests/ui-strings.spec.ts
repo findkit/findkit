@@ -44,7 +44,7 @@ test("can change ui language on the fly", async ({ page }) => {
 	await expect(closeButton).toHaveText("Close");
 
 	await page.evaluate(async () => {
-		ui.setUIStrings("fi");
+		await ui.setUIStrings("fi");
 	});
 
 	await expect(closeButton).toHaveText("Sulje");
@@ -95,7 +95,7 @@ test("can customize ui language on the fly", async ({ page }) => {
 	await expect(closeButton).toHaveText("Close");
 
 	await page.evaluate(async () => {
-		ui.setUIStrings("fi", {
+		await ui.setUIStrings("fi", {
 			close: "CUSTOM",
 		});
 	});

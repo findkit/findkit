@@ -102,21 +102,21 @@ export interface FindkitUIEvents {
 	};
 }
 
-interface MyEvents {
-	ding: {
-		instanceId: string;
-		dong: number;
-	};
-}
+// interface MyEvents {
+// 	ding: {
+// 		instanceId: string;
+// 		dong: number;
+// 	};
+// }
 
-const emitter = new Emitter<MyEvents>("sdf");
+// const emitter = new Emitter<MyEvents>("sdf");
 
-emitter.on("ding", (e) => {
-	const n: number = e.dong;
+// emitter.on("ding", (e) => {
+// 	const n: number = e.dong;
 
-	// @ts-expect-error
-	e.bad;
-});
+// 	// @ts-expect-error
+// 	e.bad;
+// });
 
-// @ts-expect-error
-emitter.on("bad", () => {});
+// // @ts-expect-error
+// emitter.on("bad", () => {});

@@ -218,7 +218,7 @@ function SingleGroupResults(props: { groupId: string }) {
 		}
 
 		const observer = new IntersectionObserver(
-			(entries) => {
+			() => {
 				engine.searchMore();
 			},
 			{
@@ -231,7 +231,7 @@ function SingleGroupResults(props: { groupId: string }) {
 		return () => {
 			observer.unobserve(el);
 		};
-	}, []);
+	}, [engine]);
 
 	return (
 		<div>

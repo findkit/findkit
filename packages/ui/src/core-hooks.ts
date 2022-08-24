@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useMemo, useRef } from "react";
 import { SearchEngine, SearchResultHit } from "./search-engine";
 import { useSnapshot } from "valtio";
 import { FindkitURLSearchParams } from "./address-bar";
-import { TranslationStrings, Translator } from "./translations";
+import { Translator } from "./translations";
 
 /**
  * @public

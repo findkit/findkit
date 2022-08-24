@@ -1,8 +1,6 @@
 import { expect, test } from "@playwright/test";
-import type { FindkitUI } from "../src/cdn-entries/index";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
-declare const ui: FindkitUI;
 
 test("can set required terms lenght to zero", async ({ page }) => {
 	await page.goto("/dummy");
