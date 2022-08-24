@@ -965,7 +965,8 @@ export class SearchEngine {
 			if (e.key === "Enter") {
 				assertInputEvent(e);
 
-				if (this.state.selectedHit) {
+				// Navigate to the first hit with cmd+enter or the selected hit
+				if (e.metaKey || this.state.selectedHit) {
 					e.preventDefault();
 					this.#navigateToSelectedHit();
 					return;
