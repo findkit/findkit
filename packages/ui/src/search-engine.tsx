@@ -100,7 +100,8 @@ export interface State {
 	infiniteScroll: boolean;
 
 	selectedHit?: {
-		index: number;
+		iter: number;
+		hitIndex: number;
 		groupIndex?: number;
 	};
 
@@ -400,70 +401,84 @@ export class SearchEngine {
 		void this.#fetch({ terms, reset });
 	};
 
+	#hasHits() {
+		for (const resultGroup of Object.values(this.state.resultGroups)) {
+			if (resultGroup.hits.length > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	#navigateHits = (direction: "down" | "up") => {
+		if (!this.#hasHits()) {
+			return;
+		}
+
+		// If we have a selected group it means we are in single group view
 		const selectedGroup = this.#getSelectedGroup("used");
 
-		const group = selectedGroup ?? this.state.usedGroupDefinitions[0];
+		const groups = selectedGroup
+			? [selectedGroup]
+			: this.state.usedGroupDefinitions;
 
-		let hitCount = group?.previewSize ?? 5;
-		const groupCount = this.state.usedGroupDefinitions.length;
+		type HitPosition = { hitIndex: number; groupIndex: number };
 
-		let nextHitIndex = this.state.selectedHit?.index;
-		let nextGroupIndex = this.state.selectedHit?.groupIndex ?? 0;
+		/**
+		 * Mapping of iteration index to hit positions in side groups
+		 */
+		const hitPositions = groups.flatMap(
+			(group, groupIndex): HitPosition | HitPosition[] => {
+				const resultGroup = this.state.resultGroups[group.id];
+				if (!resultGroup) {
+					return [];
+				}
 
-		if (selectedGroup) {
-			hitCount =
-				this.state.resultGroups[selectedGroup.id]?.hits.length ?? hitCount;
+				let hits = resultGroup.hits ?? [];
+
+				if (!selectedGroup) {
+					hits = hits.slice(0, group.previewSize);
+				}
+
+				return hits.map((_hit, hitIndex) => {
+					return {
+						groupIndex,
+						hitIndex,
+					};
+				});
+			}
+		);
+
+		if (!this.state.selectedHit) {
+			this.state.selectedHit = {
+				iter: 0,
+				hitIndex: 0,
+				groupIndex: 0,
+			};
+			return;
 		}
 
-		if (nextHitIndex === undefined) {
-			nextHitIndex = 0;
-		} else if (direction === "down") {
-			nextHitIndex++;
+		let nextIter = this.state.selectedHit.iter;
+
+		if (direction === "down") {
+			nextIter++;
 		} else {
-			nextHitIndex--;
+			nextIter--;
 		}
 
-		if (!selectedGroup) {
-			// if (selectedGroup) {
-			// 	hitCount =
-			// 		this.state.resultGroups[selectedGroup.id]?.hits.length ?? hitCount;
-			// }
-
-			if (
-				direction === "up" &&
-				nextHitIndex + 1 === 0 &&
-				nextGroupIndex === 0
-			) {
-				return;
-			}
-
-			if (
-				direction === "down" &&
-				nextHitIndex === hitCount &&
-				nextGroupIndex === groupCount - 1
-			) {
-				return;
-			}
-
-			if (nextHitIndex >= hitCount) {
-				nextGroupIndex = Math.min(nextGroupIndex + 1, groupCount - 1);
-				nextHitIndex = 0;
-			}
-			if (nextHitIndex < 0) {
-				nextGroupIndex = Math.max(0, nextGroupIndex - 1);
-				nextHitIndex = hitCount - 1;
-			}
-
-			if (!this.state.usedGroupDefinitions[nextGroupIndex]) {
-				return;
-			}
+		if (nextIter < 0) {
+			nextIter = hitPositions.length - 1;
 		}
 
-		this.state.selectedHit = {
-			index: nextHitIndex,
-			groupIndex: nextGroupIndex,
-		};
+		nextIter = nextIter % hitPositions.length;
+
+		const next = hitPositions[nextIter];
+		if (next) {
+			this.state.selectedHit = {
+				iter: nextIter,
+				...next,
+			};
+		}
 	};
 
 	#clearTimeout = () => {
@@ -809,7 +824,15 @@ export class SearchEngine {
 		this.state.error = undefined;
 
 		if (options.reset && this.state.selectedHit !== undefined) {
-			this.state.selectedHit = { index: 0 };
+			this.state.selectedHit = {
+				iter: 0,
+				hitIndex: 0,
+				groupIndex: 0,
+			};
+		}
+
+		if (!this.#hasHits()) {
+			this.state.selectedHit = undefined;
 		}
 
 		if (this.#pendingRequestIds.size === 0) {

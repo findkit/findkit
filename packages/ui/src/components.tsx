@@ -120,7 +120,7 @@ function HitList(props: {
 
 	return (
 		<>
-			{props.hits.map((hit, index) => {
+			{props.hits.map((hit, hitIndex) => {
 				const handleLinkClick: MouseEventHandler<HTMLDivElement> = (e) => {
 					if (!(e.target instanceof HTMLAnchorElement)) {
 						return;
@@ -140,8 +140,9 @@ function HitList(props: {
 					});
 				};
 				const selected =
-					props.groupIndex === selectedHit?.groupIndex &&
-					selectedHit?.index === index;
+					selectedHit &&
+					props.groupIndex === selectedHit.groupIndex &&
+					selectedHit.hitIndex === hitIndex;
 
 				return (
 					<View key={hit.url} cn="hit" onClick={handleLinkClick}>
