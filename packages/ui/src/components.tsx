@@ -102,22 +102,19 @@ function AllResultsLink(props: { children: ReactNode }) {
 	);
 }
 
-function HitList(props: {
-	title: string;
-	hits: ReadonlyArray<SearchResultHit>;
-}) {
-	const state = useSearchEngineState();
+function GroupTitle(props: { title: string; total: number }) {
+	return (
+		<View as="h1" cn="group-title">
+			{props.title} {props.total > 0 ? `(${props.total})` : ""}
+		</View>
+	);
+}
+
+function HitList(props: { hits: ReadonlyArray<SearchResultHit> }) {
 	const engine = useSearchEngine();
-	const multipleGroups = state.usedGroupDefinitions.length > 1;
 
 	return (
 		<>
-			{props.title && multipleGroups ? (
-				<View as="h1" cn="group-title">
-					{props.title}
-				</View>
-			) : null}
-
 			{props.hits.map((hit) => {
 				const handleLinkClick: MouseEventHandler<HTMLDivElement> = (e) => {
 					if (!(e.target instanceof HTMLAnchorElement)) {
@@ -175,10 +172,10 @@ function AllGroupResults() {
 
 				return (
 					<div key={def.id}>
-						<HitList
-							title={def.title}
-							hits={group.hits.slice(0, def.previewSize)}
-						/>
+						{def.title ? (
+							<GroupTitle title={def.title} total={group.total} />
+						) : null}
+						<HitList hits={group.hits.slice(0, def.previewSize)} />
 						<p>
 							{t("total")}: {group.total}
 						</p>
@@ -194,14 +191,10 @@ function SingleGroupResults(props: { groupId: string }) {
 	const state = useSearchEngineState();
 	const t = useTranslator();
 	const engine = useSearchEngine();
+	const groupCount = state.usedGroupDefinitions.length;
 	let group = state.resultGroups[props.groupId];
 
 	const ref = useRef<HTMLButtonElement | null>(null);
-
-	const groupCount = state.usedGroupDefinitions.length;
-	const title = state.usedGroupDefinitions.find((group) => {
-		return group.id === props.groupId;
-	})?.title;
 
 	if (!group) {
 		group = {
@@ -212,7 +205,11 @@ function SingleGroupResults(props: { groupId: string }) {
 	}
 
 	useEffect(() => {
+		if (!state.infiniteScroll) {
+			return;
+		}
 		const el = ref.current;
+
 		if (!el) {
 			return;
 		}
@@ -231,14 +228,15 @@ function SingleGroupResults(props: { groupId: string }) {
 		return () => {
 			observer.unobserve(el);
 		};
-	}, [engine]);
+	}, [engine, state.infiniteScroll]);
 
 	return (
 		<div>
-			<HitList title={title ?? ""} hits={group.hits} />
+			{groupCount > 1 && <AllResultsLink>go back</AllResultsLink>}
+
+			<HitList hits={group.hits} />
 
 			<p>total: {group.total}</p>
-			{groupCount > 1 && <AllResultsLink>go back</AllResultsLink>}
 
 			<p>
 				<View
@@ -246,7 +244,9 @@ function SingleGroupResults(props: { groupId: string }) {
 					cn="load-more-button"
 					ref={ref}
 					type="button"
-					disabled={group.hits.length === group.total}
+					disabled={
+						group.hits.length === group.total || state.status === "fetching"
+					}
 					onClick={() => {
 						engine.searchMore({ force: true });
 					}}

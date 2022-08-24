@@ -97,6 +97,8 @@ export interface State {
 
 	currentGroupId: string | undefined;
 
+	infiniteScroll: boolean;
+
 	/**
 	 * Search params lang filter
 	 */
@@ -228,6 +230,7 @@ export class SearchEngine {
 		events: Emitter<FindkitUIEvents>;
 		groups?: GroupDefinition[];
 		params?: SearchEngineParams;
+		infiniteScroll?: boolean;
 		/**
 		 * Monitor <html lang> changes
 		 */
@@ -278,6 +281,7 @@ export class SearchEngine {
 			searchParams: this.addressBar.getSearchParamsString(),
 			lang: undefined,
 			status: "closed",
+			infiniteScroll: options.infiniteScroll ?? true,
 			error: undefined,
 			resultGroups: {},
 			ui: {

@@ -29,7 +29,7 @@ test("can navigate to full group results and back", async ({ page }) => {
 	const hitCount2 = await hits.count();
 	expect(hitCount2).toBeGreaterThan(hitCount1);
 
-	expect(await groupTitles.count()).toBe(1);
+	expect(await groupTitles.count()).toBe(0);
 
 	await page.locator(".findkit--load-more-button").first().click();
 
@@ -69,8 +69,6 @@ test("can navigate directly to a group results", async ({ page }) => {
 
 	const hitCount1 = await hits.count();
 	expect(hitCount1).toBeGreaterThan(2);
-	const groupTitles = page.locator(".findkit--group-title");
-	expect(await groupTitles.count()).toBe(1);
 });
 
 test("back button works", async ({ page }) => {
@@ -91,7 +89,7 @@ test("back button works", async ({ page }) => {
 
 	await loading.waitFor({ state: "hidden" });
 
-	expect(await groupTitles.count()).toBe(1);
+	expect(await groupTitles.count()).toBe(0);
 
 	await page.goBack();
 	await moreLink.first().waitFor({ state: "visible" });
