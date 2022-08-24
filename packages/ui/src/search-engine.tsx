@@ -102,7 +102,7 @@ export interface State {
 	selectedHit?: {
 		iter: number;
 		hitIndex: number;
-		groupIndex?: number;
+		groupIndex: number;
 	};
 
 	/**
