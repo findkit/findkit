@@ -110,55 +110,70 @@ function GroupTitle(props: { title: string; total: number }) {
 	);
 }
 
+function Hit(props: { hit: SearchResultHit; selected: boolean }) {
+	const engine = useSearchEngine();
+
+	const handleLinkClick: MouseEventHandler<HTMLDivElement> = (e) => {
+		if (!(e.target instanceof HTMLAnchorElement)) {
+			return;
+		}
+
+		if (e.target.href !== props.hit.url) {
+			return;
+		}
+
+		engine.events.emit("hit-click", {
+			hit: props.hit,
+			target: e.target,
+			terms: engine.state.usedTerms,
+			preventDefault: () => {
+				e.preventDefault();
+			},
+		});
+	};
+
+	const ref = useRef<HTMLElement>(null);
+	useEffect(() => {
+		if (props.selected) {
+			// XXX Goes under the header...
+			// ref.current?.scrollIntoView({ behavior: "smooth" });
+		}
+	}, [props.selected, ref]);
+
+	return (
+		<View key={props.hit.url} ref={ref} cn="hit" onClick={handleLinkClick}>
+			<Slot
+				name="Hit"
+				key={props.hit.url}
+				props={{
+					hit: props.hit,
+				}}
+			>
+				<a href={props.hit.url}>{props.hit.title}</a>
+				{props.selected && <span>&#x25cf;</span>}
+				<span>{props.hit.url}</span>
+			</Slot>
+		</View>
+	);
+}
+
 function HitList(props: {
 	groupId: string;
 	groupIndex: number;
 	hits: ReadonlyArray<SearchResultHit>;
 }) {
-	const engine = useSearchEngine();
 	const selectedHit = useSearchEngineState().selectedHit;
 
 	return (
 		<>
 			{props.hits.map((hit, hitIndex) => {
-				const handleLinkClick: MouseEventHandler<HTMLDivElement> = (e) => {
-					if (!(e.target instanceof HTMLAnchorElement)) {
-						return;
-					}
-
-					if (e.target.href !== hit.url) {
-						return;
-					}
-
-					engine.events.emit("hit-click", {
-						hit,
-						target: e.target,
-						terms: engine.state.usedTerms,
-						preventDefault: () => {
-							e.preventDefault();
-						},
-					});
-				};
-				const selected =
+				const selected = Boolean(
 					selectedHit &&
-					props.groupIndex === selectedHit.groupIndex &&
-					selectedHit.hitIndex === hitIndex;
-
-				return (
-					<View key={hit.url} cn="hit" onClick={handleLinkClick}>
-						<Slot
-							name="Hit"
-							key={hit.url}
-							props={{
-								hit: hit,
-							}}
-						>
-							<a href={hit.url}>{hit.title}</a>
-							{selected && <span>&#x25cf;</span>}
-							<span>{hit.url}</span>
-						</Slot>
-					</View>
+						props.groupIndex === selectedHit.groupIndex &&
+						selectedHit.hitIndex === hitIndex
 				);
+
+				return <Hit hit={hit} selected={selected} />;
 			})}
 		</>
 	);
