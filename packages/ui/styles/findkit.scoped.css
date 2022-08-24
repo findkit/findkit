@@ -130,6 +130,26 @@
 
 .hit {
 	padding: var(--space-3);
+
+	transition: opacity 200ms ease;
+}
+
+.hit-not-selected {
+	opacity: 0.5;
+}
+
+.hit-selected {
+	/* border: 5px dashed salmon;
+	background-color: blanchedalmond; */
+}
+
+.hit-selected::before {
+	content: "️•";
+	position: absolute;
+	top: var(--space-1-5);
+	left: calc(-1 * var(--space-1));
+	font-size: var(--space-6);
+	box-sizing: border-box;
 }
 
 .group-title {

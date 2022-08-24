@@ -112,6 +112,7 @@ function GroupTitle(props: { title: string; total: number }) {
 
 function Hit(props: { hit: SearchResultHit; selected: boolean }) {
 	const engine = useSearchEngine();
+	const state = useSearchEngineState();
 
 	const handleLinkClick: MouseEventHandler<HTMLDivElement> = (e) => {
 		if (!(e.target instanceof HTMLAnchorElement)) {
@@ -141,7 +142,16 @@ function Hit(props: { hit: SearchResultHit; selected: boolean }) {
 	}, [props.selected, ref]);
 
 	return (
-		<View key={props.hit.url} ref={ref} cn="hit" onClick={handleLinkClick}>
+		<View
+			key={props.hit.url}
+			ref={ref}
+			cn={{
+				hit: true,
+				"hit-selected": props.selected,
+				"hit-not-selected": state.selectedHit && !props.selected,
+			}}
+			onClick={handleLinkClick}
+		>
 			<Slot
 				name="Hit"
 				key={props.hit.url}
@@ -150,7 +160,6 @@ function Hit(props: { hit: SearchResultHit; selected: boolean }) {
 				}}
 			>
 				<a href={props.hit.url}>{props.hit.title}</a>
-				{props.selected && <span>&#x25cf;</span>}
 				<span>{props.hit.url}</span>
 			</Slot>
 		</View>

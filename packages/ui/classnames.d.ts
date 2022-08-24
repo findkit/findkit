@@ -12,6 +12,8 @@ type ClassNames =
   | "findkit--header"
   | "findkit--header-hidden"
   | "findkit--hit"
+  | "findkit--hit-not-selected"
+  | "findkit--hit-selected"
   | "findkit--load-more-button"
   | "findkit--logo"
   | "findkit--logo-animating"
