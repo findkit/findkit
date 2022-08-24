@@ -997,7 +997,9 @@ export class SearchEngine {
 		const groupIndex = this.state.selectedHit?.groupIndex ?? 0;
 		const hitIndex = this.state.selectedHit?.hitIndex ?? 0;
 
-		const group = this.state.usedGroupDefinitions[groupIndex];
+		const group =
+			this.#getSelectedGroup("used") ??
+			this.state.usedGroupDefinitions[groupIndex];
 
 		if (group) {
 			const hit = this.state.resultGroups[group.id]?.hits[hitIndex];
