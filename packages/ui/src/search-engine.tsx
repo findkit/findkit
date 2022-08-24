@@ -194,6 +194,10 @@ const SINGLE_GROUP_NAME = Object.freeze({
 	title: "Default",
 });
 
+/**
+ * Listen on multiple events on events targets and remove them using one function
+ * call
+ */
 class MultiListener {
 	#cleaners = new Set<() => void>();
 
