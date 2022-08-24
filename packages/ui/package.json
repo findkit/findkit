@@ -17,8 +17,9 @@
 		"dev:serve": "serve -p 28104 tests",
 		"tsc": "tsc",
 		"build": "jake build-all",
+		"eslint": "../../node_modules/.bin/eslint 'src/**/*.{ts,tsx}' 'tests/**/*.{ts,tsx}' --max-warnings 0",
 		"build-test": "jake build-test",
-		"test": "tsc && size-limit",
+		"test": "tsc && pnpm run eslint && size-limit",
 		"playwright-test": "playwright test",
 		"publish-build": "(cd ../../ && ./node_modules/.bin/turbo run build) && jake upload",
 		"dev": "run-p 'dev:*'"
@@ -43,6 +44,7 @@
 	},
 	"devDependencies": {
 		"@findkit/fetch": "workspace:*",
+		"@findkit/eslint-config": "workspace:*",
 		"@microsoft/api-documenter": "^7.19.5",
 		"@microsoft/api-extractor": "^7.29.3",
 		"@parcel/watcher": "^2.0.5",
