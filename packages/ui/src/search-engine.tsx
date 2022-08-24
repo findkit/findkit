@@ -481,9 +481,22 @@ export class SearchEngine {
 		void this.#fetch({ reset: true, terms });
 	};
 
-	searchMore() {
-		void this.#fetch({ reset: false, terms: this.state.usedTerms });
+	#searchMoreDebounce?: ReturnType<typeof setTimeout>;
+
+	searchMore(options?: { force?: boolean }) {
+		clearTimeout(this.#searchMoreDebounce);
+		if (options?.force === true) {
+			this.#actualSearchMore();
+		} else {
+			this.#searchMoreDebounce = setTimeout(this.#actualSearchMore, 1000);
+		}
 	}
+
+	#actualSearchMore = async () => {
+		if (this.state.status === "ready" && this.#getNextCurrentGroupId()) {
+			void this.#fetch({ reset: false, terms: this.state.usedTerms });
+		}
+	};
 
 	retry() {
 		this.state.error = undefined;
@@ -597,6 +610,18 @@ export class SearchEngine {
 		}
 
 		const appendGroupId = this.#getNextCurrentGroupId();
+
+		if (appendGroupId) {
+			const group = this.state.resultGroups[appendGroupId];
+			if (group) {
+				const fetched = group.hits.length;
+				const total = group.total;
+				if (fetched >= total) {
+					console.log("already fetched all");
+					return;
+				}
+			}
+		}
 
 		const fullParams = this.#getFindkitFetchOptions({
 			groups,

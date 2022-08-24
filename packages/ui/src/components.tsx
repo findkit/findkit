@@ -1,4 +1,10 @@
-import React, { MouseEventHandler, ReactNode, useMemo } from "react";
+import React, {
+	MouseEventHandler,
+	ReactNode,
+	useEffect,
+	useMemo,
+	useRef,
+} from "react";
 import { useSnapshot } from "valtio";
 import {
 	FindkitContext,
@@ -190,6 +196,8 @@ function SingleGroupResults(props: { groupId: string }) {
 	const engine = useSearchEngine();
 	let group = state.resultGroups[props.groupId];
 
+	const ref = useRef<HTMLButtonElement | null>(null);
+
 	const groupCount = state.usedGroupDefinitions.length;
 	const title = state.usedGroupDefinitions.find((group) => {
 		return group.id === props.groupId;
@@ -203,6 +211,28 @@ function SingleGroupResults(props: { groupId: string }) {
 		};
 	}
 
+	useEffect(() => {
+		const el = ref.current;
+		if (!el) {
+			return;
+		}
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				engine.searchMore();
+			},
+			{
+				threshold: 0.5,
+			}
+		);
+
+		observer.observe(el);
+
+		return () => {
+			observer.unobserve(el);
+		};
+	}, []);
+
 	return (
 		<div>
 			<HitList title={title ?? ""} hits={group.hits} />
@@ -214,10 +244,11 @@ function SingleGroupResults(props: { groupId: string }) {
 				<View
 					as="button"
 					cn="load-more-button"
+					ref={ref}
 					type="button"
 					disabled={group.hits.length === group.total}
 					onClick={() => {
-						engine.searchMore();
+						engine.searchMore({ force: true });
 					}}
 				>
 					{t("load-more")}
