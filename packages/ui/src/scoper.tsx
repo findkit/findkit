@@ -3,7 +3,7 @@ import { ElementType, forwardRef } from "react";
 
 export type ScopeCSS<
 	Prefix extends string,
-	Values extends string
+	Values extends string,
 > = Values extends `${Prefix}--${infer rest}` ? rest : never;
 
 export interface ScopedStyle {
@@ -74,7 +74,7 @@ export function createClassNameScoper<KnownStyles extends string>() {
 		};
 
 		function ViewType<T extends ElementType = "div">(
-			_props: React.ComponentPropsWithoutRef<T> & ViewProps<T>
+			_props: React.ComponentPropsWithoutRef<T> & ViewProps<T>,
 		): JSX.Element {
 			return <></>;
 		}
@@ -89,7 +89,7 @@ export function createClassNameScoper<KnownStyles extends string>() {
 					.join(" ");
 
 				return <Component {...props} className={classes} ref={ref} />;
-			}
+			},
 		) as any;
 
 		Object.assign(View, { displayName: `View[${prefix}]` });

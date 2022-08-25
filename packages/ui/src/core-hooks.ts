@@ -21,7 +21,7 @@ export interface SlotProps {
  */
 export type MakeSlotComponents<Type> = {
 	[Property in keyof Type]: (
-		props: Type[Property] & { children: unknown }
+		props: Type[Property] & { children: unknown },
 	) => any;
 };
 
@@ -63,7 +63,7 @@ export function useFindkitURLSearchParams() {
 	const engine = useSearchEngine();
 	return useMemo(
 		() => new FindkitURLSearchParams(engine.instanceId, state.searchParams),
-		[engine.instanceId, state.searchParams]
+		[engine.instanceId, state.searchParams],
 	);
 }
 
@@ -100,6 +100,6 @@ export function useInput() {
 				engine.bindInput(input);
 			}
 		},
-		[engine]
+		[engine],
 	);
 }

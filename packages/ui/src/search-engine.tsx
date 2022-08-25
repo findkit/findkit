@@ -99,6 +99,12 @@ export interface State {
 
 	infiniteScroll: boolean;
 
+	selectedHit?: {
+		cursor: number;
+		hitIndex: number;
+		groupIndex: number;
+	};
+
 	/**
 	 * Search params lang filter
 	 */
@@ -160,7 +166,7 @@ export type UpdateGroupsArgument =
 	| GroupDefinition[]
 	| GroupDefinition
 	| ((
-			groups: GroupDefinition[]
+			groups: GroupDefinition[],
 	  ) => GroupDefinition[] | GroupDefinition | undefined | void);
 
 /**
@@ -189,6 +195,33 @@ const SINGLE_GROUP_NAME = Object.freeze({
 });
 
 /**
+ * Listen on multiple events on events targets and remove them using one function
+ * call
+ */
+class MultiListener {
+	#cleaners = new Set<() => void>();
+
+	on<EventName extends keyof HTMLElementEventMap>(
+		target: any,
+		eventName: EventName,
+		listener: (e: HTMLElementEventMap[EventName]) => void,
+		options?: AddEventListenerOptions,
+	) {
+		target.addEventListener(eventName as any, listener, options);
+		this.#cleaners.add(() => {
+			target.removeEventListener(eventName as any, listener);
+		});
+	}
+
+	off = () => {
+		for (const clean of this.#cleaners) {
+			clean();
+		}
+		this.#cleaners.clear();
+	};
+}
+
+/**
  * @public
  */
 export class SearchEngine {
@@ -196,8 +229,7 @@ export class SearchEngine {
 	#pendingRequestIds: Map<number, AbortController> = new Map();
 	#inputs = [] as {
 		input: HTMLInputElement;
-		onChange: (e: { target: unknown }) => void;
-		onEnter: (e: KeyboardEvent) => void;
+		dispose: () => void;
 	}[];
 
 	readonly addressBar: AddressBar;
@@ -247,7 +279,7 @@ export class SearchEngine {
 
 		if (instanceIds.has(this.instanceId)) {
 			throw new Error(
-				`[findkit] Instance id "${this.instanceId}" already exists. Pass in custom "instanceId" to avoid conflicts.`
+				`[findkit] Instance id "${this.instanceId}" already exists. Pass in custom "instanceId" to avoid conflicts.`,
 			);
 		}
 
@@ -255,7 +287,7 @@ export class SearchEngine {
 
 		const initialSearchParams = new FindkitURLSearchParams(
 			this.instanceId,
-			this.addressBar.getSearchParamsString()
+			this.addressBar.getSearchParamsString(),
 		);
 
 		let groups = options.groups;
@@ -282,6 +314,7 @@ export class SearchEngine {
 			lang: undefined,
 			status: "closed",
 			infiniteScroll: options.infiniteScroll ?? true,
+			selectedHit: undefined,
 			error: undefined,
 			resultGroups: {},
 			ui: {
@@ -298,7 +331,11 @@ export class SearchEngine {
 		});
 		devtools(this.state);
 		this.#cleaners.add(
-			subscribeKey(this.state, "nextGroupDefinitions", this.#handleGroupsChange)
+			subscribeKey(
+				this.state,
+				"nextGroupDefinitions",
+				this.#handleGroupsChange,
+			),
 		);
 
 		if (options.monitorDocumentElementChanges !== false) {
@@ -394,6 +431,96 @@ export class SearchEngine {
 		void this.#fetch({ terms, reset });
 	};
 
+	#hasHits() {
+		for (const resultGroup of Object.values(this.state.resultGroups)) {
+			if (resultGroup.hits.length > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Navigate between results hits. Only applicable when the search input is focused
+	 */
+	#navigateHits = (direction: "down" | "up") => {
+		if (!this.#hasHits()) {
+			return;
+		}
+
+		// If we have a selected group it means we are in the single group view
+		const selectedGroup = this.#getSelectedGroup("used");
+
+		const groups = selectedGroup
+			? [selectedGroup]
+			: // otherwise we navigate between all groups
+			  // XXX use the sorted groups once it is implemented
+			  this.state.usedGroupDefinitions;
+
+		type HitPosition = { hitIndex: number; groupIndex: number };
+
+		/**
+		 * Mapping of cursor indices to the actual hit positions within the groups
+		 */
+		const hitPositions = groups.flatMap(
+			(group, groupIndex): HitPosition | HitPosition[] => {
+				const resultGroup = this.state.resultGroups[group.id];
+				if (!resultGroup) {
+					return [];
+				}
+
+				let hits = resultGroup.hits ?? [];
+
+				// If we are in the multi group view we only display the hits
+				// according to the preview size. So we must use it here too.
+				if (!selectedGroup) {
+					hits = hits.slice(0, group.previewSize);
+				}
+
+				return hits.map((_hit, hitIndex) => {
+					return {
+						groupIndex,
+						hitIndex,
+					};
+				});
+			},
+		);
+
+		// On the first down key press go to the first hit
+		if (!this.state.selectedHit) {
+			this.state.selectedHit = {
+				cursor: 0,
+				hitIndex: 0,
+				groupIndex: 0,
+			};
+			return;
+		}
+
+		let nextCursorPosition = this.state.selectedHit.cursor;
+
+		if (direction === "down") {
+			nextCursorPosition++;
+		} else {
+			nextCursorPosition--;
+		}
+
+		// Going backwards from the first item: Jump to the last item
+		if (nextCursorPosition < 0) {
+			nextCursorPosition = hitPositions.length - 1;
+		}
+
+		// Going past the last item: Jump to the first item
+		nextCursorPosition = nextCursorPosition % hitPositions.length;
+
+		const next = hitPositions[nextCursorPosition];
+		if (next) {
+			this.state.selectedHit = {
+				cursor: nextCursorPosition,
+				...next,
+			};
+		}
+	};
+
 	#clearTimeout = () => {
 		if (this.#throttleTimerID) {
 			clearTimeout(this.#throttleTimerID);
@@ -403,7 +530,7 @@ export class SearchEngine {
 
 	updateAddressBar = (
 		params: FindkitURLSearchParams,
-		options?: { push?: boolean }
+		options?: { push?: boolean },
 	) => {
 		this.addressBar.update(params.toURLSearchParams(), options);
 	};
@@ -434,25 +561,31 @@ export class SearchEngine {
 		this.updateAddressBar(this.findkitParams.setTerms(terms));
 	}
 
-	updateGroups = (groups: UpdateGroupsArgument) => {
+	updateGroups = (groupsOrFn: UpdateGroupsArgument) => {
 		let nextGroups: GroupDefinition[] = [];
 
-		if (Array.isArray(groups)) {
-			nextGroups = groups;
-		} else if (typeof groups === "function") {
-			const replace = groups(this.state.nextGroupDefinitions);
+		if (Array.isArray(groupsOrFn)) {
+			nextGroups = groupsOrFn;
+		} else if (typeof groupsOrFn === "function") {
+			const replace = groupsOrFn(this.state.nextGroupDefinitions);
+			// The function can return a completely new set of groups which are
+			// used to replace the old ones
 			if (replace) {
 				nextGroups = Array.isArray(replace) ? replace : [replace];
 			} else {
 				nextGroups = this.state.nextGroupDefinitions;
 			}
 		} else {
-			nextGroups = [groups];
+			nextGroups = [groupsOrFn];
 		}
 
 		this.state.nextGroupDefinitions = nextGroups;
 	};
 
+	/**
+	 * Convenience method for updating on the first group in single group
+	 * scenarios
+	 */
 	updateParams = (params: UpdateParamsArgument) => {
 		if (typeof params === "function") {
 			this.updateGroups((groups) => {
@@ -497,7 +630,7 @@ export class SearchEngine {
 	}
 
 	#actualSearchMore = () => {
-		if (this.state.status === "ready" && this.#getNextCurrentGroupId()) {
+		if (this.state.status === "ready" && this.#getSelectedGroup("next")) {
 			void this.#fetch({ reset: false, terms: this.state.usedTerms });
 		}
 	};
@@ -613,15 +746,14 @@ export class SearchEngine {
 			return;
 		}
 
-		const appendGroupId = this.#getNextCurrentGroupId();
+		const appendGroup = this.#getSelectedGroup("next");
 
-		if (appendGroupId) {
-			const group = this.state.resultGroups[appendGroupId];
+		if (appendGroup && !options.reset) {
+			const group = this.state.resultGroups[appendGroup.id];
 			if (group) {
 				const fetched = group.hits.length;
 				const total = group.total;
 				if (fetched >= total) {
-					console.log("already fetched all");
 					return;
 				}
 			}
@@ -630,7 +762,7 @@ export class SearchEngine {
 		const fullParams = this.#getFindkitFetchOptions({
 			groups,
 			terms: options.terms,
-			appendGroupId,
+			appendGroupId: appendGroup?.id,
 			lang: this.state.lang,
 			reset: options.reset,
 		});
@@ -660,7 +792,7 @@ export class SearchEngine {
 					ok: false as const,
 					error,
 				};
-			}
+			},
 		);
 
 		// This request was already cleared as there are newer requests ready
@@ -728,7 +860,7 @@ export class SearchEngine {
 		this.state.usedTerms = options.terms;
 		this.state.usedGroupDefinitions = groups;
 
-		if (appendGroupId && !options?.reset) {
+		if (appendGroup && !options.reset) {
 			this.#addAllResults(resWithIds);
 		} else {
 			this.state.resultGroups = resWithIds;
@@ -737,6 +869,18 @@ export class SearchEngine {
 
 		this.state.error = undefined;
 
+		if (options.reset && this.state.selectedHit !== undefined) {
+			this.state.selectedHit = {
+				cursor: 0,
+				hitIndex: 0,
+				groupIndex: 0,
+			};
+		}
+
+		if (!this.#hasHits()) {
+			this.state.selectedHit = undefined;
+		}
+
 		if (this.#pendingRequestIds.size === 0) {
 			this.#statusTransition("ready");
 		}
@@ -744,17 +888,19 @@ export class SearchEngine {
 		this.#syncInputs(options.terms);
 	};
 
-	#getNextCurrentGroupId(): string | undefined {
+	#getSelectedGroup(source: "next" | "used"): GroupDefinition | undefined {
 		const groups =
-			this.state.nextGroupDefinitions ?? this.state.usedGroupDefinitions;
+			source === "next"
+				? this.state.nextGroupDefinitions
+				: this.state.usedGroupDefinitions;
 
 		// When using only one group we can just use the id of the first group
 		if (groups.length === 1 && groups[0]) {
-			return groups[0].id;
+			return groups[0];
 		}
 
 		const id = this.findkitParams.getGroupId();
-		return groups.find((group) => group.id === id)?.id;
+		return groups.find((group) => group.id === id);
 	}
 
 	#syncInputs = (terms: string) => {
@@ -796,32 +942,88 @@ export class SearchEngine {
 			this.#handleInputChange(input.value);
 		}
 
-		const onChange = (e: { target: unknown }): any => {
-			assertInputEvent(e);
-			this.#handleInputChange(e.target.value);
-		};
+		const multi = new MultiListener();
 
-		const onEnter = (e: KeyboardEvent) => {
+		multi.on(
+			input,
+			"input",
+			(e) => {
+				assertInputEvent(e);
+				this.#handleInputChange(e.target.value);
+			},
+			{ passive: true },
+		);
+
+		multi.on(
+			input,
+			"blur",
+			() => {
+				this.state.selectedHit = undefined;
+			},
+			{ passive: true },
+		);
+
+		multi.on(input, "keydown", (e) => {
+			if (this.state.selectedHit && e.key === "Escape") {
+				this.state.selectedHit = undefined;
+				e.preventDefault();
+				e.stopImmediatePropagation();
+			}
+
+			if (e.key === "ArrowDown") {
+				e.preventDefault();
+				this.#navigateHits("down");
+				return;
+			}
+
+			if (e.key === "ArrowUp") {
+				e.preventDefault();
+				this.#navigateHits("up");
+				return;
+			}
+
 			if (e.key === "Enter") {
 				assertInputEvent(e);
+
+				// Navigate to the first hit with cmd+enter or the selected hit
+				if (e.metaKey || this.state.selectedHit) {
+					e.preventDefault();
+					this.#navigateToSelectedHit();
+					return;
+				}
+
 				this.#handleInputChange(e.target.value, { force: true });
 			}
-		};
+		});
 
-		input.addEventListener("input", onChange, { passive: true });
-		input.addEventListener("keydown", onEnter, { passive: true });
-
-		this.#inputs.push({ input, onChange, onEnter });
+		this.#inputs.push({ input, dispose: multi.off });
 
 		return true;
 	};
 
+	/**
+	 * Navigate to the selected hit or the first if none is selected
+	 */
+	#navigateToSelectedHit() {
+		const groupIndex = this.state.selectedHit?.groupIndex ?? 0;
+		const hitIndex = this.state.selectedHit?.hitIndex ?? 0;
+
+		const group =
+			this.#getSelectedGroup("used") ??
+			this.state.usedGroupDefinitions[groupIndex];
+
+		if (group) {
+			const hit = this.state.resultGroups[group.id]?.hits[hitIndex];
+
+			if (hit) {
+				window.location.href = hit.url;
+			}
+		}
+	}
+
 	removeInput = (rmInput: HTMLInputElement) => {
 		const input = this.#inputs.find((input) => input?.input === rmInput);
-
-		input?.input.removeEventListener("keydown", input.onEnter);
-
-		input?.input.removeEventListener("change", input.onChange);
+		input?.dispose();
 
 		const inputIndex = this.#inputs.findIndex((obj) => obj === input);
 		if (inputIndex !== -1) {

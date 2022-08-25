@@ -110,57 +110,144 @@ function GroupTitle(props: { title: string; total: number }) {
 	);
 }
 
-function HitList(props: { hits: ReadonlyArray<SearchResultHit> }) {
+function getScrollContainer(node: HTMLElement | null): HTMLElement | null {
+	if (!node) {
+		return null;
+	}
+
+	if (node.scrollHeight > node.clientHeight) {
+		if (node === document.body) {
+			return document.documentElement;
+		}
+		return node;
+	}
+
+	return getScrollContainer(node.parentElement);
+}
+
+function scrollIntoViewIfNeeded(el: HTMLElement, offsetSelector?: string) {
+	const scrollContainer = getScrollContainer(el);
+	let headerOffset = 0;
+	const margin = 30;
+
+	if (!scrollContainer) {
+		return;
+	}
+
+	if (offsetSelector) {
+		const header = scrollContainer.querySelector(offsetSelector);
+		if (header instanceof HTMLElement) {
+			headerOffset = header.clientHeight;
+		}
+	}
+
+	const rect = el.getBoundingClientRect();
+
+	if (rect.top < headerOffset) {
+		scrollContainer.scrollTo({
+			top: scrollContainer.scrollTop + rect.top - headerOffset - margin,
+			behavior: "smooth",
+		});
+	} else if (rect.bottom > scrollContainer.clientHeight) {
+		scrollContainer.scrollTo({
+			top:
+				scrollContainer.scrollTop +
+				rect.bottom -
+				scrollContainer.clientHeight +
+				margin,
+			behavior: "smooth",
+		});
+	}
+}
+
+function Hit(props: { hit: SearchResultHit; selected: boolean }) {
 	const engine = useSearchEngine();
+	const state = useSearchEngineState();
+
+	const handleLinkClick: MouseEventHandler<HTMLDivElement> = (e) => {
+		if (!(e.target instanceof HTMLAnchorElement)) {
+			return;
+		}
+
+		if (e.target.href !== props.hit.url) {
+			return;
+		}
+
+		engine.events.emit("hit-click", {
+			hit: props.hit,
+			target: e.target,
+			terms: engine.state.usedTerms,
+			preventDefault: () => {
+				e.preventDefault();
+			},
+		});
+	};
+
+	const ref = useRef<HTMLElement>(null);
+	useEffect(() => {
+		if (props.selected && ref.current) {
+			const el = ref.current;
+			scrollIntoViewIfNeeded(el, ".findkit--header");
+
+			// XXX Goes under the header...
+			// ref.current?.scrollIntoView({ behavior: "smooth" });
+		}
+	}, [props.selected, ref]);
+
+	return (
+		<View
+			key={props.hit.url}
+			ref={ref}
+			cn={{
+				hit: true,
+				"hit-selected": props.selected,
+				"hit-not-selected": state.selectedHit && !props.selected,
+			}}
+			onClick={handleLinkClick}
+		>
+			<Slot
+				name="Hit"
+				key={props.hit.url}
+				props={{
+					hit: props.hit,
+				}}
+			>
+				<a href={props.hit.url}>{props.hit.title}</a>
+				<span>{props.hit.url}</span>
+			</Slot>
+		</View>
+	);
+}
+
+function HitList(props: {
+	groupId: string;
+	groupIndex: number;
+	hits: ReadonlyArray<SearchResultHit>;
+}) {
+	const selectedHit = useSearchEngineState().selectedHit;
 
 	return (
 		<>
-			{props.hits.map((hit) => {
-				const handleLinkClick: MouseEventHandler<HTMLDivElement> = (e) => {
-					if (!(e.target instanceof HTMLAnchorElement)) {
-						return;
-					}
-
-					if (e.target.href !== hit.url) {
-						return;
-					}
-
-					engine.events.emit("hit-click", {
-						hit,
-						target: e.target,
-						terms: engine.state.usedTerms,
-						preventDefault: () => {
-							e.preventDefault();
-						},
-					});
-				};
-
-				return (
-					<View key={hit.url} cn="hit" onClick={handleLinkClick}>
-						<Slot
-							name="Hit"
-							key={hit.url}
-							props={{
-								hit: hit,
-							}}
-						>
-							<a href={hit.url}>{hit.title}</a>
-							<span>{hit.url}</span>
-						</Slot>
-					</View>
+			{props.hits.map((hit, hitIndex) => {
+				const selected = Boolean(
+					selectedHit &&
+						props.groupIndex === selectedHit.groupIndex &&
+						selectedHit.hitIndex === hitIndex,
 				);
+
+				return <Hit hit={hit} selected={selected} />;
 			})}
 		</>
 	);
 }
 
-function AllGroupResults() {
+function MultiGroupResults() {
 	const state = useSearchEngineState();
 	const t = useTranslator();
 
 	return (
-		<div>
-			{state.usedGroupDefinitions.map((def) => {
+		<>
+			{state.usedGroupDefinitions.map((def, groupIndex) => {
 				let group = state.resultGroups[def.id];
 				if (!group) {
 					group = {
@@ -171,23 +258,27 @@ function AllGroupResults() {
 				}
 
 				return (
-					<div key={def.id}>
+					<View key={def.id} cn="group">
 						{def.title ? (
 							<GroupTitle title={def.title} total={group.total} />
 						) : null}
-						<HitList hits={group.hits.slice(0, def.previewSize)} />
+						<HitList
+							groupId={def.id}
+							groupIndex={groupIndex}
+							hits={group.hits.slice(0, def.previewSize)}
+						/>
 						<p>
 							{t("total")}: {group.total}
 						</p>
 						<SingleGroupLink groupId={def.id}>{t("show-all")}</SingleGroupLink>
-					</div>
+					</View>
 				);
 			})}
-		</div>
+		</>
 	);
 }
 
-function SingleGroupResults(props: { groupId: string }) {
+function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	const state = useSearchEngineState();
 	const t = useTranslator();
 	const engine = useSearchEngine();
@@ -220,7 +311,7 @@ function SingleGroupResults(props: { groupId: string }) {
 			},
 			{
 				threshold: 0.5,
-			}
+			},
 		);
 
 		observer.observe(el);
@@ -231,10 +322,14 @@ function SingleGroupResults(props: { groupId: string }) {
 	}, [engine, state.infiniteScroll]);
 
 	return (
-		<div>
+		<>
 			{groupCount > 1 && <AllResultsLink>go back</AllResultsLink>}
 
-			<HitList hits={group.hits} />
+			<HitList
+				groupIndex={props.groupIndex}
+				groupId={props.groupId}
+				hits={group.hits}
+			/>
 
 			<p>total: {group.total}</p>
 
@@ -254,7 +349,7 @@ function SingleGroupResults(props: { groupId: string }) {
 					{t("load-more")}
 				</View>
 			</p>
-		</div>
+		</>
 	);
 }
 
@@ -265,12 +360,23 @@ export function Results() {
 		state.usedGroupDefinitions.length === 1 &&
 		state.usedGroupDefinitions[0]
 	) {
-		return <SingleGroupResults groupId={state.usedGroupDefinitions[0].id} />;
+		return (
+			<SingleGroupResults
+				groupIndex={0}
+				groupId={state.usedGroupDefinitions[0].id}
+			/>
+		);
 	} else if (state.currentGroupId === undefined) {
-		return <AllGroupResults />;
+		return <MultiGroupResults />;
 	}
 
-	return <SingleGroupResults groupId={state.currentGroupId} />;
+	const index = state.usedGroupDefinitions.findIndex(
+		(group) => group.id === state.currentGroupId,
+	);
+
+	return (
+		<SingleGroupResults groupIndex={index} groupId={state.currentGroupId} />
+	);
 }
 
 export function Logo() {

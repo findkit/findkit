@@ -32,7 +32,7 @@ export class FindkitURLSearchParams {
 	next(fn: (params: FindkitURLSearchParams) => void) {
 		const next = new FindkitURLSearchParams(
 			this.instanceId,
-			this.params.toString()
+			this.params.toString(),
 		);
 		fn(next);
 		return next;
@@ -87,7 +87,7 @@ export class FindkitURLSearchParams {
 function monitorMethod<Target extends {}, Method extends keyof Target>(
 	targetObject: Target,
 	method: Method,
-	cb: () => void
+	cb: () => void,
 ) {
 	const anyTarget = targetObject as any;
 	const orginalMethod = anyTarget[method] as any;

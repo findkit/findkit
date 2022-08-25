@@ -112,7 +112,7 @@ function onDomContentLoaded(cb: () => any) {
 			() => {
 				cb();
 			},
-			{ once: true }
+			{ once: true },
 		);
 	}
 }
@@ -190,7 +190,7 @@ async function preloadStylesheet(href: string) {
 
 async function loadScriptFromGlobal<T>(
 	globalName: string,
-	src: string
+	src: string,
 ): Promise<T> {
 	const existing = (window as any)[globalName];
 	if (existing) {
@@ -219,7 +219,7 @@ async function loadScriptFromGlobal<T>(
 	const output = (window as any)[globalName];
 	if (!output) {
 		throw new Error(
-			`[findkit] Global "${globalName}" was not defined by ${src}`
+			`[findkit] Global "${globalName}" was not defined by ${src}`,
 		);
 	}
 
@@ -298,7 +298,7 @@ export class FindkitUI {
 		} else {
 			this.#implementationPromise = loadScriptFromGlobal<ModalImplementation>(
 				"FINDKIT_" + FINDKIT_VERSION,
-				cdnFile("implementation.js")
+				cdnFile("implementation.js"),
 			);
 		}
 
@@ -307,7 +307,7 @@ export class FindkitUI {
 		});
 
 		const preloadStylesPromise = Promise.all(
-			this.#getStyleSheets().map(async (href) => preloadStylesheet(href))
+			this.#getStyleSheets().map(async (href) => preloadStylesheet(href)),
 		);
 
 		await preloadStylesPromise;
