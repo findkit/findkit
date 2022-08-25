@@ -39,7 +39,7 @@ function useScrollLock(lock: boolean) {
 }
 
 function useFocusTrap(
-	containerRef: React.MutableRefObject<HTMLDivElement | null>
+	containerRef: React.MutableRefObject<HTMLDivElement | null>,
 ) {
 	const state = useSearchEngineState();
 	const engine = useSearchEngine();
@@ -84,7 +84,7 @@ function useFocusTrap(
 
 function useIsScrollingDown(
 	containerRef: React.MutableRefObject<HTMLDivElement | null>,
-	isActive: boolean
+	isActive: boolean,
 ) {
 	const [scrollingDown, setScrollingDown] = useState(false);
 	const prev = useRef(0);
@@ -230,7 +230,10 @@ function Modal() {
 	const duration = 150;
 	const delayed = useDelay(show, duration);
 	const unmount = !delayed && !show;
-	const isScrollingDown = useIsScrollingDown(containerRef, show);
+	const isScrollingDown = useIsScrollingDown(
+		containerRef,
+		show && !state.selectedHit,
+	);
 
 	useScrollLock(!unmount);
 
@@ -398,7 +401,7 @@ export function init(options: {
 				</FindkitProvider>
 			</>
 		</StrictMode>,
-		container
+		container,
 	);
 
 	return engine;

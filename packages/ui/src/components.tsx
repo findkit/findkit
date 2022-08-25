@@ -110,6 +110,56 @@ function GroupTitle(props: { title: string; total: number }) {
 	);
 }
 
+function getScrollContainer(node: HTMLElement | null): HTMLElement | null {
+	if (!node) {
+		return null;
+	}
+
+	if (node.scrollHeight > node.clientHeight) {
+		if (node === document.body) {
+			return document.documentElement;
+		}
+		return node;
+	}
+
+	return getScrollContainer(node.parentElement);
+}
+
+function scrollIntoViewIfNeeded(el: HTMLElement, offsetSelector?: string) {
+	const scrollContainer = getScrollContainer(el);
+	let headerOffset = 0;
+	const margin = 30;
+
+	if (!scrollContainer) {
+		return;
+	}
+
+	if (offsetSelector) {
+		const header = scrollContainer.querySelector(offsetSelector);
+		if (header instanceof HTMLElement) {
+			headerOffset = header.clientHeight;
+		}
+	}
+
+	const rect = el.getBoundingClientRect();
+
+	if (rect.top < headerOffset) {
+		scrollContainer.scrollTo({
+			top: scrollContainer.scrollTop + rect.top - headerOffset - margin,
+			behavior: "smooth",
+		});
+	} else if (rect.bottom > scrollContainer.clientHeight) {
+		scrollContainer.scrollTo({
+			top:
+				scrollContainer.scrollTop +
+				rect.bottom -
+				scrollContainer.clientHeight +
+				margin,
+			behavior: "smooth",
+		});
+	}
+}
+
 function Hit(props: { hit: SearchResultHit; selected: boolean }) {
 	const engine = useSearchEngine();
 	const state = useSearchEngineState();
@@ -135,7 +185,10 @@ function Hit(props: { hit: SearchResultHit; selected: boolean }) {
 
 	const ref = useRef<HTMLElement>(null);
 	useEffect(() => {
-		if (props.selected) {
+		if (props.selected && ref.current) {
+			const el = ref.current;
+			scrollIntoViewIfNeeded(el, ".findkit--header");
+
 			// XXX Goes under the header...
 			// ref.current?.scrollIntoView({ behavior: "smooth" });
 		}
@@ -179,7 +232,7 @@ function HitList(props: {
 				const selected = Boolean(
 					selectedHit &&
 						props.groupIndex === selectedHit.groupIndex &&
-						selectedHit.hitIndex === hitIndex
+						selectedHit.hitIndex === hitIndex,
 				);
 
 				return <Hit hit={hit} selected={selected} />;
@@ -188,12 +241,12 @@ function HitList(props: {
 	);
 }
 
-function AllGroupResults() {
+function MultiGroupResults() {
 	const state = useSearchEngineState();
 	const t = useTranslator();
 
 	return (
-		<div>
+		<>
 			{state.usedGroupDefinitions.map((def, groupIndex) => {
 				let group = state.resultGroups[def.id];
 				if (!group) {
@@ -205,7 +258,7 @@ function AllGroupResults() {
 				}
 
 				return (
-					<div key={def.id}>
+					<View key={def.id} cn="group">
 						{def.title ? (
 							<GroupTitle title={def.title} total={group.total} />
 						) : null}
@@ -218,10 +271,10 @@ function AllGroupResults() {
 							{t("total")}: {group.total}
 						</p>
 						<SingleGroupLink groupId={def.id}>{t("show-all")}</SingleGroupLink>
-					</div>
+					</View>
 				);
 			})}
-		</div>
+		</>
 	);
 }
 
@@ -258,7 +311,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 			},
 			{
 				threshold: 0.5,
-			}
+			},
 		);
 
 		observer.observe(el);
@@ -269,7 +322,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	}, [engine, state.infiniteScroll]);
 
 	return (
-		<div>
+		<>
 			{groupCount > 1 && <AllResultsLink>go back</AllResultsLink>}
 
 			<HitList
@@ -296,7 +349,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 					{t("load-more")}
 				</View>
 			</p>
-		</div>
+		</>
 	);
 }
 
@@ -314,11 +367,11 @@ export function Results() {
 			/>
 		);
 	} else if (state.currentGroupId === undefined) {
-		return <AllGroupResults />;
+		return <MultiGroupResults />;
 	}
 
 	const index = state.usedGroupDefinitions.findIndex(
-		(group) => group.id === state.currentGroupId
+		(group) => group.id === state.currentGroupId,
 	);
 
 	return (

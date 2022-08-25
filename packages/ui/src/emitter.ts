@@ -28,7 +28,7 @@ export class Emitter<Events extends {}> {
 
 	on<EventName extends keyof Events>(
 		eventName: EventName,
-		handler: (event: Events[EventName]) => void
+		handler: (event: Events[EventName]) => void,
 	) {
 		const set = this.#handlers.get(eventName) || new Set();
 		this.#handlers.set(eventName, set);
@@ -40,7 +40,7 @@ export class Emitter<Events extends {}> {
 
 	off<EventName extends keyof Events>(
 		eventName: EventName,
-		handler: (event: any) => void
+		handler: (event: any) => void,
 	) {
 		const set = this.#handlers.get(eventName);
 		set?.delete(handler);
@@ -52,7 +52,7 @@ export class Emitter<Events extends {}> {
 
 	emit<EventName extends keyof Events>(
 		eventName: EventName,
-		event: Omit<Events[EventName], "instanceId">
+		event: Omit<Events[EventName], "instanceId">,
 	) {
 		const set = this.#handlers.get(eventName);
 		if (set) {

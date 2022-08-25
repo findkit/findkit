@@ -33,7 +33,7 @@ export interface Translator {
 
 export function createTranslator(
 	lang: string,
-	extra?: Partial<TranslationStrings>
+	extra?: Partial<TranslationStrings>,
 ): Translator {
 	const translations = {
 		...BASE_TRANSLATIONS,
