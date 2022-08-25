@@ -230,10 +230,7 @@ function Modal() {
 	const duration = 150;
 	const delayed = useDelay(show, duration);
 	const unmount = !delayed && !show;
-	const isScrollingDown = useIsScrollingDown(
-		containerRef,
-		show && !state.selectedHit,
-	);
+	const isScrollingDown = useIsScrollingDown(containerRef, show);
 
 	useScrollLock(!unmount);
 
@@ -247,7 +244,7 @@ function Modal() {
 		<View
 			cn={{
 				header: true,
-				"header-hidden": isScrollingDown && !state.selectedHit,
+				"header-hidden": isScrollingDown,
 			}}
 		>
 			<Slot name="Header" props={{}}>

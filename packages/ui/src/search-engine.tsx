@@ -99,12 +99,6 @@ export interface State {
 
 	infiniteScroll: boolean;
 
-	selectedHit?: {
-		cursor: number;
-		hitIndex: number;
-		groupIndex: number;
-	};
-
 	/**
 	 * Search params lang filter
 	 */
@@ -314,7 +308,6 @@ export class SearchEngine {
 			lang: undefined,
 			status: "closed",
 			infiniteScroll: options.infiniteScroll ?? true,
-			selectedHit: undefined,
 			error: undefined,
 			resultGroups: {},
 			ui: {
@@ -429,96 +422,6 @@ export class SearchEngine {
 		this.state.currentGroupId = nextParams.getGroupId();
 
 		void this.#fetch({ terms, reset });
-	};
-
-	#hasHits() {
-		for (const resultGroup of Object.values(this.state.resultGroups)) {
-			if (resultGroup.hits.length > 0) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Navigate between results hits. Only applicable when the search input is focused
-	 */
-	#navigateHits = (direction: "down" | "up") => {
-		if (!this.#hasHits()) {
-			return;
-		}
-
-		// If we have a selected group it means we are in the single group view
-		const selectedGroup = this.#getSelectedGroup("used");
-
-		const groups = selectedGroup
-			? [selectedGroup]
-			: // otherwise we navigate between all groups
-			  // XXX use the sorted groups once it is implemented
-			  this.state.usedGroupDefinitions;
-
-		type HitPosition = { hitIndex: number; groupIndex: number };
-
-		/**
-		 * Mapping of cursor indices to the actual hit positions within the groups
-		 */
-		const hitPositions = groups.flatMap(
-			(group, groupIndex): HitPosition | HitPosition[] => {
-				const resultGroup = this.state.resultGroups[group.id];
-				if (!resultGroup) {
-					return [];
-				}
-
-				let hits = resultGroup.hits ?? [];
-
-				// If we are in the multi group view we only display the hits
-				// according to the preview size. So we must use it here too.
-				if (!selectedGroup) {
-					hits = hits.slice(0, group.previewSize);
-				}
-
-				return hits.map((_hit, hitIndex) => {
-					return {
-						groupIndex,
-						hitIndex,
-					};
-				});
-			},
-		);
-
-		// On the first down key press go to the first hit
-		if (!this.state.selectedHit) {
-			this.state.selectedHit = {
-				cursor: 0,
-				hitIndex: 0,
-				groupIndex: 0,
-			};
-			return;
-		}
-
-		let nextCursorPosition = this.state.selectedHit.cursor;
-
-		if (direction === "down") {
-			nextCursorPosition++;
-		} else {
-			nextCursorPosition--;
-		}
-
-		// Going backwards from the first item: Jump to the last item
-		if (nextCursorPosition < 0) {
-			nextCursorPosition = hitPositions.length - 1;
-		}
-
-		// Going past the last item: Jump to the first item
-		nextCursorPosition = nextCursorPosition % hitPositions.length;
-
-		const next = hitPositions[nextCursorPosition];
-		if (next) {
-			this.state.selectedHit = {
-				cursor: nextCursorPosition,
-				...next,
-			};
-		}
 	};
 
 	#clearTimeout = () => {
@@ -869,18 +772,6 @@ export class SearchEngine {
 
 		this.state.error = undefined;
 
-		if (options.reset && this.state.selectedHit !== undefined) {
-			this.state.selectedHit = {
-				cursor: 0,
-				hitIndex: 0,
-				groupIndex: 0,
-			};
-		}
-
-		if (!this.#hasHits()) {
-			this.state.selectedHit = undefined;
-		}
-
 		if (this.#pendingRequestIds.size === 0) {
 			this.#statusTransition("ready");
 		}
@@ -956,70 +847,21 @@ export class SearchEngine {
 
 		multi.on(
 			input,
-			"blur",
-			() => {
-				this.state.selectedHit = undefined;
+			"keydown",
+			(e) => {
+				if (e.key === "Enter") {
+					assertInputEvent(e);
+
+					this.#handleInputChange(e.target.value, { force: true });
+				}
 			},
 			{ passive: true },
 		);
-
-		multi.on(input, "keydown", (e) => {
-			if (this.state.selectedHit && e.key === "Escape") {
-				this.state.selectedHit = undefined;
-				e.preventDefault();
-				e.stopImmediatePropagation();
-			}
-
-			if (e.key === "ArrowDown") {
-				e.preventDefault();
-				this.#navigateHits("down");
-				return;
-			}
-
-			if (e.key === "ArrowUp") {
-				e.preventDefault();
-				this.#navigateHits("up");
-				return;
-			}
-
-			if (e.key === "Enter") {
-				assertInputEvent(e);
-
-				// Navigate to the first hit with cmd+enter or the selected hit
-				if (e.metaKey || this.state.selectedHit) {
-					e.preventDefault();
-					this.#navigateToSelectedHit();
-					return;
-				}
-
-				this.#handleInputChange(e.target.value, { force: true });
-			}
-		});
 
 		this.#inputs.push({ input, dispose: multi.off });
 
 		return true;
 	};
-
-	/**
-	 * Navigate to the selected hit or the first if none is selected
-	 */
-	#navigateToSelectedHit() {
-		const groupIndex = this.state.selectedHit?.groupIndex ?? 0;
-		const hitIndex = this.state.selectedHit?.hitIndex ?? 0;
-
-		const group =
-			this.#getSelectedGroup("used") ??
-			this.state.usedGroupDefinitions[groupIndex];
-
-		if (group) {
-			const hit = this.state.resultGroups[group.id]?.hits[hitIndex];
-
-			if (hit) {
-				window.location.href = hit.url;
-			}
-		}
-	}
 
 	removeInput = (rmInput: HTMLInputElement) => {
 		const input = this.#inputs.find((input) => input?.input === rmInput);
