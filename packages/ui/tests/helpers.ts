@@ -26,7 +26,7 @@ export async function getHitHosts(page: Page) {
  */
 export async function oneEvent<EventName extends keyof FindkitUIEvents>(
 	page: Page,
-	eventName: EventName
+	eventName: EventName,
 ): Promise<FindkitUIEvents[EventName]> {
 	return await page.evaluate(async (eventName) => {
 		return await new Promise<any>((resolve) => {

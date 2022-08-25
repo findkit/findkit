@@ -21,7 +21,7 @@ export function cleanUndefined<T extends {}>(ob: T): T {
  */
 export function assertNonNullable<T>(
 	ob: T,
-	assertionMessage: string
+	assertionMessage: string,
 ): asserts ob is NonNullable<T> {
 	if (ob === null || ob === undefined) {
 		throw new Error(assertionMessage);

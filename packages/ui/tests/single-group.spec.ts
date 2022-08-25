@@ -53,7 +53,7 @@ test("the input is cleared when the modal is closed", async ({ page }) => {
 	await page.locator("text=open").click();
 
 	expect(await page.locator('[aria-label="Search input"]').inputValue()).toBe(
-		""
+		"",
 	);
 });
 

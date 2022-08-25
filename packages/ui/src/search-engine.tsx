@@ -166,7 +166,7 @@ export type UpdateGroupsArgument =
 	| GroupDefinition[]
 	| GroupDefinition
 	| ((
-			groups: GroupDefinition[]
+			groups: GroupDefinition[],
 	  ) => GroupDefinition[] | GroupDefinition | undefined | void);
 
 /**
@@ -205,7 +205,7 @@ class MultiListener {
 		target: any,
 		eventName: EventName,
 		listener: (e: HTMLElementEventMap[EventName]) => void,
-		options?: AddEventListenerOptions
+		options?: AddEventListenerOptions,
 	) {
 		target.addEventListener(eventName as any, listener, options);
 		this.#cleaners.add(() => {
@@ -279,7 +279,7 @@ export class SearchEngine {
 
 		if (instanceIds.has(this.instanceId)) {
 			throw new Error(
-				`[findkit] Instance id "${this.instanceId}" already exists. Pass in custom "instanceId" to avoid conflicts.`
+				`[findkit] Instance id "${this.instanceId}" already exists. Pass in custom "instanceId" to avoid conflicts.`,
 			);
 		}
 
@@ -287,7 +287,7 @@ export class SearchEngine {
 
 		const initialSearchParams = new FindkitURLSearchParams(
 			this.instanceId,
-			this.addressBar.getSearchParamsString()
+			this.addressBar.getSearchParamsString(),
 		);
 
 		let groups = options.groups;
@@ -331,7 +331,11 @@ export class SearchEngine {
 		});
 		devtools(this.state);
 		this.#cleaners.add(
-			subscribeKey(this.state, "nextGroupDefinitions", this.#handleGroupsChange)
+			subscribeKey(
+				this.state,
+				"nextGroupDefinitions",
+				this.#handleGroupsChange,
+			),
 		);
 
 		if (options.monitorDocumentElementChanges !== false) {
@@ -479,7 +483,7 @@ export class SearchEngine {
 						hitIndex,
 					};
 				});
-			}
+			},
 		);
 
 		// On the first down key press go to the first hit
@@ -526,7 +530,7 @@ export class SearchEngine {
 
 	updateAddressBar = (
 		params: FindkitURLSearchParams,
-		options?: { push?: boolean }
+		options?: { push?: boolean },
 	) => {
 		this.addressBar.update(params.toURLSearchParams(), options);
 	};
@@ -788,7 +792,7 @@ export class SearchEngine {
 					ok: false as const,
 					error,
 				};
-			}
+			},
 		);
 
 		// This request was already cleared as there are newer requests ready
@@ -947,7 +951,7 @@ export class SearchEngine {
 				assertInputEvent(e);
 				this.#handleInputChange(e.target.value);
 			},
-			{ passive: true }
+			{ passive: true },
 		);
 
 		multi.on(
@@ -956,7 +960,7 @@ export class SearchEngine {
 			() => {
 				this.state.selectedHit = undefined;
 			},
-			{ passive: true }
+			{ passive: true },
 		);
 
 		multi.on(input, "keydown", (e) => {
