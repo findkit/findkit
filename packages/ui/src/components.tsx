@@ -110,59 +110,8 @@ function GroupTitle(props: { title: string; total: number }) {
 	);
 }
 
-function getScrollContainer(node: HTMLElement | null): HTMLElement | null {
-	if (!node) {
-		return null;
-	}
-
-	if (node.scrollHeight > node.clientHeight) {
-		if (node === document.body) {
-			return document.documentElement;
-		}
-		return node;
-	}
-
-	return getScrollContainer(node.parentElement);
-}
-
-function scrollIntoViewIfNeeded(el: HTMLElement, offsetSelector?: string) {
-	const scrollContainer = getScrollContainer(el);
-	let headerOffset = 0;
-	const margin = 30;
-
-	if (!scrollContainer) {
-		return;
-	}
-
-	if (offsetSelector) {
-		const header = scrollContainer.querySelector(offsetSelector);
-		if (header instanceof HTMLElement) {
-			headerOffset = header.clientHeight;
-		}
-	}
-
-	const rect = el.getBoundingClientRect();
-
-	if (rect.top < headerOffset) {
-		scrollContainer.scrollTo({
-			top: scrollContainer.scrollTop + rect.top - headerOffset - margin,
-			behavior: "smooth",
-		});
-	} else if (rect.bottom > scrollContainer.clientHeight) {
-		scrollContainer.scrollTo({
-			top:
-				scrollContainer.scrollTop +
-				rect.bottom -
-				scrollContainer.clientHeight +
-				margin,
-			behavior: "smooth",
-		});
-	}
-}
-
-function Hit(props: { hit: SearchResultHit; selected: boolean }) {
+function Hit(props: { hit: SearchResultHit }) {
 	const engine = useSearchEngine();
-	const state = useSearchEngineState();
 
 	const handleLinkClick: MouseEventHandler<HTMLDivElement> = (e) => {
 		if (!(e.target instanceof HTMLAnchorElement)) {
@@ -183,28 +132,8 @@ function Hit(props: { hit: SearchResultHit; selected: boolean }) {
 		});
 	};
 
-	const ref = useRef<HTMLElement>(null);
-	useEffect(() => {
-		if (props.selected && ref.current) {
-			const el = ref.current;
-			scrollIntoViewIfNeeded(el, ".findkit--header");
-
-			// XXX Goes under the header...
-			// ref.current?.scrollIntoView({ behavior: "smooth" });
-		}
-	}, [props.selected, ref]);
-
 	return (
-		<View
-			key={props.hit.url}
-			ref={ref}
-			cn={{
-				hit: true,
-				"hit-selected": props.selected,
-				"hit-not-selected": state.selectedHit && !props.selected,
-			}}
-			onClick={handleLinkClick}
-		>
+		<View key={props.hit.url} cn="hit" onClick={handleLinkClick}>
 			<Slot
 				name="Hit"
 				key={props.hit.url}
@@ -224,18 +153,10 @@ function HitList(props: {
 	groupIndex: number;
 	hits: ReadonlyArray<SearchResultHit>;
 }) {
-	const selectedHit = useSearchEngineState().selectedHit;
-
 	return (
 		<>
-			{props.hits.map((hit, hitIndex) => {
-				const selected = Boolean(
-					selectedHit &&
-						props.groupIndex === selectedHit.groupIndex &&
-						selectedHit.hitIndex === hitIndex,
-				);
-
-				return <Hit hit={hit} selected={selected} />;
+			{props.hits.map((hit) => {
+				return <Hit hit={hit} />;
 			})}
 		</>
 	);
