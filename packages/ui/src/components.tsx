@@ -177,6 +177,7 @@ function HitList(props: {
 			{props.hits.map((hit, index) => {
 				return (
 					<Hit
+						key={hit.url}
 						hit={hit}
 						hitIndex={index}
 						groupId={props.groupId}
