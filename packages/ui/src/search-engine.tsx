@@ -417,7 +417,6 @@ export class SearchEngine {
 	}
 
 	#moveKeyboardCursor(direction: "down" | "up") {
-		let index: undefined | number = undefined;
 		const currentId = this.state.keyboardCursor;
 
 		// Up does not do anything on start
@@ -426,6 +425,8 @@ export class SearchEngine {
 		}
 
 		const items = this.#container.querySelectorAll("[data-kb]");
+
+		let index: undefined | number = undefined;
 
 		// Find the current index if the cursor is set
 		if (currentId) {
