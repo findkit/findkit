@@ -16,7 +16,7 @@ import {
 	useFindkitContext,
 	SlotProps,
 	useTranslator,
-	useKeyboardDataAttributes,
+	useKeyboardItemAttributes,
 } from "./core-hooks";
 import { SearchEngine, SearchResultHit } from "./search-engine";
 import { createTranslator } from "./translations";
@@ -67,7 +67,7 @@ function SingleGroupLink(props: { children: ReactNode; groupId: string }) {
 	const engine = useSearchEngine();
 	const params = useFindkitURLSearchParams();
 	const nextParams = params.setGroupId(props.groupId);
-	const kbAttrs = useKeyboardDataAttributes(
+	const kbAttrs = useKeyboardItemAttributes(
 		"single-group-link-" + props.groupId,
 	);
 
@@ -89,7 +89,7 @@ function SingleGroupLink(props: { children: ReactNode; groupId: string }) {
 }
 
 function AllResultsLink(props: { children: ReactNode }) {
-	const kbAttrs = useKeyboardDataAttributes("back-to-all-results");
+	const kbAttrs = useKeyboardItemAttributes("back-to-all-results");
 	const engine = useSearchEngine();
 	const params = useFindkitURLSearchParams();
 	const nextParams = params.clearGroupId();
@@ -126,7 +126,7 @@ function Hit(props: {
 	hitIndex: number;
 }) {
 	const engine = useSearchEngine();
-	const kbAttrs = useKeyboardDataAttributes(
+	const kbAttrs = useKeyboardItemAttributes(
 		`hit-${props.groupId}-${props.hitIndex}`,
 	);
 
@@ -232,7 +232,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	const engine = useSearchEngine();
 	const groupCount = state.usedGroupDefinitions.length;
 	let group = state.resultGroups[props.groupId];
-	const kbAttrs = useKeyboardDataAttributes("load-more-" + props.groupId);
+	const kbAttrs = useKeyboardItemAttributes("load-more-" + props.groupId);
 
 	const ref = useRef<HTMLButtonElement | null>(null);
 

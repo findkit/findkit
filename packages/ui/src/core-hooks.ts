@@ -104,7 +104,12 @@ export function useInput() {
 	);
 }
 
-export function useKeyboardDataAttributes(id: string) {
+/**
+ * Get attributes for a keyboard navigation item
+ *
+ * @param id unique id of nav item
+ */
+export function useKeyboardItemAttributes(id: string) {
 	const state = useSearchEngineState();
 	const attrs: {
 		"data-kb": string;
@@ -120,6 +125,9 @@ export function useKeyboardDataAttributes(id: string) {
 	return attrs;
 }
 
+/**
+ *  Get attributes for the keyboard navigation container
+ */
 export function useContainerKeyboardAttributes() {
 	const state = useSearchEngineState();
 	const attrs: {
