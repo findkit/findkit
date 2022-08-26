@@ -1007,8 +1007,15 @@ export class SearchEngine {
 				this.#moveKeyboardCursor("up");
 			} else if (e.key === "Escape" && this.state.keyboardCursor) {
 				e.preventDefault();
+
+				// Stop event bubbling to prevent the modal from closing.  Eg.
+				// first esc hit disables the keyboard navigation if active and
+				// the only the second one closes the modal
 				e.stopImmediatePropagation();
+
 				this.state.keyboardCursor = undefined;
+
+				// Input might be hidden so scroll to it to make it visible
 				scrollIntoViewIfNeeded(input);
 			} else if (e.key === "Enter") {
 				assertInputEvent(e);
