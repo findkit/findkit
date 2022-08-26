@@ -103,3 +103,32 @@ export function useInput() {
 		[engine],
 	);
 }
+
+export function useKeyboardDataAttributes(id: string) {
+	const state = useSearchEngineState();
+	const attrs: {
+		"data-kb": string;
+		"data-kb-current"?: string;
+	} = {
+		"data-kb": id,
+	};
+
+	if (state.keyboardCursor === id) {
+		attrs["data-kb-current"] = "";
+	}
+
+	return attrs;
+}
+
+export function useContainerKeyboardAttributes() {
+	const state = useSearchEngineState();
+	const attrs: {
+		"data-kb-active"?: string;
+	} = {};
+
+	if (state.keyboardCursor) {
+		attrs["data-kb-active"] = state.keyboardCursor;
+	}
+
+	return attrs;
+}

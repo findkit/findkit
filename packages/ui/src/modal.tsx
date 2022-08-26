@@ -8,6 +8,7 @@ import {
 	useInput,
 	Slots,
 	useTranslator,
+	useContainerKeyboardAttributes,
 } from "./core-hooks";
 
 import {
@@ -224,6 +225,7 @@ function Modal() {
 	const state = useSearchEngineState();
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const t = useTranslator();
+	const containerKbAttrs = useContainerKeyboardAttributes();
 	useFocusTrap(containerRef);
 
 	const show = state.status !== "closed";
@@ -275,6 +277,7 @@ function Modal() {
 	return (
 		<View
 			ref={containerRef}
+			{...containerKbAttrs}
 			cn={["modal", visible && "modal-visible"]}
 			style={{
 				["--findkit--modal-animation-duration"]: `${duration}ms`,
@@ -295,6 +298,8 @@ function Modal() {
 }
 
 export function Plain() {
+	const containerKbAttrs = useContainerKeyboardAttributes();
+
 	const header = <SearchInput />;
 	const content = (
 		<View cn="content">
@@ -304,7 +309,7 @@ export function Plain() {
 	);
 
 	return (
-		<View cn="plain">
+		<View {...containerKbAttrs} cn="plain">
 			<Slot name="Layout" props={{ header, content }}>
 				{header}
 				{content}
@@ -365,7 +370,7 @@ export function init(options: {
 		});
 	}
 
-	const engine = new SearchEngine(options);
+	const engine = new SearchEngine({ ...options, container: container });
 
 	options.events.on("dispose", () => {
 		if (container) {

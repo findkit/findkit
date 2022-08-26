@@ -147,3 +147,17 @@
 
 .load-more-button {
 }
+
+/* [data-kb-current] {
+	border: 5px dashed sandybrown;
+} */
+
+/* [data-kb-active] [data-kb]:not([data-kb-current]) {
+	opacity: 0.75;
+} */
+
+[data-kb-current] {
+	outline: 5px dashed rgba(56, 175, 255, 0.2);
+	background-color: rgba(195, 231, 255, 0.2);
+	border-radius: 15px;
+}

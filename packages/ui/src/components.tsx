@@ -16,6 +16,7 @@ import {
 	useFindkitContext,
 	SlotProps,
 	useTranslator,
+	useKeyboardDataAttributes,
 } from "./core-hooks";
 import { SearchEngine, SearchResultHit } from "./search-engine";
 import { createTranslator } from "./translations";
@@ -66,11 +67,16 @@ function SingleGroupLink(props: { children: ReactNode; groupId: string }) {
 	const engine = useSearchEngine();
 	const params = useFindkitURLSearchParams();
 	const nextParams = params.setGroupId(props.groupId);
+	const kbAttrs = useKeyboardDataAttributes(
+		"single-group-link-" + props.groupId,
+	);
 
 	return (
 		<View
 			as="a"
 			cn="more-link"
+			{...kbAttrs}
+			data-kb-action
 			href={nextParams.toLink()}
 			onClick={(e: { preventDefault: () => void }) => {
 				e.preventDefault();
@@ -83,6 +89,7 @@ function SingleGroupLink(props: { children: ReactNode; groupId: string }) {
 }
 
 function AllResultsLink(props: { children: ReactNode }) {
+	const kbAttrs = useKeyboardDataAttributes("back-to-all-results");
 	const engine = useSearchEngine();
 	const params = useFindkitURLSearchParams();
 	const nextParams = params.clearGroupId();
@@ -90,6 +97,8 @@ function AllResultsLink(props: { children: ReactNode }) {
 	return (
 		<View
 			as="a"
+			{...kbAttrs}
+			data-kb-action
 			cn="back-link"
 			href={nextParams.toLink()}
 			onClick={(e: { preventDefault: () => void }) => {
@@ -110,8 +119,16 @@ function GroupTitle(props: { title: string; total: number }) {
 	);
 }
 
-function Hit(props: { hit: SearchResultHit }) {
+function Hit(props: {
+	hit: SearchResultHit;
+	groupId: string;
+	groupIndex: number;
+	hitIndex: number;
+}) {
 	const engine = useSearchEngine();
+	const kbAttrs = useKeyboardDataAttributes(
+		`hit-${props.groupId}-${props.hitIndex}`,
+	);
 
 	const handleLinkClick: MouseEventHandler<HTMLDivElement> = (e) => {
 		if (!(e.target instanceof HTMLAnchorElement)) {
@@ -133,7 +150,7 @@ function Hit(props: { hit: SearchResultHit }) {
 	};
 
 	return (
-		<View key={props.hit.url} cn="hit" onClick={handleLinkClick}>
+		<View key={props.hit.url} cn="hit" {...kbAttrs} onClick={handleLinkClick}>
 			<Slot
 				name="Hit"
 				key={props.hit.url}
@@ -141,7 +158,9 @@ function Hit(props: { hit: SearchResultHit }) {
 					hit: props.hit,
 				}}
 			>
-				<a href={props.hit.url}>{props.hit.title}</a>
+				<a href={props.hit.url} data-kb-action>
+					{props.hit.title}
+				</a>
 				<span>{props.hit.url}</span>
 			</Slot>
 		</View>
@@ -155,8 +174,15 @@ function HitList(props: {
 }) {
 	return (
 		<>
-			{props.hits.map((hit) => {
-				return <Hit hit={hit} />;
+			{props.hits.map((hit, index) => {
+				return (
+					<Hit
+						hit={hit}
+						hitIndex={index}
+						groupId={props.groupId}
+						groupIndex={props.groupIndex}
+					/>
+				);
 			})}
 		</>
 	);
@@ -205,6 +231,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	const engine = useSearchEngine();
 	const groupCount = state.usedGroupDefinitions.length;
 	let group = state.resultGroups[props.groupId];
+	const kbAttrs = useKeyboardDataAttributes("load-more-" + props.groupId);
 
 	const ref = useRef<HTMLButtonElement | null>(null);
 
@@ -217,9 +244,10 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	}
 
 	useEffect(() => {
-		if (!state.infiniteScroll) {
+		if (!state.infiniteScroll || state.keyboardCursor) {
 			return;
 		}
+
 		const el = ref.current;
 
 		if (!el) {
@@ -240,7 +268,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 		return () => {
 			observer.unobserve(el);
 		};
-	}, [engine, state.infiniteScroll]);
+	}, [engine, state.infiniteScroll, state.keyboardCursor]);
 
 	return (
 		<>
@@ -260,6 +288,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 					cn="load-more-button"
 					ref={ref}
 					type="button"
+					{...kbAttrs}
 					disabled={
 						group.hits.length === group.total || state.status === "fetching"
 					}

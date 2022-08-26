@@ -100,6 +100,11 @@ export interface State {
 	infiniteScroll: boolean;
 
 	/**
+	 * ID of the element keyboard cursor is at
+	 */
+	keyboardCursor: string | undefined;
+
+	/**
 	 * Search params lang filter
 	 */
 	lang: string | undefined;
@@ -215,6 +220,56 @@ class MultiListener {
 	};
 }
 
+function getScrollContainer(node: HTMLElement | null): HTMLElement | null {
+	if (!node) {
+		return null;
+	}
+
+	if (node.scrollHeight > node.clientHeight) {
+		if (node === document.body) {
+			return document.documentElement;
+		}
+		return node;
+	}
+
+	return getScrollContainer(node.parentElement);
+}
+
+function scrollIntoViewIfNeeded(el: HTMLElement, offsetSelector?: string) {
+	const scrollContainer = getScrollContainer(el);
+	let headerOffset = 0;
+	const margin = 30;
+
+	if (!scrollContainer) {
+		return;
+	}
+
+	if (offsetSelector) {
+		const header = scrollContainer.querySelector(offsetSelector);
+		if (header instanceof HTMLElement) {
+			headerOffset = header.clientHeight;
+		}
+	}
+
+	const rect = el.getBoundingClientRect();
+
+	if (rect.top < headerOffset) {
+		scrollContainer.scrollTo({
+			top: scrollContainer.scrollTop + rect.top - headerOffset - margin,
+			behavior: "smooth",
+		});
+	} else if (rect.bottom > scrollContainer.clientHeight) {
+		scrollContainer.scrollTo({
+			top:
+				scrollContainer.scrollTop +
+				rect.bottom -
+				scrollContainer.clientHeight +
+				margin,
+			behavior: "smooth",
+		});
+	}
+}
+
 /**
  * @public
  */
@@ -243,6 +298,7 @@ export class SearchEngine {
 	#throttleTimerID?: ReturnType<typeof setTimeout>;
 
 	#cleaners = new Set<() => void>();
+	#container: Element | ShadowRoot;
 
 	events: Emitter<FindkitUIEvents>;
 
@@ -257,6 +313,8 @@ export class SearchEngine {
 		groups?: GroupDefinition[];
 		params?: SearchEngineParams;
 		infiniteScroll?: boolean;
+		container: Element | ShadowRoot;
+
 		/**
 		 * Monitor <html lang> changes
 		 */
@@ -270,6 +328,7 @@ export class SearchEngine {
 		this.instanceId = options.instanceId ?? "fdk";
 		this.publicToken = options.publicToken;
 		this.events = options.events;
+		this.#container = options.container;
 
 		if (instanceIds.has(this.instanceId)) {
 			throw new Error(
@@ -310,6 +369,7 @@ export class SearchEngine {
 			infiniteScroll: options.infiniteScroll ?? true,
 			error: undefined,
 			resultGroups: {},
+			keyboardCursor: undefined,
 			ui: {
 				lang,
 				strings: {
@@ -353,6 +413,86 @@ export class SearchEngine {
 		this.state.ui.lang = lang;
 		if (overrides) {
 			this.state.ui.strings[lang] = ref(overrides);
+		}
+	}
+
+	#moveKeyboardCursor(direction: "down" | "up") {
+		let index: undefined | number = undefined;
+		const currentId = this.state.keyboardCursor;
+
+		// Up does not do anything on start
+		if (!currentId && direction === "up") {
+			return;
+		}
+
+		const items = this.#container.querySelectorAll("[data-kb]");
+
+		// Find the current index if the cursor is set
+		if (currentId) {
+			for (const [i, item] of items.entries()) {
+				if (item instanceof HTMLElement && item.dataset.kb === currentId) {
+					index = i;
+					break;
+				}
+			}
+		}
+
+		if (index === undefined) {
+			// Start from the first item
+			index = 0;
+		} else if (direction === "down") {
+			index++;
+		} else {
+			index--;
+		}
+
+		// Disable if going back past the first item
+		if (index < 0) {
+			this.state.keyboardCursor = undefined;
+		}
+
+		// Go to the begining when going past the last item
+		if (index > items.length - 1) {
+			index = items.length - 1;
+		}
+
+		const item = items[index];
+
+		if (item instanceof HTMLElement) {
+			if (item.className.includes("load-more-button")) {
+				this.searchMore({ force: true });
+				return;
+			}
+
+			const id = item.dataset.kb;
+			if (id) {
+				scrollIntoViewIfNeeded(item, ".findkit--header");
+				this.state.keyboardCursor = id;
+			}
+		}
+	}
+
+	#selectKeyboardCursor() {
+		// Find the currently selected item
+		const item = this.#container.querySelector(`[data-kb-current]`);
+
+		let actionElement: HTMLElement | undefined | null = null;
+
+		// Select the action item which is denoted with the data-kb-action
+		// attribute which can the item itself or one of its children
+		if (item instanceof HTMLElement && item.dataset.kbAction) {
+			actionElement = item;
+		} else {
+			actionElement = item?.querySelector("[data-kb-action],a,button");
+		}
+
+		// Run the onClick handler
+		if (
+			actionElement instanceof HTMLAnchorElement ||
+			actionElement instanceof HTMLButtonElement
+		) {
+			this.state.keyboardCursor = undefined;
+			actionElement.click();
 		}
 	}
 
@@ -528,7 +668,7 @@ export class SearchEngine {
 		if (options?.force === true) {
 			this.#actualSearchMore();
 		} else {
-			this.#searchMoreDebounce = setTimeout(this.#actualSearchMore, 1000);
+			this.#searchMoreDebounce = setTimeout(this.#actualSearchMore, 500);
 		}
 	}
 
@@ -770,6 +910,10 @@ export class SearchEngine {
 			this.#emitDebouncedSearchEvent(options.terms);
 		}
 
+		if (options.reset) {
+			this.state.keyboardCursor = undefined;
+		}
+
 		this.state.error = undefined;
 
 		if (this.#pendingRequestIds.size === 0) {
@@ -847,16 +991,37 @@ export class SearchEngine {
 
 		multi.on(
 			input,
-			"keydown",
-			(e) => {
-				if (e.key === "Enter") {
-					assertInputEvent(e);
-
-					this.#handleInputChange(e.target.value, { force: true });
-				}
+			"blur",
+			() => {
+				this.state.keyboardCursor = undefined;
 			},
 			{ passive: true },
 		);
+
+		multi.on(input, "keydown", (e) => {
+			if (e.key === "ArrowDown") {
+				e.preventDefault();
+				this.#moveKeyboardCursor("down");
+			} else if (e.key === "ArrowUp") {
+				e.preventDefault();
+				this.#moveKeyboardCursor("up");
+			} else if (e.key === "Escape" && this.state.keyboardCursor) {
+				e.preventDefault();
+				e.stopImmediatePropagation();
+				this.state.keyboardCursor = undefined;
+				scrollIntoViewIfNeeded(input);
+			} else if (e.key === "Enter") {
+				assertInputEvent(e);
+
+				if (this.state.keyboardCursor) {
+					e.preventDefault();
+					this.#selectKeyboardCursor();
+					return;
+				}
+
+				this.#handleInputChange(e.target.value, { force: true });
+			}
+		});
 
 		this.#inputs.push({ input, dispose: multi.off });
 
