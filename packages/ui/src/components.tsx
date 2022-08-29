@@ -20,7 +20,7 @@ import {
 } from "./core-hooks";
 import { SearchEngine, SearchResultHit } from "./search-engine";
 import { createTranslator } from "./translations";
-import { cn, View } from "./utils";
+import { cn, scrollToTop, View } from "./utils";
 
 export function FindkitProvider(props: {
 	children: ReactNode;
@@ -78,8 +78,11 @@ function SingleGroupLink(props: { children: ReactNode; groupId: string }) {
 			{...kbAttrs}
 			data-kb-action
 			href={nextParams.toLink()}
-			onClick={(e: { preventDefault: () => void }) => {
+			onClick={(e) => {
 				e.preventDefault();
+				if (e.target instanceof HTMLElement) {
+					scrollToTop(e.target);
+				}
 				engine.updateAddressBar(nextParams, { push: true });
 			}}
 		>

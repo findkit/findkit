@@ -33,3 +33,67 @@ export const { scopeClassNames, scopeView } =
 
 export const View = scopeView("findkit");
 export const cn = scopeClassNames("findkit");
+
+export function getScrollContainer(
+	node: HTMLElement | null,
+): HTMLElement | null {
+	if (!node) {
+		return null;
+	}
+
+	if (node.scrollHeight > node.clientHeight) {
+		if (node === document.body) {
+			return document.documentElement;
+		}
+		return node;
+	}
+
+	return getScrollContainer(node.parentElement);
+}
+
+export function scrollToTop(el: HTMLElement) {
+	const container = getScrollContainer(el);
+	if (container && container !== document.documentElement) {
+		container.scrollTo({
+			top: 0,
+		});
+	}
+}
+
+export function scrollIntoViewIfNeeded(
+	el: HTMLElement,
+	offsetSelector?: string,
+) {
+	const scrollContainer = getScrollContainer(el);
+	let headerOffset = 0;
+	const margin = 30;
+
+	if (!scrollContainer) {
+		return;
+	}
+
+	if (offsetSelector) {
+		const header = scrollContainer.querySelector(offsetSelector);
+		if (header instanceof HTMLElement) {
+			headerOffset = header.clientHeight;
+		}
+	}
+
+	const rect = el.getBoundingClientRect();
+
+	if (rect.top < headerOffset) {
+		scrollContainer.scrollTo({
+			top: scrollContainer.scrollTop + rect.top - headerOffset - margin,
+			behavior: "smooth",
+		});
+	} else if (rect.bottom > scrollContainer.clientHeight) {
+		scrollContainer.scrollTo({
+			top:
+				scrollContainer.scrollTop +
+				rect.bottom -
+				scrollContainer.clientHeight +
+				margin,
+			behavior: "smooth",
+		});
+	}
+}

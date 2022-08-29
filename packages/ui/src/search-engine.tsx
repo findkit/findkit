@@ -1,5 +1,9 @@
 import { devtools, subscribeKey } from "valtio/utils";
-import { assertNonNullable, cleanUndefined } from "./utils";
+import {
+	assertNonNullable,
+	cleanUndefined,
+	scrollIntoViewIfNeeded,
+} from "./utils";
 import {
 	CustomFields,
 	findkitFetch,
@@ -218,56 +222,6 @@ class MultiListener {
 		}
 		this.#cleaners.clear();
 	};
-}
-
-function getScrollContainer(node: HTMLElement | null): HTMLElement | null {
-	if (!node) {
-		return null;
-	}
-
-	if (node.scrollHeight > node.clientHeight) {
-		if (node === document.body) {
-			return document.documentElement;
-		}
-		return node;
-	}
-
-	return getScrollContainer(node.parentElement);
-}
-
-function scrollIntoViewIfNeeded(el: HTMLElement, offsetSelector?: string) {
-	const scrollContainer = getScrollContainer(el);
-	let headerOffset = 0;
-	const margin = 30;
-
-	if (!scrollContainer) {
-		return;
-	}
-
-	if (offsetSelector) {
-		const header = scrollContainer.querySelector(offsetSelector);
-		if (header instanceof HTMLElement) {
-			headerOffset = header.clientHeight;
-		}
-	}
-
-	const rect = el.getBoundingClientRect();
-
-	if (rect.top < headerOffset) {
-		scrollContainer.scrollTo({
-			top: scrollContainer.scrollTop + rect.top - headerOffset - margin,
-			behavior: "smooth",
-		});
-	} else if (rect.bottom > scrollContainer.clientHeight) {
-		scrollContainer.scrollTo({
-			top:
-				scrollContainer.scrollTop +
-				rect.bottom -
-				scrollContainer.clientHeight +
-				margin,
-			behavior: "smooth",
-		});
-	}
 }
 
 /**
