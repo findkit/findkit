@@ -74,7 +74,7 @@ function SingleGroupLink(props: { children: ReactNode; groupId: string }) {
 	return (
 		<View
 			as="a"
-			cn="more-link"
+			cn="single-group-link"
 			{...kbAttrs}
 			data-kb-action
 			href={nextParams.toLink()}
@@ -83,7 +83,8 @@ function SingleGroupLink(props: { children: ReactNode; groupId: string }) {
 				engine.updateAddressBar(nextParams, { push: true });
 			}}
 		>
-			{props.children}
+			<View cn="link-text">{props.children}</View>
+			<Arrow direction="right" />
 		</View>
 	);
 }
@@ -101,12 +102,13 @@ function AllResultsLink(props: { children: ReactNode }) {
 			data-kb-action
 			cn="back-link"
 			href={nextParams.toLink()}
-			onClick={(e: { preventDefault: () => void }) => {
+			onClick={(e) => {
 				e.preventDefault();
 				engine.updateAddressBar(nextParams, { push: true });
 			}}
 		>
-			{props.children}
+			<Arrow direction="left" />
+			<View cn="link-text">{props.children}</View>
 		</View>
 	);
 }
@@ -159,7 +161,12 @@ function Hit(props: {
 				}}
 			>
 				<View as="h2" cn="hit-title">
-					<View as="a" cn="hit-title-link" href={props.hit.url} data-kb-action>
+					<View
+						as="a"
+						cn={["hit-title-link", "link"]}
+						href={props.hit.url}
+						data-kb-action
+					>
 						{props.hit.title}
 					</View>
 				</View>
@@ -169,7 +176,12 @@ function Hit(props: {
 					dangerouslySetInnerHTML={{ __html: props.hit.highlight }}
 				></View>
 
-				<View as="a" cn="hit-url" href={props.hit.url} tabIndex={-1}>
+				<View
+					as="a"
+					cn={["hit-url", "link"]}
+					href={props.hit.url}
+					tabIndex={-1}
+				>
 					{props.hit.url}
 				</View>
 			</Slot>
@@ -180,10 +192,16 @@ function Hit(props: {
 function HitList(props: {
 	groupId: string;
 	groupIndex: number;
+	title?: string;
+	total: number;
 	hits: ReadonlyArray<SearchResultHit>;
 }) {
 	return (
 		<>
+			{props.title ? (
+				<GroupTitle title={props.title} total={props.total} />
+			) : null}
+
 			{props.hits.map((hit, index) => {
 				return (
 					<Hit
@@ -217,17 +235,13 @@ function MultiGroupResults() {
 
 				return (
 					<View key={def.id} cn="group">
-						{def.title ? (
-							<GroupTitle title={def.title} total={group.total} />
-						) : null}
 						<HitList
 							groupId={def.id}
 							groupIndex={groupIndex}
+							title={def.title}
+							total={group.total}
 							hits={group.hits.slice(0, def.previewSize)}
 						/>
-						<p>
-							{t("total")}: {group.total}
-						</p>
 						<SingleGroupLink groupId={def.id}>{t("show-all")}</SingleGroupLink>
 					</View>
 				);
@@ -242,6 +256,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	const engine = useSearchEngine();
 	const groupCount = state.usedGroupDefinitions.length;
 	let group = state.resultGroups[props.groupId];
+	const def = state.usedGroupDefinitions[props.groupIndex];
 	const kbAttrs = useKeyboardItemAttributes("load-more-" + props.groupId);
 
 	const ref = useRef<HTMLButtonElement | null>(null);
@@ -283,12 +298,14 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 
 	return (
 		<>
-			{groupCount > 1 && <AllResultsLink>Go back</AllResultsLink>}
+			{groupCount > 1 && <AllResultsLink>{t("go-back")}</AllResultsLink>}
 
 			<HitList
 				groupIndex={props.groupIndex}
 				groupId={props.groupId}
 				hits={group.hits}
+				total={group.total}
+				title={groupCount > 1 ? def?.title : undefined}
 			/>
 
 			<p>total: {group.total}</p>
@@ -366,9 +383,11 @@ export function Logo() {
 	);
 }
 
-export function Arrow() {
+export function Arrow(props: { direction: "left" | "right" }) {
+	const transform = "";
 	return (
-		<svg
+		<View
+			as="svg"
 			stroke="currentColor"
 			fill="currentColor"
 			strokeWidth={0}
@@ -376,12 +395,16 @@ export function Arrow() {
 			height={24}
 			width={24}
 			xmlns="http://www.w3.org/2000/svg"
+			style={{
+				transform:
+					(props.direction === "right" ? "rotate(180deg) " : "") + transform,
+			}}
 		>
 			<path
 				fillRule="evenodd"
 				clipRule="evenodd"
 				d="M13.362 17.0002C13.0898 16.9991 12.8298 16.8872 12.642 16.6902L8.78195 12.6902H8.78195C8.40081 12.3013 8.40081 11.679 8.78195 11.2902L12.782 7.29019C13.1741 6.89806 13.8098 6.89806 14.202 7.29019C14.5941 7.68231 14.5941 8.31807 14.202 8.71019L10.902 12.0002L14.082 15.3002C14.4697 15.6902 14.4697 16.3201 14.082 16.7102C13.8908 16.8999 13.6312 17.0044 13.362 17.0002Z"
 			/>
-		</svg>
+		</View>
 	);
 }

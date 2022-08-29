@@ -17,13 +17,15 @@ type ClassNames =
   | "findkit--hit-title"
   | "findkit--hit-title-link"
   | "findkit--hit-url"
+  | "findkit--link"
+  | "findkit--link-text"
   | "findkit--load-more-button"
   | "findkit--logo"
   | "findkit--logo-animating"
   | "findkit--modal"
   | "findkit--modal-visible"
-  | "findkit--more-link"
   | "findkit--plain"
   | "findkit--retry-button"
   | "findkit--search-input"
-  | "findkit--search-input-wrap";
+  | "findkit--search-input-wrap"
+  | "findkit--single-group-link";

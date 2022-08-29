@@ -1,8 +1,8 @@
 export const BASE_TRANSLATIONS = {
 	close: "Close",
-	total: "Total",
-	"show-all": "Show all",
+	"show-all": "Show more search results",
 	"load-more": "Load more",
+	"go-back": "Back",
 	"aria-label-close-search": "Close search",
 	"aria-label-search-input": "Search input",
 };
@@ -19,7 +19,7 @@ export const TRANSLATIONS: Record<string, TranslationStrings> = {
 	en: BASE_TRANSLATIONS,
 	fi: {
 		close: "Sulje",
-		total: "Yhteensä",
+		"go-back": "Takaisin",
 		"show-all": "Näytä kaikki",
 		"load-more": "Lataa lisää",
 		"aria-label-close-search": "Sulje haku",
