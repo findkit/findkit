@@ -17,6 +17,7 @@ test("can select first element", async ({ page }) => {
 
 	const selected = await page
 		.locator("[data-kb-current] a")
+		.first()
 		.evaluate((link) => {
 			if (link instanceof HTMLAnchorElement) {
 				return link.href;
@@ -47,7 +48,7 @@ test("can navigate to group", async ({ page }) => {
 	// Select the group
 	await page.keyboard.down("Enter");
 
-	expect(await groupTitles.count()).toBe(0);
+	expect(await groupTitles.count()).toBe(1);
 
 	// Go back link
 	await page.keyboard.down("ArrowDown");
@@ -61,6 +62,7 @@ test("can navigate to group", async ({ page }) => {
 
 	const selected = await page
 		.locator("[data-kb-current] a")
+		.first()
 		.evaluate((link) => {
 			if (link instanceof HTMLAnchorElement) {
 				return link.href;
@@ -80,7 +82,7 @@ test("can navigate to group", async ({ page }) => {
 	// Go back link
 	await page.keyboard.down("ArrowDown");
 
-	await expect(page.locator("[data-kb-current]")).toHaveText("Go back");
+	await expect(page.locator("[data-kb-current]")).toHaveText("Back");
 	await page.keyboard.down("Enter");
 	expect(await groupTitles.count()).toBe(2);
 });

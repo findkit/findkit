@@ -157,7 +157,7 @@ test("can change terms after fetching all", async ({ page }) => {
 	const input = page.locator('[aria-label="Search input"]');
 
 	// Something that has only page of results eg. triggers "all hits fetched"
-	await input.fill("esa-matti");
+	await input.fill("headup javascript");
 
 	await hits.first().waitFor({ state: "visible" });
 	const initialContent = await hits.first().textContent();

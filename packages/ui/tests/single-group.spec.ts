@@ -15,7 +15,7 @@ test("can load more results when using only one group", async ({ page }) => {
 
 	const input = page.locator("input:visible");
 
-	await input.type("mikko");
+	await input.type("valu");
 
 	await hits.first().waitFor({ state: "visible" });
 

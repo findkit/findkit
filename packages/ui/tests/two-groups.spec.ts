@@ -14,7 +14,7 @@ test("can navigate to full group results and back", async ({ page }) => {
 	await groupTitles.first().waitFor({ state: "visible" });
 	expect(await groupTitles.count()).toBe(2);
 
-	await page.locator("input:visible").type("mikko");
+	await page.locator("input:visible").type("wordpress");
 
 	expect(await groupTitles.count()).toBe(2);
 	await hits.first().waitFor({ state: "visible" });
@@ -22,14 +22,14 @@ test("can navigate to full group results and back", async ({ page }) => {
 	const hitCount1 = await hits.count();
 	expect(hitCount1).toBeGreaterThan(2);
 
-	await page.locator(".findkit--more-link").first().click();
+	await page.locator(".findkit--single-group-link").first().click();
 
 	await loading.waitFor({ state: "hidden" });
 
 	const hitCount2 = await hits.count();
 	expect(hitCount2).toBeGreaterThan(hitCount1);
 
-	expect(await groupTitles.count()).toBe(0);
+	expect(await groupTitles.count()).toBe(1);
 
 	await page.locator(".findkit--load-more-button").first().click();
 
@@ -83,13 +83,13 @@ test("back button works", async ({ page }) => {
 	expect(await groupTitles.count()).toBe(2);
 	await hits.first().waitFor({ state: "visible" });
 
-	const moreLink = page.locator(".findkit--more-link");
+	const moreLink = page.locator(".findkit--single-group-link");
 
 	await moreLink.first().click();
 
 	await loading.waitFor({ state: "hidden" });
 
-	expect(await groupTitles.count()).toBe(0);
+	expect(await groupTitles.count()).toBe(1);
 
 	await page.goBack();
 	await moreLink.first().waitFor({ state: "visible" });
@@ -162,13 +162,13 @@ test("fetch counts", async ({ page }) => {
 	await page.waitForLoadState("networkidle");
 	expect(await getCount()).toBe(0);
 
-	await page.locator("input:visible").type("mikko");
+	await page.locator("input:visible").type("wordpress");
 
 	await hits.first().waitFor({ state: "visible" });
 
 	expect(await getCount()).toBe(1);
 
-	await page.locator(".findkit--more-link").first().click();
+	await page.locator(".findkit--single-group-link").first().click();
 
 	await loading.waitFor({ state: "hidden" });
 
