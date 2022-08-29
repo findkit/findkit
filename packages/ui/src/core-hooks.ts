@@ -103,3 +103,40 @@ export function useInput() {
 		[engine],
 	);
 }
+
+/**
+ * Get attributes for a keyboard navigation item
+ *
+ * @param id unique id of nav item
+ */
+export function useKeyboardItemAttributes(id: string) {
+	const state = useSearchEngineState();
+	const attrs: {
+		"data-kb": string;
+		"data-kb-current"?: string;
+	} = {
+		"data-kb": id,
+	};
+
+	if (state.keyboardCursor === id) {
+		attrs["data-kb-current"] = "";
+	}
+
+	return attrs;
+}
+
+/**
+ *  Get attributes for the keyboard navigation container
+ */
+export function useContainerKeyboardAttributes() {
+	const state = useSearchEngineState();
+	const attrs: {
+		"data-kb-active"?: string;
+	} = {};
+
+	if (state.keyboardCursor) {
+		attrs["data-kb-active"] = state.keyboardCursor;
+	}
+
+	return attrs;
+}
