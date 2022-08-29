@@ -1,7 +1,15 @@
 import { test, expect } from "@playwright/test";
 import type { FindkitUI } from "../src/cdn-entries";
+import { getScrollPosition } from "./helpers";
 
 declare const ui: FindkitUI;
+
+test.use({
+	viewport: {
+		width: 600,
+		height: 600,
+	},
+});
 
 test("can select first element", async ({ page }) => {
 	await page.goto("/two-groups");
@@ -45,10 +53,17 @@ test("can navigate to group", async ({ page }) => {
 		await page.keyboard.down("ArrowDown");
 	}
 
+	await expect.poll(async () => getScrollPosition(page)).toBeGreaterThan(50);
+
+	// Wait for the smooth scroll animation finish
+	await page.waitForTimeout(500);
+
 	// Select the group
 	await page.keyboard.down("Enter");
 
 	expect(await groupTitles.count()).toBe(1);
+
+	await expect.poll(async () => getScrollPosition(page)).toBe(0);
 
 	// Go back link
 	await page.keyboard.down("ArrowDown");

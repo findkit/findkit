@@ -37,3 +37,13 @@ export async function oneEvent<EventName extends keyof FindkitUIEvents>(
 		});
 	}, eventName);
 }
+
+export async function getScrollPosition(page: Page) {
+	return await page.evaluate(() => {
+		return (
+			document
+				.querySelector("#findkit--modal-container-fdk")
+				?.shadowRoot?.querySelector(".findkit--modal")?.scrollTop ?? -1
+		);
+	});
+}
