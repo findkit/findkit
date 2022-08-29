@@ -273,7 +273,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 
 	return (
 		<>
-			{groupCount > 1 && <AllResultsLink>go back</AllResultsLink>}
+			{groupCount > 1 && <AllResultsLink>Go back</AllResultsLink>}
 
 			<HitList
 				groupIndex={props.groupIndex}
