@@ -10,6 +10,10 @@ export interface ScopedStyle {
 	__scoped: string;
 }
 
+function isScopedStyle(style: any): style is ScopedStyle {
+	return Boolean(style && typeof style === "object" && "__scoped" in style);
+}
+
 /**
  * See __tests__/scoper.test.tsx
  */
@@ -35,7 +39,7 @@ export function createClassNameScoper<KnownStyles extends string>() {
 						return [`${scope}--${n}`];
 					}
 
-					if ("__scoped" in n) {
+					if (isScopedStyle(n)) {
 						return [n.__scoped];
 					}
 
@@ -50,7 +54,7 @@ export function createClassNameScoper<KnownStyles extends string>() {
 				.join(" ");
 		}
 
-		classNames.nest = (...names: Args<null>[]): ScopedStyle => {
+		classNames.nest = (...names: Args<ScopedStyle>[]): ScopedStyle => {
 			return {
 				__scoped: classNames(...names),
 			};
