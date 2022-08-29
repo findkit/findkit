@@ -158,10 +158,20 @@ function Hit(props: {
 					hit: props.hit,
 				}}
 			>
-				<a href={props.hit.url} data-kb-action>
-					{props.hit.title}
-				</a>
-				<span>{props.hit.url}</span>
+				<View as="h2" cn="hit-title">
+					<View as="a" cn="hit-title-link" href={props.hit.url} data-kb-action>
+						{props.hit.title}
+					</View>
+				</View>
+
+				<View
+					cn="highlight"
+					dangerouslySetInnerHTML={{ __html: props.hit.highlight }}
+				></View>
+
+				<View as="a" cn="hit-url" href={props.hit.url} tabIndex={-1}>
+					{props.hit.url}
+				</View>
 			</Slot>
 		</View>
 	);
@@ -351,6 +361,26 @@ export function Logo() {
 			<path
 				fill="currentColor"
 				d="M21.602 11.719V8.45l-2.852 4.198h1.623c.058 0 .106.051.106.114v3.275l2.852-4.198h-1.623c-.058 0-.106-.051-.106-.115"
+			/>
+		</svg>
+	);
+}
+
+export function Arrow() {
+	return (
+		<svg
+			stroke="currentColor"
+			fill="currentColor"
+			strokeWidth={0}
+			viewBox="2 2 20 20"
+			height={24}
+			width={24}
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<path
+				fillRule="evenodd"
+				clipRule="evenodd"
+				d="M13.362 17.0002C13.0898 16.9991 12.8298 16.8872 12.642 16.6902L8.78195 12.6902H8.78195C8.40081 12.3013 8.40081 11.679 8.78195 11.2902L12.782 7.29019C13.1741 6.89806 13.8098 6.89806 14.202 7.29019C14.5941 7.68231 14.5941 8.31807 14.202 8.71019L10.902 12.0002L14.082 15.3002C14.4697 15.6902 14.4697 16.3201 14.082 16.7102C13.8908 16.8999 13.6312 17.0044 13.362 17.0002Z"
 			/>
 		</svg>
 	);
