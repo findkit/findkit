@@ -412,13 +412,16 @@ export class SearchEngine {
 		}
 
 		const item = items[index];
+		const peek = items[index + 1];
+
+		if (
+			peek instanceof HTMLElement &&
+			peek.className.includes("load-more-button")
+		) {
+			this.searchMore({ force: true });
+		}
 
 		if (item instanceof HTMLElement) {
-			if (item.className.includes("load-more-button")) {
-				this.searchMore({ force: true });
-				return;
-			}
-
 			const id = item.dataset.kb;
 			if (id) {
 				scrollIntoViewIfNeeded(item, ".findkit--header");

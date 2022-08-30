@@ -202,6 +202,13 @@ function FetchError() {
 	);
 }
 
+export function Spinner() {
+	const state = useSearchEngineState();
+	return (
+		<View cn={{ spinner: true, spinning: state.status === "fetching" }}></View>
+	);
+}
+
 function SearchInput() {
 	const inputRef = useInput();
 	const t = useTranslator();
@@ -215,6 +222,7 @@ function SearchInput() {
 				ref={inputRef}
 				aria-label={t("aria-label-search-input")}
 			/>
+			<Spinner />
 			<Logo />
 		</View>
 	);

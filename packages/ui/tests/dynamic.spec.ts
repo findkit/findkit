@@ -103,7 +103,7 @@ test("updates from history.pushState()", async ({ page }) => {
 	await page.goto("/dummy");
 
 	const hits = page.locator(".findkit--hit a");
-	const loading = page.locator(".findkit--logo-animating");
+	const loading = page.locator(".findkit--spinning");
 	const input = page.locator('[aria-label="Search input"]');
 
 	await page.evaluate(async () => {

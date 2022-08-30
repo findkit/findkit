@@ -3,7 +3,7 @@ import { getHitHosts } from "./helpers";
 
 test("can use 'useParams()' to filter results", async ({ page }) => {
 	await page.goto("/use-params");
-	const loading = page.locator(".findkit--logo-animating");
+	const loading = page.locator(".findkit--spinning");
 	await page.locator("text=open").click();
 
 	const hits = page.locator(".findkit--hit a");
