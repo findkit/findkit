@@ -15,6 +15,7 @@ import { proxy, ref } from "valtio";
 import {
 	AddressBar,
 	createAddressBar,
+	createMemoryAddressbar,
 	FindkitURLSearchParams,
 } from "./address-bar";
 import { Emitter, FindkitUIEvents } from "./emitter";
@@ -227,6 +228,33 @@ class MultiListener {
 /**
  * @public
  */
+export interface SearchEngineOptions {
+	instanceId?: string;
+	publicToken: string;
+	searchEndpoint?: string;
+	throttleTime?: number;
+	searchMoreSize?: number;
+	minTerms?: number;
+	events: Emitter<FindkitUIEvents>;
+	groups?: GroupDefinition[];
+	params?: SearchEngineParams;
+	infiniteScroll?: boolean;
+	container: Element | ShadowRoot;
+	router?: "memory" | "history" | AddressBar;
+
+	/**
+	 * Monitor <html lang> changes
+	 */
+	monitorDocumentElementChanges?: boolean;
+	ui?: {
+		lang: string;
+		overrides?: Partial<TranslationStrings>;
+	};
+}
+
+/**
+ * @public
+ */
 export class SearchEngine {
 	#requestId = 0;
 	#pendingRequestIds: Map<number, AbortController> = new Map();
@@ -256,29 +284,13 @@ export class SearchEngine {
 
 	events: Emitter<FindkitUIEvents>;
 
-	constructor(options: {
-		instanceId?: string;
-		publicToken: string;
-		searchEndpoint?: string;
-		throttleTime?: number;
-		searchMoreSize?: number;
-		minTerms?: number;
-		events: Emitter<FindkitUIEvents>;
-		groups?: GroupDefinition[];
-		params?: SearchEngineParams;
-		infiniteScroll?: boolean;
-		container: Element | ShadowRoot;
+	constructor(options: SearchEngineOptions) {
+		if (options.router === "memory") {
+			this.addressBar = createMemoryAddressbar();
+		} else {
+			this.addressBar = createAddressBar();
+		}
 
-		/**
-		 * Monitor <html lang> changes
-		 */
-		monitorDocumentElementChanges?: boolean;
-		ui?: {
-			lang: string;
-			overrides?: Partial<TranslationStrings>;
-		};
-	}) {
-		this.addressBar = createAddressBar();
 		this.instanceId = options.instanceId ?? "fdk";
 		this.publicToken = options.publicToken;
 		this.events = options.events;

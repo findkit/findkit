@@ -15,6 +15,7 @@ import {
 	SearchEngine,
 	GroupDefinition,
 	SearchEngineParams,
+	SearchEngineOptions,
 } from "./search-engine";
 import { cn, View } from "./utils";
 import type { Emitter, FindkitUIEvents } from "./emitter";
@@ -354,6 +355,7 @@ export function init(options: {
 	groups?: GroupDefinition[];
 	container?: Element;
 	infiniteScroll?: boolean;
+	router?: SearchEngineOptions["router"];
 	ui?: {
 		lang: string;
 		overrides?: Partial<TranslationStrings>;
