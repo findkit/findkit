@@ -21,11 +21,12 @@ type ClassNames =
   | "findkit--link-text"
   | "findkit--load-more-button"
   | "findkit--logo"
-  | "findkit--logo-animating"
   | "findkit--modal"
   | "findkit--modal-visible"
   | "findkit--plain"
   | "findkit--retry-button"
   | "findkit--search-input"
   | "findkit--search-input-wrap"
-  | "findkit--single-group-link";
+  | "findkit--single-group-link"
+  | "findkit--spinner"
+  | "findkit--spinning";

@@ -84,16 +84,6 @@
 
 	/* click through */
 	pointer-events: none;
-
-	animation-name: color;
-	animation-duration: 0.5s;
-	animation-iteration-count: 1;
-	animation-direction: alternate-reverse;
-	animation-timing-function: ease;
-}
-
-.logo-animating {
-	animation-iteration-count: infinite;
 }
 
 .search-input-wrap {
@@ -239,4 +229,47 @@
 	outline: 5px dashed rgba(56, 175, 255, 0.2);
 	background-color: rgba(195, 231, 255, 0.2);
 	border-radius: 15px;
+}
+
+.spinner {
+	position: absolute;
+	display: flex;
+	height: 100%;
+	aspect-ratio: 1 / 1;
+	right: 0;
+	pointer-events: none;
+
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+.spinner:after {
+	content: " ";
+	display: flex;
+	flex: 1;
+	box-sizing: border-box;
+	margin: 15px;
+	border: 3px solid;
+	border-color: rgba(0, 0, 0, 0.1) transparent rgb(0, 0, 0, 0.1) transparent;
+	border-radius: 50%;
+	animation: findkit-spinner-rotate 0.5s linear infinite;
+	animation-play-state: paused;
+}
+
+.spinning {
+	transition-delay: 1s;
+	opacity: 1;
+}
+
+.spinning:after {
+	animation-play-state: running;
+}
+
+@keyframes findkit-spinner-rotate {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }

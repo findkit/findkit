@@ -7,7 +7,7 @@ test("can navigate to full group results and back", async ({ page }) => {
 	await page.goto("/two-groups");
 	const hits = page.locator(".findkit--hit");
 	const groupTitles = page.locator(".findkit--group-title");
-	const loading = page.locator(".findkit--logo-animating");
+	const loading = page.locator(".findkit--spinning");
 
 	await page.locator("text=open").click();
 
@@ -75,7 +75,7 @@ test("back button works", async ({ page }) => {
 	await page.goto("/two-groups");
 	const hits = page.locator(".findkit--hit");
 	const groupTitles = page.locator(".findkit--group-title");
-	const loading = page.locator(".findkit--logo-animating");
+	const loading = page.locator(".findkit--spinning");
 
 	await page.locator("text=open").click();
 	await page.locator("input:visible").type("mikko");
@@ -155,7 +155,7 @@ test("fetch counts", async ({ page }) => {
 		});
 	}
 
-	const loading = page.locator(".findkit--logo-animating");
+	const loading = page.locator(".findkit--spinning");
 
 	await page.locator("text=open").click();
 
