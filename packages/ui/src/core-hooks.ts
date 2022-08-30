@@ -10,6 +10,7 @@ import { Translator } from "./translations";
 export interface SlotProps {
 	Hit: { hit: SearchResultHit };
 	Header: {};
+	Content: {};
 	Layout: {
 		header: React.ReactNode;
 		content: React.ReactNode;
