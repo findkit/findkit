@@ -9,7 +9,27 @@
 	<body>
 		<div id="container"></div>
 		<script type="module">
-			import { FindkitUI } from "/build/esm/index.js";
+			import {
+				FindkitUI,
+				css,
+				html,
+				useTerms,
+				useTotal,
+				useResults,
+			} from "/build/esm/index.js";
+
+			function TestHooks(props) {
+				const terms = useTerms();
+				const total = useTotal();
+				const results = useResults();
+
+				return html`
+					<div class="test-terms">${terms}</div>
+					<div class="test-total">${total}</div>
+					<div class="test-results">${results.length}</div>
+					${props.children}
+				`;
+			}
 
 			const ui = new FindkitUI({
 				publicToken: "po8GK3G0r",
@@ -17,6 +37,14 @@
 				params: {
 					tagQuery: [["domain/valu.fi"]],
 				},
+				slots: {
+					Layout: TestHooks,
+				},
+				css: css`
+					.findkit--content {
+						background-color: #f0f0f0;
+					}
+				`,
 			});
 
 			Object.assign(window, { ui });

@@ -40,3 +40,21 @@ test("can use custom input (.bindInput()) and params-change events", async ({
 	const hosts = await getHitHosts(page);
 	expect(hosts).toEqual(["statement.fi"]);
 });
+
+test("can use hooks", async ({ page }) => {
+	await page.goto("/custom-container");
+	const hits = page.locator(".findkit--hit");
+
+	const input = page.locator('[aria-label="Search input"]');
+	await input.type("valu");
+
+	await hits.first().waitFor({ state: "visible" });
+
+	await expect(page.locator(".test-terms")).toHaveText("valu");
+	const total = await page.locator(".test-total").innerText();
+	const resultLength = await page.locator(".test-results").innerText();
+
+	expect(Number(total)).toBeGreaterThan(10);
+	expect(Number(resultLength)).toBeGreaterThan(10);
+	expect(Number(total)).toBeGreaterThan(Number(resultLength));
+});
