@@ -3,7 +3,7 @@ import { spinnerLocator } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 
-test("can set required terms lenght to zero", async ({ page }) => {
+test("can set required terms length to zero", async ({ page }) => {
 	await page.goto("/dummy");
 
 	await page.evaluate(async () => {
