@@ -10,7 +10,7 @@ export const BASE_TRANSLATIONS = {
 /**
  * @public
  *
- * Avaialable translations strings
+ * Available translations strings
  *
  */
 export type TranslationStrings = typeof BASE_TRANSLATIONS;
