@@ -211,3 +211,32 @@ test("can bind .open(terms) to a button", async ({ page }) => {
 	await expect(input).toHaveValue("valu");
 	await expect(page).toHaveURL(/fdk_q=valu/);
 });
+
+test("can use memory routing", async ({ page }) => {
+	await page.goto("/dummy");
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "po8GK3G0r",
+			router: "memory",
+			params: {
+				tagQuery: [],
+			},
+		});
+
+		await ui.open("valu");
+	});
+
+	const hits = page.locator(".findkit--hit a");
+	const input = page.locator('[aria-label="Search input"]');
+
+	await hits.first().waitFor({ state: "visible" });
+	await expect(page).not.toHaveURL(/fdk_q/);
+
+	const firstResults = await hits.first().textContent();
+
+	await input.fill("wordpress");
+
+	await expect(hits.first()).not.toHaveText(firstResults!);
+	await expect(page).not.toHaveURL(/fdk_q/);
+});

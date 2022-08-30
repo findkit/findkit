@@ -6,6 +6,7 @@ import type {
 	UpdateGroupsArgument,
 	UpdateParamsArgument,
 	SearchEngineParams,
+	SearchEngineOptions,
 } from "../search-engine";
 import type { AddressBar, FindkitURLSearchParams } from "../address-bar";
 import type { Slots, SlotProps, MakeSlotComponents } from "../core-hooks";
@@ -262,6 +263,7 @@ export interface FindkitUIOptions {
 	searchEndpoint?: string;
 	container?: Element;
 	monitorDocumentElementChanges?: boolean;
+	router?: SearchEngineOptions["router"];
 	ui?: {
 		lang: string;
 		overrides?: Partial<TranslationStrings>;

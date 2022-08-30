@@ -114,10 +114,39 @@ function monitorMethod<Target extends {}, Method extends keyof Target>(
 	};
 }
 
-// Move to Navigation API once possible
-// https://caniuse.com/mdn-api_navigation_navigate_event
-monitorMethod(history, "pushState", dispatchFindkitURLChange);
-monitorMethod(history, "replaceState", dispatchFindkitURLChange);
+export function createMemoryAddressbar(): AddressBar {
+	let qs = "";
+	const listeners = new Set<() => any>();
+
+	const emit = () => {
+		for (const listener of listeners) {
+			listener();
+		}
+	};
+
+	return {
+		getSearchParamsString: () => qs,
+		update: (params) => {
+			const next = params.toString();
+
+			if (qs === next) {
+				return;
+			}
+
+			qs = next;
+			emit();
+		},
+		listen: (cb) => {
+			listeners.add(cb);
+
+			return () => {
+				listeners.delete(cb);
+			};
+		},
+	};
+}
+
+let addressBarInitialized = false;
 
 export function createAddressBar(): AddressBar {
 	if (typeof window === "undefined") {
@@ -126,6 +155,14 @@ export function createAddressBar(): AddressBar {
 			getSearchParamsString: () => "",
 			update: () => {},
 		};
+	}
+
+	if (!addressBarInitialized) {
+		// Move to Navigation API once possible
+		// https://caniuse.com/mdn-api_navigation_navigate_event
+		monitorMethod(history, "pushState", dispatchFindkitURLChange);
+		monitorMethod(history, "replaceState", dispatchFindkitURLChange);
+		addressBarInitialized = true;
 	}
 
 	return {
