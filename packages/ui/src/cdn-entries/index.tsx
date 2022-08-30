@@ -13,6 +13,7 @@ import type {
 	ModalImplementation,
 	Dispatch,
 	SetStateAction,
+	SearchResultHitWithGroupId,
 } from "./implementation";
 import type { init } from "../modal";
 import type { CustomFields } from "@findkit/fetch";
@@ -20,6 +21,7 @@ import { Emitter, FindkitUIEvents } from "../emitter";
 import type { TranslationStrings } from "../translations";
 
 export {
+	SearchResultHitWithGroupId,
 	TranslationStrings,
 	Emitter,
 	MakeSlotComponents,
@@ -32,7 +34,7 @@ export {
 	SlotProps,
 	ModalImplementation,
 	State,
-	init as initModal,
+	init,
 	Dispatch,
 	SearchResultHit,
 	SetStateAction,
@@ -153,11 +155,25 @@ export const h = createShellFunction("h");
 export const useState = createShellFunction("useState");
 
 /**
- * Use the full UI state
+ * Use search terms
  *
  * @public
  */
-export const useUIState = createShellFunction("useUIState");
+export const useTerms = createShellFunction("useTerms");
+
+/**
+ * Use total count of search results
+ *
+ * @public
+ */
+export const useTotal = createShellFunction("useTotal");
+
+/**
+ * Use search results
+ *
+ * @public
+ */
+export const useResults = createShellFunction("useResults");
 
 /**
  * Read or update the search params
