@@ -241,6 +241,10 @@
 	align-items: center;
 }
 
+.hover-bg {
+	transition: background-color 400ms ease;
+}
+
 .hover-bg:hover:not([disabled]) {
 	background-color: var(--hover-bg-color);
 }
