@@ -1,6 +1,7 @@
 // This file is auto-generated with postcss-ts-classnames.
 
 type ClassNames =
+  | "findkit--all-results-shown"
   | "findkit--back-link"
   | "findkit--close-button"
   | "findkit--content"
@@ -8,6 +9,8 @@ type ClassNames =
   | "findkit--error-container"
   | "findkit--error-message"
   | "findkit--error-title"
+  | "findkit--footer"
+  | "findkit--footer-spinner"
   | "findkit--group"
   | "findkit--group-title"
   | "findkit--header"
@@ -17,6 +20,7 @@ type ClassNames =
   | "findkit--hit-title"
   | "findkit--hit-title-link"
   | "findkit--hit-url"
+  | "findkit--hover-bg"
   | "findkit--link"
   | "findkit--link-text"
   | "findkit--load-more-button"

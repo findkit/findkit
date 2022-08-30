@@ -1,7 +1,7 @@
 import { FocusTrap } from "./focus-trap";
 import React, { StrictMode, useRef, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { Results, FindkitProvider, Logo, Slot } from "./components";
+import { Results, FindkitProvider, Logo, Slot, Spinner } from "./components";
 import {
 	useSearchEngineState,
 	useSearchEngine,
@@ -199,13 +199,6 @@ function FetchError() {
 				Try again
 			</View>
 		</View>
-	);
-}
-
-export function Spinner() {
-	const state = useSearchEngineState();
-	return (
-		<View cn={{ spinner: true, spinning: state.status === "fetching" }}></View>
 	);
 }
 
