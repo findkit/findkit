@@ -47,3 +47,7 @@ export async function getScrollPosition(page: Page) {
 		);
 	});
 }
+
+export function spinnerLocator(page: Page) {
+	return page.locator(".findkit--search-input-wrap .findkit--spinning");
+}

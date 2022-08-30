@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { spinnerLocator } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 
@@ -103,7 +104,7 @@ test("updates from history.pushState()", async ({ page }) => {
 	await page.goto("/dummy");
 
 	const hits = page.locator(".findkit--hit a");
-	const loading = page.locator(".findkit--spinning");
+	const loading = spinnerLocator(page);
 	const input = page.locator('[aria-label="Search input"]');
 
 	await page.evaluate(async () => {

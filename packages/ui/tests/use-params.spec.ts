@@ -1,9 +1,9 @@
 import { test, expect } from "@playwright/test";
-import { getHitHosts } from "./helpers";
+import { getHitHosts, spinnerLocator } from "./helpers";
 
 test("can use 'useParams()' to filter results", async ({ page }) => {
 	await page.goto("/use-params");
-	const loading = page.locator(".findkit--spinning");
+	const loading = spinnerLocator(page);
 	await page.locator("text=open").click();
 
 	const hits = page.locator(".findkit--hit a");
