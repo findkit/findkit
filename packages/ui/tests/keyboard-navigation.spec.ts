@@ -94,10 +94,30 @@ test("can navigate to group", async ({ page }) => {
 
 	await page.goBack();
 
+	await hits.first().waitFor({ state: "visible" });
+
 	// Go back link
 	await page.keyboard.down("ArrowDown");
 
 	await expect(page.locator("[data-kb-current]")).toHaveText("Back");
 	await page.keyboard.down("Enter");
 	expect(await groupTitles.count()).toBe(2);
+});
+
+test("can keyboard navigate in custom container", async ({ page }) => {
+	await page.goto("/custom-container");
+	const hits = page.locator(".findkit--hit");
+
+	const input = page.locator('[aria-label="Search input"]');
+	await input.type("valu");
+
+	await hits.first().waitFor({ state: "visible" });
+
+	for (let i = 0; i < 6; i++) {
+		await page.keyboard.down("ArrowDown");
+	}
+
+	await expect
+		.poll(async () => page.evaluate(() => document.documentElement.scrollTop))
+		.toBeGreaterThan(100);
 });

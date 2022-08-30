@@ -34,18 +34,30 @@ export const { scopeClassNames, scopeView } =
 export const View = scopeView("findkit");
 export const cn = scopeClassNames("findkit");
 
-export function getScrollContainer(
-	node: HTMLElement | null,
-): HTMLElement | null {
+export function getScrollContainer(node: HTMLElement): HTMLElement | null {
 	if (!node) {
 		return null;
 	}
 
 	if (node.scrollHeight > node.clientHeight) {
 		if (node === document.body) {
+			// This is weird edge case. The <body> seems to be the scrollable
+			// element but we need to get the measurements from the <html>
+			// element aka documentElement.
 			return document.documentElement;
 		}
 		return node;
+	}
+
+	if (!node.parentElement) {
+		// Check for shadow dom
+		const root = node.getRootNode();
+		if (root instanceof ShadowRoot && root.host instanceof HTMLElement) {
+			return getScrollContainer(root.host);
+		}
+
+		// Nothing to scroll
+		return null;
 	}
 
 	return getScrollContainer(node.parentElement);
