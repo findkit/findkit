@@ -35,10 +35,6 @@ export const View = scopeView("findkit");
 export const cn = scopeClassNames("findkit");
 
 export function getScrollContainer(node: HTMLElement): HTMLElement | null {
-	if (!node) {
-		return null;
-	}
-
 	if (node.scrollHeight > node.clientHeight) {
 		if (node === document.body) {
 			// This is weird edge case. The <body> seems to be the scrollable
@@ -50,13 +46,13 @@ export function getScrollContainer(node: HTMLElement): HTMLElement | null {
 	}
 
 	if (!node.parentElement) {
-		// Check for shadow dom
+		// Check for shadow dom break out of it if it is "open"
 		const root = node.getRootNode();
 		if (root instanceof ShadowRoot && root.host instanceof HTMLElement) {
 			return getScrollContainer(root.host);
 		}
 
-		// Nothing to scroll
+		// Got to root with nothing to scroll
 		return null;
 	}
 
@@ -66,9 +62,7 @@ export function getScrollContainer(node: HTMLElement): HTMLElement | null {
 export function scrollToTop(el: HTMLElement) {
 	const container = getScrollContainer(el);
 	if (container && container !== document.documentElement) {
-		container.scrollTo({
-			top: 0,
-		});
+		container.scrollTo({ top: 0 });
 	}
 }
 
