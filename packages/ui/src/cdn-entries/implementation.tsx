@@ -3,7 +3,7 @@ import { createElement, useMemo, useState } from "react";
 import { useSearchEngine, useSearchEngineState } from "../core-hooks";
 
 import { init } from "../modal";
-import { SearchResultHit, State } from "../search-engine";
+import { SearchResultHit } from "../search-engine";
 import { assertNonNullable } from "../utils";
 
 /**

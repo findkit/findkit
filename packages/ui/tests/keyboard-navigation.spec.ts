@@ -1,8 +1,5 @@
 import { test, expect } from "@playwright/test";
-import type { FindkitUI } from "../src/cdn-entries";
 import { getScrollPosition } from "./helpers";
-
-declare const ui: FindkitUI;
 
 test.use({
 	viewport: {
