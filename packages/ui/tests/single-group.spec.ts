@@ -1,13 +1,13 @@
 import { test, expect } from "@playwright/test";
 import type { FindkitUI } from "../src/cdn-entries/index";
-import { getHitHosts } from "./helpers";
+import { getHitHosts, spinnerLocator } from "./helpers";
 
 declare const ui: FindkitUI;
 
 test("can load more results when using only one group", async ({ page }) => {
 	await page.goto("/single-group");
 	const hits = page.locator(".findkit--hit");
-	const loading = page.locator(".findkit--spinning");
+	const loading = spinnerLocator(page);
 
 	const button = page.locator("text=open");
 
@@ -231,7 +231,7 @@ test("can update groups on the fly", async ({ page }) => {
 		]);
 	});
 
-	const loading = page.locator(".findkit--spinning");
+	const loading = spinnerLocator(page);
 	await loading.waitFor({ state: "hidden" });
 
 	expect(await getHitHosts(page)).toEqual(["statement.fi"]);
@@ -257,7 +257,7 @@ test("can update groups on the fly with update function", async ({ page }) => {
 		});
 	});
 
-	const loading = page.locator(".findkit--spinning");
+	const loading = spinnerLocator(page);
 	await loading.waitFor({ state: "hidden" });
 
 	expect(await getHitHosts(page)).toEqual(["statement.fi"]);

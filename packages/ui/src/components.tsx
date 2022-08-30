@@ -74,7 +74,7 @@ function SingleGroupLink(props: { children: ReactNode; groupId: string }) {
 	return (
 		<View
 			as="a"
-			cn="single-group-link"
+			cn={["single-group-link", "hover-bg"]}
 			{...kbAttrs}
 			data-kb-action
 			href={nextParams.toLink()}
@@ -103,7 +103,7 @@ function AllResultsLink(props: { children: ReactNode }) {
 			as="a"
 			{...kbAttrs}
 			data-kb-action
-			cn="back-link"
+			cn={["back-link", "hover-bg"]}
 			href={nextParams.toLink()}
 			onClick={(e) => {
 				e.preventDefault();
@@ -272,6 +272,9 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 		};
 	}
 
+	const allResultsShown =
+		group.hits.length === group.total && state.status !== "fetching";
+
 	useEffect(() => {
 		if (!state.infiniteScroll || state.keyboardCursor) {
 			return;
@@ -311,25 +314,30 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 				title={groupCount > 1 ? def?.title : undefined}
 			/>
 
-			<p>total: {group.total}</p>
-
-			<p>
-				<View
-					as="button"
-					cn="load-more-button"
-					ref={ref}
-					type="button"
-					{...kbAttrs}
-					disabled={
-						group.hits.length === group.total || state.status === "fetching"
-					}
-					onClick={() => {
-						engine.searchMore({ force: true });
-					}}
-				>
-					{t("load-more")}
+			<View cn="footer">
+				{allResultsShown ? (
+					<View cn="all-results-shown">All results shown</View>
+				) : (
+					<View
+						as="button"
+						cn={["load-more-button", "hover-bg"]}
+						ref={ref}
+						type="button"
+						{...kbAttrs}
+						disabled={
+							group.hits.length === group.total || state.status === "fetching"
+						}
+						onClick={() => {
+							engine.searchMore({ force: true });
+						}}
+					>
+						{t("load-more")}
+					</View>
+				)}
+				<View cn="footer-spinner">
+					<Spinner />
 				</View>
-			</p>
+			</View>
 		</>
 	);
 }
@@ -404,5 +412,17 @@ export function Arrow(props: { direction: "left" | "right" }) {
 				d="M13.362 17.0002C13.0898 16.9991 12.8298 16.8872 12.642 16.6902L8.78195 12.6902H8.78195C8.40081 12.3013 8.40081 11.679 8.78195 11.2902L12.782 7.29019C13.1741 6.89806 13.8098 6.89806 14.202 7.29019C14.5941 7.68231 14.5941 8.31807 14.202 8.71019L10.902 12.0002L14.082 15.3002C14.4697 15.6902 14.4697 16.3201 14.082 16.7102C13.8908 16.8999 13.6312 17.0044 13.362 17.0002Z"
 			/>
 		</View>
+	);
+}
+
+export function Spinner() {
+	const state = useSearchEngineState();
+	return (
+		<View
+			cn={{
+				spinner: true,
+				spinning: state.status === "fetching",
+			}}
+		></View>
 	);
 }

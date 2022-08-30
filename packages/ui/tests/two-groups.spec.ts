@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import type { FindkitUI } from "../src/cdn-entries";
+import { spinnerLocator } from "./helpers";
 
 declare const ui: FindkitUI;
 
@@ -7,7 +8,7 @@ test("can navigate to full group results and back", async ({ page }) => {
 	await page.goto("/two-groups");
 	const hits = page.locator(".findkit--hit");
 	const groupTitles = page.locator(".findkit--group-title");
-	const loading = page.locator(".findkit--spinning");
+	const loading = spinnerLocator(page);
 
 	await page.locator("text=open").click();
 
@@ -75,7 +76,7 @@ test("back button works", async ({ page }) => {
 	await page.goto("/two-groups");
 	const hits = page.locator(".findkit--hit");
 	const groupTitles = page.locator(".findkit--group-title");
-	const loading = page.locator(".findkit--spinning");
+	const loading = spinnerLocator(page);
 
 	await page.locator("text=open").click();
 	await page.locator("input:visible").type("mikko");
@@ -155,7 +156,7 @@ test("fetch counts", async ({ page }) => {
 		});
 	}
 
-	const loading = page.locator(".findkit--spinning");
+	const loading = spinnerLocator(page);
 
 	await page.locator("text=open").click();
 
