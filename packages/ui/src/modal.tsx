@@ -252,7 +252,7 @@ function Modal() {
 		>
 			<Slot name="Header" props={{}}>
 				<View
-					cn="close-button"
+					cn={["close-button", "hover-bg"]}
 					as="button"
 					type="button"
 					aria-label={t("aria-label-close-search")}
