@@ -72,6 +72,15 @@ test("can navigate directly to a group results", async ({ page }) => {
 	expect(hitCount1).toBeGreaterThan(2);
 });
 
+test("can navigate directly to the second group results", async ({ page }) => {
+	await page.goto("/two-groups?fdk_q=valu&fdk_id=statement");
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	const hitCount1 = await hits.count();
+	expect(hitCount1).toBeGreaterThan(2);
+});
+
 test("back button works", async ({ page }) => {
 	await page.goto("/two-groups");
 	const hits = page.locator(".findkit--hit");

@@ -845,9 +845,15 @@ export class SearchEngine {
 				};
 			});
 
-			const groupId = groups[index]?.id;
-			if (groupId === undefined) {
-				throw new Error("[findkit] Bug? Inknown group index: " + index);
+			let groupId;
+			const indexGroup = groups[index];
+
+			if (appendGroup) {
+				groupId = appendGroup.id;
+			} else if (indexGroup) {
+				groupId = indexGroup.id;
+			} else {
+				throw new Error("[findkit] Bug? Unknown group index: " + index);
 			}
 
 			resWithIds[groupId] = {
