@@ -171,3 +171,43 @@ test("can change terms after fetching all", async ({ page }) => {
 	// Expect results to change
 	await expect(hits.first()).not.toHaveText(initialContent!);
 });
+
+test("can bind .open(terms) to a button", async ({ page }) => {
+	await page.goto("/dummy");
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "po8GK3G0r",
+			params: {
+				tagQuery: [],
+			},
+		});
+
+		document.querySelector("#open-button")!.addEventListener("click", () => {
+			void ui.open("valu");
+		});
+
+		Object.assign(window, { ui });
+	});
+
+	const button = page.locator("text=open");
+	const input = page.locator('[aria-label="Search input"]');
+	const hits = page.locator(".findkit--hit");
+
+	await button.click();
+	await hits.first().waitFor({ state: "visible" });
+
+	await expect(input).toHaveValue("valu");
+	await expect(page).toHaveURL(/fdk_q=valu/);
+
+	await page.keyboard.press("Escape");
+
+	await expect(page).not.toHaveURL(/fdk_q=valu/);
+	await expect(input).not.toBeVisible();
+
+	await button.click();
+	await hits.first().waitFor({ state: "visible" });
+
+	await expect(input).toHaveValue("valu");
+	await expect(page).toHaveURL(/fdk_q=valu/);
+});
