@@ -147,7 +147,7 @@ function Hit(props: {
 		engine.events.emit("hit-click", {
 			hit: props.hit,
 			target: e.target,
-			terms: engine.state.usedTerms,
+			terms: engine.state.usedTerms ?? "",
 			preventDefault: () => {
 				e.preventDefault();
 			},
@@ -276,7 +276,13 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 		group.hits.length === group.total && state.status !== "fetching";
 
 	useEffect(() => {
-		if (!state.infiniteScroll || state.keyboardCursor) {
+		// Explicitly disabled
+		if (!state.infiniteScroll) {
+			return;
+		}
+
+		// Keyboard navigating has it's own method of fetching more
+		if (state.keyboardCursor) {
 			return;
 		}
 
@@ -287,11 +293,14 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 		}
 
 		const observer = new IntersectionObserver(
-			() => {
-				engine.searchMore();
+			(entries) => {
+				if (entries[0]?.isIntersecting) {
+					engine.searchMore();
+				}
 			},
 			{
 				threshold: 0.5,
+				rootMargin: "200px",
 			},
 		);
 
