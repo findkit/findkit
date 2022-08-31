@@ -290,6 +290,10 @@ test("can infinite scroll", async ({ page }) => {
 
 	const count = await hits.count();
 
+	// Move focus away from the input to ensure that the End key scrolls and
+	// does not move the text cursor. Required on Linux.
+	await page.keyboard.press("Tab");
+
 	await page.keyboard.press("End");
 
 	await expect.poll(async () => hits.count()).toBeGreaterThan(count);
