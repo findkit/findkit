@@ -83,7 +83,7 @@ export interface State {
 	/**
 	 * Search terms used on the last completed search
 	 */
-	usedTerms: string;
+	usedTerms: string | undefined;
 
 	/**
 	 * Search groups used on the last completed search
@@ -329,7 +329,7 @@ export class SearchEngine {
 		const lang = options.ui?.lang ?? this.#getDocumentLang();
 
 		this.state = proxy<State>({
-			usedTerms: initialSearchParams.getTerms(),
+			usedTerms: undefined,
 			currentGroupId: initialSearchParams.getGroupId(),
 			searchParams: this.addressBar.getSearchParamsString(),
 			lang: undefined,
@@ -636,6 +636,16 @@ export class SearchEngine {
 	#searchMoreDebounce?: ReturnType<typeof setTimeout>;
 
 	searchMore(options?: { force?: boolean }) {
+		// If no usedTerms is set it means first fetch has not completed so no
+		// need to fetch yet
+		if (this.state.usedTerms === undefined) {
+			return;
+		}
+
+		if (this.#isAllresultsFetched()) {
+			return;
+		}
+
 		clearTimeout(this.#searchMoreDebounce);
 		if (options?.force === true) {
 			this.#actualSearchMore();
@@ -646,20 +656,30 @@ export class SearchEngine {
 
 	#actualSearchMore = () => {
 		if (this.state.status === "ready" && this.#getSelectedGroup("next")) {
-			void this.#fetch({ reset: false, terms: this.state.usedTerms });
+			void this.#fetch({ reset: false, terms: this.state.usedTerms ?? "" });
 		}
 	};
 
 	retry() {
 		this.state.error = undefined;
-		void this.#fetch({ reset: true, terms: this.state.usedTerms });
+		void this.#fetch({ reset: true, terms: this.state.usedTerms ?? "" });
 	}
 
 	/**
 	 * Aka the "from" value for append requests
 	 */
-	#getGroupTotal(groupId: string): number {
+	#getFetchedGroupHitCount(groupId: string): number {
 		return this.state.resultGroups[groupId]?.hits.length ?? 0;
+	}
+
+	#isAllresultsFetched() {
+		const group = this.#getSelectedGroup("used");
+		if (group) {
+			const total = this.state.resultGroups[group.id]?.total;
+			return this.#getFetchedGroupHitCount(group.id) === total;
+		}
+
+		return false;
 	}
 
 	#getFindkitFetchOptions(options: {
@@ -685,7 +705,7 @@ export class SearchEngine {
 
 				let from = 0;
 				if (options.appendGroupId && !options.reset) {
-					from = this.#getGroupTotal(options.appendGroupId);
+					from = this.#getFetchedGroupHitCount(options.appendGroupId);
 				}
 
 				return cleanUndefined({
@@ -905,7 +925,7 @@ export class SearchEngine {
 		const groups =
 			source === "next"
 				? this.state.nextGroupDefinitions
-				: this.state.usedGroupDefinitions;
+				: this.state.usedGroupDefinitions ?? this.state.nextGroupDefinitions;
 
 		// When using only one group we can just use the id of the first group
 		if (groups.length === 1 && groups[0]) {

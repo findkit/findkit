@@ -197,3 +197,36 @@ test("fetch counts", async ({ page }) => {
 	// Eh, could optimize and remove this fetch
 	expect(await getCount()).toBe(4);
 });
+
+test("fetches only once when navigating directly to results", async ({
+	page,
+}) => {
+	const hits = page.locator(".findkit--hit");
+
+	await page.goto("/two-groups");
+
+	await page.evaluate(async () => {
+		const anyWindow = window as any;
+		anyWindow.COUNT = 0;
+		ui.events.on("fetch", () => {
+			anyWindow.COUNT++;
+		});
+
+		await ui.preload();
+
+		history.replaceState(null, "", "?fdk_q=valu&fdk_id=valu");
+	});
+
+	async function getCount() {
+		return await page.evaluate(async () => {
+			const anyWindow = window as any;
+			return anyWindow.COUNT as number;
+		});
+	}
+
+	await hits.first().waitFor({ state: "visible" });
+
+	await page.waitForTimeout(500);
+
+	expect(await getCount()).toBe(1);
+});

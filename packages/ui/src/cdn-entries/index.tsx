@@ -333,8 +333,8 @@ export class FindkitUI {
 		return await this.#implementationPromise;
 	}
 
-	preload() {
-		void this.#getEngine();
+	async preload() {
+		await this.#getEngine();
 	}
 
 	#getStyleSheets(): string[] {

@@ -50,9 +50,9 @@ export interface SearchResultHitWithGroupId extends SearchResultHit {
 /**
  * @public
  */
-export function useTermsImplementation() {
+export function useTermsImplementation(): string {
 	const state = useSearchEngineState();
-	return state.usedTerms;
+	return state.usedTerms ?? "";
 }
 
 /**
