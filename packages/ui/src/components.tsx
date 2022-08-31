@@ -1,10 +1,4 @@
-import React, {
-	MouseEventHandler,
-	ReactNode,
-	useEffect,
-	useMemo,
-	useRef,
-} from "react";
+import React, { MouseEventHandler, ReactNode, useMemo } from "react";
 import { useSnapshot } from "valtio";
 import {
 	FindkitContext,
