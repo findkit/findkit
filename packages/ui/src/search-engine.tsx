@@ -432,7 +432,7 @@ export class SearchEngine {
 			peek instanceof HTMLElement &&
 			peek.className.includes("load-more-button")
 		) {
-			this.searchMore({ force: true });
+			this.searchMore({ now: true });
 		}
 
 		if (item instanceof HTMLElement) {
@@ -635,7 +635,16 @@ export class SearchEngine {
 
 	#searchMoreDebounce?: ReturnType<typeof setTimeout>;
 
-	searchMore(options?: { force?: boolean }) {
+	searchMore(options?: { now?: boolean }) {
+		clearTimeout(this.#searchMoreDebounce);
+		if (options?.now === true) {
+			this.#actualSearchMore();
+		} else {
+			this.#searchMoreDebounce = setTimeout(this.#actualSearchMore, 500);
+		}
+	}
+
+	#actualSearchMore = () => {
 		// If no usedTerms is set it means first fetch has not completed so no
 		// need to fetch yet
 		if (this.state.usedTerms === undefined) {
@@ -646,15 +655,6 @@ export class SearchEngine {
 			return;
 		}
 
-		clearTimeout(this.#searchMoreDebounce);
-		if (options?.force === true) {
-			this.#actualSearchMore();
-		} else {
-			this.#searchMoreDebounce = setTimeout(this.#actualSearchMore, 500);
-		}
-	}
-
-	#actualSearchMore = () => {
 		if (this.state.status === "ready" && this.#getSelectedGroup("next")) {
 			void this.#fetch({ reset: false, terms: this.state.usedTerms ?? "" });
 		}

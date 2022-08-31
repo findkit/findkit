@@ -73,6 +73,53 @@ export function useSearchEngineState() {
 	return useSnapshot(engine.state);
 }
 
+export function useSearchMoreOnReveal() {
+	const engine = useSearchEngine();
+	const elRef = useRef<HTMLElement | null>(null);
+	const observerRef = useRef<IntersectionObserver | null>(null);
+
+	return useCallback(
+		(el: HTMLElement | null) => {
+			if (el === elRef.current) {
+				return;
+			}
+
+			observerRef.current?.disconnect();
+
+			if (!el) {
+				return;
+			}
+
+			const observer = new IntersectionObserver(
+				(entries) => {
+					if (!entries[0]?.isIntersecting) {
+						return;
+					}
+
+					if (!engine.state.infiniteScroll) {
+						return;
+					}
+
+					if (engine.state.keyboardCursor) {
+						return;
+					}
+
+					engine.searchMore();
+				},
+				{
+					threshold: 0.2,
+				},
+			);
+
+			observer.observe(el);
+
+			observerRef.current = observer;
+			elRef.current = el;
+		},
+		[engine],
+	);
+}
+
 export function useInput() {
 	const engine = useSearchEngine();
 

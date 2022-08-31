@@ -262,3 +262,37 @@ test("can update groups on the fly with update function", async ({ page }) => {
 
 	expect(await getHitHosts(page)).toEqual(["statement.fi"]);
 });
+
+test("can infinite scroll", async ({ page }) => {
+	await page.goto("/single-group");
+
+	await page.evaluate(async () => {
+		const anyWindow = window as any;
+		anyWindow.COUNT = 0;
+		ui.events.on("fetch", () => {
+			anyWindow.COUNT++;
+		});
+	});
+
+	async function getFetchCount() {
+		return await page.evaluate(async () => {
+			const anyWindow = window as any;
+			return anyWindow.COUNT as number;
+		});
+	}
+
+	await page.locator("text=open").click();
+
+	const hits = page.locator(".findkit--hit a");
+	const input = page.locator('[aria-label="Search input"]');
+	await input.type("valu");
+	await hits.first().waitFor({ state: "visible" });
+
+	const count = await hits.count();
+
+	await page.keyboard.press("End");
+
+	await expect.poll(async () => hits.count()).toBeGreaterThan(count);
+
+	expect(await getFetchCount()).toBe(2);
+});

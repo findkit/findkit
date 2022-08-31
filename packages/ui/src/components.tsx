@@ -17,6 +17,7 @@ import {
 	SlotProps,
 	useTranslator,
 	useKeyboardItemAttributes,
+	useSearchMoreOnReveal,
 } from "./core-hooks";
 import { SearchEngine, SearchResultHit } from "./search-engine";
 import { createTranslator } from "./translations";
@@ -129,6 +130,7 @@ function Hit(props: {
 	groupId: string;
 	groupIndex: number;
 	hitIndex: number;
+	containerRef: ReturnType<typeof useSearchMoreOnReveal> | undefined;
 }) {
 	const engine = useSearchEngine();
 	const kbAttrs = useKeyboardItemAttributes(
@@ -155,7 +157,13 @@ function Hit(props: {
 	};
 
 	return (
-		<View key={props.hit.url} cn="hit" {...kbAttrs} onClick={handleLinkClick}>
+		<View
+			ref={props.containerRef}
+			key={props.hit.url}
+			cn="hit"
+			{...kbAttrs}
+			onClick={handleLinkClick}
+		>
 			<Slot
 				name="Hit"
 				key={props.hit.url}
@@ -199,6 +207,8 @@ function HitList(props: {
 	total: number;
 	hits: ReadonlyArray<SearchResultHit>;
 }) {
+	const hitRef = useSearchMoreOnReveal();
+
 	return (
 		<>
 			{props.title ? (
@@ -206,6 +216,7 @@ function HitList(props: {
 			) : null}
 
 			{props.hits.map((hit, index) => {
+				const last = index === props.hits.length - 1;
 				return (
 					<Hit
 						key={hit.url}
@@ -213,6 +224,7 @@ function HitList(props: {
 						hitIndex={index}
 						groupId={props.groupId}
 						groupIndex={props.groupIndex}
+						containerRef={last ? hitRef : undefined}
 					/>
 				);
 			})}
@@ -262,8 +274,6 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	const def = state.usedGroupDefinitions[props.groupIndex];
 	const kbAttrs = useKeyboardItemAttributes("load-more-" + props.groupId);
 
-	const ref = useRef<HTMLButtonElement | null>(null);
-
 	if (!group) {
 		group = {
 			hits: [],
@@ -274,42 +284,6 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 
 	const allResultsShown =
 		group.hits.length === group.total && state.status !== "fetching";
-
-	useEffect(() => {
-		// Explicitly disabled
-		if (!state.infiniteScroll) {
-			return;
-		}
-
-		// Keyboard navigating has it's own method of fetching more
-		if (state.keyboardCursor) {
-			return;
-		}
-
-		const el = ref.current;
-
-		if (!el) {
-			return;
-		}
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				if (entries[0]?.isIntersecting) {
-					engine.searchMore();
-				}
-			},
-			{
-				threshold: 0.5,
-				rootMargin: "200px",
-			},
-		);
-
-		observer.observe(el);
-
-		return () => {
-			observer.unobserve(el);
-		};
-	}, [engine, state.infiniteScroll, state.keyboardCursor]);
 
 	return (
 		<>
@@ -330,14 +304,13 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 					<View
 						as="button"
 						cn={["load-more-button", "hover-bg"]}
-						ref={ref}
 						type="button"
 						{...kbAttrs}
 						disabled={
 							group.hits.length === group.total || state.status === "fetching"
 						}
 						onClick={() => {
-							engine.searchMore({ force: true });
+							engine.searchMore({ now: true });
 						}}
 					>
 						{t("load-more")}
