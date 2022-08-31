@@ -21,6 +21,8 @@ import {
 import { Emitter, FindkitUIEvents } from "./emitter";
 import { TranslationStrings } from "./translations";
 
+const DEFAULT_HIGHLIGHT_LENGTH = 500;
+
 /**
  * Like the findkit result but real dates instead of the string dates
  *
@@ -316,7 +318,7 @@ export class SearchEngine {
 				{
 					...SINGLE_GROUP_NAME,
 					tagQuery: [],
-					highlightLength: 10,
+					highlightLength: DEFAULT_HIGHLIGHT_LENGTH,
 					scoreBoost: 1,
 					previewSize: 5,
 					...options.params,
@@ -691,7 +693,7 @@ export class SearchEngine {
 					createdDecay: group.createdDecay,
 					modifiedDecay: group.modifiedDecay,
 					decayScale: group.decayScale,
-					highlightLength: group.highlightLength ?? 10,
+					highlightLength: group.highlightLength ?? DEFAULT_HIGHLIGHT_LENGTH,
 					lang: options.lang,
 					size,
 					from,
