@@ -262,11 +262,9 @@ function MultiGroupResults() {
 function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	const state = useSearchEngineState();
 	const t = useTranslator();
-	const engine = useSearchEngine();
 	const groupCount = state.usedGroupDefinitions.length;
 	let group = state.resultGroups[props.groupId];
 	const def = state.usedGroupDefinitions[props.groupIndex];
-	const kbAttrs = useKeyboardItemAttributes("load-more-" + props.groupId);
 
 	if (!group) {
 		group = {
@@ -276,8 +274,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 		};
 	}
 
-	const allResultsShown =
-		group.hits.length === group.total && state.status !== "fetching";
+	const allResultsLoaded = group.hits.length === group.total;
 
 	return (
 		<>
@@ -292,29 +289,46 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 			/>
 
 			<View cn="footer">
-				{allResultsShown ? (
-					<View cn="all-results-shown">All results shown</View>
-				) : (
-					<View
-						as="button"
-						cn={["load-more-button", "hover-bg"]}
-						type="button"
-						{...kbAttrs}
-						disabled={
-							group.hits.length === group.total || state.status === "fetching"
-						}
-						onClick={() => {
-							engine.searchMore({ now: true });
-						}}
-					>
-						{t("load-more")}
-					</View>
-				)}
+				<FooterContent
+					groupId={props.groupId}
+					allResultsLoaded={allResultsLoaded}
+				/>
 				<View cn="footer-spinner">
 					<Spinner />
 				</View>
 			</View>
 		</>
+	);
+}
+
+function FooterContent(props: { allResultsLoaded: boolean; groupId: string }) {
+	const state = useSearchEngineState();
+	const t = useTranslator();
+	const engine = useSearchEngine();
+	const kbAttrs = useKeyboardItemAttributes("load-more-" + props.groupId);
+	const firstSearchMade = state.usedTerms !== undefined;
+
+	if (!firstSearchMade) {
+		return null;
+	}
+
+	if (props.allResultsLoaded) {
+		return <View cn="all-results-shown">All results shown</View>;
+	}
+
+	return (
+		<View
+			as="button"
+			cn={["load-more-button", "hover-bg"]}
+			type="button"
+			{...kbAttrs}
+			disabled={state.status === "fetching"}
+			onClick={() => {
+				engine.searchMore({ now: true });
+			}}
+		>
+			{t("load-more")}
+		</View>
 	);
 }
 
