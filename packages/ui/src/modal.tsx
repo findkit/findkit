@@ -134,24 +134,38 @@ function useIsScrollingDown(
 	return scrollingDown;
 }
 
-function useDelay(show: boolean, ms: number) {
-	const [status, setStatus] = useState(false);
+function useDelay(
+	start: boolean,
+	containerRef: React.MutableRefObject<HTMLDivElement | null>,
+) {
+	const [end, setEnd] = useState(false);
 
 	useEffect(() => {
-		if (show) {
-			setStatus(show);
+		const el = containerRef.current;
+		if (!el) {
+			return;
+		}
+
+		const delay = getComputedStyle(el).getPropertyValue(
+			"--findkit--modal-animation-duration",
+		);
+
+		const ms = Number(/(\d+)ms/.exec(delay)?.[1] ?? 0);
+
+		if (start) {
+			setEnd(start);
 		} else {
 			const timer = setTimeout(() => {
-				setStatus(false);
+				setEnd(false);
 			}, ms);
 
 			return () => {
 				clearTimeout(timer);
 			};
 		}
-	}, [ms, show]);
+	}, [containerRef, start]);
 
-	return status;
+	return end;
 }
 
 function Cross() {
@@ -231,8 +245,7 @@ function Modal() {
 	useFocusTrap(containerRef);
 
 	const show = state.status !== "closed";
-	const duration = 150;
-	const delayed = useDelay(show, duration);
+	const delayed = useDelay(show, containerRef);
 	const unmount = !delayed && !show;
 	const isScrollingDown = useIsScrollingDown(containerRef, show);
 
