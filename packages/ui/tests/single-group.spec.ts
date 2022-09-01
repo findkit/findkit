@@ -175,8 +175,8 @@ test("can navigate to hit and come back retaining url and input value", async ({
 
 	await page.goBack();
 
-	expect(page.url()).toContain("wordpress");
-	expect(await input.inputValue()).toBe("wordpress");
+	await expect(page).toHaveURL(/fdk_q=wordpress/);
+	await expect.poll(async () => input.inputValue()).toBe("wordpress");
 });
 
 test("emits hit-click events and can prevent default", async ({ page }) => {
