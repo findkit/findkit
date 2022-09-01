@@ -294,7 +294,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 					allResultsLoaded={allResultsLoaded}
 				/>
 				<View cn="footer-spinner">
-					<Spinner />
+					<Spinner spinning={group.hits.length !== 0} />
 				</View>
 			</View>
 		</>
@@ -405,13 +405,13 @@ export function Arrow(props: { direction: "left" | "right" }) {
 	);
 }
 
-export function Spinner() {
+export function Spinner(props: { spinning?: boolean }) {
 	const state = useSearchEngineState();
 	return (
 		<View
 			cn={{
 				spinner: true,
-				spinning: state.status === "fetching",
+				spinning: props.spinning !== false && state.status === "fetching",
 			}}
 		></View>
 	);
