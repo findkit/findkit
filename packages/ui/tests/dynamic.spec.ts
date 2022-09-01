@@ -240,3 +240,72 @@ test("can use memory routing", async ({ page }) => {
 	await expect(hits.first()).not.toHaveText(firstResults!);
 	await expect(page).not.toHaveURL(/fdk_q/);
 });
+
+test("can open modal from link", async ({ page }) => {
+	await page.goto("/dummy");
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "po8GK3G0r",
+			params: {
+				tagQuery: [],
+			},
+		});
+
+		document.querySelector("button")?.remove();
+
+		const a = document.createElement("a");
+		a.href = "bad";
+		a.className = "link-open";
+		a.innerText = "Link";
+		document.body.appendChild(a);
+
+		ui.openFrom(".link-open");
+
+		Object.assign(window, { ui });
+	});
+
+	const link = page.locator("text=Link");
+	await link.click();
+
+	const input = page.locator('[aria-label="Search input"]');
+	await input.fill("valu");
+	await expect(page.locator(".findkit--hit").first()).toBeVisible();
+
+	await expect(page).not.toHaveURL(/bad/);
+});
+
+test("can cmd links", async ({ page, context }) => {
+	await page.goto("/dummy");
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "po8GK3G0r",
+			params: {
+				tagQuery: [],
+			},
+		});
+
+		document.querySelector("button")?.remove();
+
+		const a = document.createElement("a");
+		a.href = "new-page";
+		a.className = "link-open";
+		a.innerText = "Link";
+		document.body.appendChild(a);
+
+		ui.openFrom(".link-open");
+
+		Object.assign(window, { ui });
+	});
+
+	const link = page.locator("text=Link");
+
+	if (process.platform === "darwin") {
+		await link.click({ modifiers: ["Meta"] });
+	} else {
+		await link.click({ modifiers: ["Control"] });
+	}
+
+	await expect.poll(() => context.pages()).toHaveLength(2);
+});

@@ -399,18 +399,33 @@ export class FindkitUI {
 		(await this.#enginePromise).setUIStrings(lang, overrides);
 	}
 
-	#handleButtonHover = () => {
+	#handleHover = () => {
 		void this.preload();
 	};
 
-	#handleButtonClick = () => {
+	#handleOpenClick = (e: {
+		target: unknown;
+		preventDefault(): void;
+		metaKey?: boolean;
+		ctrlKey?: boolean;
+		shiftKey?: boolean;
+		which?: number;
+	}) => {
+		if (e.target instanceof HTMLAnchorElement) {
+			// Requests for new tab or window
+			if (e.ctrlKey || e.shiftKey || e.metaKey || e.which === 2) {
+				return;
+			}
+		}
+
+		e.preventDefault();
 		void this.open();
 	};
 
 	#bindOpeners(elements: Element[] | NodeListOf<Element>) {
 		for (const el of elements) {
-			el.addEventListener("click", this.#handleButtonClick);
-			el.addEventListener("mouseover", this.#handleButtonHover, {
+			el.addEventListener("click", this.#handleOpenClick);
+			el.addEventListener("mouseover", this.#handleHover, {
 				once: true,
 				passive: true,
 			});
