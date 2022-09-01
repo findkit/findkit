@@ -68,6 +68,7 @@ jobs:
           if [ "$(git status --porcelain tests)" != "" ]; then
             git add tests
             git commit -m "Update snapshots [skip actions]"
+            # Push back to the pr branch
             git push origin "HEAD:$GITHUB_HEAD_REF"
           fi
 
