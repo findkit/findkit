@@ -1,5 +1,11 @@
 import { FocusTrap } from "./focus-trap";
-import React, { StrictMode, useRef, useEffect, useState } from "react";
+import React, {
+	StrictMode,
+	useRef,
+	useEffect,
+	useState,
+	CSSProperties,
+} from "react";
 import ReactDOM from "react-dom";
 import { Results, FindkitProvider, Logo, Slot, Spinner } from "./components";
 import {
@@ -293,23 +299,27 @@ function Modal() {
 
 	return (
 		<View
-			ref={containerRef}
-			{...containerKbAttrs}
-			cn={["modal", visible && "modal-visible"]}
-			style={{
-				["--findkit--modal-animation-duration"]: `${duration}ms`,
+			cn={{
+				backdrop: true,
+				"backdrop-visible": visible,
 			}}
 		>
-			<Slot
-				name="Layout"
-				props={{
-					header,
-					content,
-				}}
+			<View
+				ref={containerRef}
+				{...containerKbAttrs}
+				cn={{ modal: true, "modal-visible": visible }}
 			>
-				{header}
-				{content}
-			</Slot>
+				<Slot
+					name="Layout"
+					props={{
+						header,
+						content,
+					}}
+				>
+					{header}
+					{content}
+				</Slot>
+			</View>
 		</View>
 	);
 }

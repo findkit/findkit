@@ -3,6 +3,8 @@
 type ClassNames =
   | "findkit--all-results-shown"
   | "findkit--back-link"
+  | "findkit--backdrop"
+  | "findkit--backdrop-visible"
   | "findkit--close-button"
   | "findkit--content"
   | "findkit--cross"
