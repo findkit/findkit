@@ -15,6 +15,7 @@ import { proxy, ref } from "valtio";
 import {
 	AddressBar,
 	createAddressBar,
+	createHashAddressBar,
 	createMemoryAddressbar,
 	FindkitURLSearchParams,
 } from "./address-bar";
@@ -242,7 +243,7 @@ export interface SearchEngineOptions {
 	params?: SearchEngineParams;
 	infiniteScroll?: boolean;
 	container: Element | ShadowRoot;
-	router?: "memory" | "history" | AddressBar;
+	router?: "memory" | "history" | "hash" | AddressBar;
 
 	/**
 	 * Monitor <html lang> changes
@@ -289,6 +290,8 @@ export class SearchEngine {
 	constructor(options: SearchEngineOptions) {
 		if (options.router === "memory") {
 			this.addressBar = createMemoryAddressbar();
+		} else if (options.router === "hash") {
+			this.addressBar = createHashAddressBar();
 		} else {
 			this.addressBar = createAddressBar();
 		}

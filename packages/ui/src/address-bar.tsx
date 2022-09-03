@@ -146,6 +146,25 @@ export function createMemoryAddressbar(): AddressBar {
 	};
 }
 
+export function createHashAddressBar(): AddressBar {
+	return {
+		getSearchParamsString: () => {
+			// Remove leading "#""
+			return window.location.hash.slice(1);
+		},
+		update: (params) => {
+			window.location.hash = params.toString();
+		},
+		listen: (cb) => {
+			window.addEventListener("hashchange", cb);
+
+			return () => {
+				window.removeEventListener("hashchange", cb);
+			};
+		},
+	};
+}
+
 let addressBarInitialized = false;
 
 export function createAddressBar(): AddressBar {
