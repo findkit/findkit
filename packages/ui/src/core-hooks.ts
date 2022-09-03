@@ -1,7 +1,10 @@
 import { createContext, useCallback, useContext, useMemo, useRef } from "react";
-import { SearchEngine, SearchResultHit } from "./search-engine";
+import {
+	FindkitURLSearchParams,
+	SearchEngine,
+	SearchResultHit,
+} from "./search-engine";
 import { useSnapshot } from "valtio";
-import { FindkitURLSearchParams } from "./address-bar";
 import { Translator } from "./translations";
 
 /**
@@ -59,7 +62,7 @@ export function useSearchEngine(): SearchEngine {
 	return context.engine;
 }
 
-export function useFindkitURLSearchParams() {
+export function useFindkitURLSearchParams(): FindkitURLSearchParams {
 	const state = useSearchEngineState();
 	const engine = useSearchEngine();
 	return useMemo(

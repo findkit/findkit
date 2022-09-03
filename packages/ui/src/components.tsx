@@ -72,7 +72,7 @@ function SingleGroupLink(props: { children: ReactNode; groupId: string }) {
 			cn={["single-group-link", "hover-bg"]}
 			{...kbAttrs}
 			data-kb-action
-			href={nextParams.toLink()}
+			href={engine.formatHref(nextParams)}
 			onClick={(e) => {
 				e.preventDefault();
 				if (e.target instanceof HTMLElement) {
@@ -99,7 +99,7 @@ function AllResultsLink(props: { children: ReactNode }) {
 			{...kbAttrs}
 			data-kb-action
 			cn={["back-link", "hover-bg"]}
-			href={nextParams.toLink()}
+			href={engine.formatHref(nextParams)}
 			onClick={(e) => {
 				e.preventDefault();
 				engine.updateAddressBar(nextParams, { push: true });

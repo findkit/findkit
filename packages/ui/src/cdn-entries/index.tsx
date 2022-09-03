@@ -7,8 +7,9 @@ import type {
 	UpdateParamsArgument,
 	SearchEngineParams,
 	SearchEngineOptions,
+	FindkitURLSearchParams,
 } from "../search-engine";
-import type { AddressBar, FindkitURLSearchParams } from "../address-bar";
+import type { RouterBackend } from "../router";
 import type { Slots, SlotProps, MakeSlotComponents } from "../core-hooks";
 import type {
 	ModalImplementation,
@@ -29,7 +30,7 @@ export {
 	SearchEngineParams,
 	FindkitUIEvents,
 	FindkitURLSearchParams,
-	AddressBar,
+	RouterBackend,
 	GroupDefinition,
 	Slots,
 	SlotProps,
