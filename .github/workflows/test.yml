@@ -1,8 +1,16 @@
 name: Test
+
+concurrency:
+  group: "test-crawler-${{ github.ref }}"
+  cancel-in-progress: true
+
 on:
   push:
     branches: [master]
   pull_request:
+    paths:
+      - "packages/ui/**"
+      - "packages/fetch/**"
 jobs:
   test:
     timeout-minutes: 60
