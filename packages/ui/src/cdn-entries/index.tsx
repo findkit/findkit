@@ -7,8 +7,9 @@ import type {
 	UpdateParamsArgument,
 	SearchEngineParams,
 	SearchEngineOptions,
+	FindkitURLSearchParams,
 } from "../search-engine";
-import type { AddressBar, FindkitURLSearchParams } from "../address-bar";
+import type { RouterBackend } from "../router";
 import type { Slots, SlotProps, MakeSlotComponents } from "../core-hooks";
 import type {
 	ModalImplementation,
@@ -29,7 +30,7 @@ export {
 	SearchEngineParams,
 	FindkitUIEvents,
 	FindkitURLSearchParams,
-	AddressBar,
+	RouterBackend,
 	GroupDefinition,
 	Slots,
 	SlotProps,
@@ -302,7 +303,12 @@ export class FindkitUI {
 	}
 
 	#isAlreadyOpened() {
-		const params = new URLSearchParams(location.search);
+		let search = location.search;
+		if (this.#options.router === "hash") {
+			search = location.hash.slice(1);
+		}
+
+		const params = new URLSearchParams(search);
 		return params.has(this.#instanceId + "_q");
 	}
 

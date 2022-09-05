@@ -13,11 +13,11 @@ import {
 import { FindkitFetchOptions, FindkitSearchResponse } from "@findkit/fetch";
 import { proxy, ref } from "valtio";
 import {
-	AddressBar,
-	createAddressBar,
-	createMemoryAddressbar,
-	FindkitURLSearchParams,
-} from "./address-bar";
+	RouterBackend,
+	createQueryStringBackend,
+	createURLHashBackend,
+	createMemoryBackend,
+} from "./router";
 import { Emitter, FindkitUIEvents } from "./emitter";
 import { TranslationStrings } from "./translations";
 
@@ -230,6 +230,73 @@ class MultiListener {
 /**
  * @public
  */
+export class FindkitURLSearchParams {
+	#params: URLSearchParams;
+	#instanceId: string;
+
+	constructor(instanceId: string, search: string) {
+		this.#instanceId = instanceId;
+		this.#params = new URLSearchParams(search);
+	}
+
+	getGroupId() {
+		return this.#params.get(this.#instanceId + "_id")?.trim() || undefined;
+	}
+
+	next(fn: (params: FindkitURLSearchParams) => void) {
+		const next = new FindkitURLSearchParams(
+			this.#instanceId,
+			this.#params.toString(),
+		);
+		fn(next);
+		return next;
+	}
+
+	clearGroupId() {
+		return this.next((next) => {
+			next.#params.delete(next.#instanceId + "_id");
+		});
+	}
+
+	clearAll() {
+		return this.next((next) => {
+			next.#params.delete(next.#instanceId + "_id");
+			next.#params.delete(next.#instanceId + "_q");
+		});
+	}
+
+	setGroupId(id: string) {
+		return this.next((next) => {
+			next.#params.set(next.#instanceId + "_id", id);
+		});
+	}
+
+	setTerms(terms: string) {
+		return this.next((next) => {
+			next.#params.set(next.#instanceId + "_q", terms.trim());
+		});
+	}
+
+	isActive() {
+		return this.#params.has(this.#instanceId + "_q");
+	}
+
+	getTerms() {
+		return (this.#params.get(this.#instanceId + "_q") || "").trim();
+	}
+
+	toString() {
+		return this.#params.toString();
+	}
+
+	toURLSearchParams() {
+		return this.#params;
+	}
+}
+
+/**
+ * @public
+ */
 export interface SearchEngineOptions {
 	instanceId?: string;
 	publicToken: string;
@@ -242,7 +309,7 @@ export interface SearchEngineOptions {
 	params?: SearchEngineParams;
 	infiniteScroll?: boolean;
 	container: Element | ShadowRoot;
-	router?: "memory" | "history" | AddressBar;
+	router?: "memory" | "querystring" | "hash" | RouterBackend;
 
 	/**
 	 * Monitor <html lang> changes
@@ -265,7 +332,7 @@ export class SearchEngine {
 		dispose: () => void;
 	}[];
 
-	readonly addressBar: AddressBar;
+	readonly router: RouterBackend;
 	#fetcher: FindkitFetcher;
 	readonly instanceId: string;
 	readonly state: State;
@@ -287,10 +354,19 @@ export class SearchEngine {
 	events: Emitter<FindkitUIEvents>;
 
 	constructor(options: SearchEngineOptions) {
-		if (options.router === "memory") {
-			this.addressBar = createMemoryAddressbar();
+		if (typeof window === "undefined") {
+			this.router = {
+				listen: () => () => {},
+				getSearchParamsString: () => "",
+				update: () => {},
+				formatHref: () => "",
+			};
+		} else if (options.router === "memory") {
+			this.router = createMemoryBackend();
+		} else if (options.router === "hash") {
+			this.router = createURLHashBackend();
 		} else {
-			this.addressBar = createAddressBar();
+			this.router = createQueryStringBackend();
 		}
 
 		this.instanceId = options.instanceId ?? "fdk";
@@ -308,7 +384,7 @@ export class SearchEngine {
 
 		const initialSearchParams = new FindkitURLSearchParams(
 			this.instanceId,
-			this.addressBar.getSearchParamsString(),
+			this.router.getSearchParamsString(),
 		);
 
 		let groups = options.groups;
@@ -331,7 +407,7 @@ export class SearchEngine {
 		this.state = proxy<State>({
 			usedTerms: undefined,
 			currentGroupId: initialSearchParams.getGroupId(),
-			searchParams: this.addressBar.getSearchParamsString(),
+			searchParams: this.router.getSearchParamsString(),
 			lang: undefined,
 			status: "closed",
 			infiniteScroll: options.infiniteScroll ?? true,
@@ -373,7 +449,7 @@ export class SearchEngine {
 
 		this.#syncInputs(initialSearchParams.getTerms());
 
-		this.#cleaners.add(this.addressBar.listen(this.#handleAddressChange));
+		this.#cleaners.add(this.router.listen(this.#handleAddressChange));
 		this.#handleAddressChange();
 	}
 
@@ -504,6 +580,10 @@ export class SearchEngine {
 		return new FindkitURLSearchParams(this.instanceId, this.state.searchParams);
 	}
 
+	formatHref(params: FindkitURLSearchParams) {
+		return this.router.formatHref(params.toString());
+	}
+
 	#debouncedSearchTimer?: ReturnType<typeof setTimeout>;
 
 	#emitDebouncedSearchEvent(terms: string) {
@@ -517,7 +597,7 @@ export class SearchEngine {
 
 	#handleAddressChange = () => {
 		const currentTerms = this.findkitParams.getTerms();
-		this.state.searchParams = this.addressBar.getSearchParamsString();
+		this.state.searchParams = this.router.getSearchParamsString();
 		const nextParams = this.findkitParams;
 		if (!this.findkitParams.isActive()) {
 			this.#statusTransition("closed");
@@ -547,7 +627,7 @@ export class SearchEngine {
 		params: FindkitURLSearchParams,
 		options?: { push?: boolean },
 	) => {
-		this.addressBar.update(params.toURLSearchParams(), options);
+		this.router.update(params.toString(), options);
 	};
 
 	#handleInputChange(terms: string, options?: { force?: boolean }) {
