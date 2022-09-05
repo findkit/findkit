@@ -49,6 +49,7 @@ test("can navigate to full group results and back", async ({ page }) => {
 
 test("refresh restores search results", async ({ page }) => {
 	await page.goto("/two-groups");
+
 	const hits = page.locator(".findkit--hit");
 
 	await page.locator("text=open").click();
@@ -57,7 +58,7 @@ test("refresh restores search results", async ({ page }) => {
 
 	await page.reload();
 
-	await hits.first().waitFor({ state: "visible" });
+	await expect(hits.first()).toBeVisible();
 
 	const hitCount1 = await hits.count();
 	expect(hitCount1).toBeGreaterThan(2);

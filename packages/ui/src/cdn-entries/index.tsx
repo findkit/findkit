@@ -303,7 +303,12 @@ export class FindkitUI {
 	}
 
 	#isAlreadyOpened() {
-		const params = new URLSearchParams(location.search);
+		let search = location.search;
+		if (this.#options.router === "hash") {
+			search = location.hash.slice(1);
+		}
+
+		const params = new URLSearchParams(search);
 		return params.has(this.#instanceId + "_q");
 	}
 
