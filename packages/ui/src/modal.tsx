@@ -1,11 +1,5 @@
 import { FocusTrap } from "./focus-trap";
-import React, {
-	StrictMode,
-	useRef,
-	useEffect,
-	useState,
-	CSSProperties,
-} from "react";
+import React, { StrictMode, useRef, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { Results, FindkitProvider, Logo, Slot, Spinner } from "./components";
 import {
