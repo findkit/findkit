@@ -45,10 +45,10 @@ jobs:
             playwright-${{ runner.os }}-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --filter @findkit/ui
 
       - name: Build all
-        run: ./node_modules/.bin/turbo run build
+        run: ./node_modules/.bin/turbo run build --filter @findkit/ui
 
       - name: Run @findkit/tests
         run: cd packages/fetch && pnpm run test
