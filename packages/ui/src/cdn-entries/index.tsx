@@ -432,22 +432,39 @@ export class FindkitUI {
 	};
 
 	#bindOpeners(elements: Element[] | NodeListOf<Element>) {
-		for (const el of elements) {
+		return Array.from(elements).map((el) => {
 			el.addEventListener("click", this.#handleOpenClick);
 			el.addEventListener("mouseover", this.#handleHover, {
 				once: true,
 				passive: true,
 			});
-		}
+
+			return () => {
+				el.removeEventListener("click", this.#handleOpenClick);
+				el.removeEventListener("mouseover", this.#handleHover);
+			};
+		});
 	}
 
 	openFrom(elements: string | NodeListOf<Element> | Element[]) {
-		if (typeof elements === "string") {
-			onDomContentLoaded(() => {
-				this.#bindOpeners(doc().querySelectorAll(elements));
-			});
-		} else {
-			this.#bindOpeners(elements);
-		}
+		let cleared = false;
+		let unbinders: (() => void)[] = [];
+
+		onDomContentLoaded(() => {
+			if (cleared) {
+				return;
+			}
+
+			if (typeof elements === "string") {
+				unbinders = this.#bindOpeners(doc().querySelectorAll(elements));
+			} else {
+				unbinders = this.#bindOpeners(elements);
+			}
+		});
+
+		return () => {
+			unbinders.forEach((unbind) => unbind());
+			cleared = true;
+		};
 	}
 }
