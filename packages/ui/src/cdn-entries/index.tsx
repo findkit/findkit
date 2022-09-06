@@ -303,6 +303,9 @@ export class FindkitUI {
 	}
 
 	#isAlreadyOpened() {
+		if (typeof window === "undefined") {
+			return false;
+		}
 		let search = location.search;
 		if (this.#options.router === "hash") {
 			search = location.hash.slice(1);
