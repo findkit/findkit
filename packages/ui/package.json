@@ -21,7 +21,7 @@
 		"build-test": "jake build-test",
 		"test": "tsc && pnpm run eslint && size-limit",
 		"playwright-test": "playwright test",
-		"publish-build": "(cd ../../ && ./node_modules/.bin/turbo run build) && jake upload",
+		"publish-build": "(cd ../../ && ./node_modules/.bin/turbo run build --filter @findkit/ui) && jake upload",
 		"dev": "run-p 'dev:*'"
 	},
 	"author": "Valu Digital Oy",
