@@ -24,6 +24,8 @@ findkit authenticate
 This will generate the required access keys and instructs you how to add them to
 the Hub.
 
+## Initialize Configuration
+
 Initialize a Findkit project. You can do this within your existing website project.
 
 ```
@@ -59,6 +61,8 @@ content_selector = "main,.content,#main,.post"
 #content_selector = "main,.content,#main,.post"
 ```
 
+## Deploy and Test
+
 Once ready deploy the project:
 
 ```
@@ -92,6 +96,8 @@ When you update the `findkit.toml` file you must run `findkit deploy` again.
 :::tip
 You can also inspect the index using the "Inspect Index" feature on the Hub.
 :::
+
+## Full Crawl
 
 You should try indexing few different pages manually like this. Once everything
 seems good you can start a full crawl on your site.
