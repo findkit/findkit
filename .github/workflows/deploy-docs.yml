@@ -1,0 +1,56 @@
+name: Deploy docs.findkit.com
+
+concurrency:
+  group: "deploy-docs"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/docs/**"
+      - ".github/workflows/deploy-docs.yml"
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 7.9.5
+
+      - name: Set pnpm store path
+        run: echo "PNPM_STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
+
+      - name: Cache pnpm modules
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.PNPM_STORE_PATH }}
+          key: pnpm-docs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-docs-${{ runner.os }}-
+
+      - name: Cache turborepo
+        uses: actions/cache@v2
+        with:
+          path: node_modules/.cache/turbo/
+          key: turbo-docs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            turbo-docs-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --filter @findkit/root --filter @findkit/docs
+
+      - name: Build all
+        run: ./node_modules/.bin/turbo run build --filter @findkit/docs
+
+      - name: Deploy site
+        run: cd packages/docs && pnpm run deploy
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

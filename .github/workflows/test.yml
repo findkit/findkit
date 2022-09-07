@@ -28,13 +28,16 @@ jobs:
         with:
           version: 7.9.5
 
+      - name: Set pnpm store path
+        run: echo "PNPM_STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
+
       - name: Cache pnpm modules
         uses: actions/cache@v2
         with:
-          path: ~/.pnpm-store
-          key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ${{ env.PNPM_STORE_PATH }}
+          key: pnpm-docs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            pnpm-${{ runner.os }}-
+            pnpm-docs-${{ runner.os }}-
 
       - name: Cache playwright browsers
         uses: actions/cache@v2
