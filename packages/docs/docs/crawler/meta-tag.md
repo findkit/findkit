@@ -33,7 +33,7 @@ Plugin](https://github.com/findkit/wp-findkit) to generate this tag.
 
 ### `title: string`
 
-The crawler read the title from the `<title>` tag but this field can used
+The crawler reads the title from the `<title>` tag but this field can used
 provide different title.
 
 ### `tags: string[]`

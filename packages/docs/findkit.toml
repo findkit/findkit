@@ -8,19 +8,28 @@ description = "Findkit Developer Documentation site"
 ## Crawl schedules. Comment out to disable scheduled crawls.
 #full_crawl_schedule = "weekly"
 
-## Target websites to crawl
+# Target websites to crawl
 [[targets]]
 host = "docs.findkit.com"
 
-## Docusaurus has no sitemaps so we must walk the site manually
+# Docusaurus has no sitemaps so we must walk the site manually
 use_sitemap = false
 walk_links = true
 
 ## CSS selectors to extract the text content from
 content_selector = ".markdown"
 
-
+# Docusaurus adds "| Findkit" to the title so want to grab the text before that
+title_selector_regex = "(.+?) | Findkit"
 
 ## Not public yet, so ignore robots rules
 respect_robots_meta = false
-respect_robots = false
+respect_robots_txt = false
+
+[[targets.tags]]
+pathname_regex = '^\/([^\\/]+)'
+on_match = "$1"
+
+[[targets.tags]]
+pathname_regex = '^\/[^\/]+$'
+on_match = "root"

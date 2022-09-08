@@ -45,7 +45,7 @@ You can also start a crawl only for a single url
 findkit crawl start --url <url>
 ```
 
-### Scheduling
+## Scheduling
 
 Crawls can be also scheduled via the `findkit.toml` file with the
 [`schedule_full_crawl`](/crawler/toml/#schedule_full_crawl) and
@@ -54,3 +54,13 @@ Crawls can be also scheduled via the `findkit.toml` file with the
 The schedules will be active immediately when the TOML file
 is deployed with `findkit deploy`. If you need to disable the
 schedules just comment them out and run the deploy.
+
+## REST API
+
+Crawls be also triggered using our REST API. This can be used to create deep CMS
+integrations where individual pages are re-indexed immediately when changes are
+saved.
+
+:::caution
+Coming soon!
+:::

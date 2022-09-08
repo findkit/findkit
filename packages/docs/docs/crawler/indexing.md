@@ -20,7 +20,7 @@ Example
 ```
 
 You can use the attribute multiple times on a single page. The crawler will
-extract the text content from all elements with it combine them to the page
+extract the text content from all elements with it and combines them to the page
 index. You can use the `findkit inspect <url>` and `findkit crawl test <url>`
 CLI commands to see what the content is actually selected to the index.
 

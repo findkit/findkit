@@ -7,11 +7,11 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 /** @type {import('@docusaurus/types').Config} */
 const config = {
 	title: "Findkit",
-	tagline: "Dinosaurs are cool",
+	// tagline: "Dinosaurs are cool",
 	url: "https://docs.findkit.com",
 	baseUrl: "/",
 	onBrokenLinks: "throw",
-	onBrokenMarkdownLinks: "warn",
+	onBrokenMarkdownLinks: "throw",
 	favicon: "img/favicon.png",
 
 	// GitHub pages deployment config.
@@ -35,10 +35,7 @@ const config = {
 				docs: {
 					routeBasePath: "/", // Serve the docs at the site's root,
 					sidebarPath: require.resolve("./sidebars.js"),
-					// Please change this to your repo.
-					// Remove this to remove the "edit this page" links.
-					editUrl:
-						"https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+					editUrl: "https://github.com/findkit/findkit/tree/main/packages/docs",
 				},
 				blog: false,
 				theme: {
@@ -89,6 +86,7 @@ const config = {
 			prism: {
 				theme: lightCodeTheme,
 				darkTheme: darkCodeTheme,
+				additionalLanguages: ["toml"],
 			},
 		}),
 };
