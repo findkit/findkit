@@ -1,17 +1,17 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 ---
 
-# Tagging Content
+# Tagging Pages
 
 The crawler can tag the content for [filtering](/ui/filtering).
 
-By default few default tags are added
+By default following tags are added
 
 - Domain tag
   - `domain/example.com`
 - Content-type tag
-  - `html`or `pdf`
+  - `html` or `pdf`
 - Language
   - `language/en`, `language/fi` etc.
 
@@ -21,13 +21,18 @@ You can list the available tags in your project with
 findkit tags
 ```
 
+You can check the tags on any given page with
+
+```
+findkit inspect <url>
+```
+
 ## Custom Tags
 
-Use the `tags` [meta tag field](/crawler/meta-tag#tags-string) to add your own
-custom tags to pages.
+Custom tags can be added
 
-If you use WordPress you can use [our WordPress
-plugin](https://github.com/findkit/wp-findkit) to generate the tags
-automatically from taxonomies.
-
-TODO regex tagger
+- In the [`tags` meta tag field](/crawler/meta-tag#tags-string)
+- In `findkit.toml` with the [`tags` field](/crawler/toml/tags) using CSS and regexes
+- With WordPress you can use [our WordPress
+  plugin](https://github.com/findkit/wp-findkit) to generate the tags
+  automatically from taxonomies and any custom ones with PHP

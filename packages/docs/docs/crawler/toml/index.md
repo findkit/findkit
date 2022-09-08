@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 ---
 
 # Crawler Configuration
@@ -20,6 +20,27 @@ Human readable name of project. Displayed in the Hub.
 ### `description: string`
 
 Description of the project. Displayed in the Hub.
+
+### `schedule_full_crawl`
+
+Run the full crawl automatically with the given schedule.
+
+Allowed values
+
+- `weekly`
+- `daily`
+
+This is the same as running `findkit crawl start`. Read more from ["Starting
+Crawls"](/crawler/starting#full).
+
+### `schedule_update_crawl`
+
+This is the same as running `findkit crawl start --updated`.
+Read more from ["Starting Crawls"](/crawler/starting#partial).
+
+:::danger
+This option is not available yet.
+:::
 
 ### `targets: object[]`
 
@@ -46,6 +67,14 @@ Defaults to `true`.
 
 CSS selector used to select the text content for indexing.
 
+Read more from the [Indexing Content](/crawler/indexing) page.
+
+### `cleanup_selector: string`
+
+CSS selector used to skip elements from indexing.
+
+Read more from the [Indexing Content](/crawler/indexing) page.
+
 ### `respect_robots_meta: boolean`
 
 Respect robots meta tags like
@@ -61,3 +90,7 @@ Defaults to `true`.
 Respect `/robots.txt` rules.
 
 Defaults to `true`.
+
+### `tags`
+
+Array tagging matchers. [Documented on the dedicated page](tags).
