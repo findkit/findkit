@@ -47,7 +47,14 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build api docs
-        run: ./node_modules/.bin/turbo run build-ui-api-docs --filter @findkit/ui
+        run: |
+          set -eu
+          # Build ui deps but the the ui itself because we don't need the full
+          # build for docs build
+          ./node_modules/.bin/turbo run build --filter @findkit/ui^...
+
+          # Build the actual docs from ts types
+          ./node_modules/.bin/turbo run build-ui-api-docs --filter @findkit/ui
 
       - name: Build docusaurus
         run: ./node_modules/.bin/turbo run build --filter @findkit/docs
