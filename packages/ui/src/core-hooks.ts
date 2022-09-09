@@ -12,12 +12,12 @@ import { Translator } from "./translations";
  */
 export interface Slots {
 	/**
-	 * React component override for the result item
+	 * Component override for the result item
 	 */
 	Hit(props: { hit: SearchResultHit }): any;
 
 	/**
-	 * Header component which hides automatically when scrolling downd
+	 * Header component which hides automatically when scrolling down
 	 */
 	Header(props: { children: any }): any;
 
