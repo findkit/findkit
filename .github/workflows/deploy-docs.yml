@@ -36,6 +36,9 @@ jobs:
           restore-keys: |
             pnpm-docs-${{ runner.os }}-
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Cache turborepo
         uses: actions/cache@v2
         with:
@@ -43,9 +46,6 @@ jobs:
           key: turbo-docs
           restore-keys: |
             turbo-docs
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: Build api docs
         run: |
