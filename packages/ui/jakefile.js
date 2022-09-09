@@ -176,10 +176,11 @@ task(
 		mkdir -p .temp/api-docs-markdown
 		api-documenter markdown --input-folder .temp/doc-model --output-folder .temp/api-docs-markdown
 
-		if [ ! -x $(command -v mkdocs) ]; then
-			if [ -x $(command -v apt-get) ]; then
-				sudo apt-get install mkdocs
-			fi
+
+		# Install mkdocs just in time in the CI so it can be skipped when we get
+		# full cache hit from Turborepo
+		if [ "\${CI:-}" != "" ]; then
+				sudo apt-get install mkdocs -y
 		fi
 
 		mkdocs build
