@@ -400,6 +400,9 @@ export class FindkitUI {
 		}
 	}
 
+	/**
+	 * Unbind all event listeners, close the modal and remove it from the DOM
+	 */
 	async dispose() {
 		(await this.#enginePromise).dispose();
 	}

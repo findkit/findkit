@@ -1,0 +1,7 @@
+site_name: Api Docs
+theme:
+  name: readthedocs
+docs_dir: .temp/api-docs-markdown
+site_dir: api-docs-html/api
+# site_url: https://docs.findkit.com/api/
+site_url: http://localhost:3000/api/

@@ -4,6 +4,10 @@
 		"test": {},
 		"build": {
 			"dependsOn": ["^build"]
+		},
+		"build-ui-api-docs": {
+			"outputs": ["api-docs-html/**"],
+			"dependsOn": []
 		}
 	}
 }

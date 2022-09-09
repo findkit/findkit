@@ -22,6 +22,7 @@
 		"test": "tsc && pnpm run eslint && size-limit",
 		"playwright-test": "playwright test",
 		"publish-build": "(cd ../../ && ./node_modules/.bin/turbo run build --filter @findkit/ui) && jake upload",
+		"build-ui-api-docs": "jake build-ui-api-docs",
 		"dev": "run-p 'dev:*'"
 	},
 	"author": "Valu Digital Oy",

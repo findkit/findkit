@@ -46,11 +46,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --filter @findkit/root --filter @findkit/docs
 
-      - name: Build all
+      - name: Build api docs
+        run: ./node_modules/.bin/turbo run build-ui-api-docs --filter @findkit/ui
+
+      - name: Build docusaurus
         run: ./node_modules/.bin/turbo run build --filter @findkit/docs
 
       - name: Deploy site
-        run: cd packages/docs && pnpm run deploy
+        run: |
+          set -eu
+          mv packages/ui/api-docs-html/api packages/docs/build/api
+          cd packages/docs && pnpm run deploy
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

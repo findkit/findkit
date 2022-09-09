@@ -3,23 +3,26 @@ import { FindkitUI } from "@findkit/ui";
 
 const ui = new FindkitUI({
 	publicToken: "p68GxRvaA",
-	groups: [
-		{
-			id: "generic",
-			title: "Generic",
-			tagQuery: [["re/root"]],
-		},
-		{
-			id: "crawler",
-			title: "Crawler",
-			tagQuery: [["re/crawler"]],
-		},
-		{
-			id: "ui",
-			title: "UI",
-			tagQuery: [["re/ui"]],
-		},
-	],
+	params: {
+		tagQuery: [[]],
+	},
+	// groups: [
+	// 	{
+	// 		id: "generic",
+	// 		title: "Generic",
+	// 		tagQuery: [["re/root"]],
+	// 	},
+	// 	{
+	// 		id: "crawler",
+	// 		title: "Crawler",
+	// 		tagQuery: [["re/crawler"]],
+	// 	},
+	// 	{
+	// 		id: "ui",
+	// 		title: "UI",
+	// 		tagQuery: [["re/ui"]],
+	// 	},
+	// ],
 });
 
 export default function SearchBarWrapper() {

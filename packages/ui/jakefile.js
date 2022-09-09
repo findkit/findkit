@@ -61,7 +61,7 @@ async function runEsbuild(options = {}) {
 			},
 			() => {
 				// esbuild logs the error itself
-			}
+			},
 		);
 
 	return result;
@@ -114,7 +114,7 @@ task("upload", async () => {
 
 task(
 	"css",
-	sh`NODE_ENV=production postcss styles/index.css --output styles.css`
+	sh`NODE_ENV=production postcss styles/index.css --output styles.css`,
 );
 
 // XXX Does not work due to
@@ -122,7 +122,7 @@ task(
 // The issue is closed but the issue still remains.
 task(
 	"watch-css",
-	sh`postcss --watch styles/index.css --output tests/build/styles.css`
+	sh`postcss --watch styles/index.css --output tests/build/styles.css`,
 );
 
 task("build-test", async () => {
@@ -168,6 +168,20 @@ task("watch-js", async () => {
 task("build-ts", sh`tsc -p tsconfig.build.json`);
 
 task(
-	"build-docs",
-	sh`rm -rf dist docs temp && tsc -p tsconfig.build.json && api-extractor run --local --verbose && api-documenter markdown --input-folder temp --output-folder docs`
+	"build-ui-api-docs",
+	sh`
+		rm -rf .temp
+		tsc -p tsconfig.build.json
+		api-extractor run --local --verbose
+		mkdir -p .temp/api-docs-markdown
+		api-documenter markdown --input-folder .temp/doc-model --output-folder .temp/api-docs-markdown
+
+		if [ ! -x $(command -v mkdocs) ]; then
+			if [ -x $(command -v apt-get) ]; then
+				sudo apt-get install mkdocs
+			fi
+		fi
+
+		mkdocs build
+	`,
 );
