@@ -1,0 +1,7 @@
+{
+	"files.exclude": {
+		"**/.temp": true,
+		"**/.turbo": true,
+		"**/build": true
+	}
+}
