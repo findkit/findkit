@@ -3,7 +3,7 @@
 	"pipeline": {
 		"test": {},
 		"build": {
-			"outputs": ["build/**", "dist/**", "esm/**", "cjs/**"],
+			"outputs": ["build/**", "dist/**", "esm/**", "cjs/**", "styles.css"],
 			"dependsOn": ["^build"]
 		},
 		"build-ui-api-docs": {
