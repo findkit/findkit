@@ -20,6 +20,7 @@ import {
 } from "./router";
 import { Emitter, FindkitUIEvents } from "./emitter";
 import { TranslationStrings } from "./translations";
+import { MultiListener } from "./multi-dom-listener";
 
 const DEFAULT_HIGHLIGHT_LENGTH = 500;
 
@@ -199,33 +200,6 @@ const SINGLE_GROUP_NAME = Object.freeze({
 	id: "default",
 	title: "Default",
 });
-
-/**
- * Listen on multiple events on events targets and remove them using one function
- * call
- */
-class MultiListener {
-	#cleaners = new Set<() => void>();
-
-	on<EventName extends keyof HTMLElementEventMap>(
-		target: any,
-		eventName: EventName,
-		listener: (e: HTMLElementEventMap[EventName]) => void,
-		options?: AddEventListenerOptions,
-	) {
-		target.addEventListener(eventName as any, listener, options);
-		this.#cleaners.add(() => {
-			target.removeEventListener(eventName as any, listener);
-		});
-	}
-
-	off = () => {
-		for (const clean of this.#cleaners) {
-			clean();
-		}
-		this.#cleaners.clear();
-	};
-}
 
 /**
  * @public
