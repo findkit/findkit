@@ -40,9 +40,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: node_modules/.cache/turbo/
-          key: turbo-docs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: turbo-docs
           restore-keys: |
-            turbo-docs-${{ runner.os }}-
+            turbo-docs
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

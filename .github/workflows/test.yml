@@ -35,9 +35,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ env.PNPM_STORE_PATH }}
-          key: pnpm-docs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: pnpm-test-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            pnpm-docs-${{ runner.os }}-
+            pnpm-test-${{ runner.os }}-
 
       - name: Cache playwright browsers
         uses: actions/cache@v2
