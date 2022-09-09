@@ -44,7 +44,7 @@ jobs:
             turbo-docs-${{ runner.os }}-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --filter @findkit/root --filter @findkit/docs
+        run: pnpm install --frozen-lockfile
 
       - name: Build api docs
         run: ./node_modules/.bin/turbo run build-ui-api-docs --filter @findkit/ui
