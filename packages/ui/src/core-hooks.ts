@@ -12,7 +12,7 @@ import { Translator } from "./translations";
  */
 export interface Slots {
 	/**
-	 * A result item
+	 * React component override for the result item
 	 */
 	Hit(props: { hit: SearchResultHit }): any;
 
