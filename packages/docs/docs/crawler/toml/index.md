@@ -91,6 +91,10 @@ Respect `/robots.txt` rules.
 
 Defaults to `true`.
 
+### `max_pages: number`
+
+Max pages to crawl. If this limit is exceeded the crawler will just stop.
+
 ### `tags`
 
 Array tagging matchers. [Documented on the dedicated page](tags).
