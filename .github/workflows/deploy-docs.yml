@@ -8,6 +8,7 @@ on:
     branches: [main]
     paths:
       - "packages/docs/**"
+      - "packages/ui/**"
       - ".github/workflows/deploy-docs.yml"
 jobs:
   test:
