@@ -10,7 +10,7 @@ import type {
 	FindkitURLSearchParams,
 } from "../search-engine";
 import type { RouterBackend } from "../router";
-import type { Slots, SlotProps, MakeSlotComponents } from "../core-hooks";
+import type { Slots } from "../core-hooks";
 import type {
 	ModalImplementation,
 	Dispatch,
@@ -26,14 +26,12 @@ export {
 	SearchResultHitWithGroupId,
 	TranslationStrings,
 	Emitter,
-	MakeSlotComponents,
 	SearchEngineParams,
 	FindkitUIEvents,
 	FindkitURLSearchParams,
 	RouterBackend,
 	GroupDefinition,
 	Slots,
-	SlotProps,
 	ModalImplementation,
 	State,
 	init,

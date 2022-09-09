@@ -10,29 +10,27 @@ import { Translator } from "./translations";
 /**
  * @public
  */
-export interface SlotProps {
-	Hit: { hit: SearchResultHit };
-	Header: {};
-	Content: {};
-	Layout: {
-		header: React.ReactNode;
-		content: React.ReactNode;
-	};
+export interface Slots {
+	/**
+	 * A result item
+	 */
+	Hit(props: { hit: SearchResultHit }): any;
+
+	/**
+	 * Header component which hides automatically when scrolling downd
+	 */
+	Header(props: { children: any }): any;
+
+	/**
+	 * Search result content
+	 */
+	Content(props: { children: any }): any;
+
+	/**
+	 * Layout component which wraps the header and content
+	 */
+	Layout(props: { header: React.ReactNode; content: React.ReactNode }): any;
 }
-
-/**
- * @public
- */
-export type MakeSlotComponents<Type> = {
-	[Property in keyof Type]: (
-		props: Type[Property] & { children: unknown },
-	) => any;
-};
-
-/**
- * @public
- */
-export type Slots = MakeSlotComponents<SlotProps>;
 
 export interface FindkitContextType {
 	engine: SearchEngine | undefined;

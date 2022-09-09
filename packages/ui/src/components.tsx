@@ -8,7 +8,6 @@ import {
 	useFindkitURLSearchParams,
 	useSearchEngineState,
 	useFindkitContext,
-	SlotProps,
 	useTranslator,
 	useKeyboardItemAttributes,
 	useSearchMoreOnReveal,
@@ -42,9 +41,9 @@ export function FindkitProvider(props: {
 	);
 }
 
-export function Slot<Name extends keyof SlotProps>(props: {
+export function Slot<Name extends keyof Slots>(props: {
 	name: Name;
-	props: SlotProps[Name];
+	props: Omit<Parameters<Slots[Name]>[0], "children">;
 	children: ReactNode;
 }) {
 	const context = useFindkitContext();
