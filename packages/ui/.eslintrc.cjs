@@ -3,5 +3,5 @@ module.exports = {
 	parserOptions: {
 		tsconfigRootDir: __dirname,
 	},
-	ignorePatterns: ["tests/build/**"],
+	ignorePatterns: ["e2e/build/**"],
 };
