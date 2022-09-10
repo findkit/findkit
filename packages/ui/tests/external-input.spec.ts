@@ -1,8 +1,14 @@
 import { test, expect } from "@playwright/test";
 import type { FindkitUI } from "../src/cdn-entries/index";
 
+declare const ui: FindkitUI;
+
 test("can use external input with modal", async ({ page }) => {
 	await page.goto("/external-input");
+
+	await page.evaluate(async () => {
+		void ui.bindInput(document.querySelector("#external-input")!);
+	});
 
 	const input = page.locator("#external-input");
 	const hits = page.locator(".findkit--hit a");
@@ -21,6 +27,27 @@ test("can use external input with modal", async ({ page }) => {
 	await expect(input).toBeFocused();
 
 	await page.keyboard.press("Tab");
-	// Random butotn is can be focused when the modal is closed
+	// Random button is can be focused when the modal is closed
 	await expect(randomButton).toBeFocused();
+});
+
+test("can lazily bind input", async ({ page }) => {
+	await page.goto("/external-input");
+
+	await page.evaluate(async () => {
+		await ui.open();
+		await new Promise((resolve) => setTimeout(resolve, 1000));
+		void ui.bindInput(document.querySelector("#external-input")!);
+	});
+
+	const input = page.locator("#external-input");
+	const hits = page.locator(".findkit--hit a");
+
+	await input.fill("valu");
+	await expect(hits.first()).toBeVisible();
+	await expect(input).toBeFocused();
+
+	await page.keyboard.press("Tab");
+	// Jumps over the random button to the first hit
+	await expect(hits.first()).toBeFocused();
 });

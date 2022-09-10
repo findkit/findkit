@@ -20,7 +20,7 @@ import {
 } from "./router";
 import { Emitter, FindkitUIEvents } from "./emitter";
 import { TranslationStrings } from "./translations";
-import { MultiListener } from "./multi-dom-listener";
+import { listen, Resources } from "./resources";
 
 const DEFAULT_HIGHLIGHT_LENGTH = 500;
 
@@ -303,7 +303,7 @@ export class SearchEngine {
 	#pendingRequestIds: Map<number, AbortController> = new Map();
 	#inputs = [] as {
 		input: HTMLInputElement;
-		dispose: () => void;
+		unbindEvents: () => void;
 	}[];
 
 	readonly router: RouterBackend;
@@ -322,7 +322,7 @@ export class SearchEngine {
 	#throttlingTerms = "";
 	#throttleTimerID?: ReturnType<typeof setTimeout>;
 
-	#cleaners = new Set<() => void>();
+	#resources = new Resources();
 	#container: Element | ShadowRoot;
 
 	events: Emitter<FindkitUIEvents>;
@@ -401,7 +401,8 @@ export class SearchEngine {
 			nextGroupDefinitions: clone(groups),
 		});
 		devtools(this.state);
-		this.#cleaners.add(
+
+		this.#resources.create(() =>
 			subscribeKey(
 				this.state,
 				"nextGroupDefinitions",
@@ -423,7 +424,8 @@ export class SearchEngine {
 
 		this.#syncInputs(initialSearchParams.getTerms());
 
-		this.#cleaners.add(this.router.listen(this.#handleAddressChange));
+		this.#resources.create(() => this.router.listen(this.#handleAddressChange));
+
 		this.#handleAddressChange();
 	}
 
@@ -536,7 +538,7 @@ export class SearchEngine {
 			subtree: false,
 		});
 
-		this.#cleaners.add(() => observer.disconnect());
+		this.#resources.create(() => () => observer.disconnect());
 	}
 
 	#getDocumentLang() {
@@ -1007,13 +1009,18 @@ export class SearchEngine {
 	};
 
 	/**
-	 * Bind input to search. Returns true when is new input is added. False if
-	 * the given input was already added
+	 * Bind input to search. Returns unbind function.
 	 */
 	bindInput = (input: HTMLInputElement) => {
+		const listeners = this.#resources.child();
 		const prev = this.#inputs.find((o) => o.input === input);
+
+		const unbind = () => {
+			this.removeInput(input);
+		};
+
 		if (prev) {
-			return false;
+			return unbind;
 		}
 
 		const currentTerms = this.findkitParams.getTerms();
@@ -1033,67 +1040,73 @@ export class SearchEngine {
 			this.#handleInputChange(input.value);
 		}
 
-		const multi = new MultiListener();
+		this.#resources.create(() => listeners.dispose);
 
-		multi.on(
-			input,
-			"input",
-			(e) => {
-				assertInputEvent(e);
-				this.#handleInputChange(e.target.value);
-			},
-			{ passive: true },
+		listeners.create(() =>
+			listen(
+				input,
+				"input",
+				(e) => {
+					assertInputEvent(e);
+					this.#handleInputChange(e.target.value);
+				},
+				{ passive: true },
+			),
 		);
 
-		multi.on(
-			input,
-			"blur",
-			() => {
-				this.state.keyboardCursor = undefined;
-			},
-			{ passive: true },
+		listeners.create(() =>
+			listen(
+				input,
+				"blur",
+				() => {
+					this.state.keyboardCursor = undefined;
+				},
+				{ passive: true },
+			),
 		);
 
-		multi.on(input, "keydown", (e) => {
-			if (e.key === "ArrowDown") {
-				e.preventDefault();
-				this.#moveKeyboardCursor("down");
-			} else if (e.key === "ArrowUp") {
-				e.preventDefault();
-				this.#moveKeyboardCursor("up");
-			} else if (e.key === "Escape" && this.state.keyboardCursor) {
-				e.preventDefault();
-
-				// Stop event bubbling to prevent the modal from closing.  Eg.
-				// first esc hit disables the keyboard navigation if active and
-				// the only the second one closes the modal
-				e.stopImmediatePropagation();
-
-				this.state.keyboardCursor = undefined;
-
-				// Input might be hidden so scroll to it to make it visible
-				scrollIntoViewIfNeeded(input);
-			} else if (e.key === "Enter") {
-				assertInputEvent(e);
-
-				if (this.state.keyboardCursor) {
+		listeners.create(() =>
+			listen(input, "keydown", (e) => {
+				if (e.key === "ArrowDown") {
 					e.preventDefault();
-					this.#selectKeyboardCursor();
-					return;
+					this.#moveKeyboardCursor("down");
+				} else if (e.key === "ArrowUp") {
+					e.preventDefault();
+					this.#moveKeyboardCursor("up");
+				} else if (e.key === "Escape" && this.state.keyboardCursor) {
+					e.preventDefault();
+
+					// Stop event bubbling to prevent the modal from closing.  Eg.
+					// first esc hit disables the keyboard navigation if active and
+					// the only the second one closes the modal
+					e.stopImmediatePropagation();
+
+					this.state.keyboardCursor = undefined;
+
+					// Input might be hidden so scroll to it to make it visible
+					scrollIntoViewIfNeeded(input);
+				} else if (e.key === "Enter") {
+					assertInputEvent(e);
+
+					if (this.state.keyboardCursor) {
+						e.preventDefault();
+						this.#selectKeyboardCursor();
+						return;
+					}
+
+					this.#handleInputChange(e.target.value, { force: true });
 				}
+			}),
+		);
 
-				this.#handleInputChange(e.target.value, { force: true });
-			}
-		});
+		this.#inputs.push({ input, unbindEvents: listeners.dispose });
 
-		this.#inputs.push({ input, dispose: multi.off });
-
-		return true;
+		return unbind;
 	};
 
 	removeInput = (rmInput: HTMLInputElement) => {
 		const input = this.#inputs.find((input) => input?.input === rmInput);
-		input?.dispose();
+		input?.unbindEvents();
 
 		const inputIndex = this.#inputs.findIndex((obj) => obj === input);
 		if (inputIndex !== -1) {
@@ -1139,9 +1152,7 @@ export class SearchEngine {
 		this.events.emit("dispose", {});
 		instanceIds.delete(this.instanceId);
 		this.close();
-		for (const cleanup of this.#cleaners) {
-			cleanup();
-		}
+		this.#resources.dispose();
 
 		for (const input of this.#inputs) {
 			this.removeInput(input.input);

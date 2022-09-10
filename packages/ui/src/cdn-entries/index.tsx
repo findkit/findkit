@@ -21,7 +21,7 @@ import type { init } from "../modal";
 import type { CustomFields } from "@findkit/fetch";
 import { Emitter, FindkitUIEvents } from "../emitter";
 import type { TranslationStrings } from "../translations";
-import { MultiListener } from "../multi-dom-listener";
+import { listen, Resources } from "../resources";
 
 export {
 	SearchResultHitWithGroupId,
@@ -46,8 +46,6 @@ export {
 };
 
 const doc = () => document;
-
-const globalEvents = new MultiListener();
 
 /**
  * Variable created by the esbuild config in jakefile.js
@@ -112,8 +110,9 @@ function onDomContentLoaded(cb: () => any) {
 	if (/complete|interactive|loaded/.test(doc().readyState)) {
 		cb();
 	} else {
-		doc().addEventListener(
-			"DOMContentLoaded",
+		listen(
+			doc(),
+			"DOMContentLoaded" as any,
 			() => {
 				cb();
 			},
@@ -198,7 +197,7 @@ async function preloadStylesheet(href: string) {
 	link.as = "style";
 	link.href = href;
 	const promise = new Promise<void>((resolve) => {
-		globalEvents.on(link, "load", () => {
+		listen(link, "load", () => {
 			doc().head?.removeChild(link);
 			resolve();
 		});
@@ -220,12 +219,12 @@ async function loadScriptFromGlobal<T>(
 	script.type = "module";
 
 	const promise = new Promise<void>((resolve, reject) => {
-		globalEvents.on(script, "load", () => {
+		listen(script, "load", () => {
 			doc().head?.removeChild(script);
 			resolve();
 		});
 
-		globalEvents.on(script, "error", () => {
+		listen(script, "error", () => {
 			reject(new Error("[findkit] Failed to implementation from: " + src));
 		});
 	});
@@ -285,7 +284,7 @@ export class FindkitUI {
 
 	#options: FindkitUIOptions;
 	readonly events: Emitter<FindkitUIEvents>;
-	#listeners = new MultiListener();
+	#resources = new Resources();
 
 	constructor(options: FindkitUIOptions) {
 		this.#options = options;
@@ -368,10 +367,16 @@ export class FindkitUI {
 		(await this.#enginePromise).updateParams(params);
 	}
 
-	async bindInput(input: HTMLInputElement) {
-		this.#listeners.on(input, "focus", this.preload);
+	bindInput(input: HTMLInputElement) {
+		const resources = this.#resources.child();
 
-		(await this.#enginePromise).bindInput(input);
+		resources.create(() => listen(input, "focus", this.preload));
+
+		void this.#enginePromise.then((engine) => {
+			resources.create(() => engine.bindInput(input));
+		});
+
+		return resources.dispose;
 	}
 
 	async #getEngine() {
@@ -433,39 +438,34 @@ export class FindkitUI {
 	};
 
 	#bindOpeners(elements: Element[] | NodeListOf<Element>) {
-		const listeners = new MultiListener();
+		const resources = this.#resources.child();
 
 		for (const el of elements) {
 			if (el instanceof HTMLElement) {
-				listeners.on(el, "click", this.#handleOpenClick);
-				listeners.on(el, "mouseover", this.preload, {
-					once: true,
-					passive: true,
-				});
+				resources.create(() => listen(el, "click", this.#handleOpenClick));
+				resources.create(() =>
+					listen(el, "mouseover", this.preload, {
+						once: true,
+						passive: true,
+					}),
+				);
 			}
 		}
 
-		return listeners.off;
+		return resources.dispose;
 	}
 
 	openFrom(elements: string | NodeListOf<Element> | Element[]) {
-		let cleared = false;
-		let cleanup: () => void;
+		const resources = this.#resources.child();
 
 		onDomContentLoaded(() => {
-			if (cleared) {
-				return;
-			}
-
-			cleanup =
-				typeof elements === "string"
+			resources.create(() => {
+				return typeof elements === "string"
 					? this.#bindOpeners(doc().querySelectorAll(elements))
 					: this.#bindOpeners(elements);
+			});
 		});
 
-		return () => {
-			cleanup?.();
-			cleared = true;
-		};
+		return resources.dispose;
 	}
 }
