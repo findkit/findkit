@@ -5,9 +5,18 @@
 export class Resources {
 	#cleaners = new Set<() => void>();
 	#disposed = false;
+	#onDispose?: () => void;
+
+	constructor(onDispose?: () => void) {
+		this.#onDispose = onDispose;
+	}
 
 	get disposed() {
 		return this.#disposed;
+	}
+
+	get size() {
+		return this.#cleaners.size;
 	}
 
 	/**
@@ -34,8 +43,11 @@ export class Resources {
 		};
 	};
 
-	child = () => {
-		const resources = new Resources();
+	child = (onDispose?: () => void) => {
+		const resources = new Resources(() => {
+			this.#cleaners.delete(resources.dispose);
+			onDispose?.();
+		});
 		this.create(() => resources.dispose);
 		return resources;
 	};
@@ -50,6 +62,7 @@ export class Resources {
 		// cleaners are manually called from other cleaners
 		this.#cleaners.clear();
 		copy.forEach((fn) => fn());
+		this.#onDispose?.();
 	};
 }
 
