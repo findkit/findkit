@@ -24,6 +24,9 @@ test("can show backdrop", async ({ page }) => {
 			publicToken: "po8GK3G0r",
 			css: MOD.css`
 				.findkit--modal {
+					position: fixed;
+					width: initial;
+					height: initial;
 					inset: 20px;
 				}
 			`,
@@ -53,5 +56,86 @@ test("centers the content with width css", async ({ page }) => {
 		await ui.open();
 	});
 	await page.locator("input").waitFor({ state: "visible" });
+	await expect(page).toHaveScreenshot();
+});
+
+test("can set modal top", async ({ page }) => {
+	await page.goto("/external-input-dummy");
+
+	await page.evaluate(async () => {
+		const { FindkitUI, css, html } = MOD;
+
+		const ui = new FindkitUI({
+			publicToken: "po8GK3G0r",
+			slots: {
+				Layout(props) {
+					return html`${props.content}`;
+				},
+				Hit() {
+					// Hide the actual results so content won't change the
+					// screenshot
+					return html`<h1>Hit</h1>`;
+				},
+			},
+			css: css`
+				.findkit--backdrop {
+					top: 50px;
+				}
+			`,
+		});
+		void ui.bindInput(document.querySelector("#external-input")!);
+	});
+
+	const input = page.locator("#external-input");
+	const hits = page.locator(".findkit--hit");
+
+	await input.fill("valu");
+	await expect(hits.first()).toBeVisible();
+
+	await page.waitForTimeout(200);
+
+	await expect(page).toHaveScreenshot();
+});
+
+test("modal slides under the backdrop container", async ({ page }) => {
+	await page.goto("/external-input-dummy");
+
+	await page.evaluate(async () => {
+		const { FindkitUI, css, html } = MOD;
+
+		const ui = new FindkitUI({
+			publicToken: "po8GK3G0r",
+			slots: {
+				Layout(props) {
+					return html`${props.content}`;
+				},
+				Hit() {
+					// Hide the actual results so content won't change the
+					// screenshot
+					return html`<h1>Hit</h1>`;
+				},
+			},
+			css: css`
+				.findkit--backdrop {
+					top: 50px;
+				}
+
+				.findkit--modal-visible {
+					transform: translateY(-50%);
+				}
+			`,
+		});
+
+		void ui.bindInput(document.querySelector("#external-input")!);
+	});
+
+	const input = page.locator("#external-input");
+	const hits = page.locator(".findkit--hit");
+
+	await input.fill("valu");
+	await expect(hits.first()).toBeVisible();
+
+	await page.waitForTimeout(200);
+
 	await expect(page).toHaveScreenshot();
 });

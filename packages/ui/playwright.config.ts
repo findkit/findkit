@@ -16,7 +16,7 @@ const projects: PlaywrightTestConfig["projects"] = [
 	},
 ];
 
-if (process.env.CI) {
+if (process.env.CI || process.env.ALL_PLAYWRIGHT_BROWSERS) {
 	projects.push({
 		name: "firefox",
 		use: {
