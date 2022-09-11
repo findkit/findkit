@@ -76,9 +76,9 @@ jobs:
           ## Use this instead to update snapshots on the ci
           pnpm run playwright-test --update-snapshots ./e2e/visual.spec.ts
 
-          if [ "$(git status --porcelain tests)" != "" ]; then
-            git add tests
-            git commit -m "Update snapshots [skip actions]"
+          if [ "$(git status --porcelain e2e)" != "" ]; then
+            git add e2e
+            git commit -m "Update e2e snapshots [skip actions]"
             # Push back to the pr branch
             git push origin "HEAD:$GITHUB_HEAD_REF"
           fi
