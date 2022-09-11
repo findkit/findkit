@@ -70,7 +70,7 @@ jobs:
           # Sanity check
           ./node_modules/.bin/findkit search -t po8GK3G0r valu
 
-          pnpm run build-test
+          pnpm run build-e2e
 
           pnpm run playwright-test
           ## Use this instead to update snapshots on the ci
