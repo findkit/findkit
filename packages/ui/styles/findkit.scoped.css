@@ -1,9 +1,7 @@
 .modal {
-	z-index: 100001;
 	overflow: auto;
-	position: fixed;
-	inset: 0;
 	height: 100%;
+	width: 100%;
 	transform: translateY(-100%);
 	background-color: white;
 	align-items: center;
@@ -19,7 +17,7 @@
 
 .backdrop {
 	z-index: 100000;
-	overflow: auto;
+	overflow: hidden;
 	position: fixed;
 	inset: 0;
 	background-color: transparent;

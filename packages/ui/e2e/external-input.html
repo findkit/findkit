@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Search UI Test</title>
+
+		<link rel="stylesheet" href="/shared.css" />
+		<style>
+			header {
+				position: fixed;
+				height: 50px;
+				background-color: aquamarine;
+				width: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<input id="external-input" /><button type="button">Random button</button>
+		</header>
+		<script type="module">
+			import {
+				FindkitUI,
+				css,
+				html,
+				useTerms,
+				useTotal,
+				useResults,
+			} from "/build/esm/index.js";
+
+			const ui = new FindkitUI({
+				publicToken: "po8GK3G0r",
+				params: {
+					tagQuery: [["domain/valu.fi"]],
+				},
+				slots: {
+					Layout(props) {
+						return html`${props.content}`;
+					},
+				},
+				css: css`
+					.findkit--backdrop {
+						top: 50px;
+					}
+				`,
+			});
+
+			Object.assign(window, { ui });
+		</script>
+	</body>
+</html>

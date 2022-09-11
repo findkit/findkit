@@ -16,7 +16,7 @@ const projects: PlaywrightTestConfig["projects"] = [
 	},
 ];
 
-if (process.env.CI) {
+if (process.env.CI || process.env.ALL_PLAYWRIGHT_BROWSERS) {
 	projects.push({
 		name: "firefox",
 		use: {
@@ -29,7 +29,7 @@ if (process.env.CI) {
  * See https://playwright.dev/docs/test-configuration.
  */
 const config: PlaywrightTestConfig = {
-	testDir: "./tests",
+	testDir: "./e2e",
 	/* Maximum time one test can run for. */
 	timeout: 30 * 1000,
 	expect: {

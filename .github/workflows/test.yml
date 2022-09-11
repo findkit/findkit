@@ -70,15 +70,15 @@ jobs:
           # Sanity check
           ./node_modules/.bin/findkit search -t po8GK3G0r valu
 
-          pnpm run build-test
+          pnpm run build-e2e
 
-          pnpm run playwright-test
+          #pnpm run playwright-test
           ## Use this instead to update snapshots on the ci
-          #pnpm run playwright-test --update-snapshots ./tests/visual.spec.ts
+          pnpm run playwright-test --update-snapshots ./e2e/visual.spec.ts
 
-          if [ "$(git status --porcelain tests)" != "" ]; then
-            git add tests
-            git commit -m "Update snapshots [skip actions]"
+          if [ "$(git status --porcelain e2e)" != "" ]; then
+            git add e2e
+            git commit -m "Update e2e snapshots [skip actions]"
             # Push back to the pr branch
             git push origin "HEAD:$GITHUB_HEAD_REF"
           fi
