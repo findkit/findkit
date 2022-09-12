@@ -24,6 +24,7 @@
 		"vitest": "vitest run",
 		"test": "tsc && pnpm run eslint && pnpm run vitest && size-limit",
 		"playwright-test": "playwright test",
+		"playwright-update": "ALL_PLAYWRIGHT_BROWSERS=1 playwright test --update-snapshots ./e2e/visual.spec.ts",
 		"publish-build": "(cd ../../ && ./node_modules/.bin/turbo run build --filter @findkit/ui) && jake upload",
 		"build-ui-api-docs": "jake build-ui-api-docs",
 		"dev": "run-p 'dev:*'"
