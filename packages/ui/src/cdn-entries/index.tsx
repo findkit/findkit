@@ -437,8 +437,11 @@ export class FindkitUI {
 		void this.open();
 	};
 
-	#bindOpeners(elements: Element[] | NodeListOf<Element>) {
+	#bindOpeners(elements: Element | Element[] | NodeListOf<Element>) {
 		const resources = this.#resources.child();
+		if (elements instanceof Element) {
+			elements = [elements];
+		}
 
 		for (const el of elements) {
 			if (el instanceof HTMLElement) {
@@ -455,10 +458,23 @@ export class FindkitUI {
 		return resources.dispose;
 	}
 
-	openFrom(elements: string | NodeListOf<Element> | Element[]) {
+	/**
+	 * Open the modal from the given elements. If a string is given it is used
+	 * as a query selector to find the elements after the DOMContentLoaded
+	 * event.
+	 *
+	 * The implementation is preloaded on mouseover.
+	 *
+	 * @param elements
+	 * @returns unbind function
+	 */
+	openFrom(elements: string | NodeListOf<Element> | Element[] | Element) {
 		const resources = this.#resources.child();
 
 		onDomContentLoaded(() => {
+			// Use `Resources` to create the the bindings. This ensures that
+			// bindings are not created if the unbind function is called before
+			// the DOMContentLoaded event.
 			resources.create(() => {
 				return typeof elements === "string"
 					? this.#bindOpeners(doc().querySelectorAll(elements))
