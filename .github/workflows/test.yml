@@ -72,9 +72,9 @@ jobs:
 
           pnpm run build-e2e
 
-          pnpm run playwright-test
+          #pnpm run playwright-test
           ## Use this instead to update snapshots on the ci
-          #pnpm run playwright-test --update-snapshots ./e2e/visual.spec.ts
+          pnpm run playwright-test --update-snapshots ./e2e/visual.spec.ts
 
           if [ "$(git status --porcelain e2e)" != "" ]; then
             git add e2e
