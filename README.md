@@ -1,1 +1,1 @@
-See [`@findkit/ui`](/packages/ui).
+See [`@findkit/ui`](/packages/ui#readme).

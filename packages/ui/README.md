@@ -33,7 +33,7 @@ Start development server and build watcher with
 pnpm dev
 ```
 
-This will serve the files from the [e2e][./e2e] directly.
+This will serve the files from the [e2e](e2e) directory.
 
 Try <http://localhost:28104/single-group?fdk_q=valu> for example.
 
