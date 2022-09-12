@@ -7,3 +7,4 @@ main.d.ts
 findkit-ui-*.tgz
 api-docs-html
 test-results
+implementation.js

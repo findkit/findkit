@@ -100,7 +100,7 @@ export function useResultsImplementation(): SearchResultHitWithGroupId[] {
 /**
  * @public
  */
-export interface ModalImplementation {
+export interface Implementation {
 	init: typeof init;
 	h: (...args: any[]) => any;
 	html: (strings: TemplateStringsArray, ...values: any[]) => any;
@@ -112,7 +112,7 @@ export interface ModalImplementation {
 	useTotal: typeof useTotalImplementation;
 }
 
-export const implementation: ModalImplementation = {
+export const js: Implementation = {
 	init,
 	html,
 	h: createElement,
@@ -125,4 +125,7 @@ export const implementation: ModalImplementation = {
 };
 
 declare const FINDKIT_VERSION: string;
-Object.assign(window, { ["FINDKIT_" + FINDKIT_VERSION]: implementation });
+
+if (typeof window !== "undefined") {
+	Object.assign(window, { ["FINDKIT_" + FINDKIT_VERSION]: js });
+}
