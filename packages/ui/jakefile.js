@@ -139,7 +139,26 @@ task("build-e2e", async () => {
 	});
 });
 
-task("build-all", ["clean", "css", "esbuild-esm", "build-npm", "size-limit"]);
+task("styles-js", ["css"], async () => {
+	const styles = await fs.readFile("./styles.css");
+	const code = `
+	// Generated file. Do not edit.
+	module.exports = {
+		js: require("./cjs/implementation").js,
+		css: ${JSON.stringify(styles.toString())},
+	}
+	`;
+	await fs.writeFile("./implementation.js", code);
+});
+
+task("build-all", [
+	"clean",
+	"css",
+	"styles-js",
+	"esbuild-esm",
+	"build-npm",
+	"size-limit",
+]);
 
 task("watch-js", async () => {
 	const opts = {

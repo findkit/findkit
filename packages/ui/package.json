@@ -9,7 +9,9 @@
 		"main.d.ts",
 		"cjs",
 		"esm",
-		"src"
+		"src",
+		"implementation.js",
+		"implementation.d.ts"
 	],
 	"scripts": {
 		"dev:js": "jake watch-js",
@@ -34,7 +36,7 @@
 		},
 		{
 			"path": "esm/index.js",
-			"limit": "2.3kb"
+			"limit": "2.5kb"
 		}
 	],
 	"browserslist": [

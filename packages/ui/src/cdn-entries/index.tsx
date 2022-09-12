@@ -12,7 +12,7 @@ import type {
 import type { RouterBackend } from "../router";
 import type { Slots } from "../core-hooks";
 import type {
-	ModalImplementation,
+	Implementation,
 	Dispatch,
 	SetStateAction,
 	SearchResultHitWithGroupId,
@@ -33,7 +33,7 @@ export {
 	RouterBackend,
 	GroupDefinition,
 	Slots,
-	ModalImplementation,
+	Implementation,
 	State,
 	init,
 	Dispatch,
@@ -121,10 +121,10 @@ function onDomContentLoaded(cb: () => any) {
 	}
 }
 
-const lazyImplementation: Partial<ModalImplementation> = {};
+const lazyImplementation: Partial<Implementation> = {};
 
-function createShellFunction<Key extends keyof ModalImplementation>(name: Key) {
-	return (...args: any[]): ReturnType<ModalImplementation[Key]> => {
+function createShellFunction<Key extends keyof Implementation>(name: Key) {
+	return (...args: any[]): ReturnType<Implementation[Key]> => {
 		const fn = lazyImplementation[name] as any;
 		if (!fn) {
 			throw new Error(`[findkit] Implementation for "${name}" not loaded yet!`);
@@ -196,10 +196,14 @@ async function preloadStylesheet(href: string) {
 	link.rel = "preload";
 	link.as = "style";
 	link.href = href;
-	const promise = new Promise<void>((resolve) => {
+	const promise = new Promise<void>((resolve, reject) => {
 		listen(link, "load", () => {
 			doc().head?.removeChild(link);
 			resolve();
+		});
+
+		listen(link, "error", () => {
+			reject(new Error(`[findkit] Failed to load stylesheet "${href}"`));
 		});
 	});
 	doc().head?.appendChild(link);
@@ -260,7 +264,7 @@ export interface FindkitUIOptions {
 	infiniteScroll?: boolean;
 	styleSheet?: string;
 	slots?: Partial<Slots>;
-	load?: () => Promise<ModalImplementation>;
+	load?: () => Promise<{ js: Implementation; css?: string }>;
 	searchEndpoint?: string;
 	container?: Element;
 	monitorDocumentElementChanges?: boolean;
@@ -277,7 +281,10 @@ export interface FindkitUIOptions {
  * @public
  */
 export class FindkitUI {
-	#implementationPromise?: Promise<ModalImplementation>;
+	#implementationPromise?: Promise<{
+		js: Implementation;
+		css?: string;
+	}>;
 	#enginePromise: Promise<SearchEngine>;
 	#engineLoading = false;
 	#resolveEngine!: (engine: SearchEngine) => void;
@@ -324,14 +331,16 @@ export class FindkitUI {
 		if (this.#options.load) {
 			this.#implementationPromise = this.#options.load();
 		} else {
-			this.#implementationPromise = loadScriptFromGlobal<ModalImplementation>(
-				"FINDKIT_" + FINDKIT_VERSION,
-				cdnFile("implementation.js"),
-			);
+			this.#implementationPromise = new Promise((resolve) => {
+				void loadScriptFromGlobal<Implementation>(
+					"FINDKIT_" + FINDKIT_VERSION,
+					cdnFile("implementation.js"),
+				).then((js) => resolve({ js }));
+			});
 		}
 
 		void this.#implementationPromise.then((mod) => {
-			Object.assign(lazyImplementation, mod);
+			Object.assign(lazyImplementation, mod.js);
 		});
 
 		const preloadStylesPromise = Promise.all(
@@ -346,10 +355,16 @@ export class FindkitUI {
 	preload = async () => this.#getEngine();
 
 	#getStyleSheets(): string[] {
-		const sheets = [cdnFile("styles.css")];
+		const sheets = [];
+
+		if (!this.#options.load) {
+			sheets.push(cdnFile("styles.css"));
+		}
+
 		if (this.#options.styleSheet) {
 			sheets.push(this.#options.styleSheet);
 		}
+
 		return sheets;
 	}
 
@@ -387,9 +402,13 @@ export class FindkitUI {
 		this.#engineLoading = true;
 
 		const impl = await this.#loadImplementation();
-		const { styleSheet: _1, load: _2, ...rest } = this.#options;
-		const engine = impl.init({
+		const { styleSheet: _1, load: _2, css: userCSS, ...rest } = this.#options;
+
+		const allCSS = [impl.css, userCSS].filter(Boolean).join("\n");
+
+		const engine = impl.js.init({
 			...rest,
+			css: allCSS,
 			styleSheets: this.#getStyleSheets(),
 			instanceId: this.#instanceId,
 			events: this.events,
