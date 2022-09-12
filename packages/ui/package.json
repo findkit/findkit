@@ -13,13 +13,14 @@
 	],
 	"scripts": {
 		"dev:js": "jake watch-js",
-		"dev:css": "postcss --watch styles/index.css --output tests/build/styles.css",
-		"dev:serve": "serve -p 28104 tests",
+		"dev:css": "postcss --watch styles/index.css --output e2e/build/styles.css",
+		"dev:serve": "serve -p 28104 e2e",
 		"tsc": "tsc",
 		"build": "jake build-all",
-		"eslint": "../../node_modules/.bin/eslint 'src/**/*.{ts,tsx}' 'tests/**/*.{ts,tsx}' --max-warnings 0",
-		"build-test": "jake build-test",
-		"test": "tsc && pnpm run eslint && size-limit",
+		"eslint": "../../node_modules/.bin/eslint 'src/**/*.{ts,tsx}' 'e2e/**/*.{ts,tsx}' --max-warnings 0",
+		"build-e2e": "jake build-e2e",
+		"vitest": "vitest run",
+		"test": "tsc && pnpm run eslint && pnpm run vitest && size-limit",
 		"playwright-test": "playwright test",
 		"publish-build": "(cd ../../ && ./node_modules/.bin/turbo run build --filter @findkit/ui) && jake upload",
 		"build-ui-api-docs": "jake build-ui-api-docs",
@@ -33,7 +34,7 @@
 		},
 		{
 			"path": "esm/index.js",
-			"limit": "2.1kb"
+			"limit": "2.3kb"
 		}
 	],
 	"browserslist": [
@@ -82,7 +83,8 @@
 		"tabbable": "^5.3.3",
 		"tilg": "^0.1.1",
 		"typescript": "4.8.2",
-		"valtio": "^1.6.4"
+		"valtio": "^1.6.4",
+		"vitest": "^0.21.1"
 	},
 	"license": "ISC",
 	"volta": {

@@ -21,6 +21,7 @@ import type { init } from "../modal";
 import type { CustomFields } from "@findkit/fetch";
 import { Emitter, FindkitUIEvents } from "../emitter";
 import type { TranslationStrings } from "../translations";
+import { listen, Resources } from "../resources";
 
 export {
 	SearchResultHitWithGroupId,
@@ -109,8 +110,9 @@ function onDomContentLoaded(cb: () => any) {
 	if (/complete|interactive|loaded/.test(doc().readyState)) {
 		cb();
 	} else {
-		doc().addEventListener(
-			"DOMContentLoaded",
+		listen(
+			doc(),
+			"DOMContentLoaded" as any,
 			() => {
 				cb();
 			},
@@ -195,7 +197,7 @@ async function preloadStylesheet(href: string) {
 	link.as = "style";
 	link.href = href;
 	const promise = new Promise<void>((resolve) => {
-		link.addEventListener("load", () => {
+		listen(link, "load", () => {
 			doc().head?.removeChild(link);
 			resolve();
 		});
@@ -217,12 +219,12 @@ async function loadScriptFromGlobal<T>(
 	script.type = "module";
 
 	const promise = new Promise<void>((resolve, reject) => {
-		script.addEventListener("load", () => {
+		listen(script, "load", () => {
 			doc().head?.removeChild(script);
 			resolve();
 		});
 
-		script.addEventListener("error", () => {
+		listen(script, "error", () => {
 			reject(new Error("[findkit] Failed to implementation from: " + src));
 		});
 	});
@@ -282,6 +284,7 @@ export class FindkitUI {
 
 	#options: FindkitUIOptions;
 	readonly events: Emitter<FindkitUIEvents>;
+	#resources = new Resources();
 
 	constructor(options: FindkitUIOptions) {
 		this.#options = options;
@@ -340,9 +343,7 @@ export class FindkitUI {
 		return await this.#implementationPromise;
 	}
 
-	async preload() {
-		await this.#getEngine();
-	}
+	preload = async () => this.#getEngine();
 
 	#getStyleSheets(): string[] {
 		const sheets = [cdnFile("styles.css")];
@@ -366,8 +367,16 @@ export class FindkitUI {
 		(await this.#enginePromise).updateParams(params);
 	}
 
-	async bindInput(input: HTMLInputElement) {
-		(await this.#enginePromise).bindInput(input);
+	bindInput(input: HTMLInputElement) {
+		const resources = this.#resources.child();
+
+		resources.create(() => listen(input, "focus", this.preload));
+
+		void this.#enginePromise.then((engine) => {
+			resources.create(() => engine.bindInput(input));
+		});
+
+		return resources.dispose;
 	}
 
 	async #getEngine() {
@@ -409,10 +418,6 @@ export class FindkitUI {
 		(await this.#enginePromise).setUIStrings(lang, overrides);
 	}
 
-	#handleHover = () => {
-		void this.preload();
-	};
-
 	#handleOpenClick = (e: {
 		target: unknown;
 		preventDefault(): void;
@@ -432,40 +437,51 @@ export class FindkitUI {
 		void this.open();
 	};
 
-	#bindOpeners(elements: Element[] | NodeListOf<Element>) {
-		return Array.from(elements).map((el) => {
-			el.addEventListener("click", this.#handleOpenClick);
-			el.addEventListener("mouseover", this.#handleHover, {
-				once: true,
-				passive: true,
-			});
+	#bindOpeners(elements: Element | Element[] | NodeListOf<Element>) {
+		const resources = this.#resources.child();
+		if (elements instanceof Element) {
+			elements = [elements];
+		}
 
-			return () => {
-				el.removeEventListener("click", this.#handleOpenClick);
-				el.removeEventListener("mouseover", this.#handleHover);
-			};
-		});
+		for (const el of elements) {
+			if (el instanceof HTMLElement) {
+				resources.create(() => listen(el, "click", this.#handleOpenClick));
+				resources.create(() =>
+					listen(el, "mouseover", this.preload, {
+						once: true,
+						passive: true,
+					}),
+				);
+			}
+		}
+
+		return resources.dispose;
 	}
 
-	openFrom(elements: string | NodeListOf<Element> | Element[]) {
-		let cleared = false;
-		let unbinders: (() => void)[] = [];
+	/**
+	 * Open the modal from the given elements. If a string is given it is used
+	 * as a query selector to find the elements after the DOMContentLoaded
+	 * event.
+	 *
+	 * The implementation is preloaded on mouseover.
+	 *
+	 * @param elements
+	 * @returns unbind function
+	 */
+	openFrom(elements: string | NodeListOf<Element> | Element[] | Element) {
+		const resources = this.#resources.child();
 
 		onDomContentLoaded(() => {
-			if (cleared) {
-				return;
-			}
-
-			if (typeof elements === "string") {
-				unbinders = this.#bindOpeners(doc().querySelectorAll(elements));
-			} else {
-				unbinders = this.#bindOpeners(elements);
-			}
+			// Use `Resources` to create the the bindings. This ensures that
+			// bindings are not created if the unbind function is called before
+			// the DOMContentLoaded event.
+			resources.create(() => {
+				return typeof elements === "string"
+					? this.#bindOpeners(doc().querySelectorAll(elements))
+					: this.#bindOpeners(elements);
+			});
 		});
 
-		return () => {
-			unbinders.forEach((unbind) => unbind());
-			cleared = true;
-		};
+		return resources.dispose;
 	}
 }
