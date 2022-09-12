@@ -36,7 +36,7 @@ css = ".foo"
 on_match = "foo"
 ```
 
-When page has an element like `<div class="foo">` a `css/foo` tag is added.
+When page has an element like `<div class="foo">` a `foo` tag is added.
 
 ### `pathname_pattern`
 
@@ -58,7 +58,7 @@ pathname_regex = '^\/author\/'
 on_match = "author"
 ```
 
-This would add the `re/author` tag to all pages under `/author/`.
+This would add the `author` tag to all pages under `/author/`.
 
 Eg. on page `https://example.com/author/john-doe` the regex is matched againts
 `/author/john-doe` string.
@@ -84,4 +84,4 @@ pathname_regex = '^\/([^\\/]+)'
 on_match = "$1"
 ```
 
-a `re/ui` tag will be added.
+a `ui` tag will be added.
