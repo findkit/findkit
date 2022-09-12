@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Search UI Test</title>
+
+		<link rel="stylesheet" href="/shared.css" />
+
+		<script type="module">
+			import { FindkitUI } from "/build/esm/index.js";
+
+			const ui = new FindkitUI({
+				publicToken: "po8GK3G0r",
+				async load() {
+					const { js } = await import("/build/esm/implementation.js");
+					const css = await fetch("/build/styles.css").then((r) => r.text());
+					return { js, css };
+				},
+			});
+
+			Object.assign(window, { ui });
+
+			ui.openFrom("button");
+		</script>
+	</head>
+	<body>
+		<button id="open-button" type="button">open</button>
+	</body>
+</html>

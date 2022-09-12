@@ -139,3 +139,15 @@ test("modal slides under the backdrop container", async ({ page }) => {
 
 	await expect(page).toHaveScreenshot();
 });
+
+test("can use load() with styles", async ({ page }) => {
+	await page.goto("/manual-load");
+
+	const input = page.locator('[aria-label="Search input"]');
+	const button = page.locator("text=open");
+
+	await button.click();
+	await input.waitFor({ state: "visible" });
+
+	await expect(page.locator(".findkit--header")).toHaveScreenshot();
+});
