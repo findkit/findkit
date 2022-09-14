@@ -28,3 +28,29 @@
 	--ifm-color-primary-lightest: #ff78c4;
 	--docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+.search-bar-findkit-logo {
+	color: var(--ifm-link-color);
+	transform: scale(1.5);
+}
+
+.open-search {
+	border: 0;
+	background-color: transparent;
+	/* transform: scale(1.4); */
+	height: 100%;
+	aspect-ratio: 1/1;
+}
+
+.navbar__items--right > :last-child {
+	height: 100%;
+	padding-right: 0;
+	right: 0;
+}
+
+.open-search:hover {
+	background-color: var(--ifm-link-color);
+}
+.open-search:hover .search-bar-findkit-logo {
+	color: white;
+}
