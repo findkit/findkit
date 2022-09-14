@@ -20,8 +20,11 @@ const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
 	// highlight-start
 	css: `
+        /* Reveal the backdrop */
         .findkit--modal {
-            margin: 1rem;
+            position: fixed;
+            width: initial;
+            inset: 1rem;
         }
     `,
 	// highlight-end
