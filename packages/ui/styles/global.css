@@ -28,6 +28,12 @@
 	--brand-color: rgb(184, 97, 150);
 	--hover-bg-color: rgba(184, 97, 150, 0.103);
 	--findkit--modal-animation-duration: 200ms;
+
+	/**
+	* Do not inherit any styles outside the shadow root
+	* See https://stackoverflow.com/a/49709787/153718
+	*/
+	all: initial;
 }
 
 /*
