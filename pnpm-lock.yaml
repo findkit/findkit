@@ -23,7 +23,7 @@ importers:
       '@docusaurus/core': 2.1.0
       '@docusaurus/module-type-aliases': 2.1.0
       '@docusaurus/preset-classic': 2.1.0
-      '@findkit/ui': 0.0.1-dev.ea7f1d40de
+      '@findkit/ui': 0.0.1-dev.4f155b0cfd
       '@mdx-js/react': ^1.6.22
       clsx: ^1.2.1
       netlify-cli: ^11.5.1
@@ -34,7 +34,7 @@ importers:
     dependencies:
       '@docusaurus/core': 2.1.0_rw34wyrummvuuuhgiylphbvpae
       '@docusaurus/preset-classic': 2.1.0_rw34wyrummvuuuhgiylphbvpae
-      '@findkit/ui': 0.0.1-dev.ea7f1d40de
+      '@findkit/ui': 0.0.1-dev.4f155b0cfd
       '@mdx-js/react': 1.6.22_react@17.0.2
       clsx: 1.2.1
       prism-react-renderer: 1.3.5_react@17.0.2
@@ -2638,8 +2638,8 @@ packages:
       - supports-color
     dev: true
 
-  /@findkit/ui/0.0.1-dev.ea7f1d40de:
-    resolution: {integrity: sha512-Ysmnf8JOR6i6fOspcqoVRNENJqPKfGYEAkLrOXR/EccrfWt2Pkx0NWjjNtZjMb0/O+no35lA2Fbh0JwTqAFeOQ==}
+  /@findkit/ui/0.0.1-dev.4f155b0cfd:
+    resolution: {integrity: sha512-yfomAfWHEhsIdDcS9CL6baV6pAqCKw+i4ECtDdOQIV2w9XG6ROtBIphtORu9Dc0pDlhl4ydg5wup2UXhEZfAjA==}
     dev: false
 
   /@hapi/hoek/9.3.0:
