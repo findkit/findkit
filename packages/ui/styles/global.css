@@ -34,6 +34,8 @@
 	* See https://stackoverflow.com/a/49709787/153718
 	*/
 	all: initial;
+	/* But do use the website font */
+	font-family: inherit;
 }
 
 /*

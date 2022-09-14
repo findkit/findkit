@@ -1,17 +1,11 @@
 import React, { useEffect } from "react";
-import { FindkitUI, css } from "@findkit/ui";
+import { FindkitUI } from "@findkit/ui";
 
 const ui = new FindkitUI({
 	publicToken: "p68GxRvaA",
 	// async load() {
 	// 	return import("@findkit/ui/implementation");
 	// },
-	css: css`
-		:host {
-			/* Use the docusaurus font */
-			font-family: inherit;
-		}
-	`,
 	params: {
 		tagQuery: [],
 	},
