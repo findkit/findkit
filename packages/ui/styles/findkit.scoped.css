@@ -97,6 +97,14 @@
 
 	/* click through */
 	pointer-events: none;
+
+	opacity: 1;
+	transition: opacity 0.2s ease;
+}
+
+.logo-hide {
+	transition-delay: 1s;
+	opacity: 0;
 }
 
 .search-input-wrap {
@@ -285,7 +293,7 @@
 	display: flex;
 	height: 100%;
 	aspect-ratio: 1 / 1;
-	right: 0;
+	left: 0;
 	pointer-events: none;
 
 	opacity: 0;

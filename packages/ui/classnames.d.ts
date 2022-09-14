@@ -27,6 +27,7 @@ type ClassNames =
   | "findkit--link-text"
   | "findkit--load-more-button"
   | "findkit--logo"
+  | "findkit--logo-hide"
   | "findkit--modal"
   | "findkit--modal-visible"
   | "findkit--plain"

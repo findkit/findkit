@@ -358,9 +358,13 @@ export function Results() {
 }
 
 export function Logo() {
+	const state = useSearchEngineState();
 	return (
 		<svg
-			className={cn("logo")}
+			className={cn({
+				logo: true,
+				"logo-hide": state.status === "fetching",
+			})}
 			xmlns="http://www.w3.org/2000/svg"
 			width={24}
 			height={24}
