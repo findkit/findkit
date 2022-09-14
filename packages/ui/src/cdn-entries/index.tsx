@@ -229,7 +229,7 @@ async function loadScriptFromGlobal<T>(
 		});
 
 		listen(script, "error", () => {
-			reject(new Error("[findkit] Failed to implementation from: " + src));
+			reject(new Error("[findkit] Failed to load implementation from: " + src));
 		});
 	});
 
