@@ -31,20 +31,19 @@
 
 .search-bar-findkit-logo {
 	color: var(--ifm-link-color);
-	transform: scale(1.5);
 }
 
 .open-search {
 	border: 0;
 	background-color: transparent;
-	/* transform: scale(1.4); */
 	height: 100%;
 	aspect-ratio: 1/1;
+	padding: 5px;
 }
 
 .navbar__items--right > :last-child {
 	height: 100%;
-	padding-right: 0;
+	padding: 0;
 	right: 0;
 }
 

@@ -45,8 +45,8 @@ export function Logo() {
 		<svg
 			className="search-bar-findkit-logo"
 			xmlns="http://www.w3.org/2000/svg"
-			width={24}
-			height={24}
+			width={30}
+			height={30}
 			viewBox="0 0 24 20"
 		>
 			<path
