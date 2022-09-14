@@ -9,6 +9,7 @@ there are few cases where you might want to disable this:
     not uploaded to our CDN.
 - If you need to run fork of `@findkit/ui`
 - You just cannot connect to `cdn.findkit.com` from a internal network.
+- Developing offline
 
 ## Code
 
