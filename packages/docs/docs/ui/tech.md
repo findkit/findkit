@@ -5,7 +5,7 @@ sidebar_position: 10
 # Technical Description
 
 The `@findki/ui` library is implemented using Preact which is bundled inside the
-library. This makes it very easy to use the library since the users do not have
+library. This makes it very easy to use the library because users do not have
 known anything about Preact since it is just an implementation detail (unless
 using Slot Override Components).
 
@@ -16,15 +16,12 @@ and the npm package. Meaning even the npm package loads the actual
 implementation from the CDN. [This can be disabled](/ui/advanced/disable-cdn) if
 you cannot depend on our CDN.
 
-The library is open-source and is available on Github
-<https://github.com/findkit/findkit/tree/main/packages/ui>
-
 ## Rendering
 
 By default the UI renders a full screen modal into a dynamically created
-container with Shadow DOM. This ensures that UI can be opened on any page
-without having to worry that the page styles can interfere with it. This is
-of course customizable. You can disable the shadow dom and render the UI
+container with Shadow DOM and focus trapping. This ensures that UI can be opened
+on any page without having to worry that the page styles can interfere with it.
+This is of course customizable. You can disable the shadow dom and render the UI
 in a [custom container](/ui/advanced/custom-container) without the modal.
 
 ## Routing
@@ -32,7 +29,7 @@ in a [custom container](/ui/advanced/custom-container) without the modal.
 The current search terms are saved in the query string using the browser History
 API. This ensures that the search results are restored when user presses the
 browser back button from a result page. Sometimes this routing method can
-conflict the used framework and it [can be disable or completely
+conflict the used framework and it [can be disabled or completely
 customized](/ui/advanced/routing).
 
 ## Fetching

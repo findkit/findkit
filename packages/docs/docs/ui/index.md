@@ -9,11 +9,13 @@ The source code is available on
 
 Feature highlights:
 
-- "Search as you type"
+- "Search as you type" experience
 - Accessibile
 - Search result groupping
 - Customizable
 - Automatic lazy loading
+
+For more detailed description checkout the [Technical Description](/ui/tech) page.
 
 The library can installed by hot linking it from our CDN or by bundling from the
 npm-package. See the [setup](/ui/setup) page for details.
