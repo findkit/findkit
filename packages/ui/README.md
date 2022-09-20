@@ -1,8 +1,8 @@
 # Findkit UI package
 
-See documentation at <https://docs.findkit.com/ui/setup>
+See documentation at <https://docs.findkit.com/ui>
 
-# Contributing
+## Contributing
 
 Get [pnpm](https://pnpm.io/installation) 7 and clone the repository
 
@@ -17,7 +17,7 @@ cd findkit
 pnpm install
 ```
 
-## Unit tests with Vitest
+### Unit tests with Vitest
 
 Run
 
@@ -25,7 +25,7 @@ Run
 pnpm vitest
 ```
 
-## Manual testing
+### Manual testing
 
 Start development server and build watcher with
 
@@ -37,7 +37,7 @@ This will serve the files from the [e2e](e2e) directory.
 
 Try <http://localhost:28104/single-group?fdk_q=valu> for example.
 
-## E2E Tests with Playwright
+### E2E Tests with Playwright
 
 While the development server is running you can execute the Playwright tests
 with:
@@ -46,7 +46,7 @@ with:
 pnpm playwright-test --headed
 ```
 
-## Updating the visual snapshots
+### Updating the visual snapshots
 
 Run
 
@@ -61,7 +61,7 @@ Github Actions runs Linux so you need to run the update in the
 to git automatically. Use this only from PRs and remember to disable it when
 done.
 
-## Manual packaging
+### Manual packaging
 
 When you want test the changes in your project you must build the package and
 install it to your project.
