@@ -12,7 +12,7 @@
 		"build": "tsc --noEmit false --project tsconfig.build.json"
 	},
 	"author": "Valu Digital Oy",
-	"license": "ISC",
+	"license": "MIT",
 	"devDependencies": {
 		"@types/jsonwebtoken": "^8.5.8",
 		"@valu/npm-tools": "^1.1.2",

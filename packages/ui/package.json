@@ -89,7 +89,7 @@
 		"valtio": "^1.6.4",
 		"vitest": "^0.21.1"
 	},
-	"license": "ISC",
+	"license": "MIT",
 	"volta": {
 		"node": "16.17.0"
 	}

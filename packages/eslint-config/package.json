@@ -5,7 +5,7 @@
 	"description": "",
 	"main": "index.js",
 	"author": "",
-	"license": "ISC",
+	"license": "MIT",
 	"volta": {
 		"node": "14.19.2"
 	}
