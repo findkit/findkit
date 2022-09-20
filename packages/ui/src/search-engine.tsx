@@ -69,12 +69,12 @@ export interface SearchEngineParams {
  *
  * @public
  */
-export interface GroupDefinition extends SearchEngineParams {
+export interface GroupDefinition {
 	id: string;
 	title: string;
-
 	previewSize?: number;
 	scoreBoost?: number;
+	params: SearchEngineParams;
 }
 
 /**
@@ -367,11 +367,13 @@ export class SearchEngine {
 			groups = [
 				{
 					...SINGLE_GROUP_NAME,
-					tagQuery: [],
-					highlightLength: DEFAULT_HIGHLIGHT_LENGTH,
 					scoreBoost: 1,
 					previewSize: 5,
-					...options.params,
+					params: {
+						tagQuery: [],
+						highlightLength: DEFAULT_HIGHLIGHT_LENGTH,
+						...options.params,
+					},
 				},
 			];
 		}
@@ -662,13 +664,13 @@ export class SearchEngine {
 			this.updateGroups((groups) => {
 				const group = groups[0];
 				if (group) {
-					params(group);
+					params(group.params ?? {});
 				}
 			});
 		} else {
 			this.updateGroups({
 				...SINGLE_GROUP_NAME,
-				...params,
+				params,
 			});
 		}
 	};
@@ -678,11 +680,11 @@ export class SearchEngine {
 			groups: this.state.nextGroupDefinitions,
 		});
 
-		const params = this.state.nextGroupDefinitions[0];
-		assertNonNullable(params, "first group missing");
+		const group = this.state.nextGroupDefinitions[0];
+		assertNonNullable(group, "first group missing");
 
 		this.events.emit("params-change", {
-			params,
+			params: group.params ?? {},
 		});
 		this.#clearTimeout();
 		const terms = this.findkitParams.getTerms();
@@ -765,11 +767,12 @@ export class SearchEngine {
 				}
 
 				return cleanUndefined({
-					tagQuery: group.tagQuery,
-					createdDecay: group.createdDecay,
-					modifiedDecay: group.modifiedDecay,
-					decayScale: group.decayScale,
-					highlightLength: group.highlightLength ?? DEFAULT_HIGHLIGHT_LENGTH,
+					tagQuery: group.params.tagQuery ?? [],
+					createdDecay: group.params.createdDecay,
+					modifiedDecay: group.params.modifiedDecay,
+					decayScale: group.params.decayScale,
+					highlightLength:
+						group.params.highlightLength ?? DEFAULT_HIGHLIGHT_LENGTH,
 					lang: options.lang,
 					size,
 					from,

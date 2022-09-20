@@ -26,7 +26,7 @@ function useParamsImplementation() {
 	const group = state.nextGroupDefinitions[0];
 	assertNonNullable(group, "useParams(): No group defined");
 
-	return [group, engine.updateParams] as const;
+	return [group.params, engine.updateParams] as const;
 }
 
 /**
