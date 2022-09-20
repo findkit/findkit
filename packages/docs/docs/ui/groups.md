@@ -45,7 +45,7 @@ ui.updateGroups((groups) => {
 
 ## Keys
 
-The group support all the [params keys](/ui/params#keys) with following additions:
+The groups support all the [params keys](/ui/params#keys) with following additions:
 
 ### `id: string`
 
