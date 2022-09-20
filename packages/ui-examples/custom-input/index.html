@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Static Template</title>
+		<script type="module">
+			import {
+				FindkitUI,
+				html,
+				useInput,
+			} from "https://cdn.findkit.com/ui/v0.0.1-dev.fed2084b69/esm/index.js";
+
+			const ui = new FindkitUI({
+				publicToken: "p68GxRvaA",
+				slots: {
+					Header() {
+						const ref = useInput();
+						return html`
+							<input ref=${ref} placeholder="My custom input" type="text" />
+						`;
+					},
+				},
+			});
+
+			ui.openFrom("#open");
+		</script>
+	</head>
+	<body>
+		<button id="open" type="button">open</button>
+	</body>
+</html>
