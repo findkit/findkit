@@ -33,7 +33,7 @@ When a search is made with this configuration it will display results from each
 group as searches are made. The result amount per group is determined by the
 `previewSize` key.
 
-Checkout on here how this actually works. TODO link.
+Checkout this example to see how it works: <https://codesandbox.io/s/github/findkit/findkit/tree/main/packages/ui-examples/grouping>
 
 The groups can be also updated on the fly with `ui.updateGroups(fn)` method:
 
