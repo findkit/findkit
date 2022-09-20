@@ -1,32 +1,7 @@
 import React, { useEffect } from "react";
 import { FindkitUI } from "@findkit/ui";
 
-const ui = new FindkitUI({
-	publicToken: "p68GxRvaA",
-	// async load() {
-	// 	return import("@findkit/ui/implementation");
-	// },
-	params: {
-		tagQuery: [],
-	},
-	// groups: [
-	// 	{
-	// 		id: "generic",
-	// 		title: "Generic",
-	// 		tagQuery: [["re/root"]],
-	// 	},
-	// 	{
-	// 		id: "crawler",
-	// 		title: "Crawler",
-	// 		tagQuery: [["re/crawler"]],
-	// 	},
-	// 	{
-	// 		id: "ui",
-	// 		title: "UI",
-	// 		tagQuery: [["re/ui"]],
-	// 	},
-	// ],
-});
+const ui = new FindkitUI({ publicToken: "p68GxRvaA" });
 
 export default function SearchBarWrapper() {
 	useEffect(() => {
