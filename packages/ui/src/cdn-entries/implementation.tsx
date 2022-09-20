@@ -1,6 +1,6 @@
 import { html } from "htm/preact";
 import { createElement, useMemo, useState } from "react";
-import { useSearchEngine, useSearchEngineState } from "../core-hooks";
+import { useInput, useSearchEngine, useSearchEngineState } from "../core-hooks";
 
 import { init } from "../modal";
 import { SearchResultHit } from "../search-engine";
@@ -110,6 +110,7 @@ export interface Implementation {
 	useTerms: typeof useTermsImplementation;
 	useResults: typeof useResultsImplementation;
 	useTotal: typeof useTotalImplementation;
+	useInput: typeof useInput;
 }
 
 export const js: Implementation = {
@@ -122,6 +123,7 @@ export const js: Implementation = {
 	useTerms: useTermsImplementation,
 	useTotal: useTotalImplementation,
 	useResults: useResultsImplementation,
+	useInput,
 };
 
 declare const FINDKIT_VERSION: string;

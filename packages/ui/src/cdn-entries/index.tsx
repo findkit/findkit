@@ -191,6 +191,18 @@ export const useParams = createShellFunction("useParams");
  */
 export const useGroups = createShellFunction("useGroups");
 
+/**
+ * Returns a ref for binding a inputs to the search
+ *
+ * Example:
+ *
+ * 		const ref = useInput();
+ * 		<input ref={ref} type="text" />
+ *
+ * @public
+ */
+export const useInput = createShellFunction("useInput");
+
 async function preloadStylesheet(href: string) {
 	const link = doc().createElement("link");
 	link.rel = "preload";
