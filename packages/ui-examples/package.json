@@ -1,0 +1,10 @@
+{
+	"name": "@findkit/ui-examples",
+	"private": true,
+	"scripts": {
+		"serve": "serve -l 48439"
+	},
+	"devDependencies": {
+		"serve": "^14.0.1"
+	}
+}

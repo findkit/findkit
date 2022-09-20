@@ -160,6 +160,12 @@ importers:
       valtio: 1.6.4_react@18.2.0
       vitest: 0.21.1
 
+  packages/ui-examples:
+    specifiers:
+      serve: ^14.0.1
+    devDependencies:
+      serve: 14.0.1
+
 packages:
 
   /@algolia/autocomplete-core/1.7.1:
@@ -7570,7 +7576,7 @@ packages:
     dev: true
 
   /content-disposition/0.5.2:
-    resolution: {integrity: sha1-DPaLud318r55YcOoUXjLhdunjLQ=}
+    resolution: {integrity: sha512-kRGRZw3bLlFISDBgwTSA1TMBFN6J6GWDeubmDE3AF+3+yXL8hTWv8r5rkLbqYXY4RjPk/EzHnClI3zQf1cFmHA==}
     engines: {node: '>= 0.6'}
 
   /content-disposition/0.5.4:
