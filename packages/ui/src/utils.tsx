@@ -34,8 +34,15 @@ export const { scopeClassNames, scopeView } =
 export const View = scopeView("findkit");
 export const cn = scopeClassNames("findkit");
 
+function hasScrollBar(node: HTMLElement) {
+	const style = getComputedStyle(node);
+	return ["overflow", "overflow-y"].some((prop) => {
+		return /auto|scroll/i.test(style.getPropertyValue(prop));
+	});
+}
+
 export function getScrollContainer(node: HTMLElement): HTMLElement | null {
-	if (node.scrollHeight > node.clientHeight) {
+	if (hasScrollBar(node)) {
 		if (node === document.body) {
 			// This is weird edge case. The <body> seems to be the scrollable
 			// element but we need to get the measurements from the <html>
@@ -52,8 +59,8 @@ export function getScrollContainer(node: HTMLElement): HTMLElement | null {
 			return getScrollContainer(root.host);
 		}
 
-		// Got to root with nothing to scroll
-		return null;
+		// Got to root
+		return document.documentElement;
 	}
 
 	return getScrollContainer(node.parentElement);
