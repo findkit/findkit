@@ -46,14 +46,3 @@ are using Typescript as well.
 The CDN and npm imports are completely interchangeable. In this documentation
 will be using the npm import but I can be replaced with CDN import if you cannot
 use the npm import.
-
-## Demo
-
-Checkout the "Demo UI" view on the Hub to quickly see how it works on your
-project. This documentation site uses it as well. You can checkout [its
-configuration on Github](https://github.com/findkit/findkit/blob/main/packages/docs/src/theme/SearchBar.tsx).
-
-## Open Source
-
-The library is open source and is available on Github
-<https://github.com/findkit/findkit/tree/main/packages/ui>
