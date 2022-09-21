@@ -53,3 +53,12 @@
 .open-search:hover .search-bar-findkit-logo {
 	color: white;
 }
+
+.codesandbox-example {
+	font-size: 10pt;
+}
+
+.codesandbox-example a {
+	margin-left: 4px;
+	margin-right: 4px;
+}

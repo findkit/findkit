@@ -37,4 +37,5 @@ Tagged Markup)](https://github.com/developit/htm) tag and finally the
 `useInput()` hook is used to bind the input to the search UI.
 
 Try it on Codesandbox
-https://codesandbox.io/s/github/findkit/findkit/tree/main/packages/ui-examples/custom-input
+
+<Codesandbox name="custom-input" />
