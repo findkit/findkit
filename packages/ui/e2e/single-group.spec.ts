@@ -223,8 +223,10 @@ test("can update groups on the fly", async ({ page }) => {
 			{
 				id: "statement",
 				title: "statement.fi",
-				tagQuery: [["domain/statement.fi"]],
-				highlightLength: 10,
+				params: {
+					highlightLength: 10,
+					tagQuery: [["domain/statement.fi"]],
+				},
 				scoreBoost: 1,
 				previewSize: 5,
 			},
@@ -252,7 +254,7 @@ test("can update groups on the fly with update function", async ({ page }) => {
 		await ui.updateGroups((groups) => {
 			const group = groups[0];
 			if (group) {
-				group.tagQuery = [["domain/statement.fi"]];
+				group.params.tagQuery = [["domain/statement.fi"]];
 			}
 		});
 	});
