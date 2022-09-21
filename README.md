@@ -4,11 +4,11 @@ Findkit documentation and source code for the Finkdit UI Library
 
 See
 
-<https://docs.findkit.com/ui/>
+<https://docs.findkit.com/>
 
 Repo shortcuts:
 
 - [`@findkit/ui`](/packages/ui#readme)
 - [`docs`](/packages/docs#readme)
-- [example](/packages/ui-examples)
+- [`ui-examples`](/packages/ui-examples)
 - [`@findkit/fetch`](/packages/fetch#readme)
