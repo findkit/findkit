@@ -12,7 +12,6 @@ function Codesandbox(props: { name: string }) {
 		view: "preview",
 	}).toString();
 
-	//
 	return (
 		<div className="codesandbox-example">
 			View on
