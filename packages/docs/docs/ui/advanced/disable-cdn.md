@@ -1,8 +1,8 @@
 # Disable CDN
 
 As described in the [Technical Description](/ui/tech) `@findkit/ui` lazy loads
-the implementation code from our CDN even installing it from the npm package but
-there are few cases where you might want to disable this:
+the implementation code from our CDN even when installing it from the npm
+package but there are few cases where you might want to disable this:
 
 - When [contributing](https://github.com/findkit/findkit/tree/main/packages/ui#readme) to `@findkit/ui` code
   - You cannot make test installations since the code of the test builds are
