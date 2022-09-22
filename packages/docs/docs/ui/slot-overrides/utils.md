@@ -6,7 +6,7 @@ Functions starting with the `use` keyword are [React](https://reactjs.org/docs/h
 
 ### `useParams()`
 
-Hook for updating the [search params](/ui/options/params) within a component.
+Hook for updating the [search params](/ui/api/params) within a component.
 
 ### `useGroups()`
 

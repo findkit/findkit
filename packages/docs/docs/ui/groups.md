@@ -5,7 +5,7 @@ sidebar_position: 3
 # Grouping
 
 To group search results you can define a `groups` array with titles and group specific search
-[`params`](/ui/options/params).
+[`params`](/ui/api/params).
 
 [Live demo at the bottom 👇](#try-it)
 
@@ -63,7 +63,7 @@ Title of the group. Displayed within the search results.
 
 ### `params: object`
 
-See [Search Params](/ui/options/params).
+See [Search Params](/ui/api/params).
 
 ### `previewSize?: number`
 

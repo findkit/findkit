@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# Options and Methods
+# API
 
 The `FindkitUI` constructor supports following options for customization
 
@@ -15,7 +15,7 @@ const ui = new FindkitUI({
 });
 ```
 
-## Options
+## Constructor Options
 
 <Api page="ui.findkituioptions" />
 
@@ -57,7 +57,7 @@ Overrides](/ui/slot-overrides/).
 
 ### `params: object` {#params}
 
-Customize search request params. See [Search Params](/ui/options/params).
+Customize search request params. See [Search Params](/ui/api/params).
 
 <Api page="ui.findkituioptions.params" />
 
