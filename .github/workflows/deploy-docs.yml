@@ -68,7 +68,7 @@ jobs:
       - name: Deploy site
         run: |
           set -eu
-          mv packages/ui/api-docs-html/api packages/docs/build/api
+          mv packages/ui/api-docs-html/api packages/docs/build/ui-api
           cd packages/docs && pnpm run deploy
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
