@@ -6,7 +6,7 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-	title: "Findkit",
+	title: "Findkit Docs",
 	// tagline: "Dinosaurs are cool",
 	url: "https://docs.findkit.com",
 	baseUrl: "/",
@@ -17,7 +17,7 @@ const config = {
 	// GitHub pages deployment config.
 	// If you aren't using GitHub pages, you don't need these.
 	organizationName: "facebook", // Usually your GitHub org/user name.
-	projectName: "docusaurus", // Usually your repo name.
+	projectName: "findkit", // Usually your repo name.
 
 	// Even if you don't use internalization, you can use this field to set useful
 	// metadata like html lang. For example, if your site is Chinese, you may want
@@ -62,6 +62,11 @@ const config = {
 				},
 				items: [
 					{
+						href: "https://hub.findkit.com/",
+						label: "Findkit Hub",
+						position: "right",
+					},
+					{
 						href: "https://github.com/findkit/findkit",
 						label: "GitHub",
 						position: "right",
@@ -72,16 +77,24 @@ const config = {
 				style: "dark",
 				links: [
 					{
-						title: "Community",
+						title: "Links",
 						items: [
 							{
 								label: "Github",
 								href: "https://github.com/findkit/findkit/",
 							},
+							{
+								label: "Findkit Hub",
+								href: "https://hub.findkit.com/",
+							},
+							{
+								label: "Findkit.com",
+								href: "https://findkit.com/",
+							},
 						],
 					},
 				],
-				copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+				// copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
 			},
 			prism: {
 				theme: lightCodeTheme,
