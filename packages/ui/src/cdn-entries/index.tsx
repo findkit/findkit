@@ -442,7 +442,10 @@ export class FindkitUI {
 	 * Unbind all event listeners, close the modal and remove it from the DOM
 	 */
 	async dispose() {
-		(await this.#enginePromise).dispose();
+		this.#resources.dispose();
+		if (this.#engineLoading) {
+			(await this.#enginePromise).dispose();
+		}
 	}
 
 	async setUIStrings(lang: string, overrides?: Partial<TranslationStrings>) {

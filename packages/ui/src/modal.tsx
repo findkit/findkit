@@ -378,7 +378,7 @@ export function init(options: {
 		overrides?: Partial<TranslationStrings>;
 	};
 }) {
-	const plainContainer = Boolean(options.container);
+	const hasCustomContainer = Boolean(options.container);
 
 	let container =
 		options.shadowDom !== false
@@ -399,11 +399,11 @@ export function init(options: {
 			ReactDOM.unmountComponentAtNode(container);
 		}
 
-		if (plainContainer) {
+		// Bailout from removing the container if we didn't create it
+		if (hasCustomContainer) {
 			return;
 		}
 
-		// Remove the element from the DOM only if we created it
 		if (container instanceof Element) {
 			container.remove();
 		} else {
@@ -421,7 +421,7 @@ export function init(options: {
 					<style dangerouslySetInnerHTML={{ __html: options.css }} />
 				) : null}
 				<FindkitProvider engine={engine} slots={options.slots ?? {}}>
-					{plainContainer ? <Plain /> : <Modal />}
+					{hasCustomContainer ? <Plain /> : <Modal />}
 				</FindkitProvider>
 			</>
 		</StrictMode>,
