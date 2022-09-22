@@ -62,3 +62,12 @@
 	margin-left: 4px;
 	margin-right: 4px;
 }
+
+.codesandbox-placehoder {
+	height: 200px;
+	background-color: var(--ifm-color-primary-light);
+	border: 8px dashed var(--ifm-color-primary-lightest);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}

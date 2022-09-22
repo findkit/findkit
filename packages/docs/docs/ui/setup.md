@@ -20,10 +20,6 @@ project page on the Hub.
 
 This script can be placed any where on the website.
 
-Try it on Codesandbox:
-
-https://codesandbox.io/s/github/findkit/findkit/tree/main/packages/ui-examples/simple
-
 ## npm
 
 If you are using a bundler such as Webpack you can also install it from npm:
@@ -45,3 +41,7 @@ are using Typescript as well.
 
 The CDN and npm imports are completely interchangeable. In this documentation
 will be using the npm import but it can be replaced with the CDN import.
+
+## Try it!
+
+<Codesandbox example="simple" />

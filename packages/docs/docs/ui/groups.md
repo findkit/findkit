@@ -4,26 +4,30 @@ sidebar_position: 3
 
 # Grouping
 
-[Tag Queries](/ui/params#tagquery-string) are mainly used to group the results.
+To group search results you can define a `groups` array with titles and group specific search
+[`params`](/ui/options/params).
 
-Instead of passing `params` you can pass in `groups` which is an array of
-params objects with a `title` and a `id` keys.
+[Live demo at the bottom 👇](#try-it)
 
 ```ts
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
 	groups: [
 		{
-			id: "pages",
 			title: "Pages",
-			tagQuery: [["html"]],
+			id: "pages",
 			previewSize: 3,
+			params: {
+				tagQuery: [["html"]],
+			},
 		},
 		{
-			id: "pdf",
 			title: "PDF-files",
-			tagQuery: [["pdf"]],
+			id: "pdf",
 			previewSize: 3,
+			params: {
+				tagQuery: [["pdf"]],
+			},
 		},
 	],
 });
@@ -33,7 +37,7 @@ When a search is made with this configuration it will display results from each
 group as searches are made. The result amount per group is determined by the
 `previewSize` key.
 
-Checkout this example to see how it works: <https://codesandbox.io/s/github/findkit/findkit/tree/main/packages/ui-examples/grouping>
+## Dynamic Update
 
 The groups can be also updated on the fly with `ui.updateGroups(fn)` method:
 
@@ -43,9 +47,11 @@ ui.updateGroups((groups) => {
 });
 ```
 
-## Keys
+There is also a [`useGroups()`](/ui/slot-overrides/utils#usegroups) hook for updating the groups from [Slot Overrides](/ui/slot-overrides/).
 
-The groups support all the [params keys](/ui/params#keys) with following additions:
+## Options
+
+Following options are available for each group.
 
 ### `id: string`
 
@@ -55,6 +61,10 @@ Unique id of the group. Required.
 
 Title of the group. Displayed within the search results.
 
+### `params: object`
+
+See [Search Params](/ui/options/params).
+
 ### `previewSize?: number`
 
 How many search results to show when all groups are rendered.
@@ -63,3 +73,7 @@ How many search results to show when all groups are rendered.
 
 Boost (multiply) the results scores within the group. Meaningful only when the
 groups are ordered by their highest score result. TODO: link to the option dokumentation
+
+## Try it!
+
+<Codesandbox example="grouping" />

@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
+import { useIntersectionObserver } from "@valu/react-intersection-observer";
 // Import the original mapper
 import MDXComponents from "@theme-original/MDXComponents";
 
-function Codesandbox(props: { name: string }) {
+function Codesandbox(props: { example: string }) {
+	const [open, setOpen] = useState(false);
+	const ref = useIntersectionObserver(() => {
+		setOpen(true);
+	});
+
 	const query = new URLSearchParams({
 		codesandbox: "1",
 		fontsize: "14",
@@ -12,32 +18,34 @@ function Codesandbox(props: { name: string }) {
 		view: "preview",
 	}).toString();
 
+	const githubLink = `https://github.com/findkit/findkit/tree/main/packages/ui-examples/${props.example}/index.html`;
+	const codesandboxLink = `https://codesandbox.io/s/github/findkit/findkit/tree/main/packages/ui-examples/${props.example}`;
+	const embedSrc = `https://codesandbox.io/embed/github/findkit/findkit/tree/main/packages/ui-examples/${props.example}?${query}`;
+
 	return (
 		<div className="codesandbox-example">
 			View on
-			<a
-				href={`https://github.com/findkit/findkit/tree/main/packages/ui-examples/${props.name}/index.html`}
-			>
-				Github
-			</a>
-			or edit on
-			<a
-				href={`https://codesandbox.io/s/github/findkit/findkit/tree/main/packages/ui-examples/${props.name}`}
-			>
-				Codesandbox
-			</a>
-			<iframe
-				src={`https://codesandbox.io/embed/github/findkit/findkit/tree/main/packages/ui-examples/${props.name}?${query}`}
-				style={{
-					width: "100%",
-					height: "500px",
-					border: 0,
-					borderRadius: "4px",
-					overflow: "hidden",
-				}}
-				title={`findkit/findkit: ${props.name}`}
-				sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-			/>
+			<a href={githubLink}>Github</a>
+			or edit online on
+			<a href={codesandboxLink}>Codesandbox</a>
+			{!open ? (
+				<div ref={ref} className="codesandbox-placehoder">
+					<button onClick={() => setOpen(true)}>Load Codesandbox</button>
+				</div>
+			) : (
+				<iframe
+					src={embedSrc}
+					style={{
+						width: "100%",
+						height: "500px",
+						border: 0,
+						borderRadius: "4px",
+						overflow: "hidden",
+					}}
+					title={`findkit/findkit: ${props.example}`}
+					sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+				/>
+			)}
 		</div>
 	);
 }

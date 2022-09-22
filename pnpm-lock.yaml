@@ -25,6 +25,7 @@ importers:
       '@docusaurus/preset-classic': 2.1.0
       '@findkit/ui': 0.0.1-dev.77634b7050
       '@mdx-js/react': ^1.6.22
+      '@valu/react-intersection-observer': ^1.0.0
       clsx: ^1.2.1
       netlify-cli: ^11.5.1
       prism-react-renderer: ^1.3.5
@@ -36,6 +37,7 @@ importers:
       '@docusaurus/preset-classic': 2.1.0_rw34wyrummvuuuhgiylphbvpae
       '@findkit/ui': 0.0.1-dev.77634b7050
       '@mdx-js/react': 1.6.22_react@17.0.2
+      '@valu/react-intersection-observer': 1.0.0_react@17.0.2
       clsx: 1.2.1
       prism-react-renderer: 1.3.5_react@17.0.2
       react: 17.0.2
@@ -5809,6 +5811,15 @@ packages:
     resolution: {integrity: sha512-qyv0MmquDTf2mSx2OesNOm+EBXko+hdxrEpHScABvhwH0bU7brJD5qMVG1/PS8tttwQbqIfDaQm314C0+DDG3g==}
     hasBin: true
     dev: true
+
+  /@valu/react-intersection-observer/1.0.0_react@17.0.2:
+    resolution: {integrity: sha512-hQDOvNNMXcZH5d8+7UIv1/1Q0jl63M5yDsWYGpjHGqjjOYDjN2ZHsYPMxdVWc44LTMIbDXk9QSHAh+mRSNDntg==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>=16'
+    dependencies:
+      react: 17.0.2
+    dev: false
 
   /@vercel/nft/0.21.0:
     resolution: {integrity: sha512-hFCAETfI5cG8l5iAiLhMC2bReC5K7SIybzrxGorv+eGspIbIFsVw7Vg85GovXm/LxA08pIDrAlrhR6GN36XB/Q==}

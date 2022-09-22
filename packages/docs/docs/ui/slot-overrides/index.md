@@ -38,4 +38,4 @@ Tagged Markup)](https://github.com/developit/htm) tag and finally the
 
 Try it on Codesandbox
 
-<Codesandbox name="custom-input" />
+<Codesandbox example="custom-input" />
