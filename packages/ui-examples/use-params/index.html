@@ -13,7 +13,7 @@
 
 			function SelectTagButton(props) {
 				const [params, setParams] = useParams();
-				// https://docs.findkit.com/ui/options/params#tagquery-string
+				// https://docs.findkit.com/ui/api/params#tagQuery
 				const currentTag = params.tagQuery?.[0]?.[0];
 				const isSelected = currentTag === props.tag;
 
