@@ -4,7 +4,7 @@ sidebar_position: 4
 
 # Tagging Pages
 
-The crawler can tag the content for [filtering](/ui/params) and
+The crawler can tag the content for [filtering](/ui/options/params) and
 [grouping](/ui/groups).
 
 By default following tags are added
