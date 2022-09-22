@@ -27,27 +27,27 @@ ui.updateParams((params) => {
 The updates are immediately picked up and new a search request will be made on
 change.
 
-There is also a [`useParams()`](/ui/slot-overrides/utils#useparams) hook for
+There is also a [`useParams()`](/ui/slot-overrides/utils#useParams) hook for
 updating the params from [Slot Overrides](/ui/slot-overrides).
 
-## Keys
+## Params
 
 Following keys are available:
 
-### `createdDecay?: number`
+### `createdDecay?: number` {#createdDecay}
 
 0-1 numerical value for demoting old pages
 
-### `modifiedDecay?: number`
+### `modifiedDecay?: number` {#modifiedDecay}
 
 0-1 numerical value for demoting stagnant pages
 
-### `decayScale?: string`
+### `decayScale?: string` {#decayScale}
 
 To be used with `createdDecay` or `modifiedDecay`. Defines in which timeframe
 decay filter is applied, e.g. "7d".
 
-### `highlightLength?: number`
+### `highlightLength?: number` {#highlightLength}
 
 The length of returned hilight string. Se to `0` disable highlighting.
 
@@ -55,15 +55,15 @@ The length of returned hilight string. Se to `0` disable highlighting.
 Too large values might slow down the search.
 :::
 
-### `size?: number`
+### `size?: number` {#size}
 
 How many results to fetch in a single request.
 
-### `lang?: string`
+### `lang?: string` {#lang}
 
 Limit results to the given language.
 
-### `tagQuery: string[][]`
+### `tagQuery: string[][]` {#tagQuery}
 
 Limit results to the given "tag query".
 

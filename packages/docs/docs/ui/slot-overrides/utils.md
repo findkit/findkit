@@ -1,4 +1,4 @@
-# Utils
+# Hooks and Utils
 
 Following utils can be imported from `"@findkit/ui"` for slot component usage.
 

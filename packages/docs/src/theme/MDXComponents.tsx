@@ -3,6 +3,14 @@ import { useIntersectionObserver } from "@valu/react-intersection-observer";
 // Import the original mapper
 import MDXComponents from "@theme-original/MDXComponents";
 
+function Api(props: { page: string; children: any }) {
+	return (
+		<a href={`https://docs.findkit.com/ui-api/${props.page.toLowerCase()}/`}>
+			{props.children ?? "Api docs."}
+		</a>
+	);
+}
+
 function Codesandbox(props: { example: string }) {
 	const [open, setOpen] = useState(false);
 	const ref = useIntersectionObserver(() => {
@@ -53,4 +61,5 @@ function Codesandbox(props: { example: string }) {
 export default {
 	...MDXComponents,
 	Codesandbox,
+	Api,
 };

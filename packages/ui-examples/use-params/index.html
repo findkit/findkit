@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Static Template</title>
+		<script type="module">
+			import {
+				FindkitUI,
+				html,
+				useParams,
+			} from "https://cdn.findkit.com/ui/v0.0.1-dev.fed2084b69/esm/index.js";
+
+			function SelectTagButton(props) {
+				const [params, setParams] = useParams();
+				// https://docs.findkit.com/ui/options/params#tagquery-string
+				const currentTag = params.tagQuery?.[0]?.[0];
+				const isSelected = currentTag === props.tag;
+
+				const toggle = () => {
+					setParams((params) => {
+						if (isSelected) {
+							params.tagQuery = [];
+						} else {
+							params.tagQuery = [[props.tag]];
+						}
+					});
+				};
+
+				return html`<button
+					type="button"
+					onClick=${toggle}
+					class="${isSelected ? "selected" : ""}"
+				>
+					${props.title}
+				</button>`;
+			}
+
+			const ui = new FindkitUI({
+				publicToken: "p68GxRvaA",
+				minTerms: 0,
+				css: `
+					.buttons {
+						display: flex;
+						flex-direction: row;
+						justify-content: center;
+					}
+
+					.buttons button {
+						padding: 1rem;
+						margin: 1rem;
+					}
+
+					.buttons button.selected {
+						opacity: 0.5;
+					}
+
+					.tags {
+						color: red;
+						background-color: black;
+						margin-top: 1rem;
+						padding: var(--findkit--space-3);
+						margin-left: var(--findkit--space-3);
+					}
+
+				`,
+				slots: {
+					Header(props) {
+						return html`${props.children}
+							<div class="buttons">
+								<${SelectTagButton} tag="crawler" title="Crawler" />
+								<${SelectTagButton} tag="ui" title="UI" />
+							</div> `;
+					},
+					Hit(props) {
+						const tags = props.hit.tags.join(", ");
+						return html`${props.children}
+							<div class="tags">TAGS: ${tags}</div> `;
+					},
+				},
+			});
+
+			ui.openFrom("#open");
+		</script>
+	</head>
+	<body>
+		<button id="open" type="button">open</button>
+	</body>
+</html>
