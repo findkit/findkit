@@ -3,16 +3,15 @@ import { useSnapshot } from "valtio";
 import {
 	FindkitContext,
 	FindkitContextType,
-	Slots,
 	useSearchEngine,
 	useFindkitURLSearchParams,
 	useSearchEngineState,
-	useFindkitContext,
 	useTranslator,
 	useKeyboardItemAttributes,
 	useSearchMoreOnReveal,
 } from "./core-hooks";
 import { SearchEngine, SearchResultHit } from "./search-engine";
+import { Slot, Slots } from "./slots";
 import { createTranslator } from "./translations";
 import { cn, scrollToTop, View } from "./utils";
 
@@ -39,22 +38,6 @@ export function FindkitProvider(props: {
 			{props.children}
 		</FindkitContext.Provider>
 	);
-}
-
-export function Slot<Name extends keyof Slots>(props: {
-	name: Name;
-	props: Omit<Parameters<Slots[Name]>[0], "children">;
-	children: ReactNode;
-}) {
-	const context = useFindkitContext();
-
-	const SlotComponent = context.slots[props.name] as any;
-
-	if (!SlotComponent) {
-		return <>{props.children}</>;
-	}
-
-	return <SlotComponent {...props.props}>{props.children}</SlotComponent>;
 }
 
 function SingleGroupLink(props: { children: ReactNode; groupId: string }) {
