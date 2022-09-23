@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Static Template</title>
+		<style>
+			header,
+			h1,
+			body,
+			html {
+				margin: 0;
+				padding: 0;
+			}
+
+			header {
+				background-color: aqua;
+				height: 100px;
+				display: flex;
+				align-items: center;
+			}
+
+			input#search {
+				margin-left: 2rem;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1>My Website</h1>
+			<input placeholder="Search..." type="text" id="search" />
+		</header>
+		<script type="module">
+			import {
+				FindkitUI,
+				html,
+				useParams,
+			} from "https://cdn.findkit.com/ui/v0.0.1-dev.ac62036680/esm/index.js";
+
+			const ui = new FindkitUI({
+				publicToken: "p68GxRvaA",
+				minTerms: 0,
+				css: `
+					.findkit--backdrop {
+						margin-top: 100px;
+
+					}
+
+				`,
+				slots: {
+					Layout(props) {
+						return html`${props.content}`;
+					},
+				},
+			});
+
+			ui.bindInput(document.querySelector("#search"));
+		</script>
+	</body>
+</html>

@@ -5,13 +5,20 @@ import MDXComponents from "@theme-original/MDXComponents";
 
 function Api(props: { page: string; children: any }) {
 	return (
-		<a href={`https://docs.findkit.com/ui-api/${props.page.toLowerCase()}/`}>
-			{props.children ?? "Api docs."}
-		</a>
+		<>
+			{" "}
+			<a href={`https://docs.findkit.com/ui-api/${props.page.toLowerCase()}/`}>
+				{props.children ?? "Api docs."}
+			</a>{" "}
+		</>
 	);
 }
 
-function Codesandbox(props: { example: string }) {
+function Codesandbox(props: {
+	example: string;
+	link?: boolean;
+	children?: any;
+}) {
 	const [open, setOpen] = useState(false);
 	const ref = useIntersectionObserver(() => {
 		setOpen(true);
@@ -29,6 +36,15 @@ function Codesandbox(props: { example: string }) {
 	const githubLink = `https://github.com/findkit/findkit/tree/main/packages/ui-examples/${props.example}/index.html`;
 	const codesandboxLink = `https://codesandbox.io/s/github/findkit/findkit/tree/main/packages/ui-examples/${props.example}`;
 	const embedSrc = `https://codesandbox.io/embed/github/findkit/findkit/tree/main/packages/ui-examples/${props.example}?${query}`;
+
+	if (props.link) {
+		return (
+			<>
+				{" "}
+				<a href={codesandboxLink}>{props.children}</a>{" "}
+			</>
+		);
+	}
 
 	return (
 		<div className="codesandbox-example">
