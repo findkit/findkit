@@ -151,3 +151,26 @@ test("can use load() with styles", async ({ page }) => {
 
 	await expect(page.locator(".findkit--header")).toHaveScreenshot();
 });
+
+test("can remove the close button", async ({ page }) => {
+	await page.goto("/dummy");
+
+	await page.evaluate(async () => {
+		const { FindkitUI, html } = MOD;
+		const ui = new FindkitUI({
+			publicToken: "po8GK3G0r",
+			slots: {
+				Header(props) {
+					return html`
+						No close button!
+						<${props.Input} />
+					`;
+				},
+			},
+		});
+
+		await ui.open();
+	});
+	await page.locator("input").waitFor({ state: "visible" });
+	await expect(page).toHaveScreenshot();
+});
