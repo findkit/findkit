@@ -2,7 +2,6 @@
 	"name": "@findkit/ui-examples",
 	"private": true,
 	"scripts": {
-		"update-imports": "git ls-files '*/index.html' | xargs -L 1 node update-import.mjs",
 		"serve": "serve -l 48439"
 	},
 	"devDependencies": {

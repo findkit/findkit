@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -eu
+
+version="$1"
+file="$2"
+
+sed -i '' -E "s/\/ui\/v[^\/]+\//\/ui\/v${version}\//g" "$file"
