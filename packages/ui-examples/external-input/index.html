@@ -20,6 +20,10 @@
 				align-items: center;
 			}
 
+			body {
+				background-color: darkkhaki;
+			}
+
 			input#search {
 				margin-left: 2rem;
 			}
@@ -29,7 +33,13 @@
 		<header>
 			<h1>My Website</h1>
 			<input placeholder="Search..." type="text" id="search" />
+			<button type="button" id="close">X</button>
 		</header>
+
+		<main>
+			<h2>The Content</h2>
+			<p>This is the web site content.</p>
+		</main>
 		<script type="module">
 			import {
 				FindkitUI,
@@ -41,11 +51,10 @@
 				publicToken: "p68GxRvaA",
 				minTerms: 0,
 				css: `
-					.findkit--backdrop {
+					.findkit--modal-container {
 						margin-top: 100px;
 
 					}
-
 				`,
 				slots: {
 					Layout(props) {
@@ -55,6 +64,10 @@
 			});
 
 			ui.bindInput(document.querySelector("#search"));
+
+			document.querySelector("#close").addEventListener("click", () => {
+				ui.close();
+			});
 		</script>
 	</body>
 </html>
