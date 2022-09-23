@@ -28,6 +28,11 @@ jobs:
         with:
           version: 7.9.5
 
+      - uses: valu-digital/slack-action@master
+        with:
+          token: ${{ secrets.SLACK_ACCESS_TOKEN }}
+          channel: "${{ secrets.SLACK_CHANNEL }}"
+
       - name: Set pnpm store path
         run: echo "PNPM_STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
 
@@ -62,8 +67,6 @@ jobs:
       - name: Run Playwright tests
         run: |
           set -eu
-          git config user.email "action@github.com"
-          git config user.name "${{ github.actor }}"
 
           cd packages/ui
 
@@ -71,17 +74,68 @@ jobs:
           ./node_modules/.bin/findkit search -t po8GK3G0r valu
 
           pnpm run build-e2e
-
           pnpm run playwright-test
-          ## Use this instead to update snapshots on the ci
-          #pnpm playwright-update
 
-          if [ "$(git status --porcelain e2e)" != "" ]; then
-            git add e2e
-            git commit -m "Update e2e snapshots [skip actions]"
-            # Push back to the pr branch
-            git push origin "HEAD:$GITHUB_HEAD_REF"
+      - name: Run Playwright visual tests
+        run: |
+          set -eu
+          set -x
+
+          cd packages/ui
+
+          pnpm run playwright-visual || {
+            echo VISUAL_FAIL=1 >> $GITHUB_ENV
+          }
+
+      - name: Update snapshots and notify
+        if: ${{ github.event_name == 'pull_request' && env.VISUAL_FAIL == '1' }}
+        run: |
+          set -x
+          set -eu
+          cd packages/ui
+
+          pr=${{ github.event.number }}
+          link="https://github.com/${GITHUB_REPOSITORY}/pull/${pr}"
+
+          git config user.email "action@github.com"
+          git config user.name "${{ github.actor }}"
+
+          pnpm run playwright-update
+          git status
+
+          if [ "$(git status --porcelain e2e-visual)" = "" ]; then
+            exit 0
           fi
+
+          git add e2e-visual
+          git commit -m "Update e2e snapshots [skip actions]"
+          git push origin "HEAD:$GITHUB_HEAD_REF"
+          echo "DIFF_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
+          slack-message '<!channel>'"Hey ${{ github.actor }} PR <$link|#$pr> failed visual e2e tests. See the bot comment for instructions."
+
+      - name: Comment about snapshot changes
+        uses: actions/github-script@v6
+        if: ${{ github.event_name == 'pull_request' && env.VISUAL_FAIL == '1' }}
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Hey @${{ github.actor }}! The visual tests failed on ${{ github.event.pull_request.head.sha }}. I updated the snaphots to this PR and added the `VISUAL FAIL` label. See the changes at ${{ env.DIFF_SHA }}. Accept the changes by removing the label or try again by force pushing. Also remember to run tests locally to update the macOS snapshots!'
+            })
+
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['VISUAL FAIL']
+            })
+
+      - name: Fail suite if e2e failed
+        if: ${{ env.VISUAL_FAIL == '1' }}
+        run: exit 1
 
       - uses: actions/upload-artifact@v2
         if: always()

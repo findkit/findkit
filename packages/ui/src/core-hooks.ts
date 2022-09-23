@@ -1,44 +1,8 @@
 import { createContext, useCallback, useContext, useMemo, useRef } from "react";
-import {
-	FindkitURLSearchParams,
-	SearchEngine,
-	SearchResultHit,
-} from "./search-engine";
+import { FindkitURLSearchParams, SearchEngine } from "./search-engine";
 import { useSnapshot } from "valtio";
 import { Translator } from "./translations";
-
-/**
- * @public
- */
-export interface Slots {
-	/**
-	 * Component override for the result item
-	 */
-	Hit(props: { hit: SearchResultHit }): any;
-
-	/**
-	 * Header component which hides automatically when scrolling down
-	 */
-	Header(props: {
-		children: any;
-
-		/**
-		 * The search input element
-		 */
-		input: any;
-		closeButton: any;
-	}): any;
-
-	/**
-	 * Search result content
-	 */
-	Content(props: { children: any }): any;
-
-	/**
-	 * Layout component which wraps the header and content
-	 */
-	Layout(props: { header: React.ReactNode; content: React.ReactNode }): any;
-}
+import { Slots } from "./slots";
 
 export interface FindkitContextType {
 	engine: SearchEngine | undefined;

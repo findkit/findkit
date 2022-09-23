@@ -1,12 +1,11 @@
 import { FocusTrap } from "./focus-trap";
 import React, { StrictMode, useRef, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { Results, FindkitProvider, Logo, Slot, Spinner } from "./components";
+import { Results, FindkitProvider, Logo, Spinner } from "./components";
 import {
 	useSearchEngineState,
 	useSearchEngine,
 	useInput,
-	Slots,
 	useTranslator,
 	useContainerKeyboardAttributes,
 } from "./core-hooks";
@@ -20,6 +19,7 @@ import {
 import { cn, View } from "./utils";
 import type { Emitter, FindkitUIEvents } from "./emitter";
 import { TranslationStrings } from "./translations";
+import { Slot, Slots } from "./slots";
 
 function useScrollLock(lock: boolean) {
 	useEffect(() => {
@@ -236,11 +236,28 @@ function SearchInput() {
 	);
 }
 
-function Modal() {
+function CloseButton() {
 	const engine = useSearchEngine();
+	const t = useTranslator();
+
+	return (
+		<View
+			cn="close-button"
+			as="button"
+			type="button"
+			aria-label={t("aria-label-close-search")}
+			onClick={() => {
+				engine.close();
+			}}
+		>
+			{t("close")} <Cross />
+		</View>
+	);
+}
+
+function Modal() {
 	const state = useSearchEngineState();
 	const containerRef = useRef<HTMLDivElement | null>(null);
-	const t = useTranslator();
 	const containerKbAttrs = useContainerKeyboardAttributes();
 	useFocusTrap(containerRef);
 
@@ -257,22 +274,6 @@ function Modal() {
 
 	const visible = show && delayed;
 
-	const input = <SearchInput />;
-
-	const closeButton = (
-		<View
-			cn="close-button"
-			as="button"
-			type="button"
-			aria-label={t("aria-label-close-search")}
-			onClick={() => {
-				engine.close();
-			}}
-		>
-			{t("close")} <Cross />
-		</View>
-	);
-
 	const header = (
 		<View
 			cn={{
@@ -280,9 +281,12 @@ function Modal() {
 				"header-hidden": isScrollingDown,
 			}}
 		>
-			<Slot name="Header" props={{ input, closeButton }}>
-				{input}
-				{closeButton}
+			<Slot
+				name="Header"
+				props={{ Input: SearchInput, CloseButton: CloseButton }}
+			>
+				<CloseButton />
+				<SearchInput />
 			</Slot>
 		</View>
 	);
@@ -327,6 +331,7 @@ export function Plain() {
 	const containerKbAttrs = useContainerKeyboardAttributes();
 
 	const header = <SearchInput />;
+
 	const content = (
 		<View cn="content">
 			<FetchError />

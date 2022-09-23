@@ -10,7 +10,6 @@ import type {
 	FindkitURLSearchParams,
 } from "../search-engine";
 import type { RouterBackend } from "../router";
-import type { Slots } from "../core-hooks";
 import type {
 	Implementation,
 	Dispatch,
@@ -22,8 +21,17 @@ import type { CustomFields } from "@findkit/fetch";
 import { Emitter, FindkitUIEvents } from "../emitter";
 import type { TranslationStrings } from "../translations";
 import { listen, Resources } from "../resources";
+import type {
+	Slots,
+	HeaderSlotProps,
+	ContentSlotProps,
+	LayoutSlotProps,
+} from "../slots";
 
 export {
+	HeaderSlotProps,
+	ContentSlotProps,
+	LayoutSlotProps,
 	SearchResultHitWithGroupId,
 	TranslationStrings,
 	Emitter,
