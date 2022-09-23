@@ -381,6 +381,7 @@ export function init(options: {
 	searchEndpoint?: string;
 	params?: SearchEngineParams;
 	groups?: GroupDefinition[];
+	mode?: "modal" | "plain";
 	container?: Element;
 	infiniteScroll?: boolean;
 	router?: SearchEngineOptions["router"];
@@ -432,7 +433,7 @@ export function init(options: {
 					<style dangerouslySetInnerHTML={{ __html: options.css }} />
 				) : null}
 				<FindkitProvider engine={engine} slots={options.slots ?? {}}>
-					{hasCustomContainer ? <Plain /> : <Modal />}
+					{options.mode === "plain" ? <Plain /> : <Modal />}
 				</FindkitProvider>
 			</>
 		</StrictMode>,

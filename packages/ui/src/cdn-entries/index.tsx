@@ -289,6 +289,7 @@ export interface FindkitUIOptions {
 	container?: Element;
 	monitorDocumentElementChanges?: boolean;
 	router?: SearchEngineOptions["router"];
+	mode?: "modal" | "plain";
 	ui?: {
 		lang: string;
 		overrides?: Partial<TranslationStrings>;
@@ -317,7 +318,7 @@ export class FindkitUI {
 		this.#options = options;
 		this.events = new Emitter(this.#instanceId);
 
-		if (this.#isAlreadyOpened() || options.container) {
+		if (this.#isAlreadyOpened() || options.mode === "plain") {
 			void this.open();
 		}
 

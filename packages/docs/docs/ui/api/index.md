@@ -101,6 +101,14 @@ Container](ui/advanced/custom-container).
 
 <Api page="ui.findkituioptions.container" />
 
+### `mode: string` {#mode}
+
+The rendering mode. Can be `"modal"` (default) or `"plain"`. When setting to
+`"plain"` the following modal behaviour will be disabled: Focus trapping,
+opening animation and header hiding. Only usable with the `container` option.
+
+<Api page="ui.findkituioptions.mode" />
+
 ### `router: Router` {#router}
 
 See [Routing](/ui/advanced/routing).

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Search UI Test</title>
+
+		<style>
+			html,
+			body,
+			h1 {
+				margin: 0;
+			}
+			header {
+				background-color: blueviolet;
+				height: 100px;
+			}
+
+			p {
+				max-width: 400px;
+			}
+
+			main {
+				position: relative;
+			}
+
+			.findkit-overlay-container:has(.findkit--modal-visible) {
+				position: relative;
+				inset: 0;
+				background-color: tomato;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<input type="text" id="external-input" /><button type="button" id="close">
+				Close
+			</button>
+		</header>
+		<main>
+			<h1>Content</h1>
+			<p>
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+				veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+				commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+				velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+				occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+				mollit anim id est laborum.
+			</p>
+			<p>
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+				veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+				commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+				velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+				occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+				mollit anim id est laborum.
+			</p>
+			<p>
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+				veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+				commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+				velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+				occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+				mollit anim id est laborum.
+			</p>
+			<div class="findkit-overlay-container">
+				<h1 class="open">search</h1>
+			</div>
+			<script type="module">
+				import { FindkitUI } from "/build/esm/index.js";
+
+				const ui = new FindkitUI({
+					publicToken: "po8GK3G0r",
+					container: document.querySelector(".findkit-overlay-container"),
+					slots: {
+						Layout(props) {
+							return props.content;
+						},
+					},
+					css: `
+                        .findkit--modal-container {
+                            position: absolute;
+                        }
+                    `,
+				});
+
+				Object.assign(window, { ui });
+
+				ui.bindInput(document.getElementById("external-input"));
+			</script>
+		</main>
+	</body>
+</html>
