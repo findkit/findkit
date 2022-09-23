@@ -29,6 +29,7 @@ type ClassNames =
   | "findkit--logo"
   | "findkit--logo-hide"
   | "findkit--modal"
+  | "findkit--modal-container"
   | "findkit--modal-visible"
   | "findkit--plain"
   | "findkit--retry-button"

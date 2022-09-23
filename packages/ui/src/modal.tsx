@@ -304,6 +304,7 @@ function Modal() {
 		<View
 			cn={{
 				backdrop: true,
+				"modal-container": true,
 				"backdrop-visible": visible,
 			}}
 		>
