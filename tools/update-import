@@ -5,4 +5,6 @@ set -eu
 version="$1"
 file="$2"
 
+# Update the version numbers from lines like
+#   import { FindkitUI } from "https://cdn.findkit.com/ui/v0.0.1/esm/index.js";
 sed -i '' -E "s/\/ui\/v[^\/]+\//\/ui\/v${version}\//g" "$file"
