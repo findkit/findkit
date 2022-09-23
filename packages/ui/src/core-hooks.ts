@@ -19,7 +19,15 @@ export interface Slots {
 	/**
 	 * Header component which hides automatically when scrolling down
 	 */
-	Header(props: { children: any }): any;
+	Header(props: {
+		children: any;
+
+		/**
+		 * The search input element
+		 */
+		input: any;
+		closeButton: any;
+	}): any;
 
 	/**
 	 * Search result content

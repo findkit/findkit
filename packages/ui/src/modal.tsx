@@ -257,6 +257,22 @@ function Modal() {
 
 	const visible = show && delayed;
 
+	const input = <SearchInput />;
+
+	const closeButton = (
+		<View
+			cn="close-button"
+			as="button"
+			type="button"
+			aria-label={t("aria-label-close-search")}
+			onClick={() => {
+				engine.close();
+			}}
+		>
+			{t("close")} <Cross />
+		</View>
+	);
+
 	const header = (
 		<View
 			cn={{
@@ -264,20 +280,9 @@ function Modal() {
 				"header-hidden": isScrollingDown,
 			}}
 		>
-			<Slot name="Header" props={{}}>
-				<View
-					cn="close-button"
-					as="button"
-					type="button"
-					aria-label={t("aria-label-close-search")}
-					onClick={() => {
-						engine.close();
-					}}
-				>
-					{t("close")} <Cross />
-				</View>
-
-				<SearchInput />
+			<Slot name="Header" props={{ input, closeButton }}>
+				{input}
+				{closeButton}
 			</Slot>
 		</View>
 	);
