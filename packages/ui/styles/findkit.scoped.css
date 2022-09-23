@@ -15,6 +15,9 @@
 	opacity: 1;
 }
 
+.modal-container {
+}
+
 .backdrop {
 	z-index: 100000;
 	overflow: hidden;
