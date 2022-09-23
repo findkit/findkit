@@ -1,6 +1,6 @@
 # Findkit
 
-Findkit documentation and source code for the Finkdit UI Library
+Findkit documentation and source code for the Findkit UI Library
 
 See
 
