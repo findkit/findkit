@@ -2,6 +2,6 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
 	test: {
-		exclude: ["**/node_modules/**", "e2e", "esm", "cjs", "dist"],
+		exclude: ["**/node_modules/**", "e2e", "e2e-visual", "esm", "cjs", "dist"],
 	},
 });
