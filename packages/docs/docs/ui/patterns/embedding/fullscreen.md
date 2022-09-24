@@ -1,3 +1,3 @@
-# Full Screen Modal
+# Fullscreen Modal
 
 TODO

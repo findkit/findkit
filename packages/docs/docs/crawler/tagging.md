@@ -1,7 +1,3 @@
----
-sidebar_position: 4
----
-
 # Tagging Pages
 
 The crawler can tag the content for [filtering](/ui/api/params) and

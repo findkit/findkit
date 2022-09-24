@@ -1,7 +1,3 @@
----
-sidebar_position: 2
----
-
 # `tags`
 
 Matchers used to [tag pages](/crawler/tagging).

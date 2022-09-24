@@ -1,7 +1,3 @@
----
-sidebar_position: 10
----
-
 # Custom Fields
 
 Custom fields are pieces of content saved within the indexed page which are

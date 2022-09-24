@@ -1,7 +1,3 @@
----
-sidebar_position: 3
----
-
 # Grouping
 
 To group search results you can define a `groups` array with titles and group specific search

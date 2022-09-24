@@ -1,7 +1,3 @@
----
-sidebar_position: 2
----
-
 # Indexing Content
 
 A very important part of making a good search experience is to select only the

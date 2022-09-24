@@ -1,7 +1,3 @@
----
-sidebar_position: 1
----
-
 # Setup
 
 The simplest way to setup the user interface is to just import it from our

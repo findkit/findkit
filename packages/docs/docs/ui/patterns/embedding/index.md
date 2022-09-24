@@ -3,7 +3,7 @@
 Findkit UI can be embedded on a web page in multiple ways. This section
 describes and demonstrates those using live examples.
 
-- Full Screen Modal
+- Fullscreen Modal
   - The default and easiest one to setup
   - [Read more...](fullscreen)
 - Modal with External Input

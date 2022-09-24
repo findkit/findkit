@@ -1,7 +1,3 @@
----
-sidebar_position: 3
----
-
 # Starting Crawls
 
 The crawls can be started using the CLI, `findkit.toml` schedules and the REST

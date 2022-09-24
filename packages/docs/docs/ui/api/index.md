@@ -1,7 +1,3 @@
----
-sidebar_position: 2
----
-
 # API
 
 The `FindkitUI` constructor supports following options for customization

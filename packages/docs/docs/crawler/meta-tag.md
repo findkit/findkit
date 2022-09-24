@@ -1,7 +1,3 @@
----
-sidebar_position: 9
----
-
 # Meta Tag
 
 The meta tag is way to pass instructions to the crawler on per page basis.

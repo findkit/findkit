@@ -1,7 +1,3 @@
----
-sidebar_position: 10
----
-
 # Technical Description
 
 The `@findki/ui` library is implemented using Preact which is bundled inside the

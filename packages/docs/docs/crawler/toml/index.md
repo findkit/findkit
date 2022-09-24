@@ -1,7 +1,3 @@
----
-sidebar_position: 1
----
-
 # Crawler Configuration
 
 The crawler is configured using a `findkit.toml` file which is authored in a

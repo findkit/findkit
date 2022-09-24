@@ -1,7 +1,3 @@
----
-sidebar_position: 5
----
-
 # Styling
 
 Findkit UI uses Shadow DOM to avoid conflicting CSS styles. This means
