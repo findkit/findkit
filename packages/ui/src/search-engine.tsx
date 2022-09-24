@@ -316,20 +316,20 @@ export interface SearchEngineOptions {
  *
  * This includes
  *
- * 	- managing the search requests
- *  - input value throttling
- *  - keyboard navigation
- *  - query string monitoring
+ *   - managing the search requests
+ *   - input value throttling
+ *   - keyboard navigation
+ *   - query string monitoring
  *
  * This is basically a wrapper around a Valtio proxy object.
  *
  * The data flow is as follows:
- *  - User types in the input
- *  - The input events are throttled and the search term is copied to the query
+ *   - User types in the input
+ *   - The input events are throttled and the search term is copied to the query
  *    string (fdk_q by default)
- *  - A query string change is deteted and the search is triggered
- *  - Once the search completes the results are put into the Valtio state with
- *    the used search terms
+ *   - A query string change is deteted and the search is triggered
+ *   - Once the search completes the results are put into the Valtio state with
+ *     the used search terms
  *
  * Eg. the search is always triggered from the query string change. This means
  * it is also possible to trigger the search with history.pushState() or
