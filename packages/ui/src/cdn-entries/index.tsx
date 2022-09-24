@@ -137,7 +137,7 @@ type ElementSelector = string | NodeListOf<Element> | Element[] | Element;
  * Callback invoked from select()
  */
 export interface SelectCallback<T> {
-	// First argument always exists. Using separete arg type for it so it
+	// First argument always exists. Using separate arg type for it so it
 	// works with the TS noUncheckedIndexedAccess flag
 	(element: T, ...elements: T[]): void;
 }
@@ -149,16 +149,16 @@ export interface SelectCallback<T> {
  *
  * The callback is invoked immediately when the DOMContentLoaded event has already fired.
  *
- * @param elements CSS Selector
+ * @param selector CSS Selector
  * @param instanceFilter Filter results to only include instances of the given implementation
  * @param cb
  */
 export function select<InstanceFilter extends typeof Element>(
-	elements: ElementSelector,
+	selector: ElementSelector,
 	instanceFilter: InstanceFilter,
 	cb: SelectCallback<InstanceType<InstanceFilter>>,
 ) {
-	const done = (elements: NodeListOf<Element> | Element[] | Element) => {
+	const invoke = (elements: NodeListOf<Element> | Element[] | Element) => {
 		const array =
 			Array.isArray(elements) || elements instanceof NodeList
 				? Array.from(elements)
@@ -178,12 +178,12 @@ export function select<InstanceFilter extends typeof Element>(
 		}
 	};
 
-	if (typeof elements === "string") {
+	if (typeof selector === "string") {
 		onDomContentLoaded(() => {
-			done(doc().querySelectorAll(elements));
+			invoke(doc().querySelectorAll(selector));
 		});
 	} else {
-		done(elements);
+		invoke(selector);
 	}
 }
 
