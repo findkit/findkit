@@ -311,6 +311,29 @@ export interface SearchEngineOptions {
 
 /**
  * @public
+ *
+ * A class for the internal logic and state of the search ui
+ *
+ * This includes
+ *
+ * 	- managing the search requests
+ *  - input value throttling
+ *  - keyboard navigation
+ *  - query string monitoring
+ *
+ * This is basically a wrapper around a Valtio proxy object.
+ *
+ * The data flow is as follows:
+ *  - User types in the input
+ *  - The input events are throttled and search terms copied to the query string (fdk_q by default)
+ *  - A query string change is deteted and the search is triggered
+ *  - Once the search completes the results are put into the Valtio state with the used search terms
+ *
+ * Eg. the search is always triggered from the query string change. This means
+ * it is also possible to trigger the search with history.pushState() or
+ * history.replaceState() and input value will updated to match it unless the
+ * input is focused.
+ *
  */
 export class SearchEngine {
 	#requestId = 0;
