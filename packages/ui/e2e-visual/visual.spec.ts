@@ -174,3 +174,15 @@ test("can remove the close button", async ({ page }) => {
 	await page.locator("input").waitFor({ state: "visible" });
 	await expect(page).toHaveScreenshot();
 });
+
+test("overlay modal", async ({ page }) => {
+	await page.goto("/overlay-modal");
+	const input = page.locator("#external-input");
+	const hits = page.locator(".findkit-overlay-container .findkit--hit");
+	await input.fill("valu");
+
+	await expect(hits.first()).toBeVisible();
+	await expect(page).toHaveScreenshot({
+		mask: [hits],
+	});
+});
