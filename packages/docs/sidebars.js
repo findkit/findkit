@@ -76,9 +76,9 @@ const sidebars = {
 							label: "Embedding Patterns",
 							link: { type: "doc", id: "ui/patterns/embedding/index" },
 							items: [
-								"ui/patterns/embedding/content-overlay",
-								"ui/patterns/embedding/external-input",
 								"ui/patterns/embedding/fullscreen",
+								"ui/patterns/embedding/external-input",
+								"ui/patterns/embedding/content-overlay",
 								"ui/patterns/embedding/raw",
 								"ui/patterns/embedding/react",
 							],
@@ -92,18 +92,6 @@ const sidebars = {
 			],
 		},
 	],
-	// But you can create a sidebar manually
-	/*
-  tutorialSidebar: [
-    'intro',
-    'hello',
-    {
-      type: 'category',
-      label: 'Tutorial',
-      items: ['tutorial-basics/create-a-document'],
-    },
-  ],
-   */
 };
 
 module.exports = sidebars;
