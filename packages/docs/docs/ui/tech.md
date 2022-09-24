@@ -38,5 +38,5 @@ TypeScript types, JWT authentication and CORs support out of the box.
 ## Source Code
 
 The source code is written in TypeScript and React but compiled to JavaScript
-and Preact when published to the npm and CDN. The code and contributing documentation
+and Preact when published to npm and the CDN. The code and contributing documentation
 is available here: <https://github.com/findkit/findkit/tree/main/packages/ui>
