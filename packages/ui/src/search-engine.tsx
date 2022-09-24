@@ -292,7 +292,7 @@ export interface SearchEngineOptions {
 	throttleTime?: number;
 	searchMoreSize?: number;
 	minTerms?: number;
-	events: Emitter<FindkitUIEvents>;
+	events: Emitter<FindkitUIEvents, unknown>;
 	groups?: GroupDefinition[];
 	params?: SearchEngineParams;
 	infiniteScroll?: boolean;
@@ -360,7 +360,7 @@ export class SearchEngine {
 	#resources = new Resources();
 	#container: Element | ShadowRoot;
 
-	events: Emitter<FindkitUIEvents>;
+	events: Emitter<FindkitUIEvents, unknown>;
 
 	constructor(options: SearchEngineOptions) {
 		if (typeof window === "undefined") {

@@ -368,12 +368,12 @@ export class FindkitUI {
 	#resolveEngine!: (engine: SearchEngine) => void;
 
 	#options: FindkitUIOptions;
-	readonly events: Emitter<FindkitUIEvents>;
+	readonly events: Emitter<FindkitUIEvents, FindkitUI>;
 	#resources = new Resources();
 
 	constructor(options: FindkitUIOptions) {
 		this.#options = options;
-		this.events = new Emitter(this.#instanceId);
+		this.events = new Emitter(this);
 
 		if (this.#isAlreadyOpened() || options.mode === "plain") {
 			void this.open();
@@ -382,9 +382,14 @@ export class FindkitUI {
 		this.#enginePromise = new Promise<SearchEngine>((resolve) => {
 			this.#resolveEngine = resolve;
 		});
+
+		this.events.emit("init", {});
 	}
 
-	get #instanceId() {
+	/**
+	 * The instance id
+	 */
+	get id() {
 		return this.#options.instanceId ?? "fdk";
 	}
 
@@ -398,7 +403,7 @@ export class FindkitUI {
 		}
 
 		const params = new URLSearchParams(search);
-		return params.has(this.#instanceId + "_q");
+		return params.has(this.id + "_q");
 	}
 
 	async #loadImplementation() {
@@ -447,6 +452,9 @@ export class FindkitUI {
 	}
 
 	async open(terms?: string) {
+		this.events.emit("request-open", {
+			preloaded: !!this.#implementationPromise,
+		});
 		preconnect();
 		const engine = await this.#getEngine();
 		engine.open(terms);
@@ -492,7 +500,7 @@ export class FindkitUI {
 			...rest,
 			css: allCSS,
 			styleSheets: this.#getStyleSheets(),
-			instanceId: this.#instanceId,
+			instanceId: this.id,
 			events: this.events,
 			searchEndpoint: this.#options.searchEndpoint,
 		});

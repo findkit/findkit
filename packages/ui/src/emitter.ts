@@ -1,3 +1,4 @@
+import { FindkitUI } from "./cdn-entries";
 import type {
 	GroupDefinition,
 	SearchEngineParams,
@@ -18,17 +19,17 @@ export interface EventObject {
  *
  * Simple event emitter
  */
-export class Emitter<Events extends {}> {
+export class Emitter<Events extends {}, Source> {
 	#handlers = new Map<keyof Events, Set<Handler>>();
-	#instanceId: string;
+	#source: Source;
 
-	constructor(instanceId: string) {
-		this.#instanceId = instanceId;
+	constructor(source: Source) {
+		this.#source = source;
 	}
 
 	on<EventName extends keyof Events>(
 		eventName: EventName,
-		handler: (event: Events[EventName]) => void,
+		handler: (event: Events[EventName] & { source: Source }) => void,
 	) {
 		const set = this.#handlers.get(eventName) || new Set();
 		this.#handlers.set(eventName, set);
@@ -52,12 +53,20 @@ export class Emitter<Events extends {}> {
 
 	emit<EventName extends keyof Events>(
 		eventName: EventName,
-		event: Omit<Events[EventName], "instanceId">,
+		event: Events[EventName],
 	) {
+		const payload = { ...event, ui: this.#source };
 		const set = this.#handlers.get(eventName);
+
+		if (typeof document !== "undefined") {
+			const event = new Event("findkit-ui-event");
+			Object.assign(event, { payload });
+			document.dispatchEvent(event);
+		}
+
 		if (set) {
 			for (const handler of set) {
-				handler({ ...event, instanceId: this.#instanceId });
+				handler(payload);
 			}
 		}
 	}
@@ -70,7 +79,6 @@ export class Emitter<Events extends {}> {
  */
 export interface FindkitUIEvents {
 	"status-change": {
-		instanceId: string;
 		next: State["status"];
 		previous: State["status"];
 	};
@@ -80,7 +88,6 @@ export interface FindkitUIEvents {
 	 * analytics
 	 */
 	"debounced-search": {
-		instanceId: string;
 		terms: string;
 	};
 
@@ -88,7 +95,6 @@ export interface FindkitUIEvents {
 	 * Search reqeust starts
 	 */
 	fetch: {
-		instanceId: string;
 		terms: string;
 		/**
 		 * Request id
@@ -100,7 +106,6 @@ export interface FindkitUIEvents {
 	 * When a search request finishes
 	 */
 	"fetch-done": {
-		instanceId: string;
 		terms: string;
 		/**
 		 * Request id
@@ -114,36 +119,44 @@ export interface FindkitUIEvents {
 	};
 
 	/**
-	 * When the UI discarded with .dispose()
+	 * When the FinkitUI instance is created
 	 */
-	dispose: {
-		instanceId: string;
-	};
+	init: {};
 
 	/**
-	 * Whent he modal is opened
+	 * When the UI discarded with .dispose()
 	 */
-	open: {
-		instanceId: string;
+	dispose: {};
+
+	/**
+	 * Whent the modal is opened
+	 */
+	open: {};
+
+	/**
+	 * When modal opening is requested. The implementation loading can happen
+	 * before the modal is actually opened. This can be used to show a loading
+	 * indicator.
+	 */
+	"request-open": {
+		/**
+		 * True when the implementation has be already loaded
+		 */
+		preloaded: boolean;
 	};
 
 	/**
 	 * When the modal is closed
 	 */
-	close: {
-		instanceId: string;
-	};
+	close: {};
 
 	"groups-change": {
-		instanceId: string;
 		groups: GroupDefinition[];
 	};
 	"params-change": {
-		instanceId: string;
 		params: SearchEngineParams;
 	};
 	"hit-click": {
-		instanceId: string;
 		hit: SearchResultHit;
 		preventDefault: () => void;
 		target: HTMLElement;

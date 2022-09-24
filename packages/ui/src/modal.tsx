@@ -380,7 +380,7 @@ export function init(options: {
 	minTerms?: number;
 	styleSheets: string[];
 	slots?: Partial<Slots>;
-	events: Emitter<FindkitUIEvents>;
+	events: Emitter<FindkitUIEvents, unknown>;
 	searchEndpoint?: string;
 	params?: SearchEngineParams;
 	groups?: GroupDefinition[];
