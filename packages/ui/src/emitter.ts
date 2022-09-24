@@ -74,17 +74,66 @@ export interface FindkitUIEvents {
 		next: State["status"];
 		previous: State["status"];
 	};
+
+	/**
+	 * Emitted when search results have not been updated for a while. Useful for
+	 * analytics
+	 */
 	"debounced-search": {
 		instanceId: string;
 		terms: string;
 	};
+
+	/**
+	 * Search reqeust starts
+	 */
 	fetch: {
 		instanceId: string;
 		terms: string;
+		/**
+		 * Request id
+		 */
+		id: string;
 	};
+
+	/**
+	 * When a search request finishes
+	 */
+	"fetch-done": {
+		instanceId: string;
+		terms: string;
+		/**
+		 * Request id
+		 */
+		id: string;
+
+		/**
+		 * Whether this request was stale eg. a new request was made before this one finished
+		 */
+		state: boolean;
+	};
+
+	/**
+	 * When the UI discarded with .dispose()
+	 */
 	dispose: {
 		instanceId: string;
 	};
+
+	/**
+	 * Whent he modal is opened
+	 */
+	open: {
+		instanceId: string;
+	};
+
+	/**
+	 * When the modal is closed
+	 */
+	close: {
+		instanceId: string;
+	};
+
 	"groups-change": {
 		instanceId: string;
 		groups: GroupDefinition[];

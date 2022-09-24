@@ -8,7 +8,7 @@ package but there are few cases where you might want to disable this:
   - You cannot make test installations since the code of the test builds are
     not uploaded to our CDN.
 - If you need to run fork of `@findkit/ui`
-- You just cannot connect to `cdn.findkit.com` from a internal network.
+- You just cannot connect to `cdn.findkit.com` from an internal network.
 - Developing offline
 
 ## Code

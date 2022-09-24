@@ -907,7 +907,7 @@ export class SearchEngine {
 		const abortController = new AbortController();
 		this.#pendingRequestIds.set(requestId, abortController);
 
-		this.events.emit("fetch", { terms: options.terms });
+		this.events.emit("fetch", { terms: options.terms, id: String(requestId) });
 
 		// await new Promise((resolve) =>
 		// 	setTimeout(resolve, 1000 + Math.random() * 4000),
