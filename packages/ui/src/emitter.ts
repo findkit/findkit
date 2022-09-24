@@ -110,7 +110,7 @@ export interface FindkitUIEvents {
 		/**
 		 * Whether this request was stale eg. a new request was made before this one finished
 		 */
-		state: boolean;
+		stale: boolean;
 	};
 
 	/**

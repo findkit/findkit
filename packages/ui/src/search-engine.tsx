@@ -829,37 +829,50 @@ export class SearchEngine {
 
 	// Poor man's state machine
 	#statusTransition(next: State["status"]) {
-		const current = this.state.status;
+		const prev = this.state.status;
 
 		if (next === "closed") {
 			// Search can be alway closed
 			this.state.status = "closed";
 		} else if (next === "ready") {
 			// ready state can come only after fetching
-			if (current === "fetching") {
+			if (prev === "fetching") {
 				this.state.status = next;
 			}
 		} else if (next === "fetching") {
 			// Can move to fething state only from intial open (waiting) or
 			// after previous fetch
-			if (current === "waiting" || current === "ready") {
+			if (prev === "waiting" || prev === "ready") {
 				this.state.status = next;
 			}
 		} else if (next === "waiting") {
 			// Initial waiting state can only appear when the modal opens and no
 			// searches are made yet
-			if (current === "closed") {
+			if (prev === "closed") {
 				this.state.status = next;
 			}
 		} else {
 			const _: never = next;
 		}
 
-		if (current !== this.state.status) {
+		const current = this.state.status;
+
+		if (prev !== current) {
 			this.events.emit("status-change", {
-				previous: current,
-				next: this.state.status,
+				previous: prev,
+				next: current,
 			});
+
+			// There is no "open" state because there are technically multiple
+			// open states. So to fire the "open" event we need to infer it from
+			// the closed state
+			if (prev === "closed" && current !== "closed") {
+				this.events.emit("open", {});
+			}
+
+			if (prev !== "closed" && current === "closed") {
+				this.events.emit("close", {});
+			}
 		}
 	}
 
@@ -931,9 +944,17 @@ export class SearchEngine {
 			},
 		);
 
+		const stale = !this.#pendingRequestIds.has(requestId);
+
+		this.events.emit("fetch-done", {
+			terms: options.terms,
+			id: String(requestId),
+			stale,
+		});
+
 		// This request was already cleared as there are newer requests ready
 		// before this was
-		if (!this.#pendingRequestIds.has(requestId)) {
+		if (stale) {
 			return;
 		}
 
