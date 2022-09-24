@@ -34,3 +34,9 @@ The UI library uses the `@findkit/fetch` module internally to make the search
 requests. This is public library that can be used directly as well when the UI
 library is too high level. It is a small wrapper around the Fetch API but it provides
 TypeScript types, JWT authentication and CORs support out of the box.
+
+## Source Code
+
+The source code is written in TypeScript and React but compiled to JavaScript
+and Preact when published to the npm and CDN. The code and contributing documentation
+is available here: <https://github.com/findkit/findkit/tree/main/packages/ui>
