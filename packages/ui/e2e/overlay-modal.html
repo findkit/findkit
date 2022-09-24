@@ -26,7 +26,7 @@
 			}
 
 			.findkit-overlay-container:has(.findkit--modal-visible) {
-				position: relative;
+				position: absolute;
 				inset: 0;
 				background-color: tomato;
 			}
@@ -37,6 +37,7 @@
 			const ui = new FindkitUI({
 				publicToken: "po8GK3G0r",
 				container: document.querySelector(".findkit-overlay-container"),
+				shadowDom: !/no-shadow/.test(location.search),
 				slots: {
 					Layout(props) {
 						return props.content;
@@ -71,7 +72,7 @@
 				Close
 			</button>
 
-			<a href="#">Random header link</a>
+			<button>Random button</button>
 		</header>
 		<main>
 			<h1>Content</h1>

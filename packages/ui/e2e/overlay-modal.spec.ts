@@ -1,7 +1,6 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, Page } from "@playwright/test";
 
-test("can use overlay modal with proper focus management", async ({ page }) => {
-	await page.goto("/overlay-modal");
+async function testNavigationAndFocus(page: Page) {
 	const input = page.locator("#external-input");
 	const hits = page.locator(".findkit-overlay-container .findkit--hit a");
 	const randomLink = page.locator("text=Random");
@@ -36,4 +35,16 @@ test("can use overlay modal with proper focus management", async ({ page }) => {
 	await page.keyboard.press("Tab");
 	await page.keyboard.press("Tab");
 	await expect(randomLink).toBeFocused();
+}
+
+test("can use overlay modal with proper focus management", async ({ page }) => {
+	await page.goto("/overlay-modal");
+	await testNavigationAndFocus(page);
+});
+
+test("can use overlay modal with proper focus management without shadow dom", async ({
+	page,
+}) => {
+	await page.goto("/overlay-modal?no-shadow");
+	await testNavigationAndFocus(page);
 });
