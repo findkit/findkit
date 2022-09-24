@@ -57,11 +57,6 @@ pnpm playwright-update
 
 and review and commit the changes.
 
-Github Actions runs Linux so you need to run the update in the
-[test.yml](/.github/workflows/test.yml) workflow. It will push the updates back
-to git automatically. Use this only from PRs and remember to disable it when
-done.
-
 ### Manual packaging
 
 When you want test the changes in your project you must build the package and
