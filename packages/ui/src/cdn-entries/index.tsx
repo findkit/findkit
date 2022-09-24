@@ -132,6 +132,17 @@ function onDomContentLoaded(cb: () => any) {
 type ElementSelector = string | NodeListOf<Element> | Element[] | Element;
 
 /**
+ * @public
+ *
+ * Callback invoked from select()
+ */
+export interface SelectCallback<T> {
+	// First argument always exists. Using separete arg type for it so it
+	// works with the TS noUncheckedIndexedAccess flag
+	(element: T, ...elements: T[]): void;
+}
+
+/**
  * Run the given CSS selector after the DOMContentLoaded event and filter the
  * results to given instance type. Does not invoke the callback if no elements
  * where matched.
@@ -145,12 +156,7 @@ type ElementSelector = string | NodeListOf<Element> | Element[] | Element;
 export function select<InstanceFilter extends typeof Element>(
 	elements: ElementSelector,
 	instanceFilter: InstanceFilter,
-	cb: (
-		// First argument always exists. Using separete arg type for it so it
-		// works with the TS noUncheckedIndexedAccess flag
-		el: InstanceType<InstanceFilter>,
-		...elements: InstanceType<InstanceFilter>[]
-	) => void,
+	cb: SelectCallback<InstanceType<InstanceFilter>>,
 ) {
 	const done = (elements: NodeListOf<Element> | Element[] | Element) => {
 		const array =
