@@ -129,7 +129,7 @@ export interface FindkitUIEvents {
 	dispose: {};
 
 	/**
-	 * Whent the modal is opened
+	 * When the modal is opened
 	 */
 	open: {};
 
@@ -140,7 +140,8 @@ export interface FindkitUIEvents {
 	 */
 	"request-open": {
 		/**
-		 * True when the implementation has be already loaded
+		 * True when the implementation has be already loaded. Use the "open"
+		 * event to detect when implementation was loaded.
 		 */
 		preloaded: boolean;
 	};

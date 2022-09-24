@@ -325,6 +325,9 @@ async function loadScriptFromGlobal<T>(
 	return output;
 }
 
+const ENGINE_STATUS = ["waiting", "loading", "done"] as const;
+const [WAITING, LOADING, DONE] = ENGINE_STATUS;
+
 /**
  * Modal options
  *
@@ -364,7 +367,8 @@ export class FindkitUI {
 		css?: string;
 	}>;
 	#enginePromise: Promise<SearchEngine>;
-	#engineLoading = false;
+	#engineStatus: typeof ENGINE_STATUS[number] = WAITING;
+
 	#resolveEngine!: (engine: SearchEngine) => void;
 
 	#options: FindkitUIOptions;
@@ -453,7 +457,7 @@ export class FindkitUI {
 
 	async open(terms?: string) {
 		this.events.emit("request-open", {
-			preloaded: !!this.#implementationPromise,
+			preloaded: this.#engineStatus === DONE,
 		});
 		preconnect();
 		const engine = await this.#getEngine();
@@ -485,11 +489,11 @@ export class FindkitUI {
 	}
 
 	async #getEngine() {
-		if (this.#engineLoading) {
+		if (this.#engineStatus === LOADING) {
 			return this.#enginePromise;
 		}
 
-		this.#engineLoading = true;
+		this.#engineStatus = LOADING;
 
 		const impl = await this.#loadImplementation();
 		const { styleSheet: _1, load: _2, css: userCSS, ...rest } = this.#options;
@@ -511,7 +515,7 @@ export class FindkitUI {
 	}
 
 	async close() {
-		if (this.#engineLoading) {
+		if (this.#engineStatus === LOADING) {
 			(await this.#enginePromise).close();
 		}
 	}
@@ -521,7 +525,7 @@ export class FindkitUI {
 	 */
 	async dispose() {
 		this.#resources.dispose();
-		if (this.#engineLoading) {
+		if (this.#engineStatus === LOADING) {
 			(await this.#enginePromise).dispose();
 		}
 	}
