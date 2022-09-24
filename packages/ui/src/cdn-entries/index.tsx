@@ -136,11 +136,10 @@ type ElementSelector = string | NodeListOf<Element> | Element[] | Element;
  *
  * Callback invoked from select()
  */
-export interface SelectCallback<T> {
+export type SelectCallback<T> =
 	// First argument always exists. Using separate arg type for it so it
 	// works with the TS noUncheckedIndexedAccess flag
-	(element: T, ...elements: T[]): void;
-}
+	(element: T, ...elements: T[]) => void;
 
 /**
  * Run the given CSS selector after the DOMContentLoaded event and filter the
