@@ -569,16 +569,18 @@ export class SearchEngine {
 			return;
 		}
 
-		const observer = new MutationObserver(() => {
-			this.state.ui.lang = this.#getDocumentLang();
-		});
+		this.#resources.create(() => {
+			const observer = new MutationObserver(() => {
+				this.state.ui.lang = this.#getDocumentLang();
+			});
 
-		observer.observe(document.documentElement, {
-			attributeFilter: ["lang"],
-			subtree: false,
-		});
+			observer.observe(document.documentElement, {
+				attributeFilter: ["lang"],
+				subtree: false,
+			});
 
-		this.#resources.create(() => () => observer.disconnect());
+			return () => observer.disconnect();
+		});
 	}
 
 	#getDocumentLang() {
