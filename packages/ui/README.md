@@ -44,6 +44,7 @@ with:
 
 ```
 pnpm playwright-test --headed
+pnpm playwright-visual --headed
 ```
 
 ### Updating the visual snapshots
