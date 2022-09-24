@@ -125,18 +125,36 @@ Following methods are available on the `FindkitUI` instance.
 
 <Api page="ui.findkitui" />
 
-### `.open(terms?: string)` {#open}
+### `.open(terms)` {#open}
 
 Open the search modal. If search terms are passed in the input will populated
 with it and a search request is made immediately.
 
-### `.openFrom(select)`
+### `.openFrom(selector)` {#openFrom}
 
 Open the modal from the given element or elements. Select can be a `Element`
 object or a CSS selector string. A cleanup function is returned which will
 unbind all the event listeners when called.
 
 <Api page="ui.findkitui.openfrom" />
+
+### `.trapFocus(selector)` {#trapFocus}
+
+Add additional elements to the focus trap. For example if you want to add close
+button outside of the modal use this to make it keyboard accessible.
+
+A function is returned which will remove the element from the focus trap when
+invoked.
+
+<Api page="ui.findkitui.trapFocus" />
+
+### `.preload()` {#preload}
+
+Preload the implementation code and css. This is automatically called on
+`mouseover` for elements passed to `.openFrom()` and on `focus` for inputs
+passed to `.bindInput()`.
+
+<Api page="ui.findkitui.preload" />
 
 ### `.close()` {#close}
 

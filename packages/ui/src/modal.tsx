@@ -53,13 +53,16 @@ function useFocusTrap(
 			return;
 		}
 
+		const inputs = state.inputs.map((input) => input.el);
+		const trapElements = state.trapElements.map((ref) => ref.el);
+
 		if (!trapRef.current && containerRef.current) {
 			trapRef.current = new FocusTrap({
-				containers: [containerRef.current].concat(engine.getInputs()),
+				containers: [containerRef.current, ...inputs, ...trapElements],
 				escDisables: true,
 				outsideClickDisables: false,
 				onAfterEnable() {
-					for (const input of engine.getInputs()) {
+					for (const input of inputs) {
 						if (containerRef.current?.contains(input)) {
 							input.focus();
 						}
@@ -79,7 +82,7 @@ function useFocusTrap(
 			trapRef.current = null;
 			trap?.disable();
 		};
-	}, [containerRef, engine, isOpen]);
+	}, [containerRef, engine, isOpen, state.inputs, state.trapElements]);
 
 	return containerRef;
 }
