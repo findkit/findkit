@@ -115,7 +115,7 @@ export function css(strings: TemplateStringsArray, ...expr: string[]) {
  * bound after the actual event
  */
 function onDomContentLoaded(cb: () => any) {
-	if (/complete|interactive|loaded/.test(doc().readyState)) {
+	if (doc().readyState === "complete") {
 		cb();
 	} else {
 		listen(
@@ -126,6 +126,23 @@ function onDomContentLoaded(cb: () => any) {
 			},
 			{ once: true },
 		);
+	}
+}
+
+type ElementSelector = string | NodeListOf<Element> | Element[] | Element;
+
+function getElements(
+	elements: ElementSelector,
+	cb: (elements: Element[]) => void,
+) {
+	if (typeof elements === "string") {
+		onDomContentLoaded(() => {
+			cb(Array.from(doc().querySelectorAll(elements)));
+		});
+	} else if (elements instanceof Element) {
+		cb([elements]);
+	} else {
+		cb(Array.from(elements));
 	}
 }
 
@@ -403,13 +420,19 @@ export class FindkitUI {
 		(await this.#enginePromise).updateParams(params);
 	}
 
-	bindInput(input: HTMLInputElement) {
+	bindInput(selector: ElementSelector) {
 		const resources = this.#resources.child();
 
-		resources.create(() => listen(input, "focus", this.preload));
+		getElements(selector, (elements) => {
+			for (const input of elements) {
+				if (input instanceof HTMLInputElement) {
+					resources.create(() => listen(input, "focus", this.preload));
 
-		void this.#enginePromise.then((engine) => {
-			resources.create(() => engine.bindInput(input));
+					void this.#enginePromise.then((engine) => {
+						resources.create(() => engine.bindInput(input));
+					});
+				}
+			}
 		});
 
 		return resources.dispose;
@@ -480,27 +503,6 @@ export class FindkitUI {
 		void this.open();
 	};
 
-	#bindOpeners(elements: Element | Element[] | NodeListOf<Element>) {
-		const resources = this.#resources.child();
-		if (elements instanceof Element) {
-			elements = [elements];
-		}
-
-		for (const el of elements) {
-			if (el instanceof HTMLElement) {
-				resources.create(() => listen(el, "click", this.#handleOpenClick));
-				resources.create(() =>
-					listen(el, "mouseover", this.preload, {
-						once: true,
-						passive: true,
-					}),
-				);
-			}
-		}
-
-		return resources.dispose;
-	}
-
 	/**
 	 * Open the modal from the given elements. If a string is given it is used
 	 * as a query selector to find the elements after the DOMContentLoaded
@@ -508,21 +510,27 @@ export class FindkitUI {
 	 *
 	 * The implementation is preloaded on mouseover.
 	 *
-	 * @param elements
+	 * @param selector
 	 * @returns unbind function
 	 */
-	openFrom(elements: string | NodeListOf<Element> | Element[] | Element) {
+	openFrom(selector: ElementSelector) {
 		const resources = this.#resources.child();
 
-		onDomContentLoaded(() => {
+		getElements(selector, (elements) => {
 			// Use `Resources` to create the the bindings. This ensures that
 			// bindings are not created if the unbind function is called before
 			// the DOMContentLoaded event.
-			resources.create(() => {
-				return typeof elements === "string"
-					? this.#bindOpeners(doc().querySelectorAll(elements))
-					: this.#bindOpeners(elements);
-			});
+			for (const el of elements) {
+				if (el instanceof HTMLElement) {
+					resources.create(() => listen(el, "click", this.#handleOpenClick));
+					resources.create(() =>
+						listen(el, "mouseover", this.preload, {
+							once: true,
+							passive: true,
+						}),
+					);
+				}
+			}
 		});
 
 		return resources.dispose;
