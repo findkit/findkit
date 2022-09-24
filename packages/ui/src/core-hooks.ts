@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useRef } from "react";
-import { FindkitURLSearchParams, SearchEngine } from "./search-engine";
+import { FindkitURLSearchParams, SearchEngine, State } from "./search-engine";
 import { useSnapshot } from "valtio";
 import { Translator } from "./translations";
 import { Slots } from "./slots";
@@ -41,9 +41,10 @@ export function useFindkitURLSearchParams(): FindkitURLSearchParams {
 	);
 }
 
-export function useSearchEngineState() {
+export function useSearchEngineState(): State {
 	const engine = useSearchEngine();
-	return useSnapshot(engine.state);
+	// The recursive deep readonly type is too heavy. Just use the plain State type.
+	return useSnapshot(engine.state as any);
 }
 
 export function useSearchMoreOnReveal() {

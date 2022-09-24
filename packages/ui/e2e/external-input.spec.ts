@@ -25,10 +25,16 @@ test("can use external input with modal", async ({ page }) => {
 	// Escape closes the modal and returns focus to the input
 	await page.keyboard.press("Escape");
 	await expect(input).toBeFocused();
+	await expect(hits.first()).not.toBeVisible();
 
 	await page.keyboard.press("Tab");
 	// Random button is can be focused when the modal is closed
 	await expect(randomButton).toBeFocused();
+
+	// Enter press in the input opens the modal
+	await input.focus();
+	await page.keyboard.press("Enter");
+	await expect(hits.first()).toBeVisible();
 });
 
 test("can lazily bind input", async ({ page }) => {

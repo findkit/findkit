@@ -174,3 +174,41 @@ test("can remove the close button", async ({ page }) => {
 	await page.locator("input").waitFor({ state: "visible" });
 	await expect(page).toHaveScreenshot();
 });
+
+test("overlay modal", async ({ page }) => {
+	await page.goto("/overlay-modal");
+	const input = page.locator("#external-input");
+	const hits = page.locator(".findkit-overlay-container .findkit--hit");
+	await input.fill("valu");
+
+	await expect(hits.first()).toBeVisible();
+
+	const hasShadow = await page.evaluate(() => {
+		return !!document.querySelector(".findkit-overlay-container")?.shadowRoot;
+	});
+
+	expect(hasShadow).toBe(true);
+
+	await expect(page).toHaveScreenshot({
+		mask: [hits],
+	});
+});
+
+test("overlay modal without shadow dom", async ({ page }) => {
+	await page.goto("/overlay-modal?no-shadow");
+	const input = page.locator("#external-input");
+	const hits = page.locator(".findkit-overlay-container .findkit--hit");
+	await input.fill("valu");
+
+	await expect(hits.first()).toBeVisible();
+
+	const hasShadow = await page.evaluate(() => {
+		return !!document.querySelector(".findkit-overlay-container")?.shadowRoot;
+	});
+
+	expect(hasShadow).toBe(false);
+
+	await expect(page).toHaveScreenshot({
+		mask: [hits],
+	});
+});

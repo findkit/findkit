@@ -369,7 +369,7 @@ export class FocusTrap {
 
 	isValidTabbable(tabbable: Element, container: HTMLElement | undefined) {
 		if (!this.options.validateTabbable) {
-			return true;
+			return isTabbable(tabbable);
 		}
 
 		if (!container) {

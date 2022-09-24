@@ -115,7 +115,7 @@ export function css(strings: TemplateStringsArray, ...expr: string[]) {
  * bound after the actual event
  */
 function onDomContentLoaded(cb: () => any) {
-	if (/complete|interactive|loaded/.test(doc().readyState)) {
+	if (doc().readyState === "complete") {
 		cb();
 	} else {
 		listen(
@@ -126,6 +126,58 @@ function onDomContentLoaded(cb: () => any) {
 			},
 			{ once: true },
 		);
+	}
+}
+
+type ElementSelector = string | NodeListOf<Element> | Element[] | Element;
+
+/**
+ * Run the given CSS selector after the DOMContentLoaded event and filter the
+ * results to given instance type. Does not invoke the callback if no elements
+ * where matched.
+ *
+ * The callback is invoked immediately when the DOMContentLoaded event has already fired.
+ *
+ * @param elements CSS Selector
+ * @param instanceFilter Filter results to only include instances of the given implementation
+ * @param cb
+ */
+export function select<InstanceFilter extends typeof Element>(
+	elements: ElementSelector,
+	instanceFilter: InstanceFilter,
+	cb: (
+		// First argument always exists. Using separete arg type for it so it
+		// works with the TS noUncheckedIndexedAccess flag
+		el: InstanceType<InstanceFilter>,
+		...elements: InstanceType<InstanceFilter>[]
+	) => void,
+) {
+	const done = (elements: NodeListOf<Element> | Element[] | Element) => {
+		const array =
+			Array.isArray(elements) || elements instanceof NodeList
+				? Array.from(elements)
+				: [elements];
+
+		const res: any[] = array.filter(
+			(element) => element instanceof instanceFilter,
+		);
+
+		if (res.length === 0) {
+			console.error(
+				"[findkit] select(): No elements found for selector",
+				elements,
+			);
+		} else {
+			cb(res[0], ...res.slice(1));
+		}
+	};
+
+	if (typeof elements === "string") {
+		onDomContentLoaded(() => {
+			done(doc().querySelectorAll(elements));
+		});
+	} else {
+		done(elements);
 	}
 }
 
@@ -289,6 +341,7 @@ export interface FindkitUIOptions {
 	container?: Element;
 	monitorDocumentElementChanges?: boolean;
 	router?: SearchEngineOptions["router"];
+	mode?: "modal" | "plain";
 	ui?: {
 		lang: string;
 		overrides?: Partial<TranslationStrings>;
@@ -317,7 +370,7 @@ export class FindkitUI {
 		this.#options = options;
 		this.events = new Emitter(this.#instanceId);
 
-		if (this.#isAlreadyOpened() || options.container) {
+		if (this.#isAlreadyOpened() || options.mode === "plain") {
 			void this.open();
 		}
 
@@ -402,13 +455,17 @@ export class FindkitUI {
 		(await this.#enginePromise).updateParams(params);
 	}
 
-	bindInput(input: HTMLInputElement) {
+	bindInput(selector: ElementSelector) {
 		const resources = this.#resources.child();
 
-		resources.create(() => listen(input, "focus", this.preload));
+		select(selector, HTMLInputElement, (...elements) => {
+			for (const input of elements) {
+				resources.create(() => listen(input, "focus", this.preload));
 
-		void this.#enginePromise.then((engine) => {
-			resources.create(() => engine.bindInput(input));
+				void this.#enginePromise.then((engine) => {
+					resources.create(() => engine.bindInput(input));
+				});
+			}
 		});
 
 		return resources.dispose;
@@ -479,23 +536,19 @@ export class FindkitUI {
 		void this.open();
 	};
 
-	#bindOpeners(elements: Element | Element[] | NodeListOf<Element>) {
+	/**
+	 * Add additional elements to focus trap when modal is open
+	 *
+	 * @param selector A CSS selector or an element
+	 * @returns cleanup function
+	 */
+	trapFocus(selector: ElementSelector) {
 		const resources = this.#resources.child();
-		if (elements instanceof Element) {
-			elements = [elements];
-		}
-
-		for (const el of elements) {
-			if (el instanceof HTMLElement) {
-				resources.create(() => listen(el, "click", this.#handleOpenClick));
-				resources.create(() =>
-					listen(el, "mouseover", this.preload, {
-						once: true,
-						passive: true,
-					}),
-				);
-			}
-		}
+		select(selector, HTMLElement, (...elements) => {
+			void this.#enginePromise.then((engine) => {
+				resources.create(() => engine.trapFocus(elements));
+			});
+		});
 
 		return resources.dispose;
 	}
@@ -507,21 +560,25 @@ export class FindkitUI {
 	 *
 	 * The implementation is preloaded on mouseover.
 	 *
-	 * @param elements
+	 * @param selector
 	 * @returns unbind function
 	 */
-	openFrom(elements: string | NodeListOf<Element> | Element[] | Element) {
+	openFrom(selector: ElementSelector) {
 		const resources = this.#resources.child();
 
-		onDomContentLoaded(() => {
+		select(selector, HTMLElement, (...elements) => {
 			// Use `Resources` to create the the bindings. This ensures that
 			// bindings are not created if the unbind function is called before
 			// the DOMContentLoaded event.
-			resources.create(() => {
-				return typeof elements === "string"
-					? this.#bindOpeners(doc().querySelectorAll(elements))
-					: this.#bindOpeners(elements);
-			});
+			for (const el of elements) {
+				resources.create(() => listen(el, "click", this.#handleOpenClick));
+				resources.create(() =>
+					listen(el, "mouseover", this.preload, {
+						once: true,
+						passive: true,
+					}),
+				);
+			}
 		});
 
 		return resources.dispose;

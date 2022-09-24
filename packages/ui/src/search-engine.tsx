@@ -117,6 +117,20 @@ export interface State {
 	 */
 	lang: string | undefined;
 
+	inputs: {
+		el: HTMLInputElement;
+		unbindEvents: () => void;
+	}[];
+
+	/**
+	 * Additional elements to include in the focus trap
+	 *
+	 * The {el} wrapping looks weird but it is because we need to use the ref()
+	 * from valtio to avoid tracking DOM element internals and still be able to
+	 * referential equality check in removeFromFocusTrap() .
+	 */
+	trapElements: { el: HTMLElement }[];
+
 	ui: {
 		/**
 		 * Language of the UI
@@ -301,10 +315,6 @@ export interface SearchEngineOptions {
 export class SearchEngine {
 	#requestId = 0;
 	#pendingRequestIds: Map<number, AbortController> = new Map();
-	#inputs = [] as {
-		input: HTMLInputElement;
-		unbindEvents: () => void;
-	}[];
 
 	readonly router: RouterBackend;
 	#fetcher: FindkitFetcher;
@@ -396,6 +406,9 @@ export class SearchEngine {
 					[lang]: ref(options.ui?.overrides ?? {}),
 				},
 			},
+
+			trapElements: [],
+			inputs: [],
 
 			// Ensure groups are unique so mutating one does not mutate the
 			// other
@@ -999,14 +1012,18 @@ export class SearchEngine {
 		return groups.find((group) => group.id === id);
 	}
 
+	get #inputs() {
+		return this.state.inputs;
+	}
+
 	#syncInputs = (terms: string) => {
 		for (const input of this.#inputs) {
 			// only change input value if it does not have focus
 			const activeElement =
 				document.activeElement?.shadowRoot?.activeElement ??
 				document.activeElement;
-			if (input && input.input !== activeElement) {
-				input.input.value = terms;
+			if (input && input.el !== activeElement) {
+				input.el.value = terms;
 			}
 		}
 	};
@@ -1016,7 +1033,7 @@ export class SearchEngine {
 	 */
 	bindInput = (input: HTMLInputElement) => {
 		const listeners = this.#resources.child();
-		const prev = this.#inputs.find((o) => o.input === input);
+		const prev = this.#inputs.find((o) => o.el === input);
 
 		const unbind = () => {
 			this.removeInput(input);
@@ -1102,13 +1119,13 @@ export class SearchEngine {
 			}),
 		);
 
-		this.#inputs.push({ input, unbindEvents: listeners.dispose });
+		this.#inputs.push(ref({ el: input, unbindEvents: listeners.dispose }));
 
 		return unbind;
 	};
 
 	removeInput = (rmInput: HTMLInputElement) => {
-		const input = this.#inputs.find((input) => input?.input === rmInput);
+		const input = this.#inputs.find((input) => input?.el === rmInput);
 		input?.unbindEvents();
 
 		const inputIndex = this.#inputs.findIndex((obj) => obj === input);
@@ -1117,9 +1134,18 @@ export class SearchEngine {
 		}
 	};
 
-	getInputs() {
-		return this.#inputs.map((input) => input.input);
-	}
+	trapFocus = (elements: HTMLElement[]) => {
+		this.state.trapElements.push(...elements.map((el) => ref({ el })));
+		return () => {
+			return this.#removeFromFocusTrap(elements);
+		};
+	};
+
+	#removeFromFocusTrap = (elements: HTMLElement[]) => {
+		this.state.trapElements = this.state.trapElements.filter((ref) => {
+			return !elements.includes(ref.el);
+		});
+	};
 
 	#addAllResults(res: State["resultGroups"]) {
 		for (const key in res) {
@@ -1158,7 +1184,7 @@ export class SearchEngine {
 		this.#resources.dispose();
 
 		for (const input of this.#inputs) {
-			this.removeInput(input.input);
+			this.removeInput(input.el);
 		}
 		this.events.dispose();
 	};
