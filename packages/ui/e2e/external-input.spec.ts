@@ -7,7 +7,7 @@ test("can use external input with modal", async ({ page }) => {
 	await page.goto("/external-input");
 
 	await page.evaluate(async () => {
-		void ui.bindInput("#external-input"!);
+		ui.bindInput("#external-input");
 	});
 
 	const input = page.locator("#external-input");
