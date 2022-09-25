@@ -31,7 +31,7 @@ test("can use custom input (.bindInput()) and params-change events", async ({
 	await page.locator("button", { hasText: "statement.fi" }).click();
 
 	while (true) {
-		const e = await oneEvent(page, "status-change");
+		const e = await oneEvent(page, "status");
 		if (e.next === "ready") {
 			break;
 		}
