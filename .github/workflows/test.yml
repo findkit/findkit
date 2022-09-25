@@ -67,7 +67,7 @@ jobs:
 
           cd packages/ui
           gzip esm/*.js
-          echo 'The bundle sizes are now:```' > /tmp/sizes
+          echo 'The bundle sizes are now:' > /tmp/sizes
           echo '```' >> /tmp/sizes
           ls -lh esm/*.js.gz >> /tmp/sizes
           echo '```' >> /tmp/sizes
