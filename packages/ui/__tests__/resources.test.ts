@@ -124,3 +124,17 @@ test("can call cleaner only once", () => {
 
 	expect(spy).toHaveBeenCalledTimes(1);
 });
+
+test("child of disposed parent cannot create resources", () => {
+	const spy = vi.fn();
+
+	const res = new Resources();
+	res.dispose();
+
+	res.child().create(() => {
+		spy();
+		return () => {};
+	});
+
+	expect(spy).not.toBeCalled();
+});

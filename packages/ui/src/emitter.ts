@@ -1,4 +1,4 @@
-import { FindkitUI } from "./cdn-entries";
+import { FindkitUI, SearchEngine } from "./cdn-entries";
 import type {
 	GroupDefinition,
 	SearchEngineParams,
@@ -37,6 +37,17 @@ export class Emitter<Events extends {}, Source> {
 		return () => {
 			this.off(eventName, handler);
 		};
+	}
+
+	once<EventName extends keyof Events>(
+		eventName: EventName,
+		handler: (event: Events[EventName] & { source: Source }) => void,
+	) {
+		const off = this.on(eventName, (e) => {
+			handler(e);
+			off();
+		});
+		return off;
 	}
 
 	off<EventName extends keyof Events>(
@@ -162,6 +173,16 @@ export interface FindkitUIEvents {
 		preventDefault: () => void;
 		target: HTMLElement;
 		terms: string;
+	};
+
+	/**
+	 * When the implementation was loaded
+	 */
+	loaded: {
+		/**
+		 * Private API. Do not use.
+		 */
+		__engine: SearchEngine;
 	};
 }
 
