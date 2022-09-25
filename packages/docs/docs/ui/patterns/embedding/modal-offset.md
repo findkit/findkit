@@ -5,7 +5,7 @@ Offset pattern where the modal is just offsetted below the header. This is
 implemented by binding an external input from the header to Findkit UI using the
 [`.bindInput()` method](/ui/api/#bindInput), hiding the build-in one using the
 [`Layout` slot](/ui/slot-overrides/slots#layout) and pushing the modal down
-using with a top offset.
+with a top offset.
 
 ```ts
 const ui = new FindkitUI({
