@@ -17,6 +17,8 @@ The component props can be used to render only part of the header elements.
 Example: Render only the input
 
 ```ts
+import { FindkitUI, html } from "@findkit/ui";
+
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
 	slots: {
