@@ -872,7 +872,7 @@ export class SearchEngine {
 				next: current,
 			});
 
-			// There is no "open" state because there are technically multiple
+			// There is no "open" status because there are technically multiple
 			// open states. So to fire the "open" event we need to infer it from
 			// the closed state
 			if (prev === "closed" && current !== "closed") {
