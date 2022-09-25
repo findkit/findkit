@@ -20,7 +20,7 @@ body element when the UI is open. See the demo below for full details.
 }
 
 /* The parent container must have position:relative;
-   for position absolute to stretch correctly */
+   for position:absolute; to stretch correctly */
 .content {
 	position: relative;
 }
