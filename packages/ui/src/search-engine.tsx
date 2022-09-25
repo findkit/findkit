@@ -79,6 +79,13 @@ export interface GroupDefinition {
 
 /**
  * @public
+ *
+ * UI status
+ */
+export type Status = "closed" | "waiting" | "fetching" | "ready";
+
+/**
+ * @public
  */
 export interface State {
 	/**
@@ -101,7 +108,7 @@ export interface State {
 	 */
 	searchParams: string;
 
-	status: "closed" | "waiting" | "fetching" | "ready";
+	status: Status;
 
 	currentGroupId: string | undefined;
 
@@ -860,7 +867,7 @@ export class SearchEngine {
 		const current = this.state.status;
 
 		if (prev !== current) {
-			this.events.emit("status-change", {
+			this.events.emit("status", {
 				previous: prev,
 				next: current,
 			});

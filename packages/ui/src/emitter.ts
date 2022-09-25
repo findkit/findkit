@@ -1,9 +1,8 @@
-import { SearchEngine } from "./cdn-entries";
+import { SearchEngine, Status } from "./cdn-entries";
 import type {
 	GroupDefinition,
 	SearchEngineParams,
 	SearchResultHit,
-	State,
 } from "./search-engine";
 
 export interface Handler {
@@ -89,9 +88,12 @@ export class Emitter<Events extends {}, Source> {
  * FindkitUI event definitions
  */
 export interface FindkitUIEvents {
-	"status-change": {
-		next: State["status"];
-		previous: State["status"];
+	/**
+	 * Emitted when the internal UI status changes.
+	 */
+	status: {
+		next: Status;
+		previous: Status;
 	};
 
 	/**
@@ -103,7 +105,7 @@ export interface FindkitUIEvents {
 	};
 
 	/**
-	 * Search reqeust starts
+	 * Search request starts
 	 */
 	fetch: {
 		terms: string;

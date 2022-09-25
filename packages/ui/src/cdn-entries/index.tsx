@@ -8,6 +8,7 @@ import type {
 	SearchEngineParams,
 	SearchEngineOptions,
 	FindkitURLSearchParams,
+	Status,
 } from "../search-engine";
 import type { RouterBackend } from "../router";
 import type {
@@ -29,6 +30,7 @@ import type {
 } from "../slots";
 
 export {
+	Status,
 	HeaderSlotProps,
 	ContentSlotProps,
 	LayoutSlotProps,
