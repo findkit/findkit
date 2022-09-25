@@ -16,15 +16,18 @@
 			// Add visual indication when the search UI is requested to open
 			// on a slow connection when it can take moment to lazy load.
 			ui.events.on("request-open", (e) => {
-				// Only needed when it is not preloaded (preload trigger or previous usage).
-				if (!e.preloaded) {
-					document.querySelector("button.open").disabled = true;
+				// Only needed when not already preloaded.
+				if (e.preloaded) {
+					return;
 				}
-			});
 
-			// "open" event is fired when the search UI is actually opened
-			ui.events.on("open", () => {
-				document.querySelector("button.open").disabled = false;
+				const button = document.querySelector("button.open");
+				button.disabled = true;
+
+				// "open" event is fired when the search UI is actually opened
+				ui.events.once("open", () => {
+					button.disabled = false;
+				});
 			});
 		</script>
 	</head>
