@@ -11,24 +11,24 @@
 				publicToken: "p68GxRvaA",
 			});
 
-			ui.openFrom("#open");
+			ui.openFrom("button.open");
 
 			// Add visual indication when the search UI is requested to open
-			// on a slow connection when it can take moment to load.
+			// on a slow connection when it can take moment to lazy load.
 			ui.events.on("request-open", (e) => {
 				// Only needed when it is not preloaded (preload trigger or previous usage).
 				if (!e.preloaded) {
-					document.querySelector("#open").disabled = true;
+					document.querySelector("button.open").disabled = true;
 				}
 			});
 
 			// "open" event is fired when the search UI is actually opened
 			ui.events.on("open", () => {
-				document.querySelector("#open").disabled = false;
+				document.querySelector("button.open").disabled = false;
 			});
 		</script>
 	</head>
 	<body>
-		<button id="open" type="button">open</button>
+		<button class="open" type="button">open</button>
 	</body>
 </html>
