@@ -32,7 +32,7 @@ test("can show backdrop", async ({ page }) => {
 			`,
 		});
 
-		await ui.open();
+		ui.open();
 	});
 	await page.locator("input").waitFor({ state: "visible" });
 	await expect(page).toHaveScreenshot();
@@ -53,7 +53,7 @@ test("centers the content with width css", async ({ page }) => {
 			`,
 		});
 
-		await ui.open();
+		ui.open();
 	});
 	await page.locator("input").waitFor({ state: "visible" });
 	await expect(page).toHaveScreenshot();
@@ -83,7 +83,7 @@ test("can set modal top", async ({ page }) => {
 				}
 			`,
 		});
-		void ui.bindInput(document.querySelector("#external-input")!);
+		void ui.bindInput("#external-input"!);
 	});
 
 	const input = page.locator("#external-input");
@@ -126,7 +126,7 @@ test("modal slides under the backdrop container", async ({ page }) => {
 			`,
 		});
 
-		void ui.bindInput(document.querySelector("#external-input")!);
+		void ui.bindInput("#external-input"!);
 	});
 
 	const input = page.locator("#external-input");
@@ -169,7 +169,7 @@ test("can remove the close button", async ({ page }) => {
 			},
 		});
 
-		await ui.open();
+		ui.open();
 	});
 	await page.locator("input").waitFor({ state: "visible" });
 	await expect(page).toHaveScreenshot();

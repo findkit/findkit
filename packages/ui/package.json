@@ -19,7 +19,7 @@
 		"dev:serve": "serve -p 28104 e2e",
 		"tsc": "tsc",
 		"build": "jake build-all",
-		"eslint": "../../node_modules/.bin/eslint 'src/**/*.{ts,tsx}' 'e2e/**/*.{ts,tsx}' --max-warnings 0",
+		"eslint": "../../node_modules/.bin/eslint 'src/**/*.{ts,tsx}' 'e2e*/**/*.{ts,tsx}' --max-warnings 0",
 		"build-e2e": "jake build-e2e",
 		"vitest": "vitest run",
 		"test": "tsc && pnpm run eslint && pnpm run vitest",

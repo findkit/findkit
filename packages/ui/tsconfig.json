@@ -1,5 +1,13 @@
 {
-	"include": ["src", "example", "types", "e2e", "__tests__", "classnames.d.ts"],
+	"include": [
+		"src",
+		"example",
+		"types",
+		"e2e",
+		"e2e-visual",
+		"__tests__",
+		"classnames.d.ts"
+	],
 	"compilerOptions": {
 		"target": "es2020",
 		"module": "esnext",
