@@ -8,12 +8,12 @@ one using the [`Layout` slot](/ui/slot-overrides/slots#layout).
 
 ## Considerations
 
-Since we have are now hiding some of the build-in default behaviour we must
-ensure the following is properly implemented:
+Since we are now hiding some of the build-in default behaviour we must ensure
+the following is properly implemented:
 
 - There's a close button
-- The close button can focused using keyboard
-- Fetching status in indicated
+- The close button can be focused using keyboard
+- Fetching status is indicated
 
 These can be implemented using the methods and events exposed by the `FindkitUI`
 instance like in the demo below or in the slot overrides.
