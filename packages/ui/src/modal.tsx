@@ -269,7 +269,7 @@ function Modal() {
 	const unmount = !delayed && !show;
 	const isScrollingDown = useIsScrollingDown(containerRef, show);
 
-	useScrollLock(!unmount);
+	useScrollLock(!unmount && state.lockScroll);
 
 	if (unmount) {
 		return null;
@@ -386,6 +386,7 @@ export function init(options: {
 	groups?: GroupDefinition[];
 	mode?: "modal" | "plain";
 	container?: Element;
+	lockScroll?: boolean;
 	infiniteScroll?: boolean;
 	router?: SearchEngineOptions["router"];
 	ui?: {

@@ -355,6 +355,7 @@ export interface FindkitUIOptions {
 	container?: Element | string;
 	monitorDocumentElementChanges?: boolean;
 	router?: SearchEngineOptions["router"];
+	lockScroll?: boolean;
 	mode?: "modal" | "plain";
 	ui?: {
 		lang: string;
@@ -429,6 +430,7 @@ export class FindkitUI {
 	 * Unbind all event listeners, close the modal and remove it from the DOM
 	 */
 	dispose() {
+		this.close();
 		this.#resources.dispose();
 	}
 
