@@ -58,16 +58,6 @@ const sidebars = {
 				},
 				{
 					type: "category",
-					label: "Advanced",
-					// link: { type: "doc", id: "" },
-					items: [
-						"ui/advanced/disable-cdn",
-						"ui/advanced/routing",
-						"ui/advanced/custom-container",
-					],
-				},
-				{
-					type: "category",
 					label: "Patterns",
 					// link: { type: "doc", id: "" },
 					items: [
@@ -85,6 +75,16 @@ const sidebars = {
 						},
 
 						"ui/patterns/ui/index",
+					],
+				},
+				{
+					type: "category",
+					label: "Advanced",
+					// link: { type: "doc", id: "" },
+					items: [
+						"ui/advanced/disable-cdn",
+						"ui/advanced/routing",
+						"ui/advanced/custom-container",
 					],
 				},
 				"ui/api-docs",
