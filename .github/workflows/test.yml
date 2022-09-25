@@ -7,6 +7,10 @@ concurrency:
 on:
   push:
     branches: [main]
+    paths:
+      - "packages/ui/**"
+      - "packages/fetch/**"
+      - ".github/workflows/test.yml"
   pull_request:
     paths:
       - "packages/ui/**"
@@ -63,9 +67,11 @@ jobs:
 
           cd packages/ui
           gzip esm/*.js
-          echo 'The bundle sizes are now:\n```\n' > /tmp/sizes
+          echo 'The bundle sizes are now:```' > /tmp/sizes
+          echo '```' >> /tmp/sizes
           ls -lh esm/*.js.gz >> /tmp/sizes
-          echo '```\nThe `index.js` is the loader code which should be as small as possible.' >> /tmp/sizes
+          echo '```' >> /tmp/sizes
+          echo 'The `index.js` is the loader code which should be as small as possible.' >> /tmp/sizes
           gunzip esm/*.gz
 
       - name: Comment bundle sizes on commit
