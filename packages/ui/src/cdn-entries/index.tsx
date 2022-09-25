@@ -496,6 +496,7 @@ export class FindkitUI {
 		this.#engineStatus = LOADING;
 
 		const impl = await this.#loadImplementation();
+
 		const { styleSheet: _1, load: _2, css: userCSS, ...rest } = this.#options;
 
 		const allCSS = [impl.css, userCSS].filter(Boolean).join("\n");
@@ -508,6 +509,11 @@ export class FindkitUI {
 			events: this.events,
 			searchEndpoint: this.#options.searchEndpoint,
 		});
+
+		// FindkitUI was disposed while the engine was loading.
+		if (this.#resources.disposed) {
+			engine.dispose();
+		}
 
 		this.#resolveEngine(engine);
 
