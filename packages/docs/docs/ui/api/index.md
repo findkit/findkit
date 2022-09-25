@@ -72,8 +72,10 @@ results.
 
 ### `instanceId: string` {#instanceId}
 
-When using multiple `FindkitUI` instances you must provide a custom
-`instanceId` to avoid query string conflicts. Defaults to `"fdk"`.
+When using multiple `FindkitUI` instances you must provide a custom `instanceId`
+to avoid conflicts in the query strings and idendifying class names.
+
+Defaults to `"fdk"`.
 
 <Api page="ui.findkituioptions.instanceId" />
 

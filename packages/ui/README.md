@@ -13,7 +13,7 @@ git clone https://github.com/findkit/findkit.git
 Install node modules
 
 ```
-cd findkit
+cd findkit/packages/ui
 pnpm install
 ```
 
