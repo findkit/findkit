@@ -26,6 +26,21 @@ element when the UI is open. See the demo below for full details.
 }
 ```
 
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	// highlight-next-line
+	container: ".findkit-overlay-container",
+	css: `
+		.findkit--modal-container {
+			position: sticky;
+		}
+	`,
+});
+
+ui.bindInput("header input.search");
+```
+
 ## Considerations
 
 The considerations are the same as with [Modal Offset
