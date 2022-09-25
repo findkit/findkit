@@ -2,13 +2,12 @@ import { test, expect } from "@playwright/test";
 import type { FindkitUI } from "../src/cdn-entries/index";
 
 declare const ui: FindkitUI;
+declare const MOD: typeof import("../src/cdn-entries/index");
 
 test("can use external input with modal", async ({ page }) => {
 	await page.goto("/external-input");
 
-	await page.evaluate(async () => {
-		ui.bindInput("#external-input");
-	});
+	await page.evaluate(async () => {});
 
 	const input = page.locator("#external-input");
 	const hits = page.locator(".findkit--hit a");
@@ -38,9 +37,28 @@ test("can use external input with modal", async ({ page }) => {
 });
 
 test("can lazily bind input", async ({ page }) => {
-	await page.goto("/external-input");
+	await page.goto("/external-input-dummy");
 
 	await page.evaluate(async () => {
+		const { FindkitUI, html, css } = MOD;
+
+		const ui = new FindkitUI({
+			publicToken: "po8GK3G0r",
+			params: {
+				tagQuery: [["domain/valu.fi"]],
+			},
+			slots: {
+				Layout(props) {
+					return html`${props.content}`;
+				},
+			},
+			css: css`
+				.findkit--modal-container {
+					top: 50px;
+				}
+			`,
+		});
+
 		ui.open();
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 		void ui.bindInput("#external-input"!);
