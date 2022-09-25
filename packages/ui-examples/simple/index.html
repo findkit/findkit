@@ -12,6 +12,20 @@
 			});
 
 			ui.openFrom("#open");
+
+			// Add visual indication when the search UI is requested to open
+			// on a slow connection when it can take moment to load.
+			ui.events.on("request-open", (e) => {
+				// Only needed when it is not preloaded (preload trigger or previous usage).
+				if (!e.preloaded) {
+					document.querySelector("#open").disabled = true;
+				}
+			});
+
+			// "open" event is fired when the search UI is actually opened
+			ui.events.on("open", () => {
+				document.querySelector("#open").disabled = false;
+			});
 		</script>
 	</head>
 	<body>
