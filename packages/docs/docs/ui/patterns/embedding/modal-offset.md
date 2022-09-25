@@ -10,12 +10,21 @@ using with a top offset.
 ```ts
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
-	css: css`
+	css: `
 		.findkit--modal-container {
 			top: 100px;
 		}
 	`,
+	slots: {
+		Layout(props) {
+			// Render the layout without the modal header
+			// Eg. Only the props.content and not props.header
+			return html`${props.content}`;
+		},
+	},
 });
+
+ui.bindInput("header input.search");
 ```
 
 ## Considerations
