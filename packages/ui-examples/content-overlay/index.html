@@ -46,7 +46,7 @@
 				inset: 0;
 			}
 
-			input#search {
+			input.search {
 				margin-left: 2rem;
 			}
 
@@ -77,8 +77,8 @@
 		<header>
 			<div class="header-top">
 				<h1>My Website</h1>
-				<input placeholder="Search..." type="text" id="search" />
-				<button type="button" id="close">X</button>
+				<input placeholder="Search..." type="text" class="search" />
+				<button type="button" class="close">X</button>
 				<div class="loading">Loading...</div>
 
 				<!-- A link which is skipped from tab navigation when the search UI
@@ -103,7 +103,6 @@
 			import {
 				FindkitUI,
 				html,
-				useParams,
 			} from "https://cdn.findkit.com/ui/v0.0.1-dev.8c57d1406c/esm/index.js";
 
 			const ui = new FindkitUI({
@@ -131,13 +130,13 @@
 			});
 
 			// Bind the external input
-			ui.bindInput("#search");
+			ui.bindInput("input.search");
 
 			// Include the close button in the focus trap when the modal is open
-			ui.trapFocus("#close");
+			ui.trapFocus("button.close");
 
 			// Close the modal when the close button is clicked
-			document.querySelector("#close").addEventListener("click", () => {
+			document.querySelector("button.close").addEventListener("click", () => {
 				ui.close();
 			});
 
