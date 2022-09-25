@@ -124,6 +124,11 @@ export interface State {
 	 */
 	lang: string | undefined;
 
+	/**
+	 * Active the useScrollLock() hook
+	 */
+	lockScroll: boolean;
+
 	inputs: {
 		el: HTMLInputElement;
 		unbindEvents: () => void;
@@ -297,6 +302,7 @@ export interface SearchEngineOptions {
 	publicToken: string;
 	searchEndpoint?: string;
 	throttleTime?: number;
+	lockScroll?: boolean;
 	searchMoreSize?: number;
 	minTerms?: number;
 	events: Emitter<FindkitUIEvents, unknown>;
@@ -427,6 +433,7 @@ export class SearchEngine {
 			currentGroupId: initialSearchParams.getGroupId(),
 			searchParams: this.router.getSearchParamsString(),
 			lang: undefined,
+			lockScroll: options.lockScroll ?? true,
 			status: "closed",
 			infiniteScroll: options.infiniteScroll ?? true,
 			error: undefined,
