@@ -77,7 +77,7 @@ const sidebars = {
 							link: { type: "doc", id: "ui/patterns/embedding/index" },
 							items: [
 								"ui/patterns/embedding/fullscreen",
-								"ui/patterns/embedding/modal-offset",
+								"ui/patterns/embedding/offset",
 								"ui/patterns/embedding/content-overlay",
 								"ui/patterns/embedding/raw",
 								"ui/patterns/embedding/react",

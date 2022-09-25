@@ -1,7 +1,7 @@
 # Content Overlay
 
-The Content Overlay Pattern is used achieve the same result as the [Modal Offset
-Pattern](modal-offset) where the input is placed in the website header element
+The Content Overlay Pattern is used achieve the same result as the [Offset Modal
+Pattern](offset) where the input is placed in the website header element
 but instead of absolutely positioning the modal with hand picked top offset the
 search UI is placed in the content element where it overlays the content.
 This is more robust because the search UI can just fill the area given to it but
@@ -43,8 +43,8 @@ ui.bindInput("header input.search");
 
 ## Considerations
 
-The considerations are the same as with [Modal Offset
-Pattern](modal-offset#considerations): Close button, focus trapping, fetch
+The considerations are the same as with the [Offset
+Modal Pattern](offset#considerations): Close button, focus trapping, fetch
 status etc. But also you should check that the modal is resized correctly when
 the page content or search results do not fill the viewport 100%.
 
