@@ -115,7 +115,7 @@ test.describe("small window", () => {
 test("can open the search progmatically", async ({ page }) => {
 	await page.goto("/single-group");
 	await page.evaluate(async () => {
-		await ui.open("mikko");
+		ui.open("mikko");
 	});
 
 	const input = page.locator('[aria-label="Search input"]');
@@ -130,7 +130,7 @@ test("can open the search progmatically", async ({ page }) => {
 test("can open the search progmatically without terms", async ({ page }) => {
 	await page.goto("/single-group");
 	await page.evaluate(async () => {
-		await ui.open();
+		ui.open();
 	});
 
 	const input = page.locator('[aria-label="Search input"]');
@@ -219,7 +219,7 @@ test("can update groups on the fly", async ({ page }) => {
 	expect(await getHitHosts(page)).toEqual(["www.valu.fi"]);
 
 	await page.evaluate(async () => {
-		await ui.updateGroups([
+		ui.updateGroups([
 			{
 				id: "statement",
 				title: "statement.fi",
@@ -251,7 +251,7 @@ test("can update groups on the fly with update function", async ({ page }) => {
 	expect(await getHitHosts(page)).toEqual(["www.valu.fi"]);
 
 	await page.evaluate(async () => {
-		await ui.updateGroups((groups) => {
+		ui.updateGroups((groups) => {
 			const group = groups[0];
 			if (group) {
 				group.params.tagQuery = [["domain/statement.fi"]];

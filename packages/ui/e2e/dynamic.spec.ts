@@ -15,7 +15,7 @@ test("can set required terms length to zero", async ({ page }) => {
 			},
 		});
 
-		await ui.open();
+		ui.open();
 	});
 
 	const hits = page.locator(".findkit--hit");
@@ -40,7 +40,7 @@ test("can disable shadow dom", async ({ page }) => {
 			},
 		});
 
-		await ui.open();
+		ui.open();
 	});
 
 	const input = page.locator('[aria-label="Search input"]');
@@ -67,7 +67,7 @@ test("shadown dom is enabled by default", async ({ page }) => {
 			},
 		});
 
-		await ui.open();
+		ui.open();
 	});
 
 	const input = page.locator('[aria-label="Search input"]');
@@ -95,7 +95,7 @@ test("custom inputs does not mess up the focus management", async ({
 			},
 		});
 
-		await ui.open();
+		ui.open();
 	});
 	await expect(page.locator('[aria-label="Search input"]')).toBeFocused();
 });
@@ -115,7 +115,7 @@ test("updates from history.pushState()", async ({ page }) => {
 			},
 		});
 
-		await ui.open("valu");
+		ui.open("valu");
 	});
 
 	await hits.first().waitFor({ state: "visible" });
@@ -150,7 +150,7 @@ test("can change terms after fetching all", async ({ page }) => {
 			},
 		});
 
-		await ui.open();
+		ui.open();
 		Object.assign(window, { ui });
 	});
 
@@ -224,7 +224,7 @@ test("can use memory routing", async ({ page }) => {
 			},
 		});
 
-		await ui.open("valu");
+		ui.open("valu");
 	});
 
 	const hits = page.locator(".findkit--hit a");

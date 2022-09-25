@@ -18,7 +18,7 @@ test("can set ui language", async ({ page }) => {
 			},
 		});
 
-		await ui.open();
+		ui.open();
 	});
 
 	await expect(closeButton).toHaveText("Sulje");
@@ -37,14 +37,14 @@ test("can change ui language on the fly", async ({ page }) => {
 			},
 		});
 
-		await ui.open();
+		ui.open();
 		Object.assign(window, { ui });
 	});
 
 	await expect(closeButton).toHaveText("Close");
 
 	await page.evaluate(async () => {
-		await ui.setUIStrings("fi");
+		ui.setUIStrings("fi");
 	});
 
 	await expect(closeButton).toHaveText("Sulje");
@@ -69,7 +69,7 @@ test("can customize ui language", async ({ page }) => {
 			},
 		});
 
-		await ui.open();
+		ui.open();
 	});
 
 	await expect(closeButton).toHaveText("CUSTOM");
@@ -88,14 +88,14 @@ test("can customize ui language on the fly", async ({ page }) => {
 			},
 		});
 
-		await ui.open();
+		ui.open();
 		Object.assign(window, { ui });
 	});
 
 	await expect(closeButton).toHaveText("Close");
 
 	await page.evaluate(async () => {
-		await ui.setUIStrings("fi", {
+		ui.setUIStrings("fi", {
 			close: "CUSTOM",
 		});
 	});
@@ -117,7 +117,7 @@ test("reads <html lang>", async ({ page }) => {
 			},
 		});
 
-		await ui.open();
+		ui.open();
 		Object.assign(window, { ui });
 	});
 
@@ -137,7 +137,7 @@ test("Detects <html lang> mutations", async ({ page }) => {
 			},
 		});
 
-		await ui.open();
+		ui.open();
 	});
 
 	await expect(closeButton).toHaveText("Close");
