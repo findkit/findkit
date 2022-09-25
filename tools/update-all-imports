@@ -2,7 +2,7 @@
 
 set -eu
 
-version="0.0.1-dev.6038b866bb"
+version="0.0.1-dev.501e42623d"
 
 cd "$(git rev-parse --show-toplevel)"
 
