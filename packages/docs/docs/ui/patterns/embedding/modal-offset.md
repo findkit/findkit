@@ -41,11 +41,11 @@ instance like in the demo below or in the slot overrides.
 
 ## Caveats
 
-Since we hard-code the header offset you should check it works properly on all
-screen sizes since the header height might be dynamic. Use media queries etc. to
-tackle this. For more complex UI this might get very tricky. Another option is
-to use the [Content Overlay ](content-overlay) pattern which is bit more
-involved to implement but it can handle dynamic header heights.
+Because we hard-code the header offset we must check that it works properly on
+all screen sizes since the header height might be dynamic. Use media queries
+etc. to tackle this. For more complex UI this might get very tricky. Another
+option is to use the [Content Overlay ](content-overlay) pattern which is bit
+more involved to implement but it can handle dynamic header heights.
 
 ## Demo
 
