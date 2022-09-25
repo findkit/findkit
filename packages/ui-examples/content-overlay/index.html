@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Static Template</title>
+		<style>
+			header,
+			h1,
+			h2,
+			body,
+			html {
+				margin: 0;
+				padding: 0;
+			}
+
+			header {
+				background-color: aqua;
+				height: 100px;
+				display: flex;
+				align-items: center;
+			}
+
+			main {
+				padding: 2rem;
+				background-color: darkkhaki;
+				position: relative;
+				height: 200vw;
+			}
+
+			input#search {
+				margin-left: 2rem;
+			}
+
+			.loading {
+				margin-left: 2rem;
+				visibility: hidden;
+			}
+
+			.loading.active {
+				visibility: visible;
+			}
+
+			/* main > *:not(#findkit-overlay-container) {
+				display: none;
+			} */
+
+			.findkit-ui-open .findkit-overlay-container {
+				position: absolute;
+				inset: 0;
+				background-color: tomato;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1>My Website</h1>
+			<input placeholder="Search..." type="text" id="search" />
+			<button type="button" id="close">X</button>
+			<div class="loading">Loading...</div>
+		</header>
+
+		<main>
+			<h2>The Content</h2>
+			<p>This is the web site content.</p>
+
+			<div class="findkit-overlay-container"></div>
+		</main>
+		<script type="module">
+			import {
+				FindkitUI,
+				html,
+				useParams,
+			} from "https://cdn.findkit.com/ui/v0.0.1-dev.fd152c164f/esm/index.js";
+
+			const ui = new FindkitUI({
+				publicToken: "p68GxRvaA",
+				container: ".findkit-overlay-container",
+				lockScroll: false,
+				css: `
+					.findkit--modal-container {
+						position: sticky;
+					}
+					:host {
+						--findkit--modal-animation-duration: 2000ms
+					}
+				`,
+				slots: {
+					Layout(props) {
+						// Render the layout without the modal header
+						// Eg. Only the props.content and not props.header
+						return html`${props.content}`;
+					},
+				},
+			});
+
+			// Bind the external input
+			ui.bindInput("#search");
+
+			// Include the close button in the focus trap when the modal is open
+			ui.trapFocus("#close");
+
+			// Close the modal when the close button is clicked
+			document.querySelector("#close").addEventListener("click", () => {
+				ui.close();
+			});
+
+			// Visually indicate when the search is loading
+			ui.events.on("status", (status) => {
+				if (status.next === "fetching") {
+					document.querySelector(".loading").classList.add("active");
+				} else {
+					document.querySelector(".loading").classList.remove("active");
+				}
+			});
+		</script>
+	</body>
+</html>

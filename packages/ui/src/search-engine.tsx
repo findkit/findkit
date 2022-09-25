@@ -455,7 +455,6 @@ export class SearchEngine {
 			nextGroupDefinitions: clone(groups),
 		});
 		devtools(this.state);
-		this.#addBodyClasses();
 
 		this.#resources.create(() =>
 			subscribeKey(
@@ -482,35 +481,6 @@ export class SearchEngine {
 		this.#resources.create(() => this.router.listen(this.#handleAddressChange));
 
 		this.#handleAddressChange();
-	}
-
-	#addBodyClasses() {
-		if (typeof window === "undefined") {
-			return;
-		}
-
-		const classList = document.body.classList;
-
-		// Just to be cleaner use the instance id only when not using the default one
-		const prefix =
-			this.instanceId === "fdk" ? "findkit-ui" : `${this.instanceId}`;
-
-		const open = `${prefix}-open`;
-
-		this.#resources.create(() => {
-			this.events.on("open", () => {
-				classList.add(open);
-
-				this.events.once("close", () => {
-					classList.remove(open);
-				});
-			});
-
-			// Remove the classes when disposed
-			return () => {
-				classList.remove(open);
-			};
-		});
 	}
 
 	setUIStrings(lang: string, overrides?: Partial<TranslationStrings>) {

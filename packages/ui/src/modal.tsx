@@ -259,6 +259,7 @@ function CloseButton() {
 }
 
 function Modal() {
+	const engine = useSearchEngine();
 	const state = useSearchEngineState();
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const containerKbAttrs = useContainerKeyboardAttributes();
@@ -270,6 +271,23 @@ function Modal() {
 	const isScrollingDown = useIsScrollingDown(containerRef, show);
 
 	useScrollLock(!unmount && state.lockScroll);
+
+	// Use delayed to keep the open body class until the animation is done
+	useEffect(() => {
+		const classList = document.body.classList;
+
+		// Just to be cleaner use the instance id only when not using the default one
+		const prefix =
+			engine.instanceId === "fdk" ? "findkit-ui" : `${engine.instanceId}`;
+
+		const open = `${prefix}-open`;
+
+		if (delayed) {
+			classList.add(open);
+		} else {
+			classList.remove(open);
+		}
+	}, [delayed, engine.instanceId, show]);
 
 	if (unmount) {
 		return null;

@@ -48,3 +48,24 @@ test("can use overlay modal with proper focus management without shadow dom", as
 	await page.goto("/overlay-modal?no-shadow");
 	await testNavigationAndFocus(page);
 });
+
+test("keyboard navigation scrolls", async ({ page }) => {
+	await page.goto("/overlay-modal");
+
+	const input = page.locator("#external-input");
+	const hits = page.locator(".findkit--hit");
+
+	await input.fill("valu");
+	await expect(hits.first()).toBeVisible();
+
+	// Go to the group more link
+	for (let i = 0; i < 6; i++) {
+		await page.keyboard.down("ArrowDown");
+	}
+
+	await expect
+		.poll(async () => {
+			return page.evaluate(() => document.documentElement.scrollTop);
+		})
+		.toBeGreaterThan(50);
+});

@@ -35,6 +35,10 @@ export const View = scopeView("findkit");
 export const cn = scopeClassNames("findkit");
 
 function hasScrollBar(node: HTMLElement) {
+	if (node.scrollHeight === node.clientHeight) {
+		return false;
+	}
+
 	const style = getComputedStyle(node);
 	return ["overflow", "overflow-y"].some((prop) => {
 		return /auto|scroll/i.test(style.getPropertyValue(prop));
