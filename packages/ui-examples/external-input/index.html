@@ -27,6 +27,14 @@
 			input#search {
 				margin-left: 2rem;
 			}
+
+			.loading {
+				margin-left: 2rem;
+				visibility: hidden;
+			}
+			.loading.active {
+				visibility: visible;
+			}
 		</style>
 	</head>
 	<body>
@@ -34,6 +42,7 @@
 			<h1>My Website</h1>
 			<input placeholder="Search..." type="text" id="search" />
 			<button type="button" id="close">X</button>
+			<div class="loading">Loading...</div>
 		</header>
 
 		<main>
@@ -45,13 +54,14 @@
 				FindkitUI,
 				html,
 				useParams,
-			} from "https://cdn.findkit.com/ui/v0.0.1-dev.501e42623d/esm/index.js";
+			} from "https://cdn.findkit.com/ui/v0.0.1-dev.a721a8a18d/esm/index.js";
 
 			const ui = new FindkitUI({
 				publicToken: "p68GxRvaA",
 				minTerms: 0,
 				css: `
 					.findkit--modal-container {
+						/* The header height as offset /*
 						margin-top: 100px;
 
 					}
@@ -63,10 +73,24 @@
 				},
 			});
 
-			ui.bindInput(document.querySelector("#search"));
+			// Bind the external input
+			ui.bindInput("#search");
 
+			// Include the close button in the focus trap when the modal is open
+			ui.trapFocus("#close");
+
+			// Close the modal when the close button is clicked
 			document.querySelector("#close").addEventListener("click", () => {
 				ui.close();
+			});
+
+			// Visually indicate when the search is loading
+			ui.events.on("status", (status) => {
+				if (status.next === "fetching") {
+					document.querySelector(".loading").classList.add("active");
+				} else {
+					document.querySelector(".loading").classList.remove("active");
+				}
 			});
 		</script>
 	</body>

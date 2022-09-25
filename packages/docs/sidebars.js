@@ -84,7 +84,7 @@ const sidebars = {
 							],
 						},
 
-						"ui/patterns/layout/index",
+						"ui/patterns/ui/index",
 					],
 				},
 				"ui/api-docs",

@@ -18,4 +18,6 @@ const ui = new FindkitUI({
 ui.openFrom("button#open");
 ```
 
+## Demo
+
 <Codesandbox example="simple" />
