@@ -68,6 +68,8 @@
 				`,
 				slots: {
 					Layout(props) {
+						// Render the layout without the modal header
+						// Eg. Only the props.content and not props.header
 						return html`${props.content}`;
 					},
 				},

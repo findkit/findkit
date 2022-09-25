@@ -1,15 +1,15 @@
-# External Input
+# Modal Offset
 
 If you want to put the search input in your website header you can use the
-"External Input" pattern where the modal is just offsetted below the header.
+"Modal Offset" pattern where the modal is just offsetted below the header.
 This is implemented by binding an external input from the header to Findkit UI
 using the [`.bindInput()` method](/ui/api/#bindInput) and by hiding the build-in
 one using the [`Layout` slot](/ui/slot-overrides/slots#layout).
 
 ## Considerations
 
-Since we have are now hiding some build-in default behaviour we must ensure
-the following is properly implemented:
+Since we have are now hiding some of the build-in default behaviour we must
+ensure the following is properly implemented:
 
 - There's a close button
 - The close button can focused using keyboard
@@ -21,12 +21,12 @@ instance like in the demo below or in the slot overrides.
 ## Caveats
 
 Since we hard-code the header offset you should check it works properly on all
-screen sizes since the header height might be dynamic. You may media queries
+screen sizes since the header height might be dynamic. Use media queries
 etc. to tackle this.
 
 For more complex UI this might get very tricky. Another option is to use the
-[Content Overlay ](content-overlay)
+[Content Overlay ](content-overlay) pattern.
 
 ## Demo
 
-<Codesandbox example="external-input" />
+<Codesandbox example="modal-offset" />

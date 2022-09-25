@@ -6,9 +6,9 @@ describes and demonstrates those using live examples.
 - Fullscreen Modal
   - The default and easiest one to setup
   - [Read more...](fullscreen)
-- Modal with External Input
-  - Use custom input from the page header
-  - [Read more...](external-input)
+- Modal Offset
+  - Use custom input in the page header
+  - [Read more...](modal-offset)
 - Content Overlay
   - Use custom input from the page header but overlay the UI on top of the page content
   - [Read more...](content-overlay)
