@@ -9,9 +9,9 @@ this can be bit more involved to implement dependening on your website layout.
 
 This is implemented by passing a custom container element to `FindkitUI`
 instance using the [`container` option](/ui/api/#container). This container is
-stretched to overlay content when the Finkit UI is opened. The open state can be
-detected in CSS using the `findkit-ui-open` class which is added to the body
-element when the UI is open. See the demo below for full details.
+stretched to overlay the content when the Finkit UI is opened. The open state
+can be detected in CSS using the `findkit-ui-open` class which is added to the
+body element when the UI is open. See the demo below for full details.
 
 ```css
 .findkit-ui-open .findkit-overlay-container {
