@@ -28,12 +28,22 @@
 			}
 
 			.content {
+				/* The parent container of the .findkit-overlay-container element
+				 * be relatively positioned so it streches properly on top of the
+				 * content. */
 				position: relative;
 				display: flex;
 				flex: 1;
 				padding: 2rem;
 				flex-direction: column;
 				background-color: skyblue;
+			}
+
+			/* The findkit-ui-open class is added to the body when the search UI
+			 * is open by Findkit UI itself */
+			.findkit-ui-open .findkit-overlay-container {
+				position: absolute;
+				inset: 0;
 			}
 
 			input#search {
@@ -47,13 +57,6 @@
 
 			.loading.active {
 				visibility: visible;
-			}
-
-			/* The findkit-ui-open class is added to the body when the search UI
-			 * is open by Findkit UI itself */
-			.findkit-ui-open .findkit-overlay-container {
-				position: absolute;
-				inset: 0;
 			}
 
 			.header-top {
