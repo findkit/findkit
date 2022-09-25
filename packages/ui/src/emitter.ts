@@ -1,4 +1,4 @@
-import { FindkitUI, SearchEngine } from "./cdn-entries";
+import { SearchEngine } from "./cdn-entries";
 import type {
 	GroupDefinition,
 	SearchEngineParams,
@@ -44,8 +44,8 @@ export class Emitter<Events extends {}, Source> {
 		handler: (event: Events[EventName] & { source: Source }) => void,
 	) {
 		const off = this.on(eventName, (e) => {
-			handler(e);
 			off();
+			handler(e);
 		});
 		return off;
 	}

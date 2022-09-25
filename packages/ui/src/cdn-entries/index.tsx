@@ -282,7 +282,7 @@ async function preloadStylesheet(href: string) {
 	link.href = href;
 	const promise = new Promise<void>((resolve, reject) => {
 		listen(link, "load", () => {
-			doc().head?.removeChild(link);
+			link.remove();
 			resolve();
 		});
 
@@ -308,7 +308,7 @@ async function loadScriptFromGlobal<T>(
 
 	const promise = new Promise<void>((resolve, reject) => {
 		listen(script, "load", () => {
-			doc().head?.removeChild(script);
+			script.remove();
 			resolve();
 		});
 
