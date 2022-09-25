@@ -1,10 +1,22 @@
 # Modal Offset
 
-If you want to put the search input in your website header you can use the
-Modal Offset pattern where the modal is just offsetted below the header.
-This is implemented by binding an external input from the header to Findkit UI
-using the [`.bindInput()` method](/ui/api/#bindInput) and by hiding the build-in
-one using the [`Layout` slot](/ui/slot-overrides/slots#layout).
+If you want to put the search input in your website header you can use the Modal
+Offset pattern where the modal is just offsetted below the header. This is
+implemented by binding an external input from the header to Findkit UI using the
+[`.bindInput()` method](/ui/api/#bindInput), hiding the build-in one using the
+[`Layout` slot](/ui/slot-overrides/slots#layout) and pushing the modal down
+using with a top offset.
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	css: css`
+		.findkit--modal-container {
+			top: 100px;
+		}
+	`,
+});
+```
 
 ## Considerations
 
