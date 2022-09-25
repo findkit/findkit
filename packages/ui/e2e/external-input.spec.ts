@@ -1,7 +1,5 @@
 import { test, expect } from "@playwright/test";
-import type { FindkitUI } from "../src/cdn-entries/index";
 
-declare const ui: FindkitUI;
 declare const MOD: typeof import("../src/cdn-entries/index");
 
 test("can use external input with modal", async ({ page }) => {
