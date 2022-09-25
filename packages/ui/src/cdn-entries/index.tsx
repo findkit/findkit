@@ -357,6 +357,25 @@ export interface FindkitUIOptions {
 }
 
 /**
+ * Like `Parameters<typeof fn>` but for class methods
+ *
+ * Example:  `Parameters<typeof HubDB, "ensureUser">[0]`
+ */
+export type MethodParameters<
+	Klass extends new (...args: any) => any,
+	Method extends keyof InstanceType<Klass>,
+> = Parameters<InstanceType<Klass>[Method]>;
+
+/**
+ * Get union of class method names
+ */
+type Methods<Klass> = {
+	[Method in keyof Klass]: Klass[Method] extends (...args: any) => any
+		? Method
+		: never;
+}[keyof Klass];
+
+/**
  * The Lazy loading Findkit UI
  *
  * @public
@@ -378,6 +397,45 @@ export class FindkitUI {
 		}
 
 		this.events.emit("init", {});
+	}
+
+	/**
+	 * Close the modal
+	 */
+	close = this.#proxy("close");
+
+	/**
+	 * Update the translation strings
+	 */
+	setUIStrings = this.#proxy("setUIStrings");
+
+	/**
+	 * Update groups
+	 */
+	updateGroups = this.#proxy("updateGroups");
+
+	/**
+	 * Update search params
+	 */
+	updateParams = this.#proxy("updateParams");
+
+	/**
+	 * Unbind all event listeners, close the modal and remove it from the DOM
+	 */
+	dispose() {
+		this.#resources.dispose();
+	}
+
+	/**
+	 * Create proxy method for SearchEngine which is called once the engine is
+	 * loaded
+	 */
+	#proxy<Method extends Methods<SearchEngine>>(method: Method) {
+		return (...args: MethodParameters<typeof SearchEngine, Method>) => {
+			this.#withEngine((engine: any) => {
+				engine[method](...args);
+			});
+		};
 	}
 
 	#withEngine(fn: (engine: SearchEngine) => void) {
@@ -437,34 +495,6 @@ export class FindkitUI {
 		});
 	}
 
-	updateGroups(groups: UpdateGroupsArgument) {
-		this.#withEngine((engine) => {
-			engine.updateGroups(groups);
-		});
-	}
-
-	updateParams(params: UpdateParamsArgument) {
-		this.#withEngine((engine) => {
-			engine.updateParams(params);
-		});
-	}
-
-	bindInput(selector: ElementSelector) {
-		const resources = this.#resources.child();
-
-		select(selector, HTMLInputElement, (...elements) => {
-			for (const input of elements) {
-				resources.create(() => listen(input, "focus", this.preload));
-
-				this.#withEngine((engine) => {
-					resources.create(() => engine.bindInput(input));
-				});
-			}
-		});
-
-		return resources.dispose;
-	}
-
 	async #loadImplementation() {
 		let promise: Promise<{ js: Implementation; css?: string }>;
 
@@ -516,25 +546,6 @@ export class FindkitUI {
 			this.events.emit("loaded", { __engine: engine });
 
 			return engine.dispose;
-		});
-	}
-
-	close = () => {
-		this.#withEngine((engine) => {
-			engine.close();
-		});
-	};
-
-	/**
-	 * Unbind all event listeners, close the modal and remove it from the DOM
-	 */
-	dispose() {
-		this.#resources.dispose();
-	}
-
-	setUIStrings(lang: string, overrides?: Partial<TranslationStrings>) {
-		this.#withEngine((engine) => {
-			engine.setUIStrings(lang, overrides);
 		});
 	}
 
@@ -599,6 +610,22 @@ export class FindkitUI {
 						passive: true,
 					}),
 				);
+			}
+		});
+
+		return resources.dispose;
+	}
+
+	bindInput(selector: ElementSelector) {
+		const resources = this.#resources.child();
+
+		select(selector, HTMLInputElement, (...elements) => {
+			for (const input of elements) {
+				resources.create(() => listen(input, "focus", this.preload));
+
+				this.#withEngine((engine) => {
+					resources.create(() => engine.bindInput(input));
+				});
 			}
 		});
 
