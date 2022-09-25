@@ -144,6 +144,17 @@ invoked.
 
 <Api page="ui.findkitui.trapFocus" />
 
+### `.bindInput(selector)` {#bindInput}
+
+Bind any input to the Search UI. The selector can be CSS string or the raw
+`HTMLInputElement`. A unbind funtion is returned.
+
+- Input value is throttled to UI search terms
+- Focus is included in the focus trap
+- The lazy load will be triggered when the input is focused
+
+<Api page="ui.findkitui.bindInput" />
+
 ### `.preload()` {#preload}
 
 Preload the implementation code and css. This is automatically called on
