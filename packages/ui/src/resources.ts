@@ -44,12 +44,18 @@ export class Resources {
 	};
 
 	child = (onDispose?: () => void) => {
-		const resources = new Resources(() => {
-			this.#cleaners.delete(resources.dispose);
+		const child = new Resources(() => {
+			this.#cleaners.delete(child.dispose);
 			onDispose?.();
 		});
-		this.create(() => resources.dispose);
-		return resources;
+
+		if (this.disposed) {
+			child.dispose();
+		} else {
+			this.create(() => child.dispose);
+		}
+
+		return child;
 	};
 
 	/**

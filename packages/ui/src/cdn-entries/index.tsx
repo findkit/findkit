@@ -362,14 +362,8 @@ export interface FindkitUIOptions {
  * @public
  */
 export class FindkitUI {
-	#implementationPromise?: Promise<{
-		js: Implementation;
-		css?: string;
-	}>;
-	#enginePromise: Promise<SearchEngine>;
+	#engine?: SearchEngine;
 	#engineStatus: typeof ENGINE_STATUS[number] = WAITING;
-
-	#resolveEngine!: (engine: SearchEngine) => void;
 
 	#options: FindkitUIOptions;
 	readonly events: Emitter<FindkitUIEvents, FindkitUI>;
@@ -383,11 +377,17 @@ export class FindkitUI {
 			void this.open();
 		}
 
-		this.#enginePromise = new Promise<SearchEngine>((resolve) => {
-			this.#resolveEngine = resolve;
-		});
-
 		this.events.emit("init", {});
+	}
+
+	#withEngine(fn: (engine: SearchEngine) => void) {
+		if (this.#engine) {
+			fn(this.#engine);
+		} else {
+			this.events.once("loaded", (e) => {
+				fn(e.__engine);
+			});
+		}
 	}
 
 	/**
@@ -410,36 +410,7 @@ export class FindkitUI {
 		return params.has(this.id + "_q");
 	}
 
-	async #loadImplementation() {
-		if (this.#implementationPromise) {
-			return await this.#implementationPromise;
-		}
-
-		if (this.#options.load) {
-			this.#implementationPromise = this.#options.load();
-		} else {
-			this.#implementationPromise = new Promise((resolve) => {
-				void loadScriptFromGlobal<Implementation>(
-					"FINDKIT_" + FINDKIT_VERSION,
-					cdnFile("implementation.js"),
-				).then((js) => resolve({ js }));
-			});
-		}
-
-		void this.#implementationPromise.then((mod) => {
-			Object.assign(lazyImplementation, mod.js);
-		});
-
-		const preloadStylesPromise = Promise.all(
-			this.#getStyleSheets().map(async (href) => preloadStylesheet(href)),
-		);
-
-		await preloadStylesPromise;
-
-		return await this.#implementationPromise;
-	}
-
-	preload = async () => this.#getEngine();
+	preload = async () => this.#initEngine();
 
 	#getStyleSheets(): string[] {
 		const sheets = [];
@@ -455,21 +426,27 @@ export class FindkitUI {
 		return sheets;
 	}
 
-	async open(terms?: string) {
+	open(terms?: string) {
 		this.events.emit("request-open", {
 			preloaded: this.#engineStatus === DONE,
 		});
 		preconnect();
-		const engine = await this.#getEngine();
-		engine.open(terms);
+		void this.#initEngine();
+		this.#withEngine((engine) => {
+			engine.open(terms);
+		});
 	}
 
-	async updateGroups(groups: UpdateGroupsArgument) {
-		(await this.#enginePromise).updateGroups(groups);
+	updateGroups(groups: UpdateGroupsArgument) {
+		this.#withEngine((engine) => {
+			engine.updateGroups(groups);
+		});
 	}
 
-	async updateParams(params: UpdateParamsArgument) {
-		(await this.#enginePromise).updateParams(params);
+	updateParams(params: UpdateParamsArgument) {
+		this.#withEngine((engine) => {
+			engine.updateParams(params);
+		});
 	}
 
 	bindInput(selector: ElementSelector) {
@@ -479,7 +456,7 @@ export class FindkitUI {
 			for (const input of elements) {
 				resources.create(() => listen(input, "focus", this.preload));
 
-				void this.#enginePromise.then((engine) => {
+				this.#withEngine((engine) => {
 					resources.create(() => engine.bindInput(input));
 				});
 			}
@@ -488,56 +465,77 @@ export class FindkitUI {
 		return resources.dispose;
 	}
 
-	async #getEngine() {
-		if (this.#engineStatus === LOADING) {
-			return this.#enginePromise;
+	async #loadImplementation() {
+		let promise: Promise<{ js: Implementation; css?: string }>;
+
+		if (this.#options.load) {
+			promise = this.#options.load();
+		} else {
+			promise = loadScriptFromGlobal<Implementation>(
+				"FINDKIT_" + FINDKIT_VERSION,
+				cdnFile("implementation.js"),
+			).then((js) => ({ js }));
+		}
+
+		const preloadStylesPromise = Promise.all(
+			this.#getStyleSheets().map(async (href) => preloadStylesheet(href)),
+		);
+
+		await preloadStylesPromise;
+
+		return await promise;
+	}
+
+	async #initEngine() {
+		if (this.#engineStatus !== WAITING) {
+			return;
 		}
 
 		this.#engineStatus = LOADING;
 
 		const impl = await this.#loadImplementation();
 
+		Object.assign(lazyImplementation, impl.js);
+
 		const { styleSheet: _1, load: _2, css: userCSS, ...rest } = this.#options;
 
 		const allCSS = [impl.css, userCSS].filter(Boolean).join("\n");
 
-		const engine = impl.js.init({
-			...rest,
-			css: allCSS,
-			styleSheets: this.#getStyleSheets(),
-			instanceId: this.id,
-			events: this.events,
-			searchEndpoint: this.#options.searchEndpoint,
+		this.#resources.create(() => {
+			const engine = impl.js.init({
+				...rest,
+				css: allCSS,
+				styleSheets: this.#getStyleSheets(),
+				instanceId: this.id,
+				events: this.events,
+				searchEndpoint: this.#options.searchEndpoint,
+			});
+
+			this.#engine = engine;
+			this.#engineStatus = DONE;
+			this.events.emit("loaded", { __engine: engine });
+
+			return engine.dispose;
 		});
-
-		// FindkitUI was disposed while the engine was loading.
-		if (this.#resources.disposed) {
-			engine.dispose();
-		}
-
-		this.#resolveEngine(engine);
-
-		return engine;
 	}
 
-	async close() {
-		if (this.#engineStatus === LOADING) {
-			(await this.#enginePromise).close();
-		}
-	}
+	close = () => {
+		this.#withEngine((engine) => {
+			engine.close();
+		});
+	};
 
 	/**
 	 * Unbind all event listeners, close the modal and remove it from the DOM
 	 */
-	async dispose() {
+	dispose() {
 		this.#resources.dispose();
-		if (this.#engineStatus === LOADING) {
-			(await this.#enginePromise).dispose();
-		}
 	}
 
-	async setUIStrings(lang: string, overrides?: Partial<TranslationStrings>) {
-		(await this.#enginePromise).setUIStrings(lang, overrides);
+	setUIStrings(lang: string, overrides?: Partial<TranslationStrings>) {
+		this.#withEngine((engine) => {
+			engine.setUIStrings(lang, overrides);
+		});
 	}
 
 	#handleOpenClick = (e: {
@@ -568,7 +566,7 @@ export class FindkitUI {
 	trapFocus(selector: ElementSelector) {
 		const resources = this.#resources.child();
 		select(selector, HTMLElement, (...elements) => {
-			void this.#enginePromise.then((engine) => {
+			this.#withEngine((engine) => {
 				resources.create(() => engine.trapFocus(elements));
 			});
 		});

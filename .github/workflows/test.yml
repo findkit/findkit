@@ -13,7 +13,7 @@ on:
       - "packages/fetch/**"
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -56,7 +56,14 @@ jobs:
         run: pnpm install --frozen-lockfile --filter @findkit/root --filter @findkit/ui --filter @findkit/fetch
 
       - name: Build all
-        run: ./node_modules/.bin/turbo run build --filter @findkit/ui
+        run: |
+          set -eu
+          ./node_modules/.bin/turbo run build --filter @findkit/ui
+
+          cd packages/ui
+          gzip esm/*.js
+          ls -lh esm/*.js.gz > /tmp/sizes
+          gunzip esm/*.gz
 
       - name: Run @findkit/tests
         run: cd packages/fetch && pnpm run test
@@ -86,6 +93,20 @@ jobs:
           pnpm run playwright-visual || {
             echo VISUAL_FAIL=1 >> $GITHUB_ENV
           }
+
+      - name: Comment bundle sizes
+        uses: actions/github-script@v6
+        if: ${{ github.event_name == 'pull_request' && env.VISUAL_FAIL != '1' }}
+        with:
+          script: |
+            const fs = require('fs');
+            const sizes = fs.readFileSync('/tmp/sizes', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'The bundle sizes are now:\n```\n' + sizes + '```\nThe `index.js` is the loader code which should be as small as possible.'
+            })
 
       - name: Update snapshots and notify
         if: ${{ github.event_name == 'pull_request' && env.VISUAL_FAIL == '1' }}

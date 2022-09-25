@@ -67,8 +67,6 @@ async function runEsbuild(options = {}) {
 	return result;
 }
 
-task("size-limit", sh`size-limit`);
-
 task("clean", sh`rm -rf dist temp docs cjs esm`);
 
 task("esbuild-esm", async () => {
@@ -151,14 +149,7 @@ task("styles-js", ["css"], async () => {
 	await fs.writeFile("./implementation.js", code);
 });
 
-task("build-all", [
-	"clean",
-	"css",
-	"styles-js",
-	"esbuild-esm",
-	"build-npm",
-	"size-limit",
-]);
+task("build-all", ["clean", "css", "styles-js", "esbuild-esm", "build-npm"]);
 
 task("watch-js", async () => {
 	const opts = {
