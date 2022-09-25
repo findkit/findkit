@@ -115,7 +115,7 @@ export function css(strings: TemplateStringsArray, ...expr: string[]) {
  * bound after the actual event
  */
 function onDomContentLoaded(cb: () => any) {
-	if (doc().readyState === "complete") {
+	if (/interactive|complete/.test(doc().readyState)) {
 		cb();
 	} else {
 		listen(
@@ -353,7 +353,7 @@ export interface FindkitUIOptions {
 	slots?: Partial<Slots>;
 	load?: () => Promise<{ js: Implementation; css?: string }>;
 	searchEndpoint?: string;
-	container?: Element;
+	container?: Element | string;
 	monitorDocumentElementChanges?: boolean;
 	router?: SearchEngineOptions["router"];
 	mode?: "modal" | "plain";
@@ -538,22 +538,31 @@ export class FindkitUI {
 
 		const allCSS = [impl.css, userCSS].filter(Boolean).join("\n");
 
-		this.#resources.create(() => {
-			const engine = impl.js.init({
-				...rest,
-				css: allCSS,
-				styleSheets: this.#getStyleSheets(),
-				instanceId: this.id,
-				events: this.events,
-				searchEndpoint: this.#options.searchEndpoint,
+		const createEngine = (container?: Element) => {
+			this.#resources.create(() => {
+				const engine = impl.js.init({
+					...rest,
+					container,
+					css: allCSS,
+					styleSheets: this.#getStyleSheets(),
+					instanceId: this.id,
+					events: this.events,
+					searchEndpoint: this.#options.searchEndpoint,
+				});
+
+				this.#engine = engine;
+				this.#engineStatus = DONE;
+				this.events.emit("loaded", { __engine: engine });
+
+				return engine.dispose;
 			});
+		};
 
-			this.#engine = engine;
-			this.#engineStatus = DONE;
-			this.events.emit("loaded", { __engine: engine });
-
-			return engine.dispose;
-		});
+		if (this.#options.container) {
+			select(this.#options.container, Element, createEngine);
+		} else {
+			createEngine();
+		}
 	}
 
 	#handleOpenClick = (e: {
