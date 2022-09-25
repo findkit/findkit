@@ -28,13 +28,13 @@
 				align-items: center;
 			}
 
-			main {
+			.content {
+				position: relative;
 				display: flex;
 				flex: 1;
 				padding: 2rem;
 				flex-direction: column;
 				background-color: skyblue;
-				position: relative;
 			}
 
 			input#search {
@@ -68,7 +68,7 @@
 			<a href="#">Header link</a>
 		</header>
 
-		<main>
+		<main class="content">
 			<h2>The Content</h2>
 			<p>This is the web site content.</p>
 
@@ -88,6 +88,12 @@
 				css: `
 					.findkit--modal-container {
 						position: sticky;
+
+						/*
+						 * Absolute positioning can be used instead to
+						 * keep the header at top  and scroll only the content
+						 */
+						/* position: absolute; */
 					}
 				`,
 				slots: {

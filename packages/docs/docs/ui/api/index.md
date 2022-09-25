@@ -92,7 +92,10 @@ Send search requests to this custom endpoint.
 
 ### `container: HTMLElement` {#container}
 
-Render the UI without the modal. See [Custom
+Render the modal to a custom container. If not defined Findkit UI will create
+one dynamically and appends it to `<body>`.
+
+See [Custom
 Container](ui/advanced/custom-container).
 
 <Api page="ui.findkituioptions.container" />
