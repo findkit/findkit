@@ -7,7 +7,7 @@ test("can use external input with modal", async ({ page }) => {
 	await page.goto("/external-input");
 
 	await page.evaluate(async () => {
-		void ui.bindInput(document.querySelector("#external-input")!);
+		void ui.bindInput("#external-input"!);
 	});
 
 	const input = page.locator("#external-input");
@@ -41,9 +41,9 @@ test("can lazily bind input", async ({ page }) => {
 	await page.goto("/external-input");
 
 	await page.evaluate(async () => {
-		await ui.open();
+		ui.open();
 		await new Promise((resolve) => setTimeout(resolve, 1000));
-		void ui.bindInput(document.querySelector("#external-input")!);
+		void ui.bindInput("#external-input"!);
 	});
 
 	const input = page.locator("#external-input");
