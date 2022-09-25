@@ -332,9 +332,6 @@ async function loadScriptFromGlobal<T>(
 	return output;
 }
 
-const ENGINE_STATUS = ["waiting", "loading", "done"] as const;
-const [WAITING, LOADING, DONE] = ENGINE_STATUS;
-
 /**
  * Modal options
  *
@@ -389,7 +386,7 @@ type Methods<Klass> = {
  */
 export class FindkitUI {
 	#engine?: SearchEngine;
-	#engineStatus: typeof ENGINE_STATUS[number] = WAITING;
+	#loading = false;
 
 	#options: FindkitUIOptions;
 	readonly events: Emitter<FindkitUIEvents, FindkitUI>;
@@ -493,7 +490,7 @@ export class FindkitUI {
 
 	open(terms?: string) {
 		this.events.emit("request-open", {
-			preloaded: this.#engineStatus === DONE,
+			preloaded: !!this.#engine,
 		});
 		preconnect();
 		void this.#initEngine();
@@ -524,11 +521,11 @@ export class FindkitUI {
 	}
 
 	async #initEngine() {
-		if (this.#engineStatus !== WAITING) {
+		if (this.#loading || this.#engine) {
 			return;
 		}
 
-		this.#engineStatus = LOADING;
+		this.#loading = true;
 
 		const impl = await this.#loadImplementation();
 
@@ -551,7 +548,7 @@ export class FindkitUI {
 				});
 
 				this.#engine = engine;
-				this.#engineStatus = DONE;
+				this.#loading = true;
 				this.events.emit("loaded", { __engine: engine });
 
 				return engine.dispose;
