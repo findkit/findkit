@@ -129,7 +129,14 @@ function onDomContentLoaded(cb: () => any) {
 	}
 }
 
-type ElementSelector = string | NodeListOf<Element> | Element[] | Element;
+/**
+ * Set of DOM elements as CSS selector, a NodeList or an array of DOM elements
+ */
+export type ElementSelector<El extends Element> =
+	| string
+	| NodeListOf<El>
+	| El[]
+	| El;
 
 /**
  * @public
@@ -153,7 +160,7 @@ export type SelectCallback<T> =
  * @param cb
  */
 export function select<InstanceFilter extends typeof Element>(
-	selector: ElementSelector,
+	selector: ElementSelector<InstanceType<InstanceFilter>>,
 	instanceFilter: InstanceFilter,
 	cb: SelectCallback<InstanceType<InstanceFilter>>,
 ) {
@@ -574,7 +581,7 @@ export class FindkitUI {
 	 * @param selector A CSS selector or an element
 	 * @returns cleanup function
 	 */
-	trapFocus(selector: ElementSelector) {
+	trapFocus(selector: ElementSelector<HTMLElement>) {
 		const resources = this.#resources.child();
 		select(selector, HTMLElement, (...elements) => {
 			this.#withEngine((engine) => {
@@ -595,7 +602,7 @@ export class FindkitUI {
 	 * @param selector
 	 * @returns unbind function
 	 */
-	openFrom(selector: ElementSelector) {
+	openFrom(selector: ElementSelector<HTMLElement>) {
 		const resources = this.#resources.child();
 
 		select(selector, HTMLElement, (...elements) => {
@@ -616,7 +623,7 @@ export class FindkitUI {
 		return resources.dispose;
 	}
 
-	bindInput(selector: ElementSelector) {
+	bindInput(selector: ElementSelector<HTMLInputElement>) {
 		const resources = this.#resources.child();
 
 		select(selector, HTMLInputElement, (...elements) => {
