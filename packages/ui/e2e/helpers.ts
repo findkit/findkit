@@ -40,11 +40,7 @@ export async function oneEvent<EventName extends keyof FindkitUIEvents>(
 
 export async function getScrollPosition(page: Page) {
 	return await page.evaluate(() => {
-		return (
-			document
-				.querySelector(".findkit")
-				?.shadowRoot?.querySelector(".findkit--modal")?.scrollTop ?? -1
-		);
+		return document.documentElement.scrollTop;
 	});
 }
 
