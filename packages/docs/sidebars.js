@@ -81,11 +81,7 @@ const sidebars = {
 					type: "category",
 					label: "Advanced",
 					// link: { type: "doc", id: "" },
-					items: [
-						"ui/advanced/disable-cdn",
-						"ui/advanced/routing",
-						"ui/advanced/custom-container",
-					],
+					items: ["ui/advanced/disable-cdn", "ui/advanced/routing"],
 				},
 				"ui/api-docs",
 				"ui/translations",

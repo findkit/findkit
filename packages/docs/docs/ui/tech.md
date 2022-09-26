@@ -18,7 +18,7 @@ By default the UI renders a full screen modal into a dynamically created
 container with Shadow DOM and focus trapping. This ensures that UI can be opened
 on any page without having to worry that the page styles can interfere with it.
 This is of course customizable. You can disable the shadow dom and render the UI
-in a [custom container](/ui/advanced/custom-container) without the modal.
+in a [custom container](/ui/api/#container) without the modal.
 
 ## Routing
 

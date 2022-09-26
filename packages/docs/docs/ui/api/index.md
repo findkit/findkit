@@ -110,23 +110,33 @@ Send search requests to this custom endpoint.
 
 <Api page="ui.findkituioptions.searchEndpoint" />
 
-### `container: HTMLElement` {#container}
+### `container: selector` {#container}
 
 Render the modal to a custom container. If not defined Findkit UI will create
 one dynamically and appends it to `<body>`.
 
-See [Custom
-Container](ui/advanced/custom-container).
+Can be defined as a CSS selector or as an `Element` object.
 
 <Api page="ui.findkituioptions.container" />
 
-### `mode: string` {#mode}
+### `modal: boolean` {#modal}
 
-The rendering mode. Can be `"modal"` (default) or `"plain"`. When setting to
-`"plain"` the following modal behaviour will be disabled: Focus trapping,
-opening animation and header hiding. Only usable with the `container` option.
+Set to `false` to disable the modal mode. This makes sense only when used with
+a custom [`container`](#container).
+
+This disables following:
+
+- Focus trapping
+- Open/close modes. It is always "open".
+- Scrolling in the container
 
 <Api page="ui.findkituioptions.mode" />
+
+### `infiniteScroll: boolean` {#infiniteScroll}
+
+Set to false to disable the automatic result loading on scroll.
+
+<Api page="ui.findkituioptions.infiniteScroll" />
 
 ### `router: Router` {#router}
 
