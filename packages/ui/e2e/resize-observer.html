@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Search UI Test</title>
+
+		<link rel="stylesheet" href="/shared.css" />
+		<style>
+			header {
+				position: fixed;
+				background-color: aquamarine;
+				width: 100%;
+			}
+
+			header p {
+				line-height: 1.5;
+				padding-left: 3rem;
+				padding-right: 3rem;
+			}
+		</style>
+	</head>
+	<body>
+		<script type="module">
+			import {
+				FindkitUI,
+				css,
+				html,
+				useTerms,
+				useTotal,
+				useResults,
+			} from "/build/esm/index.js";
+
+			const ui = new FindkitUI({
+				publicToken: "po8GK3G0r",
+				params: {
+					tagQuery: [["domain/valu.fi"]],
+				},
+				slots: {
+					Layout(props) {
+						return html`${props.content}`;
+					},
+				},
+				css: css`
+					.findkit--modal-container {
+						top: var(--offset-top);
+					}
+				`,
+			});
+
+			ui.bindInput("#external-input");
+
+			ui.events.on("loaded", (e) => {
+				const header = document.querySelector("header");
+
+				const observer = new ResizeObserver((entries) => {
+					const height = entries[0].borderBoxSize[0].blockSize;
+					e.container.style = `--offset-top: ${height}px`;
+				});
+
+				observer.observe(header);
+			});
+		</script>
+		<header>
+			<input id="external-input" />
+			<p>
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc a
+				tincidunt quam. Suspendisse potenti. Pellentesque vitae libero eget
+				lorem congue tempor vel at mauris. Integer pellentesque eleifend
+				pretium. Nulla euismod aliquam sodales. Proin quis laoreet neque, eu
+				blandit metus. Praesent aliquet eu mauris a blandit. Nulla sit amet
+				tortor metus. Nullam id libero id ipsum feugiat aliquet. Vivamus ut
+				ultrices nibh. Etiam molestie aliquam laoreet. Integer porttitor nisi ut
+				velit egestas, eu dapibus nunc pellentesque. Pellentesque consectetur
+				neque odio, sit amet pulvinar nisi consequat vel. Vestibulum ante ipsum
+				primis in faucibus orci luctus et ultrices posuere cubilia curae;
+				Aliquam placerat pellentesque purus posuere consequat. Vestibulum ac
+				lectus orci. Sed pharetra lorem vitae molestie convallis. Nulla vitae
+				molestie urna, nec gravida ligula. Nunc venenatis mattis placerat. In
+				sed dapibus risus. Integer consequat, tortor eget luctus dictum, sem
+				ligula varius tellus, sit amet interdum turpis purus in mauris.
+			</p>
+		</header>
+	</body>
+</html>

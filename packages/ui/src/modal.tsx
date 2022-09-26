@@ -416,6 +416,8 @@ export function init(options: {
 		}
 	}
 
+	const host = container instanceof ShadowRoot ? container.host : container;
+
 	const engine = new SearchEngine({ ...options, container: container });
 
 	options.events.on("dispose", () => {
@@ -428,11 +430,7 @@ export function init(options: {
 			return;
 		}
 
-		if (container instanceof Element) {
-			container.remove();
-		} else {
-			container?.host.remove();
-		}
+		host.remove();
 	});
 
 	ReactDOM.render(
@@ -452,5 +450,5 @@ export function init(options: {
 		container,
 	);
 
-	return engine;
+	return { engine, host };
 }
