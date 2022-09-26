@@ -16,6 +16,10 @@ fi
 
 git ls-files 'packages/ui-examples/*/index.html' | xargs -L 1 ./tools/update-import ${version}
 
+cd packages/docs
+pnpm install "@findkit/ui@${version}"
+cd -
+
 if [ "$clean_git" = "1" ]; then
     git add .
     git commit -m "Update ui lib imports to ${version}"
