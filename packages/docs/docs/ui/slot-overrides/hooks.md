@@ -33,7 +33,7 @@ TODO: example
 
 Object of commonly used Preact Hooks. See the api docs for details.
 
-<Api page="ui.usestate" />
+<Api page="ui.preactfunctions" />
 
 ### `html` {#html}
 
