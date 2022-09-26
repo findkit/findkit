@@ -199,7 +199,7 @@ export type UpdateGroupsArgument =
 	| GroupDefinition[]
 	| GroupDefinition
 	| ((
-			groups: GroupDefinition[],
+			...groups: GroupDefinition[]
 	  ) => GroupDefinition[] | GroupDefinition | undefined | void);
 
 /**
@@ -694,7 +694,7 @@ export class SearchEngine {
 		if (Array.isArray(groupsOrFn)) {
 			nextGroups = groupsOrFn;
 		} else if (typeof groupsOrFn === "function") {
-			const replace = groupsOrFn(this.state.nextGroupDefinitions);
+			const replace = groupsOrFn(...this.state.nextGroupDefinitions);
 			// The function can return a completely new set of groups which are
 			// used to replace the old ones
 			if (replace) {
@@ -715,11 +715,8 @@ export class SearchEngine {
 	 */
 	updateParams = (params: UpdateParamsArgument) => {
 		if (typeof params === "function") {
-			this.updateGroups((groups) => {
-				const group = groups[0];
-				if (group) {
-					params(group.params ?? {});
-				}
+			this.updateGroups((group) => {
+				params(group.params ?? {});
 			});
 		} else {
 			this.updateGroups({
