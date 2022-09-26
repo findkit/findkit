@@ -38,6 +38,24 @@ Inject custom styles to the Shadow Root. See [Styling](/ui/styling).
 
 <Api page="ui.findkituioptions.css" />
 
+### `lockScroll: boolean` {#lockScroll}
+
+Lock page scrolling. Only used with `mode: "modal"`. Defaults to `true`. You may
+want set this to `false` when using the [Offset Modal
+Pattern](/ui/patterns/embedding/offset) with page scrolling.
+
+Use this CSS to enable page scrolling:
+
+```css
+.findkit--modal-container {
+	inset: initial;
+	position: absolute;
+	width: 100%;
+}
+```
+
+<Api page="ui.findkituioptions.lockScroll" />
+
 ### `shadowDom: boolean` {#shadowDom}
 
 Disable shadow dom. See [Styling](/ui/styling).
