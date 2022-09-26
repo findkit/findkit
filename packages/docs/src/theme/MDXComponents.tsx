@@ -7,8 +7,11 @@ function Api(props: { page: string; children: any }) {
 	return (
 		<>
 			{" "}
-			<a href={`https://docs.findkit.com/ui-api/${props.page.toLowerCase()}/`}>
-				{props.children ?? "Api docs."}
+			<a
+				href={`https://docs.findkit.com/ui-api/${props.page.toLowerCase()}/`}
+				target="_blank"
+			>
+				{props.children ?? "api docs"}
 			</a>{" "}
 		</>
 	);

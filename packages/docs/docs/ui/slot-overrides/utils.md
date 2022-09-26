@@ -8,22 +8,34 @@ Functions starting with the `use` keyword are [React](https://reactjs.org/docs/h
 
 Hook for updating the [search params](/ui/api/params).
 
+<Api page="ui.useparams" />
+
 ### `useGroups()` {#useGroups}
 
 Hook for updating the [groups](/ui/groups).
+
+<Api page="ui.usegroups" />
 
 ### `useInput()` {#useInput}
 
 Hook for binding custom inputs as the search terms inputs.
 
+<Api page="ui.useinput" />
+
 ### `useState()` {#useState}
 
 Re-exported Preact [`useState()`](https://preactjs.com/guide/v10/hooks/#usestate) hook.
+
+<Api page="ui.usestate" />
 
 ### `html` {#html}
 
 Prebound HTM (Hyperscript Tagged Markup) tagged template. For more information see: <https://github.com/developit/htm>
 
+<Api page="ui.html" />
+
 ### `h` {#h}
 
 The Preact JSX pragma
+
+<Api page="ui.h" />
