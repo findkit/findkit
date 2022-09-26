@@ -48,7 +48,7 @@
 				padding-right: 5rem;
 				max-width: 800px;
 				align-self: center;
-				line-height: 1.5;
+				line-height: 2;
 			}
 		</style>
 	</head>
@@ -66,9 +66,8 @@
 
 			<div class="header-text">
 				Some content in the header which makes the header height change when the
-				window is resized. With the Content Overlay Pattern the search results
-				will position itself correctly like the content does because it is in
-				the content element.
+				window is resized. This page uses ResizeObserver to sync the height of
+				the header to a CSS variable which used as the offset for the modal.
 			</div>
 		</header>
 
@@ -91,8 +90,7 @@
 				`,
 				slots: {
 					Layout(props) {
-						// Render the layout without the modal header
-						// Eg. Only the props.content and not props.header
+						// Without the header
 						return html`${props.content}`;
 					},
 				},
@@ -116,6 +114,23 @@
 				} else {
 					document.querySelector(".loading").classList.remove("active");
 				}
+			});
+
+			// The container is available after "loaded" event
+			ui.events.on("loaded", (e) => {
+				const header = document.querySelector("header");
+
+				const observer = new ResizeObserver((entries) => {
+					const height = entries[0].borderBoxSize[0].blockSize;
+					e.container.style = `--offset-top: ${height}px`;
+				});
+
+				observer.observe(header);
+
+				// Stop observing when the UI discarded
+				ui.events.on("dispose", () => {
+					observer.disconnect();
+				});
 			});
 		</script>
 	</body>
