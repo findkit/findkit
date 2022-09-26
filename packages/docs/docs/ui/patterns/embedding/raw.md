@@ -29,7 +29,7 @@ const ui = new FindkitUI({
 - You may want to disable the automatic result loading on scroll with
   [`infiniteScroll: false`](/ui/api/#infiniteScroll) to allow users to reach the
   footer.
-- Add loading indictor
+- Add fetching indicator
 
 ## Demo
 
