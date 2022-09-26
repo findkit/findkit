@@ -18,9 +18,10 @@ walk_links = true
 
 ## CSS selectors to extract the text content from
 content_selector = ".markdown"
+cleanup_selector = ".theme-code-block"
 
 # Docusaurus adds "| Findkit" to the title so want to grab the text before that
-title_selector_regex = "(.+?) | Findkit"
+title_selector_regex = '([^\|]+)'
 
 ## Not public yet, so ignore robots rules
 respect_robots_meta = false
