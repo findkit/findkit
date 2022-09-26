@@ -34,9 +34,9 @@ const ui = new FindkitUI({
 
 Here we use a slot named `Header` which replaces the existing search input and
 the close button with our own component. We use the
-[`html`](/ui/slot-overrides/utils#html) Javascript tagged template literal to
+[`html`](/ui/slot-overrides/hooks#html) Javascript tagged template literal to
 render our custom UI and finally the
-[`useInput()`](/ui/slot-overrides/utils#useinput) hook is used to bind the input
+[`useInput()`](/ui/slot-overrides/hooks#useinput) hook is used to bind the input
 to the search UI.
 
 Try it on Codesandbox
@@ -67,7 +67,7 @@ const ui = new FindkitUI({
 ## Hooks
 
 FindkitUI also provides few hooks to work with the internal UI state. See [Hooks
-and Utils](/ui/slot-overrides/utils) for details.
+and Utils](/ui/slot-overrides/hooks) for details.
 
 Here's an example how to use the custom hooks to create custom filtering buttons
 into the search UI:
@@ -81,7 +81,7 @@ Do not use hooks imported from the `"preact"` package in the slot override
 components. It will not work because Findkit UI [bundles Preact inside
 itself](/ui/tech) and it works only with hooks bound to it. All hooks must be
 imported from the `@finkdit/ui` package. See [`preact`
-util](/ui/slot-overrides/utils#html).
+util](/ui/slot-overrides/hooks#html).
 
 ```ts
 import { preact } from "@finkdit/ui";
