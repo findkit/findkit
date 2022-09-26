@@ -303,7 +303,7 @@ export interface SearchEngineOptions {
 	searchEndpoint?: string;
 	throttleTime?: number;
 	lockScroll?: boolean;
-	searchMoreSize?: number;
+	fetchCount?: number;
 	minTerms?: number;
 	events: Emitter<FindkitUIEvents, unknown>;
 	groups?: GroupDefinition[];
@@ -361,7 +361,7 @@ export class SearchEngine {
 	readonly publicToken: string;
 	#searchEndpoint: string | undefined;
 	#throttleTime: number;
-	#searchMoreSize: number;
+	#fetchCount: number;
 	#minTerms: number;
 	/**
 	 * Search terms from the input that are throttle to be used as the search
@@ -473,7 +473,7 @@ export class SearchEngine {
 
 		this.#fetcher = findkitFetch;
 		this.#throttleTime = options.throttleTime ?? 200;
-		this.#searchMoreSize = options.searchMoreSize ?? 20;
+		this.#fetchCount = options.fetchCount ?? 20;
 		this.#minTerms = options.minTerms ?? 2;
 
 		this.#syncInputs(initialSearchParams.getTerms());
@@ -812,7 +812,7 @@ export class SearchEngine {
 			.map((group) => {
 				let size = group.previewSize ?? 10;
 				if (options.appendGroupId) {
-					size = this.#searchMoreSize;
+					size = this.#fetchCount;
 				}
 
 				let from = 0;
