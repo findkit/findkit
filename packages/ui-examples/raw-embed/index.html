@@ -40,8 +40,8 @@
 			}
 
 			.loading {
-				margin: 2rem;
 				visibility: hidden;
+				color: white;
 			}
 
 			.loading.active {
@@ -70,11 +70,31 @@
 			<h2>The Content</h2>
 			<p>This is the website content.</p>
 
+			<form>
+				Show only:
+				<label>
+					<input type="radio" name="tag" value="crawler" />
+					Crawler
+				</label>
+				<label>
+					<input type="radio" name="tag" value="ui" />
+					UI
+				</label>
+				<label>
+					<input type="radio" name="tag" value="all" checked />
+					All
+				</label>
+			</form>
+
+			<div class="loading">Loading...</div>
+
+			<input type="text" class="search" placeholder="Search..." />
+
 			<div class="findkit-container"></div>
 		</main>
 
 		<footer>
-			<p>Infinite scrolling should be disable so the footer can be reached.</p>
+			<p>Infinite scrolling should be disabled so the footer can be reached.</p>
 		</footer>
 		<script type="module">
 			import {
@@ -88,7 +108,7 @@
 				instanceId: "my",
 				infiniteScroll: false,
 				minTerms: 0,
-				mode: "plain",
+				modal: false,
 				slots: {
 					Layout(props) {
 						// No header
@@ -97,14 +117,29 @@
 				},
 			});
 
+			ui.bindInput("input.search");
+
+			const form = document.querySelector("form");
+			form.addEventListener("change", (e) => {
+				const formData = new FormData(form);
+				const tag = formData.get("tag");
+				ui.updateParams((params) => {
+					if (tag === "all") {
+						params.tagQuery = [];
+					} else {
+						params.tagQuery = [[tag]];
+					}
+				});
+			});
+
 			// Visually indicate when the search is loading
-			// ui.events.on("status", (status) => {
-			// 	if (status.next === "fetching") {
-			// 		document.querySelector(".loading").classList.add("active");
-			// 	} else {
-			// 		document.querySelector(".loading").classList.remove("active");
-			// 	}
-			// });
+			ui.events.on("status", (status) => {
+				if (status.next === "fetching") {
+					document.querySelector(".loading").classList.add("active");
+				} else {
+					document.querySelector(".loading").classList.remove("active");
+				}
+			});
 		</script>
 	</body>
 </html>
