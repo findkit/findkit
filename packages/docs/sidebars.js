@@ -27,7 +27,7 @@ const sidebars = {
 				"crawler/tagging",
 				{
 					type: "category",
-					label: "Crawler Configuration",
+					label: "Crawler Configuration (TOML)",
 					link: { type: "doc", id: "crawler/toml/index" },
 					items: ["crawler/toml/tags"],
 				},

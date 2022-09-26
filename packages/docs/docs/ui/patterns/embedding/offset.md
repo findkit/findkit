@@ -38,21 +38,16 @@ instance like in the demo below or in the slot overrides.
 
 Because we hard-code the header offset we must check that it works properly on
 all screen sizes since the header height might be dynamic. Use media queries or
-[ResizeObserver][resizeobserver] ([demo](#resizeobserver)) etc. to tackle this.
+[ResizeObserver][resizeobserver] etc. to tackle this.
 For more complex UI this might get tricky. Another option is to use the [Content
 Overlay ](content-overlay) pattern which is bit more involved to implement but
 it is not as hacky.
 
-## Demos
-
-### Fixed Height
-
-<Codesandbox example="modal-offset" />
-
 ### ResizeObserver
 
-Here we use a [ResizeObserver][resizeobserver] to monitor the header height
-which is synced to a CSS variable to be used in the top offset.
+We can use a [ResizeObserver][resizeobserver] to monitor the header height which
+is synced to a CSS variable to be used in the top offset. See the [demo
+below](#resizeobserver-demo).
 
 ```ts
 const ui = new FindkitUI({
@@ -75,6 +70,14 @@ ui.events.on("loaded", (e) => {
 	observer.observe(document.querySelector("header"));
 });
 ```
+
+## Demos
+
+### Fixed Height
+
+<Codesandbox example="modal-offset" />
+
+### ResizeObserver Demo
 
 <Codesandbox example="offset-modal-resize-observer" />
 
