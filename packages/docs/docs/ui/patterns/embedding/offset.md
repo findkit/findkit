@@ -4,24 +4,19 @@ If you want to put the search input in your website header you can use the
 Offset Modal pattern where the modal is just offsetted below the header. This is
 implemented by binding an external input from the header to Findkit UI using the
 [`.bindInput()` method](/ui/api/#bindInput), hiding the build-in one using the
-[`Layout` slot](/ui/slot-overrides/slots#layout) and pushing the modal down with
+[`header` option](/ui/api/#header) and pushing the modal down with
 a top offset.
 
 ```ts
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
+	// We use the site header so no need for the build-in one
+	header: false,
 	css: `
 		.findkit--modal-container {
 			top: 100px;
 		}
 	`,
-	slots: {
-		Layout(props) {
-			// Render the layout without the modal header
-			// Eg. Only the props.content and not props.header
-			return html`${props.content}`;
-		},
-	},
 });
 
 ui.bindInput("header input.search");

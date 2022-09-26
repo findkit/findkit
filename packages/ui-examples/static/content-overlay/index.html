@@ -108,6 +108,8 @@
 			const ui = new FindkitUI({
 				publicToken: "p68GxRvaA",
 				container: ".findkit-overlay-container",
+				// We use the site header so no need for the build-in one
+				header: false,
 				lockScroll: false,
 				css: `
 					.findkit--modal-container {
@@ -120,13 +122,6 @@
 						/* position: absolute; */
 					}
 				`,
-				slots: {
-					Layout(props) {
-						// Render the layout without the modal header
-						// Eg. Only the props.content and not props.header
-						return html`${props.content}`;
-					},
-				},
 			});
 
 			// Bind the external input

@@ -52,12 +52,6 @@ const sidebars = {
 				"ui/tech",
 				{
 					type: "category",
-					label: "Slot Overrides",
-					link: { type: "doc", id: "ui/slot-overrides/index" },
-					items: ["ui/slot-overrides/slots", "ui/slot-overrides/hooks"],
-				},
-				{
-					type: "category",
 					label: "Patterns",
 					// link: { type: "doc", id: "" },
 					items: [
@@ -76,6 +70,12 @@ const sidebars = {
 
 						"ui/patterns/ui/index",
 					],
+				},
+				{
+					type: "category",
+					label: "Slot Overrides",
+					link: { type: "doc", id: "ui/slot-overrides/index" },
+					items: ["ui/slot-overrides/slots", "ui/slot-overrides/hooks"],
 				},
 				{
 					type: "category",

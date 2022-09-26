@@ -23,6 +23,7 @@ const ui = new FindkitUI({
 	instanceId: "my",
 	minTerms: 0,
 	infiniteScroll: false,
+	header: false,
 });
 ```
 

@@ -83,6 +83,8 @@
 
 			const ui = new FindkitUI({
 				publicToken: "p68GxRvaA",
+				// We use the site header so no need for the build-in one
+				header: false,
 				// Scroll the full page and not the container
 				pageScroll: true,
 				css: `
@@ -91,12 +93,6 @@
 						top: var(--offset-top);
 					}
 				`,
-				slots: {
-					Layout(props) {
-						// Without the header
-						return html`${props.content}`;
-					},
-				},
 			});
 
 			// The container element is available after "loaded" event
