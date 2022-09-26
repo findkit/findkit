@@ -45,8 +45,8 @@ it is not as hacky.
 
 ### ResizeObserver
 
-We can use a [ResizeObserver][resizeobserver] to monitor the header height which
-is synced to a CSS variable to be used in the top offset. See the [demo
+We can use a [ResizeObserver][resizeobserver] to monitor the header height,
+sync it to a CSS variable and use it as the top offset. See the [demo
 below](#resizeobserver-demo).
 
 ```ts
