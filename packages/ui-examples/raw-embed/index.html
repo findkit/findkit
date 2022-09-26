@@ -22,7 +22,7 @@
 
 			header {
 				background-color: aqua;
-				padding-left: 1rem;
+				padding: 1rem;
 				display: flex;
 				flex-direction: column;
 			}
@@ -39,17 +39,6 @@
 				background-color: skyblue;
 			}
 
-			/* The findkit-ui-open class is added to the body when the search UI
-			 * is open by Findkit UI itself */
-			.findkit-ui-open .findkit-overlay-container {
-				position: absolute;
-				inset: 0;
-			}
-
-			input.search {
-				margin-left: 2rem;
-			}
-
 			.loading {
 				margin: 2rem;
 				visibility: hidden;
@@ -59,46 +48,34 @@
 				visibility: visible;
 			}
 
-			.header-top {
-				display: flex;
-				align-items: center;
+			.findkit-container {
+				background-color: white;
+				padding: 1rem;
 			}
 
-			.header-text {
-				padding-left: 5rem;
-				padding-right: 5rem;
-				max-width: 800px;
-				align-self: center;
-				line-height: 1.5;
+			footer {
+				background-color: darkslategray;
+				height: 100px;
+				color: white;
+				padding: 1rem;
 			}
 		</style>
 	</head>
 	<body>
 		<header>
-			<div class="header-top">
-				<h1>My Website</h1>
-				<input placeholder="Search..." type="text" class="search" />
-				<button type="button" class="close">X</button>
-				<div class="loading">Loading...</div>
-
-				<!-- A link which is skipped from tab navigation when the search UI
-			is open because it is not in the focus trap -->
-				<a href="#">Header link</a>
-			</div>
-			<div class="header-text">
-				Some content in the header which makes the header height change when the
-				window is resized. With the Content Overlay Pattern the search results
-				will position itself correctly like the content does because it is in
-				the content element.
-			</div>
+			<h1>My Website</h1>
 		</header>
 
 		<main class="content">
 			<h2>The Content</h2>
 			<p>This is the website content.</p>
 
-			<div class="findkit-overlay-container"></div>
+			<div class="findkit-container"></div>
 		</main>
+
+		<footer>
+			<p>Infinite scrolling should be disable so the footer can be reached.</p>
+		</footer>
 		<script type="module">
 			import {
 				FindkitUI,
@@ -107,47 +84,27 @@
 
 			const ui = new FindkitUI({
 				publicToken: "p68GxRvaA",
-				container: ".findkit-overlay-container",
-				lockScroll: false,
-				css: `
-					.findkit--modal-container {
-						position: sticky;
-
-						/*
-						 * Absolute positioning can be used instead to
-						 * keep the header at top  and scroll only the content
-						 */
-						/* position: absolute; */
-					}
-				`,
+				container: ".findkit-container",
+				instanceId: "my",
+				infiniteScroll: false,
+				minTerms: 0,
+				mode: "plain",
 				slots: {
 					Layout(props) {
-						// Render the layout without the modal header
-						// Eg. Only the props.content and not props.header
+						// No header
 						return html`${props.content}`;
 					},
 				},
 			});
 
-			// Bind the external input
-			ui.bindInput("input.search");
-
-			// Include the close button in the focus trap when the modal is open
-			ui.trapFocus("button.close");
-
-			// Close the modal when the close button is clicked
-			document.querySelector("button.close").addEventListener("click", () => {
-				ui.close();
-			});
-
 			// Visually indicate when the search is loading
-			ui.events.on("status", (status) => {
-				if (status.next === "fetching") {
-					document.querySelector(".loading").classList.add("active");
-				} else {
-					document.querySelector(".loading").classList.remove("active");
-				}
-			});
+			// ui.events.on("status", (status) => {
+			// 	if (status.next === "fetching") {
+			// 		document.querySelector(".loading").classList.add("active");
+			// 	} else {
+			// 		document.querySelector(".loading").classList.remove("active");
+			// 	}
+			// });
 		</script>
 	</body>
 </html>
