@@ -1,3 +1,36 @@
 # Raw Embedding
 
-TODO
+Raw embedding can be used when you want the search UI to be part of the page
+content. This of used for more custom search interfaces, some times called
+"archive views" like event or product listing with custom filters. This pattern
+can be used together with the modal patterns.
+
+It can be implement by setting [`modal: false`](/ui/api/#modal) and passing in a
+custom container to [`container`](/ui/api/#container). This just renders the UI
+into the container without any modal behaviour such as focus trapping or
+container scrolling
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "p68GxRvaA",
+	container: ".findkit-container",
+	modal: false,
+	instanceId: "my",
+	minTerms: 0,
+	infiniteScroll: false,
+});
+```
+
+## Considerations
+
+- If you have other `FindkitUI` instances for example another one using a modal
+  embedding pattern you must pass in [`instanceId`](/ui/api/#instanceId) to avoid
+  conflicts
+- You may want to disable the automatic result loading on scroll with
+  [`infiniteScroll: false`](/ui/api/#infiniteScroll) to allow users to reach the
+  footer.
+- Add loading indictor
+
+## Demo
+
+<Codesandbox example="raw-embed" />
