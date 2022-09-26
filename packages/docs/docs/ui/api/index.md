@@ -144,6 +144,12 @@ See [Routing](/ui/advanced/routing).
 
 <Api page="ui.findkituioptions.router" />
 
+### `fetchCount: number` {#fetchCount}
+
+How many results to fetch in a single request.
+
+<Api page="ui.findkituioptions.fetchCount" />
+
 ### `ui: object` {#ui}
 
 TODO
