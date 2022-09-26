@@ -51,7 +51,7 @@ function Codesandbox(props: {
 		<div className="codesandbox-example">
 			Open in a
 			<a href={newTabUrl} target="_blank">
-				new new tab
+				new tab
 			</a>
 			view source code in
 			<a href={githubLink} target="_blank">
