@@ -259,21 +259,6 @@ function CloseButton() {
 	);
 }
 
-function useSaveScroll() {
-	const scroll = useRef<number | null>(null);
-	if (typeof document !== "undefined" && scroll.current === null) {
-		scroll.current = document.documentElement.scrollTop;
-	}
-
-	useEffect(() => {
-		if (scroll.current === null) {
-			return;
-		}
-
-		document.documentElement.scrollTop = scroll.current;
-	}, []);
-}
-
 function Modal() {
 	const engine = useSearchEngine();
 	const state = useSearchEngineState();
@@ -446,6 +431,18 @@ export function init(options: {
 
 		host.remove();
 	});
+
+	if (options.mode !== "plain") {
+		engine.events.on("open", () => {
+			const scrollPosition = document.documentElement.scrollTop;
+			console.log("saving scroll position", scrollPosition);
+
+			engine.events.once("close", () => {
+				console.log("restoring scroll position", scrollPosition);
+				document.documentElement.scrollTop = scrollPosition;
+			});
+		});
+	}
 
 	ReactDOM.render(
 		<StrictMode>
