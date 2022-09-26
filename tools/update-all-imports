@@ -2,7 +2,8 @@
 
 set -eu
 
-version="$1"
+# Ex. turn @findkit/ui@0.0.1-dev.bdfdd29b0e to 0.0.1-dev.bdfdd29b0e
+version="$(echo $1 | cut -d @ -f 3)"
 
 cd "$(git rev-parse --show-toplevel)"
 
