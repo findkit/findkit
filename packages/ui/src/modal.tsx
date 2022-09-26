@@ -376,7 +376,7 @@ export function Plain() {
 /**
  * @public
  */
-export function init(options: {
+export function init(_options: {
 	publicToken: string;
 	instanceId: string;
 	shadowDom?: boolean;
@@ -388,7 +388,8 @@ export function init(options: {
 	searchEndpoint?: string;
 	params?: SearchEngineParams;
 	groups?: GroupDefinition[];
-	mode?: "modal" | "plain";
+	pageScroll?: boolean;
+	modal?: boolean;
 	container?: Element;
 	lockScroll?: boolean;
 	infiniteScroll?: boolean;
@@ -398,6 +399,26 @@ export function init(options: {
 		overrides?: Partial<TranslationStrings>;
 	};
 }) {
+	const options = { ..._options };
+
+	let css = "";
+
+	if (options.modal === false) {
+		options.pageScroll = true;
+		options.lockScroll = false;
+	}
+
+	if (options.pageScroll) {
+		options.lockScroll = false;
+		css = `
+			.findkit--modal-container {
+				inset: initial;
+				position: absolute;
+				width: 100%;
+			}
+		`;
+	}
+
 	const hasCustomContainer = Boolean(options.container);
 
 	let container =
@@ -439,11 +460,12 @@ export function init(options: {
 				{options.styleSheets.map((href) => (
 					<link key={href} rel="stylesheet" href={href} />
 				))}
+				{css ? <style dangerouslySetInnerHTML={{ __html: css }} /> : null}
 				{options.css ? (
 					<style dangerouslySetInnerHTML={{ __html: options.css }} />
 				) : null}
 				<FindkitProvider engine={engine} slots={options.slots ?? {}}>
-					{options.mode === "plain" ? <Plain /> : <Modal />}
+					{options.modal === false ? <Plain /> : <Modal />}
 				</FindkitProvider>
 			</>
 		</StrictMode>,

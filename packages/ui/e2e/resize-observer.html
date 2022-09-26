@@ -7,7 +7,6 @@
 		<link rel="stylesheet" href="/shared.css" />
 		<style>
 			header {
-				position: fixed;
 				background-color: aquamarine;
 				width: 100%;
 			}
@@ -21,14 +20,7 @@
 	</head>
 	<body>
 		<script type="module">
-			import {
-				FindkitUI,
-				css,
-				html,
-				useTerms,
-				useTotal,
-				useResults,
-			} from "/build/esm/index.js";
+			import { FindkitUI, css, html } from "/build/esm/index.js";
 
 			const ui = new FindkitUI({
 				publicToken: "po8GK3G0r",
@@ -40,13 +32,9 @@
 						return html`${props.content}`;
 					},
 				},
-				lockScroll: false,
+				pageScroll: true,
 				css: css`
 					.findkit--modal-container {
-						inset: initial;
-						position: absolute;
-						width: 100%;
-
 						top: var(--offset-top);
 					}
 				`,
