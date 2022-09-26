@@ -52,6 +52,7 @@ below](#resizeobserver-demo).
 ```ts
 const ui = new FindkitUI({
 	publicToken: "p68GxRvaA",
+	header: false,
 	css: `
 		.findkit--modal-container {
 			/* dynamically updating header height */
