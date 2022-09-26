@@ -323,6 +323,7 @@ function Modal() {
 
 	return (
 		<View
+			data-id={engine.instanceId}
 			cn={{
 				backdrop: true,
 				"modal-container": true,
@@ -350,6 +351,7 @@ function Modal() {
 }
 
 export function Plain() {
+	const engine = useSearchEngine();
 	const containerKbAttrs = useContainerKeyboardAttributes();
 
 	const header = <SearchInput />;
@@ -362,29 +364,13 @@ export function Plain() {
 	);
 
 	return (
-		<View {...containerKbAttrs} cn="plain">
+		<View {...containerKbAttrs} cn="plain" data-id={engine.instanceId}>
 			<Slot name="Layout" props={{ header, content }}>
 				{header}
 				{content}
 			</Slot>
 		</View>
 	);
-}
-
-function createModalContainer(options: {
-	shadowDom?: boolean;
-	instaceId: string;
-}) {
-	const container = document.createElement("div");
-	container.id = "findkit--modal-container-" + options.instaceId;
-	document.body.appendChild(container);
-
-	if (options.shadowDom !== false) {
-		container.className = "findkit--shadow-host";
-		return container.attachShadow({ mode: "open" });
-	}
-
-	return container;
 }
 
 /**
@@ -420,10 +406,14 @@ export function init(options: {
 			: options.container;
 
 	if (!container) {
-		container = createModalContainer({
-			shadowDom: options.shadowDom,
-			instaceId: options.instanceId,
-		});
+		container = document.createElement("div");
+		container.classList.add("findkit");
+		document.body.appendChild(container);
+
+		if (options.shadowDom !== false) {
+			container.classList.add("findkit--shadow-host");
+			container = container.attachShadow({ mode: "open" });
+		}
 	}
 
 	const engine = new SearchEngine({ ...options, container: container });
