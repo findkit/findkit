@@ -1,9 +1,12 @@
 # Raw Embedding
 
 Raw embedding can be used when you want the search UI to be part of the page
-content. This of used for more custom search interfaces, some times called
-"archive views" like event or product listing with custom filters. This pattern
-can be used together with the modal patterns.
+content. This often used for the more custom search interfaces, some times
+called "archive views" like an event or product listing with custom filters.
+
+This pattern can be used together with the modal patterns. Ex. the modal pattern
+is used for the global site search and raw embeding for the more specific use
+cases.
 
 It can be implement by setting [`modal: false`](/ui/api/#modal) and passing in a
 custom container to [`container`](/ui/api/#container). This just renders the UI
