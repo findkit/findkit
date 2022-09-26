@@ -55,3 +55,7 @@ used to customize the element positioning. For example it can be used to
 or add side panels with tag filters etc.
 
 <Api page="ui.slots.layout" />
+
+## `Hit`
+
+TODO
