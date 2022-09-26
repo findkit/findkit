@@ -51,7 +51,7 @@ below](#resizeobserver-demo).
 
 ```ts
 const ui = new FindkitUI({
-	publicToken: "p68GxRvaA",
+	publicToken: "<TOKEN>",
 	header: false,
 	css: `
 		.findkit--modal-container {
