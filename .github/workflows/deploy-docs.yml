@@ -69,6 +69,10 @@ jobs:
         run: |
           set -eu
           mv packages/ui/api-docs-html/api packages/docs/build/ui-api
+
+          mkdir -p packages/docs/build/ui-examples
+          cp -r packages/ui-examples/static packages/docs/build/ui-examples/
+
           cd packages/docs && pnpm run deploy
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}

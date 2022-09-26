@@ -15,7 +15,7 @@ fi
 
 ./tools/update-import ${version} ./packages/docs/docs/ui/setup.md
 
-git ls-files 'packages/ui-examples/*/index.html' | xargs -L 1 ./tools/update-import ${version}
+git ls-files 'packages/ui-examples/static/*/index.html' | xargs -L 1 ./tools/update-import ${version}
 
 cd packages/docs
 pnpm install "@findkit/ui@${version}"

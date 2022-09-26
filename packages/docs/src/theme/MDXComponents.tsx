@@ -36,6 +36,7 @@ function Codesandbox(props: {
 	const githubLink = `https://github.com/findkit/findkit/tree/main/packages/ui-examples/${props.example}/index.html`;
 	const codesandboxLink = `https://codesandbox.io/s/github/findkit/findkit/tree/main/packages/ui-examples/${props.example}`;
 	const embedSrc = `https://codesandbox.io/embed/github/findkit/findkit/tree/main/packages/ui-examples/${props.example}?${query}`;
+	const newTabUrl = `https://docs.findkit.com/ui-examples/static/${props.example}`;
 
 	if (props.link) {
 		return (
@@ -48,10 +49,18 @@ function Codesandbox(props: {
 
 	return (
 		<div className="codesandbox-example">
-			View on
-			<a href={githubLink}>Github</a>
-			or edit online on
-			<a href={codesandboxLink}>Codesandbox</a>
+			Open in a
+			<a href={newTabUrl} target="_blank">
+				new new tab
+			</a>
+			view source code in
+			<a href={githubLink} target="_blank">
+				Github
+			</a>
+			or edit online in
+			<a href={codesandboxLink} target="_blank">
+				Codesandbox
+			</a>
 			{!open ? (
 				<div ref={ref} className="codesandbox-placehoder">
 					<button onClick={() => setOpen(true)}>Load Codesandbox</button>
