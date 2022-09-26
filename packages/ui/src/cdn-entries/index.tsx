@@ -395,6 +395,11 @@ export class FindkitUI {
 	readonly events: Emitter<FindkitUIEvents, FindkitUI>;
 	#resources = new Resources();
 
+	/**
+	 * The container element. Available after the "loaded" event.
+	 */
+	container?: Element;
+
 	constructor(options: FindkitUIOptions) {
 		this.#options = options;
 		this.events = new Emitter(this);
@@ -541,7 +546,7 @@ export class FindkitUI {
 
 		const createEngine = (container?: Element) => {
 			this.#resources.create(() => {
-				const engine = impl.js.init({
+				const { engine, host } = impl.js.init({
 					...rest,
 					container,
 					css: allCSS,
@@ -553,7 +558,8 @@ export class FindkitUI {
 
 				this.#engine = engine;
 				this.#loading = true;
-				this.events.emit("loaded", { __engine: engine });
+				this.container = host;
+				this.events.emit("loaded", { __engine: engine, container: host });
 
 				return engine.dispose;
 			});
