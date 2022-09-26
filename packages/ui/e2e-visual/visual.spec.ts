@@ -233,3 +233,37 @@ test("ResizeObserver offset", async ({ page }) => {
 		mask: [hits],
 	});
 });
+
+test("header is shown when scrolled up a bit", async ({ page }) => {
+	await page.goto("/dummy");
+	await page.setViewportSize({ width: 600, height: 600 });
+
+	const input = page.locator('[aria-label="Search input"]');
+	const hits = page.locator(".findkit--hit");
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "po8GK3G0r",
+			slots: {
+				Hit() {
+					return MOD.html`<h1>Hit</h1>`;
+				},
+			},
+		});
+
+		ui.open();
+	});
+
+	await input.fill("valu");
+	await hits.first().waitFor({ state: "visible" });
+
+	await page.mouse.wheel(0, 500);
+
+	await page.waitForTimeout(500);
+
+	await expect(page).toHaveScreenshot();
+
+	await page.mouse.wheel(0, -100);
+	await page.waitForTimeout(500);
+
+	await expect(page).toHaveScreenshot();
+});
