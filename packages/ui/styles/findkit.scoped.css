@@ -1,5 +1,4 @@
 .modal {
-	overflow: auto;
 	height: 100%;
 	width: 100%;
 	flex: 1;
@@ -23,8 +22,9 @@
 	min-height: 100%;
 	z-index: 100000;
 	overflow: hidden;
-	position: fixed;
-	inset: 0;
+	position: absolute;
+	width: 100%;
+	top: 0;
 	background-color: transparent;
 	transition: background-color var(--modal-animation-duration) ease;
 	align-items: center;
