@@ -51,4 +51,3 @@ the page content or search results do not fill the viewport 100%.
 ## Demo
 
 <Codesandbox example="content-overlay" />
-````
