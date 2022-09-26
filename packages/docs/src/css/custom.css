@@ -72,7 +72,7 @@
 	justify-content: center;
 }
 
-a:not([href^="/"]):not([href^="#"]):after {
+article a:not([href^="/"]):not([href^="#"]):after {
 	content: "🔗";
 	font-size: 8pt;
 	margin-left: 3px;
