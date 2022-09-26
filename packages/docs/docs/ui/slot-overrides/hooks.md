@@ -2,7 +2,8 @@
 
 Following utils can be imported from `"@findkit/ui"` for slot component usage.
 
-Functions starting with the `use` keyword are [React](https://reactjs.org/docs/hooks-intro.html) / [Preact](https://preactjs.com/guide/v10/hooks/) hooks.
+Functions starting with the `use` keyword are
+[Preact](https://preactjs.com/guide/v10/hooks/) hooks.
 
 ### `useParams()` {#useParams}
 
