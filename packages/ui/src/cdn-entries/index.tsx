@@ -220,6 +220,11 @@ export const html = createShellFunction("html");
  */
 export const h = createShellFunction("h");
 
+/**
+ * Lazily loaded preact hooks
+ *
+ * @public
+ */
 export const preact: PreactFunctions = {} as any;
 
 /**
