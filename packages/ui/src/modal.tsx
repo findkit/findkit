@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { FocusTrap } from "./focus-trap";
 import React, { StrictMode, useRef, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
@@ -256,6 +257,21 @@ function CloseButton() {
 			{t("close")} <Cross />
 		</View>
 	);
+}
+
+function useSaveScroll() {
+	const scroll = useRef<number | null>(null);
+	if (typeof document !== "undefined" && scroll.current === null) {
+		scroll.current = document.documentElement.scrollTop;
+	}
+
+	useEffect(() => {
+		if (scroll.current === null) {
+			return;
+		}
+
+		document.documentElement.scrollTop = scroll.current;
+	}, []);
 }
 
 function Modal() {
