@@ -38,8 +38,9 @@ group as searches are made. The result amount per group is determined by the
 The groups can be also updated on the fly with `ui.updateGroups(fn)` method:
 
 ```ts
-ui.updateGroups((groups) => {
-	groups[0].tagQuery.previewSize = 5;
+ui.updateGroups((pages, pdf) => {
+	pages.previewSize = 5;
+	pdf.previewSize = 5;
 });
 ```
 

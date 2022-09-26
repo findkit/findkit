@@ -251,11 +251,8 @@ test("can update groups on the fly with update function", async ({ page }) => {
 	expect(await getHitHosts(page)).toEqual(["www.valu.fi"]);
 
 	await page.evaluate(async () => {
-		ui.updateGroups((groups) => {
-			const group = groups[0];
-			if (group) {
-				group.params.tagQuery = [["domain/statement.fi"]];
-			}
+		ui.updateGroups((group) => {
+			group.params.tagQuery = [["domain/statement.fi"]];
 		});
 	});
 
