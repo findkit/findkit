@@ -346,6 +346,7 @@ export interface FindkitUIOptions {
 	css?: string;
 	infiniteScroll?: boolean;
 	fetchCount?: number;
+	header?: boolean;
 	pageScroll?: boolean;
 	styleSheet?: string;
 	slots?: Partial<Slots>;

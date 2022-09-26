@@ -29,6 +29,7 @@ body element when the UI is open. See the demo below for full details.
 ```ts
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
+	header: false,
 	// highlight-next-line
 	container: ".findkit-overlay-container",
 	css: `

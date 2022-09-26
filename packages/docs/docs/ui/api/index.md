@@ -132,11 +132,14 @@ This disables following:
 
 <Api page="ui.findkituioptions.mode" />
 
-### `infiniteScroll: boolean` {#infiniteScroll}
+### `header: boolean` {#header}
 
-Set to false to disable the automatic result loading on scroll.
+Set to `false` to hide the default modal header with the search input and the
+close button. Useful with the non-fullscreen [embedding
+patterns](/ui/patterns/embedding/) where the input is placed on the website
+outside the Findkit UI context. Ex. in the site header.
 
-<Api page="ui.findkituioptions.infiniteScroll" />
+<Api page="ui.findkituioptions.header" />
 
 ### `router: Router` {#router}
 

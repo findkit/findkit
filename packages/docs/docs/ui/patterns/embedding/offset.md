@@ -4,24 +4,19 @@ If you want to put the search input in your website header you can use the
 Offset Modal pattern where the modal is just offsetted below the header. This is
 implemented by binding an external input from the header to Findkit UI using the
 [`.bindInput()` method](/ui/api/#bindInput), hiding the build-in one using the
-[`Layout` slot](/ui/slot-overrides/slots#layout) and pushing the modal down with
+[`header` option](/ui/api/#header) and pushing the modal down with
 a top offset.
 
 ```ts
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
+	// We use the site header so no need for the build-in one
+	header: false,
 	css: `
 		.findkit--modal-container {
 			top: 100px;
 		}
 	`,
-	slots: {
-		Layout(props) {
-			// Render the layout without the modal header
-			// Eg. Only the props.content and not props.header
-			return html`${props.content}`;
-		},
-	},
 });
 
 ui.bindInput("header input.search");
@@ -43,17 +38,44 @@ instance like in the demo below or in the slot overrides.
 
 Because we hard-code the header offset we must check that it works properly on
 all screen sizes since the header height might be dynamic. Use media queries or
-[ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)
-([demo](#resizeobserver)) etc. to tackle this. For more complex UI this might
-get tricky. Another option is to use the [Content Overlay ](content-overlay)
-pattern which is bit more involved to implement but it is not as hacky.
+[ResizeObserver][resizeobserver] ([demo](#resizeobserver)) etc. to tackle this.
+For more complex UI this might get tricky. Another option is to use the [Content
+Overlay ](content-overlay) pattern which is bit more involved to implement but
+it is not as hacky.
 
 ## Demos
 
-## Fixed Height
+### Fixed Height
 
 <Codesandbox example="modal-offset" />
 
-## ResizeObserver
+### ResizeObserver
+
+Here we use a [ResizeObserver][resizeobserver] to monitor the header height
+which is synced to a CSS variable to be used in the top offset.
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "p68GxRvaA",
+	css: `
+		.findkit--modal-container {
+			/* dynamically updating header height */
+			top: var(--top-offset);
+		}
+	`,
+});
+
+// The container element is available after "loaded" event
+ui.events.on("loaded", (e) => {
+	const observer = new ResizeObserver((entries) => {
+		const height = entries[0].borderBoxSize[0].blockSize;
+		e.container.style = `--top-offset: ${height}px`;
+	});
+
+	observer.observe(document.querySelector("header"));
+});
+```
 
 <Codesandbox example="offset-modal-resize-observer" />
+
+[resizeobserver]: https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver

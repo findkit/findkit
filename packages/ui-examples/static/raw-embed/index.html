@@ -106,12 +106,7 @@
 				minTerms: 0,
 				fetchCount: 5,
 				modal: false,
-				slots: {
-					Layout(props) {
-						// No header
-						return html`${props.content}`;
-					},
-				},
+				header: false,
 			});
 
 			ui.bindInput("input.search");

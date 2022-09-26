@@ -83,32 +83,26 @@
 
 			const ui = new FindkitUI({
 				publicToken: "p68GxRvaA",
+				// We use the site header so no need for the build-in one
+				header: false,
 				// Scroll the full page and not the container
 				pageScroll: true,
 				css: `
 					.findkit--modal-container {
 						/* dynamically updating header height */
-						top: var(--offset-top);
+						top: var(--top-offset);
 					}
 				`,
-				slots: {
-					Layout(props) {
-						// Without the header
-						return html`${props.content}`;
-					},
-				},
 			});
 
 			// The container element is available after "loaded" event
 			ui.events.on("loaded", (e) => {
-				const header = document.querySelector("header");
-
 				const observer = new ResizeObserver((entries) => {
 					const height = entries[0].borderBoxSize[0].blockSize;
-					e.container.style = `--offset-top: ${height}px`;
+					e.container.style = `--top-offset: ${height}px`;
 				});
 
-				observer.observe(header);
+				observer.observe(document.querySelector("header"));
 
 				// Stop observing when the UI is discarded
 				ui.events.on("dispose", () => {
