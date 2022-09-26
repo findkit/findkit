@@ -9,15 +9,17 @@ is used for the global site search and raw embeding for the more specific use
 cases.
 
 It can be implement by setting [`modal: false`](/ui/api/#modal) and passing in a
-custom container to [`container`](/ui/api/#container). This just renders the UI
-into the container without any modal behaviour such as focus trapping or
-container scrolling
+custom container to the [`container`](/ui/api/#container) option. This just
+renders the UI into the container without any modal behaviour such as focus
+trapping or container scrolling.
 
 ```ts
 const ui = new FindkitUI({
 	publicToken: "p68GxRvaA",
+	// highlight-start
 	container: ".findkit-container",
 	modal: false,
+	// highlight-end
 	instanceId: "my",
 	minTerms: 0,
 	infiniteScroll: false,
