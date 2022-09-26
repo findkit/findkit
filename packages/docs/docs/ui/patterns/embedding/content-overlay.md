@@ -1,11 +1,11 @@
 # Content Overlay
 
 The Content Overlay Pattern is used achieve the same result as the [Offset Modal
-Pattern](offset) where the input is placed in the website header element
-but instead of absolutely positioning the modal with hand picked top offset the
-search UI is placed in the content element where it overlays the content.
-This is more robust because the search UI can just fill the area given to it but
-this can be bit more involved to implement dependening on your website layout.
+Pattern](offset) where the input is placed in the website header element but
+instead of absolutely positioning the modal with a top offset the search UI is
+placed in the content element where it overlays the content. This is more
+robust because the search UI can just fill the area given to it but this can be
+bit more involved to implement dependening on your website layout.
 
 This is implemented by passing a custom container element to `FindkitUI`
 instance using the [`container` option](/ui/api/#container). This container is

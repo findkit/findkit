@@ -46,8 +46,7 @@ all screen sizes since the header height might be dynamic. Use media queries or
 [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)
 ([demo](#resizeobserver)) etc. to tackle this. For more complex UI this might
 get tricky. Another option is to use the [Content Overlay ](content-overlay)
-pattern which is bit more involved to implement but it can handle dynamic header
-heights.
+pattern which is bit more involved to implement but it is not as hacky.
 
 ## Demos
 
