@@ -178,9 +178,13 @@ export interface FindkitUIEvents {
 	};
 
 	/**
-	 * When the implementation was loaded
+	 * When the implementation was loaded and initialized
 	 */
 	loaded: {
+		/**
+		 * The container element
+		 */
+		container: Element;
 		/**
 		 * Private API. Do not use.
 		 */

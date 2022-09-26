@@ -212,3 +212,24 @@ test("overlay modal without shadow dom", async ({ page }) => {
 		mask: [hits],
 	});
 });
+
+test("ResizeObserver offset", async ({ page }) => {
+	await page.goto("/resize-observer");
+	const input = page.locator("#external-input");
+	const hits = page.locator(".findkit--hit");
+
+	await input.fill("valu");
+	await hits.first().waitFor({ state: "visible" });
+
+	await expect(page).toHaveScreenshot({
+		mask: [hits],
+	});
+
+	await page.setViewportSize({ width: 600, height: 600 });
+
+	await page.waitForTimeout(500);
+
+	await expect(page).toHaveScreenshot({
+		mask: [hits],
+	});
+});
