@@ -348,6 +348,7 @@ export interface FindkitUIOptions {
 	minTerms?: number;
 	css?: string;
 	infiniteScroll?: boolean;
+	pageScroll?: boolean;
 	styleSheet?: string;
 	slots?: Partial<Slots>;
 	load?: () => Promise<{ js: Implementation; css?: string }>;
@@ -356,7 +357,7 @@ export interface FindkitUIOptions {
 	monitorDocumentElementChanges?: boolean;
 	router?: SearchEngineOptions["router"];
 	lockScroll?: boolean;
-	mode?: "modal" | "plain";
+	modal?: boolean;
 	ui?: {
 		lang: string;
 		overrides?: Partial<TranslationStrings>;
@@ -404,7 +405,7 @@ export class FindkitUI {
 		this.#options = options;
 		this.events = new Emitter(this);
 
-		if (this.#isAlreadyOpened() || options.mode === "plain") {
+		if (this.#isAlreadyOpened() || options.modal === false) {
 			void this.open();
 		}
 
