@@ -44,7 +44,7 @@ ui.updateGroups((pages, pdf) => {
 });
 ```
 
-There is also a [`useGroups()`](/ui/slot-overrides/utils#usegroups) hook for updating the groups from [Slot Overrides](/ui/slot-overrides/).
+There is also a [`useGroups()`](/ui/slot-overrides/hooks#usegroups) hook for updating the groups from [Slot Overrides](/ui/slot-overrides/).
 
 ## Options
 

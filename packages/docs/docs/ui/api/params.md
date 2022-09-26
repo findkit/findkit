@@ -27,7 +27,7 @@ ui.updateParams((params) => {
 The updates are immediately picked up and new a search request will be made on
 change.
 
-There is also a [`useParams()`](/ui/slot-overrides/utils#useParams) hook for
+There is also a [`useParams()`](/ui/slot-overrides/hooks#useParams) hook for
 updating the params from [Slot Overrides](/ui/slot-overrides).
 
 ## Params

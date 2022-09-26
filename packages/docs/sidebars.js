@@ -54,7 +54,7 @@ const sidebars = {
 					type: "category",
 					label: "Slot Overrides",
 					link: { type: "doc", id: "ui/slot-overrides/index" },
-					items: ["ui/slot-overrides/slots", "ui/slot-overrides/utils"],
+					items: ["ui/slot-overrides/slots", "ui/slot-overrides/hooks"],
 				},
 				{
 					type: "category",

@@ -2,11 +2,14 @@
 
 Following utils can be imported from `"@findkit/ui"` for slot component usage.
 
-Functions starting with the `use` keyword are [React](https://reactjs.org/docs/hooks-intro.html) / [Preact](https://preactjs.com/guide/v10/hooks/) hooks.
+Functions starting with the `use` keyword are
+[Preact](https://preactjs.com/guide/v10/hooks/) hooks.
 
 ### `useParams()` {#useParams}
 
 Hook for updating the [search params](/ui/api/params).
+
+TODO: example
 
 <Api page="ui.useparams" />
 
@@ -14,17 +17,21 @@ Hook for updating the [search params](/ui/api/params).
 
 Hook for updating the [groups](/ui/groups).
 
+TODO: example
+
 <Api page="ui.usegroups" />
 
 ### `useInput()` {#useInput}
 
 Hook for binding custom inputs as the search terms inputs.
 
+TODO: example
+
 <Api page="ui.useinput" />
 
-### `useState()` {#useState}
+### `preact` {#preact}
 
-Re-exported Preact [`useState()`](https://preactjs.com/guide/v10/hooks/#usestate) hook.
+Object of commonly used Preact Hooks. See the api docs for details.
 
 <Api page="ui.usestate" />
 
