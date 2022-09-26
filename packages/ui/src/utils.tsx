@@ -72,9 +72,7 @@ export function getScrollContainer(node: HTMLElement): HTMLElement | null {
 
 export function scrollToTop(el: HTMLElement) {
 	const container = getScrollContainer(el);
-	if (container && container !== document.documentElement) {
-		container.scrollTo({ top: 0 });
-	}
+	container?.scrollTo({ top: 0 });
 }
 
 export function scrollIntoViewIfNeeded(
