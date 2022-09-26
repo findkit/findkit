@@ -61,18 +61,12 @@
 
 			const ui = new FindkitUI({
 				publicToken: "p68GxRvaA",
-				// Using the page scroll and not the container scroll.
-				lockScroll: false,
+				// Scroll the full page and not the container
+				pageScroll: true,
 				css: `
 					.findkit--modal-container {
-						/* use absolute positioning for normal scrolling */
-						inset: initial;
-						position: absolute;
-						width: 100%;
-
 						/* The header height as offset */
 						top: 100px;
-
 					}
 				`,
 				slots: {
