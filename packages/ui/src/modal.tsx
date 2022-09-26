@@ -390,6 +390,7 @@ export function init(_options: {
 	groups?: GroupDefinition[];
 	pageScroll?: boolean;
 	modal?: boolean;
+	fetchCount?: number;
 	container?: Element;
 	lockScroll?: boolean;
 	infiniteScroll?: boolean;

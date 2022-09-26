@@ -6,7 +6,6 @@ import type {
 	UpdateGroupsArgument,
 	UpdateParamsArgument,
 	SearchEngineParams,
-	SearchEngineOptions,
 	FindkitURLSearchParams,
 	Status,
 } from "../search-engine";
@@ -348,6 +347,7 @@ export interface FindkitUIOptions {
 	minTerms?: number;
 	css?: string;
 	infiniteScroll?: boolean;
+	fetchCount?: number;
 	pageScroll?: boolean;
 	styleSheet?: string;
 	slots?: Partial<Slots>;
@@ -355,7 +355,7 @@ export interface FindkitUIOptions {
 	searchEndpoint?: string;
 	container?: Element | string;
 	monitorDocumentElementChanges?: boolean;
-	router?: SearchEngineOptions["router"];
+	router?: "memory" | "querystring" | "hash" | RouterBackend;
 	lockScroll?: boolean;
 	modal?: boolean;
 	ui?: {
