@@ -12,8 +12,6 @@ import type {
 import type { RouterBackend } from "../router";
 import type {
 	Implementation,
-	Dispatch,
-	SetStateAction,
 	SearchResultHitWithGroupId,
 } from "./implementation";
 import type { init } from "../modal";
@@ -27,8 +25,10 @@ import type {
 	ContentSlotProps,
 	LayoutSlotProps,
 } from "../slots";
+import type { PreactFunctions } from "./preact-subset";
 
 export {
+	PreactFunctions,
 	Status,
 	HeaderSlotProps,
 	ContentSlotProps,
@@ -45,9 +45,7 @@ export {
 	Implementation,
 	State,
 	init,
-	Dispatch,
 	SearchResultHit,
-	SetStateAction,
 	CustomFields,
 	SearchEngine,
 	UpdateGroupsArgument,
@@ -196,7 +194,7 @@ export function select<InstanceFilter extends typeof Element>(
 
 const lazyImplementation: Partial<Implementation> = {};
 
-function createShellFunction<Key extends keyof Implementation>(name: Key) {
+function createShellFunction<Key extends Methods<Implementation>>(name: Key) {
 	return (...args: any[]): ReturnType<Implementation[Key]> => {
 		const fn = lazyImplementation[name] as any;
 		if (!fn) {
@@ -222,12 +220,7 @@ export const html = createShellFunction("html");
  */
 export const h = createShellFunction("h");
 
-/**
- * React / Preact useState()
- *
- * @public
- */
-export const useState = createShellFunction("useState");
+export const preact: PreactFunctions = {} as any;
 
 /**
  * Use search terms
@@ -540,6 +533,7 @@ export class FindkitUI {
 		const impl = await this.#loadImplementation();
 
 		Object.assign(lazyImplementation, impl.js);
+		Object.assign(preact, impl.js.preact);
 
 		const { styleSheet: _1, load: _2, css: userCSS, ...rest } = this.#options;
 

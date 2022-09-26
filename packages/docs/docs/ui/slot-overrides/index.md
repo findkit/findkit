@@ -77,10 +77,22 @@ into the search UI:
 ## Caveats
 
 :::danger
-Do not use hooks imported from the `preact` package in the slot override
+Do not use hooks imported from the `"preact"` package in the slot override
 components. It will not work because Findkit UI [bundles Preact inside
 itself](/ui/tech) and it works only with hooks bound to it. All hooks must be
-imported from the `@finkdit/ui` package.
+imported from the `@finkdit/ui` package. See [`preact`
+util](/ui/slot-overrides/utils#html).
+
+```ts
+import { preact } from "@finkdit/ui";
+
+const { useState } = preact;
+
+function SlotComponent() {
+	const [state, setState] = useState();
+	// ...
+}
+```
 
 That being said the raw Preact / React components are available on Github which
 could be imported to your codebase as is. If you are interested in this feel free to

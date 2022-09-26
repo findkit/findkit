@@ -1,20 +1,11 @@
 import { html } from "htm/preact";
-import { createElement, useMemo, useState } from "react";
+import { createElement, useMemo } from "react";
 import { useInput, useSearchEngine, useSearchEngineState } from "../core-hooks";
 
 import { init } from "../modal";
 import { SearchResultHit } from "../search-engine";
 import { assertNonNullable } from "../utils";
-
-/**
- * @public
- */
-export type SetStateAction<S> = S | ((prevState: S) => S);
-
-/**
- * @public
- */
-export type Dispatch<A> = (value: A) => void;
+import { preactFunctions, PreactFunctions } from "./preact-subset";
 
 /**
  * Read and update the search params
@@ -104,26 +95,26 @@ export interface Implementation {
 	init: typeof init;
 	h: (...args: any[]) => any;
 	html: (strings: TemplateStringsArray, ...values: any[]) => any;
-	useState<S>(initialState: S | (() => S)): [S, Dispatch<SetStateAction<S>>];
 	useParams: typeof useParamsImplementation;
 	useGroups: typeof useGroupsImplementation;
 	useTerms: typeof useTermsImplementation;
 	useResults: typeof useResultsImplementation;
 	useTotal: typeof useTotalImplementation;
 	useInput: typeof useInput;
+	preact: PreactFunctions;
 }
 
 export const js: Implementation = {
 	init,
 	html,
 	h: createElement,
-	useState,
 	useGroups: useGroupsImplementation,
 	useParams: useParamsImplementation,
 	useTerms: useTermsImplementation,
 	useTotal: useTotalImplementation,
 	useResults: useResultsImplementation,
 	useInput,
+	preact: preactFunctions,
 };
 
 declare const FINDKIT_VERSION: string;

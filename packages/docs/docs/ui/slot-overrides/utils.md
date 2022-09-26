@@ -22,9 +22,9 @@ Hook for binding custom inputs as the search terms inputs.
 
 <Api page="ui.useinput" />
 
-### `useState()` {#useState}
+### `preact` {#preact}
 
-Re-exported Preact [`useState()`](https://preactjs.com/guide/v10/hooks/#usestate) hook.
+Object of commonly used Preact Hooks. See the api docs for details.
 
 <Api page="ui.usestate" />
 
