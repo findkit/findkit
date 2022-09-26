@@ -88,39 +88,32 @@ function useFocusTrap(
 	return containerRef;
 }
 
-function useIsScrollingDown(
-	containerRef: React.MutableRefObject<HTMLDivElement | null>,
-	isActive: boolean,
-) {
+function useIsScrollingDown(isActive: boolean) {
 	const [scrollingDown, setScrollingDown] = useState(false);
 	const prev = useRef(0);
 
 	useEffect(() => {
 		if (!isActive) {
+			console.log("wat no");
 			prev.current = 0;
 			setScrollingDown(false);
 			return;
 		}
-		const el = containerRef.current;
-		if (!el) {
-			return;
-		}
+		const el = document;
 
-		const handleScroll = (e: Event) => {
-			if (!(e.target instanceof HTMLDivElement)) {
-				return;
-			}
-
-			const next = e.target.scrollTop;
+		const handleScroll = () => {
+			const next = document.documentElement.scrollTop;
 			const diff = prev.current - next;
 			const threshold = 30;
 
 			if (diff < -threshold) {
+				console.log("scrolling down");
 				setScrollingDown(true);
 				prev.current = next;
 			}
 
 			if (diff > threshold) {
+				console.log("scrolling up");
 				setScrollingDown(false);
 				prev.current = next;
 			}
@@ -133,7 +126,7 @@ function useIsScrollingDown(
 		return () => {
 			el.removeEventListener("scroll", handleScroll);
 		};
-	}, [containerRef, isActive]);
+	}, [isActive]);
 
 	return scrollingDown;
 }
@@ -269,7 +262,7 @@ function Modal() {
 	const show = state.status !== "closed";
 	const delayed = useDelay(show, containerRef);
 	const unmount = !delayed && !show;
-	const isScrollingDown = useIsScrollingDown(containerRef, show);
+	const isScrollingDown = useIsScrollingDown(show);
 
 	// Use delayed to keep the open body class until the animation is done
 	useEffect(() => {
