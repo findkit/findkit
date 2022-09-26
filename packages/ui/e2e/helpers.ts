@@ -42,7 +42,7 @@ export async function getScrollPosition(page: Page) {
 	return await page.evaluate(() => {
 		return (
 			document
-				.querySelector("#findkit--modal-container-fdk")
+				.querySelector(".findkit")
 				?.shadowRoot?.querySelector(".findkit--modal")?.scrollTop ?? -1
 		);
 	});
