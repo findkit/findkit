@@ -28,10 +28,6 @@
 			}
 
 			.content {
-				/* The parent container of the .findkit-overlay-container element
-				 * be relatively positioned so it streches properly on top of the
-				 * content. */
-				position: relative;
 				display: flex;
 				flex: 1;
 				padding: 2rem;
@@ -70,7 +66,7 @@
 			<h2>The Content</h2>
 			<p>This is the website content.</p>
 
-			<form onsubmit="event.preventDefault()">
+			<form>
 				Show only:
 				<label>
 					<input type="radio" name="tag" value="crawler" />
@@ -120,10 +116,10 @@
 
 			ui.bindInput("input.search");
 
-			const form = document.querySelector("form");
-			form.addEventListener("change", (e) => {
-				const formData = new FormData(form);
+			document.querySelector("form").addEventListener("change", (e) => {
+				const formData = new FormData(e.target.form);
 				const tag = formData.get("tag");
+
 				ui.updateParams((params) => {
 					if (tag === "all") {
 						params.tagQuery = [];
