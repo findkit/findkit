@@ -33,6 +33,7 @@ const sidebars = {
 				},
 				"crawler/meta-tag",
 				"crawler/custom-fields",
+				"crawler/rest-api",
 			],
 		},
 		{
@@ -52,23 +53,23 @@ const sidebars = {
 				"ui/tech",
 				{
 					type: "category",
-					label: "Patterns",
+					label: "Embedding Patterns",
 					// link: { type: "doc", id: "" },
 					items: [
-						{
-							type: "category",
-							label: "Embedding Patterns",
-							link: { type: "doc", id: "ui/patterns/embedding/index" },
-							items: [
-								"ui/patterns/embedding/fullscreen",
-								"ui/patterns/embedding/offset",
-								"ui/patterns/embedding/content-overlay",
-								"ui/patterns/embedding/raw",
-								"ui/patterns/embedding/react",
-							],
-						},
+						"ui/patterns/embedding/fullscreen",
+						"ui/patterns/embedding/offset",
+						"ui/patterns/embedding/content-overlay",
+						"ui/patterns/embedding/raw",
+						"ui/patterns/embedding/react",
+						// {
+						// 	type: "category",
+						// 	label: "Embedding Patterns",
+						// 	link: { type: "doc", id: "ui/patterns/embedding/index" },
+						// 	items: [
+						// 	],
+						// },
 
-						"ui/patterns/ui/index",
+						// "ui/patterns/ui/index",
 					],
 				},
 				{
@@ -87,6 +88,7 @@ const sidebars = {
 				"ui/translations",
 			],
 		},
+		"fetch-lib",
 	],
 };
 

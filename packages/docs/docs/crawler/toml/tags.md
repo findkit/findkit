@@ -1,4 +1,4 @@
-# `tags`
+# Tags
 
 Matchers used to [tag pages](/crawler/tagging).
 
