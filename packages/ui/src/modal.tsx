@@ -270,8 +270,6 @@ function Modal() {
 	const unmount = !delayed && !show;
 	const isScrollingDown = useIsScrollingDown(containerRef, show);
 
-	useScrollLock(!unmount && state.lockScroll);
-
 	// Use delayed to keep the open body class until the animation is done
 	useEffect(() => {
 		const classList = document.body.classList;
