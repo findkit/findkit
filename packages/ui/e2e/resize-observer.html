@@ -40,8 +40,13 @@
 						return html`${props.content}`;
 					},
 				},
+				lockScroll: false,
 				css: css`
 					.findkit--modal-container {
+						inset: initial;
+						position: absolute;
+						width: 100%;
+
 						top: var(--offset-top);
 					}
 				`,
