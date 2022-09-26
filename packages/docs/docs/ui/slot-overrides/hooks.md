@@ -8,17 +8,23 @@ Functions starting with the `use` keyword are [React](https://reactjs.org/docs/h
 
 Hook for updating the [search params](/ui/api/params).
 
+TODO: example
+
 <Api page="ui.useparams" />
 
 ### `useGroups()` {#useGroups}
 
 Hook for updating the [groups](/ui/groups).
 
+TODO: example
+
 <Api page="ui.usegroups" />
 
 ### `useInput()` {#useInput}
 
 Hook for binding custom inputs as the search terms inputs.
+
+TODO: example
 
 <Api page="ui.useinput" />
 
