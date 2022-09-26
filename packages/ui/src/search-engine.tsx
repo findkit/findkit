@@ -115,6 +115,11 @@ export interface State {
 	infiniteScroll: boolean;
 
 	/**
+	 * Show the default modal header
+	 */
+	header: boolean;
+
+	/**
 	 * ID of the element keyboard cursor is at
 	 */
 	keyboardCursor: string | undefined;
@@ -303,6 +308,7 @@ export interface SearchEngineOptions {
 	searchEndpoint?: string;
 	throttleTime?: number;
 	lockScroll?: boolean;
+	header?: boolean;
 	fetchCount?: number;
 	minTerms?: number;
 	events: Emitter<FindkitUIEvents, unknown>;
@@ -438,6 +444,7 @@ export class SearchEngine {
 			infiniteScroll: options.infiniteScroll ?? true,
 			error: undefined,
 			resultGroups: {},
+			header: options.header ?? true,
 			keyboardCursor: undefined,
 			ui: {
 				lang,

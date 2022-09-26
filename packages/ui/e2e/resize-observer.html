@@ -27,12 +27,8 @@
 				params: {
 					tagQuery: [["domain/valu.fi"]],
 				},
-				slots: {
-					Layout(props) {
-						return html`${props.content}`;
-					},
-				},
 				pageScroll: true,
+				header: false,
 				css: css`
 					.findkit--modal-container {
 						top: var(--offset-top);

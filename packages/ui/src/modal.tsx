@@ -295,7 +295,7 @@ function Modal() {
 
 	const visible = show && delayed;
 
-	const header = (
+	const header = state.header ? (
 		<View
 			cn={{
 				header: true,
@@ -310,7 +310,7 @@ function Modal() {
 				<SearchInput />
 			</Slot>
 		</View>
-	);
+	) : null;
 
 	const content = (
 		<View cn="content">
@@ -352,9 +352,10 @@ function Modal() {
 
 export function Plain() {
 	const engine = useSearchEngine();
+	const state = useSearchEngineState();
 	const containerKbAttrs = useContainerKeyboardAttributes();
 
-	const header = <SearchInput />;
+	const header = state.header ? <SearchInput /> : null;
 
 	const content = (
 		<View cn="content">
@@ -394,6 +395,7 @@ export function init(_options: {
 	container?: Element;
 	lockScroll?: boolean;
 	infiniteScroll?: boolean;
+	header?: boolean;
 	router?: SearchEngineOptions["router"];
 	ui?: {
 		lang: string;
