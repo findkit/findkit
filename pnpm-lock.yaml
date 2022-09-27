@@ -23,7 +23,7 @@ importers:
       '@docusaurus/core': 2.1.0
       '@docusaurus/module-type-aliases': 2.1.0
       '@docusaurus/preset-classic': 2.1.0
-      '@findkit/ui': 0.0.1-dev.2fa979c564
+      '@findkit/ui': 0.0.1-dev.42577de838
       '@mdx-js/react': ^1.6.22
       '@valu/react-intersection-observer': ^1.0.0
       clsx: ^1.2.1
@@ -35,7 +35,7 @@ importers:
     dependencies:
       '@docusaurus/core': 2.1.0_rw34wyrummvuuuhgiylphbvpae
       '@docusaurus/preset-classic': 2.1.0_rw34wyrummvuuuhgiylphbvpae
-      '@findkit/ui': 0.0.1-dev.2fa979c564
+      '@findkit/ui': 0.0.1-dev.42577de838
       '@mdx-js/react': 1.6.22_react@17.0.2
       '@valu/react-intersection-observer': 1.0.0_react@17.0.2
       clsx: 1.2.1
@@ -2646,8 +2646,8 @@ packages:
       - supports-color
     dev: true
 
-  /@findkit/ui/0.0.1-dev.2fa979c564:
-    resolution: {integrity: sha512-Ka/iay/Qjf0h4TXLpEHE7PnzE009ja0IJKSPIGmlZ53apeub584k3M4Y1zQMVJQzaXiuCVRLZ2+2ftqDsCxl8Q==}
+  /@findkit/ui/0.0.1-dev.42577de838:
+    resolution: {integrity: sha512-7T3mLGL9TNejJI9IIvyHN0IiOV2B+3zOqi3320jk9SM0gBnDA0O0SXHNSUrRTSe3agwRaHzITBSFfq5qYiXpEA==}
     dev: false
 
   /@hapi/hoek/9.3.0:
