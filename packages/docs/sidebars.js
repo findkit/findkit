@@ -55,7 +55,7 @@ const sidebars = {
 				{
 					type: "category",
 					label: "Embedding Patterns",
-					// link: { type: "doc", id: "" },
+					link: { type: "doc", id: "ui/patterns/embedding/index" },
 					items: [
 						"ui/patterns/embedding/fullscreen",
 						"ui/patterns/embedding/offset",
