@@ -426,10 +426,23 @@ export class FindkitUI {
 	 */
 	updateGroups = this.#proxy("updateGroups");
 
+	get groups(): GroupDefinition[] {
+		return this.#engine?.getGroupsSnapshot() ?? this.#options.groups ?? [];
+	}
+
 	/**
 	 * Update search params
 	 */
 	updateParams = this.#proxy("updateParams");
+
+	get params(): SearchEngineParams {
+		return (
+			this.#engine?.getParamsSnapshot() ??
+			this.#options.params ?? {
+				tagQuery: [],
+			}
+		);
+	}
 
 	/**
 	 * Unbind all event listeners, close the modal and remove it from the DOM

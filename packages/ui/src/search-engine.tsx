@@ -11,7 +11,7 @@ import {
 } from "@findkit/fetch";
 
 import { FindkitFetchOptions, FindkitSearchResponse } from "@findkit/fetch";
-import { proxy, ref } from "valtio";
+import { proxy, ref, snapshot } from "valtio";
 import {
 	RouterBackend,
 	createQueryStringBackend,
@@ -733,16 +733,33 @@ export class SearchEngine {
 		}
 	};
 
+	getParamsSnapshot(): SearchEngineParams {
+		const group = this.state.nextGroupDefinitions[0];
+		// Avoid expensive deep readonly with the any
+		return snapshot(group?.params as any) ?? {};
+	}
+
+	getGroupsSnapshot(): GroupDefinition[] {
+		const groups = this.state.nextGroupDefinitions;
+		// Avoid expensive deep readonly with the any
+		return snapshot(groups as any) ?? [];
+	}
+
 	#handleGroupsChange = () => {
+		const self = this;
 		this.events.emit("groups-change", {
-			groups: this.state.nextGroupDefinitions,
+			get groups() {
+				return self.getGroupsSnapshot();
+			},
 		});
 
 		const group = this.state.nextGroupDefinitions[0];
 		assertNonNullable(group, "first group missing");
 
 		this.events.emit("params-change", {
-			params: group.params ?? {},
+			get params() {
+				return self.getParamsSnapshot();
+			},
 		});
 		this.#clearTimeout();
 		const terms = this.findkitParams.getTerms();

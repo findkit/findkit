@@ -69,7 +69,14 @@ jobs:
           gzip esm/*.js
           echo 'The bundle sizes are now:' > /tmp/sizes
           echo '```' >> /tmp/sizes
+
+          echo 'ls -lh' >> /tmp/sizes
           ls -lh esm/*.js.gz >> /tmp/sizes
+
+          echo >> /tmp/sizes
+          echo 'ls -l' >> /tmp/sizes
+          ls -l esm/*.js.gz >> /tmp/sizes
+
           echo '```' >> /tmp/sizes
           echo 'The `index.js` is the loader code which should be as small as possible.' >> /tmp/sizes
           gunzip esm/*.gz
