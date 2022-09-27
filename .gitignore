@@ -5,6 +5,7 @@ build
 .turbo
 .temp
 .pnpm-debug.log
+.parcel-cache
 
 # Local Netlify folder
 .netlify

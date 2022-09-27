@@ -5,6 +5,7 @@
 		"serve": "serve -l 48439"
 	},
 	"devDependencies": {
+		"parcel": "^2.1.1",
 		"serve": "^14.0.1"
 	},
 	"volta": {

@@ -164,8 +164,10 @@ importers:
 
   packages/ui-examples:
     specifiers:
+      parcel: ^2.1.1
       serve: ^14.0.1
     devDependencies:
+      parcel: 2.7.0
       serve: 14.0.1
 
 packages:
@@ -4033,6 +4035,52 @@ packages:
       - '@parcel/core'
     dev: true
 
+  /@parcel/config-default/2.7.0_@parcel+core@2.7.0:
+    resolution: {integrity: sha512-ZzsLr97AYrz8c9k6qn3DlqPzifi3vbP7q3ynUrAFxmt0L4+K0H9N508ZkORYmCgaFjLIQ8Y3eWpwCJ0AewPNIg==}
+    peerDependencies:
+      '@parcel/core': ^2.7.0
+    dependencies:
+      '@parcel/bundler-default': 2.7.0_@parcel+core@2.7.0
+      '@parcel/compressor-raw': 2.7.0_@parcel+core@2.7.0
+      '@parcel/core': 2.7.0
+      '@parcel/namer-default': 2.7.0_@parcel+core@2.7.0
+      '@parcel/optimizer-css': 2.7.0_@parcel+core@2.7.0
+      '@parcel/optimizer-htmlnano': 2.7.0_@parcel+core@2.7.0
+      '@parcel/optimizer-image': 2.7.0_@parcel+core@2.7.0
+      '@parcel/optimizer-svgo': 2.7.0_@parcel+core@2.7.0
+      '@parcel/optimizer-terser': 2.7.0_@parcel+core@2.7.0
+      '@parcel/packager-css': 2.7.0_@parcel+core@2.7.0
+      '@parcel/packager-html': 2.7.0_@parcel+core@2.7.0
+      '@parcel/packager-js': 2.7.0_@parcel+core@2.7.0
+      '@parcel/packager-raw': 2.7.0_@parcel+core@2.7.0
+      '@parcel/packager-svg': 2.7.0_@parcel+core@2.7.0
+      '@parcel/reporter-dev-server': 2.7.0_@parcel+core@2.7.0
+      '@parcel/resolver-default': 2.7.0_@parcel+core@2.7.0
+      '@parcel/runtime-browser-hmr': 2.7.0_@parcel+core@2.7.0
+      '@parcel/runtime-js': 2.7.0_@parcel+core@2.7.0
+      '@parcel/runtime-react-refresh': 2.7.0_@parcel+core@2.7.0
+      '@parcel/runtime-service-worker': 2.7.0_@parcel+core@2.7.0
+      '@parcel/transformer-babel': 2.7.0_@parcel+core@2.7.0
+      '@parcel/transformer-css': 2.7.0_@parcel+core@2.7.0
+      '@parcel/transformer-html': 2.7.0_@parcel+core@2.7.0
+      '@parcel/transformer-image': 2.7.0_@parcel+core@2.7.0
+      '@parcel/transformer-js': 2.7.0_@parcel+core@2.7.0
+      '@parcel/transformer-json': 2.7.0_@parcel+core@2.7.0
+      '@parcel/transformer-postcss': 2.7.0_@parcel+core@2.7.0
+      '@parcel/transformer-posthtml': 2.7.0_@parcel+core@2.7.0
+      '@parcel/transformer-raw': 2.7.0_@parcel+core@2.7.0
+      '@parcel/transformer-react-refresh-wrap': 2.7.0_@parcel+core@2.7.0
+      '@parcel/transformer-svg': 2.7.0_@parcel+core@2.7.0
+    transitivePeerDependencies:
+      - cssnano
+      - postcss
+      - purgecss
+      - relateurl
+      - srcset
+      - terser
+      - uncss
+    dev: true
+
   /@parcel/config-default/2.7.0_shdqhynvzslzlpwcunisasy46q:
     resolution: {integrity: sha512-ZzsLr97AYrz8c9k6qn3DlqPzifi3vbP7q3ynUrAFxmt0L4+K0H9N508ZkORYmCgaFjLIQ8Y3eWpwCJ0AewPNIg==}
     peerDependencies:
@@ -4296,6 +4344,26 @@ packages:
       nullthrows: 1.1.1
     transitivePeerDependencies:
       - '@parcel/core'
+    dev: true
+
+  /@parcel/optimizer-htmlnano/2.7.0_@parcel+core@2.7.0:
+    resolution: {integrity: sha512-5QrGdWS5Hi4VXE3nQNrGqugmSXt68YIsWwKRAdarOxzyULSJS3gbCiQOXqIPRJobfZjnSIcdtkyxSiCUe1inIA==}
+    engines: {node: '>= 12.0.0', parcel: ^2.7.0}
+    dependencies:
+      '@parcel/plugin': 2.7.0_@parcel+core@2.7.0
+      htmlnano: 2.0.2_svgo@2.8.0
+      nullthrows: 1.1.1
+      posthtml: 0.16.6
+      svgo: 2.8.0
+    transitivePeerDependencies:
+      - '@parcel/core'
+      - cssnano
+      - postcss
+      - purgecss
+      - relateurl
+      - srcset
+      - terser
+      - uncss
     dev: true
 
   /@parcel/optimizer-htmlnano/2.7.0_shdqhynvzslzlpwcunisasy46q:
@@ -10777,6 +10845,41 @@ packages:
       timsort: 0.3.0
     dev: true
 
+  /htmlnano/2.0.2_svgo@2.8.0:
+    resolution: {integrity: sha512-+ZrQFS4Ub+zd+/fWwfvoYCEGNEa0/zrpys6CyXxvZDwtL7Pl+pOtRkiujyvBQ7Lmfp7/iEPxtOFgxWA16Gkj3w==}
+    peerDependencies:
+      cssnano: ^5.0.11
+      postcss: ^8.3.11
+      purgecss: ^4.0.3
+      relateurl: ^0.2.7
+      srcset: ^5.0.0
+      svgo: ^2.8.0
+      terser: ^5.10.0
+      uncss: ^0.17.3
+    peerDependenciesMeta:
+      cssnano:
+        optional: true
+      postcss:
+        optional: true
+      purgecss:
+        optional: true
+      relateurl:
+        optional: true
+      srcset:
+        optional: true
+      svgo:
+        optional: true
+      terser:
+        optional: true
+      uncss:
+        optional: true
+    dependencies:
+      cosmiconfig: 7.0.1
+      posthtml: 0.16.6
+      svgo: 2.8.0
+      timsort: 0.3.0
+    dev: true
+
   /htmlparser2/6.1.0:
     resolution: {integrity: sha512-gyyPk6rgonLFEDGoeRgQNaEUvdJ4ktTmmUh/h2t7s+M8oPpIPxgNACWa+6ESR57kXstwqPiCut0V8NRpcwgU7A==}
     dependencies:
@@ -14111,6 +14214,38 @@ packages:
       dot-case: 3.0.4
       tslib: 2.4.0
     dev: false
+
+  /parcel/2.7.0:
+    resolution: {integrity: sha512-pRYwnivwtNP0tip8xYSo4zCB0XhLt7/gJzP1p8OovCqkmFjG9VG+GW9TcAKqMIo0ovEa9tT+/s6gY1Qy+BONGQ==}
+    engines: {node: '>= 12.0.0'}
+    hasBin: true
+    peerDependenciesMeta:
+      '@parcel/core':
+        optional: true
+    dependencies:
+      '@parcel/config-default': 2.7.0_@parcel+core@2.7.0
+      '@parcel/core': 2.7.0
+      '@parcel/diagnostic': 2.7.0
+      '@parcel/events': 2.7.0
+      '@parcel/fs': 2.7.0_@parcel+core@2.7.0
+      '@parcel/logger': 2.7.0
+      '@parcel/package-manager': 2.7.0_@parcel+core@2.7.0
+      '@parcel/reporter-cli': 2.7.0_@parcel+core@2.7.0
+      '@parcel/reporter-dev-server': 2.7.0_@parcel+core@2.7.0
+      '@parcel/utils': 2.7.0
+      chalk: 4.1.2
+      commander: 7.2.0
+      get-port: 4.2.0
+      v8-compile-cache: 2.3.0
+    transitivePeerDependencies:
+      - cssnano
+      - postcss
+      - purgecss
+      - relateurl
+      - srcset
+      - terser
+      - uncss
+    dev: true
 
   /parcel/2.7.0_postcss@8.4.16:
     resolution: {integrity: sha512-pRYwnivwtNP0tip8xYSo4zCB0XhLt7/gJzP1p8OovCqkmFjG9VG+GW9TcAKqMIo0ovEa9tT+/s6gY1Qy+BONGQ==}
