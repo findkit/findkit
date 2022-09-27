@@ -1,0 +1,49 @@
+name: Publish npm package from PR comment
+
+concurrency:
+  group: "npm-publish"
+
+on:
+  issue_comment:
+    types: [created]
+
+env:
+  AWS_EC2_METADATA_DISABLED: true
+
+jobs:
+  publish:
+    permissions:
+      id-token: write # needed to interact with GitHub's OIDC Token endpoint.
+      contents: read # read the repo itself
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: ${{ github.event.issue.pull_request }}
+    steps:
+      - uses: actions/checkout@v2
+      #   with:
+      #     # Fetch full history to get all tags so we can get PREV_VERSION
+      #     fetch-depth: 0
+
+      - name: Configure AWS credentials
+        run: |
+          echo "${{github.event.comment.body}}"
+
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     role-to-assume: ${{ secrets.AWS_WORKFLOW_ROLE_ARN }}
+      #     aws-region: eu-north-1
+
+      # - name: Test AWS creds
+      #   run: |
+      #     set -eu
+      #     aws s3 ls s3://${{ secrets.FINDKIT_CDN_S3 }}/ui
+
+      # - name: Publish
+      #   uses: .github/release-action@master
+      #   env:
+      #     FINDKIT_CDN_S3: "${{ secrets.FINDKIT_CDN_S3 }}"
+      #   with:
+      #     slack_access_token: "${{ secrets.SLACK_ACCESS_TOKEN }}"
+      #     slack_channel: "${{ secrets.SLACK_CHANNEL }}"
+      #     npm_token: "${{ secrets.NPM_TOKEN }}"
