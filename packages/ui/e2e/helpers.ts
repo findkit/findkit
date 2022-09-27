@@ -51,3 +51,18 @@ export async function getScrollPosition(page: Page) {
 export function spinnerLocator(page: Page) {
 	return page.locator(".findkit--search-input-wrap .findkit--spinning");
 }
+
+export function viteEntry(entry: string) {
+	if (process.env.CI) {
+		return `http://localhost:28104/dist/vite/${entry}`;
+	}
+
+	return `http://127.0.0.1:5173/vite/${entry}.html`;
+}
+
+export function staticEntry(entry: string) {
+	if (entry.startsWith("/")) {
+		entry = entry.slice(1);
+	}
+	return `http://localhost:28104/static/${entry}`;
+}

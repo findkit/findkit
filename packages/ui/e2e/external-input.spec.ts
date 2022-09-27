@@ -1,9 +1,10 @@
 import { test, expect } from "@playwright/test";
+import { staticEntry } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 
 test("can use external input with modal", async ({ page }) => {
-	await page.goto("/external-input");
+	await page.goto(staticEntry("/external-input"));
 
 	await page.evaluate(async () => {});
 
@@ -35,7 +36,7 @@ test("can use external input with modal", async ({ page }) => {
 });
 
 test("can lazily bind input", async ({ page }) => {
-	await page.goto("/external-input-dummy");
+	await page.goto(staticEntry("/external-input-dummy"));
 
 	await page.evaluate(async () => {
 		const { FindkitUI, html, css } = MOD;

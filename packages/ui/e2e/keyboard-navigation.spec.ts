@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { getScrollPosition } from "./helpers";
+import { getScrollPosition, staticEntry } from "./helpers";
 
 test.use({
 	viewport: {
@@ -9,7 +9,7 @@ test.use({
 });
 
 test("can select first element", async ({ page }) => {
-	await page.goto("/two-groups");
+	await page.goto(staticEntry("/two-groups"));
 	const hits = page.locator(".findkit--hit");
 	await page.locator("text=open").click();
 	await page.locator('[aria-label="Search input"]').fill("mikko");
@@ -37,7 +37,7 @@ test("can select first element", async ({ page }) => {
 });
 
 test("can navigate to group", async ({ page }) => {
-	await page.goto("/two-groups");
+	await page.goto(staticEntry("/two-groups"));
 	const hits = page.locator(".findkit--hit");
 	const groupTitles = page.locator(".findkit--group-title");
 	await page.locator("text=open").click();
@@ -102,7 +102,7 @@ test("can navigate to group", async ({ page }) => {
 });
 
 test("can keyboard navigate in custom container", async ({ page }) => {
-	await page.goto("/custom-container");
+	await page.goto(staticEntry("/custom-container"));
 	const hits = page.locator(".findkit--hit");
 
 	const input = page.locator('[aria-label="Search input"]');

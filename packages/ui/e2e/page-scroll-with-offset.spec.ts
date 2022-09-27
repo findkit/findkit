@@ -1,7 +1,8 @@
 import { test, expect } from "@playwright/test";
+import { staticEntry } from "./helpers";
 
 test("can scroll page when using absolute positioning", async ({ page }) => {
-	await page.goto("/resize-observer");
+	await page.goto(staticEntry("/resize-observer"));
 	await page.setViewportSize({ width: 600, height: 600 });
 	const input = page.locator("#external-input");
 	const hits = page.locator(".findkit--hit");

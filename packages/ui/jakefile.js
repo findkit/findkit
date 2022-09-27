@@ -106,7 +106,7 @@ task("upload", async () => {
         aws s3 cp styles.css "s3://\${FINDKIT_CDN_S3}/ui/v${version}/styles.css"
 
         aws s3 cp demo.html "s3://\${FINDKIT_CDN_S3}/ui/v${version}/demo.html"
-        aws s3 cp e2e/shared.css "s3://\${FINDKIT_CDN_S3}/ui/v${version}/demo.css"
+        aws s3 cp test-app/shared.css "s3://\${FINDKIT_CDN_S3}/ui/v${version}/demo.css"
     `();
 });
 
@@ -120,19 +120,21 @@ task(
 // The issue is closed but the issue still remains.
 task(
 	"watch-css",
-	sh`postcss --watch styles/index.css --output e2e/build/styles.css`,
+	sh`postcss --watch styles/index.css --output test-app/build/styles.css`,
 );
 
-task("build-e2e", async () => {
+task("build-test-app", async () => {
 	sh`
-        mkdir -p e2e/build
-        NODE_ENV=production postcss styles/index.css --output e2e/build/styles.css
+        mkdir -p test-app/build
+        NODE_ENV=production postcss styles/index.css --output test-app/build/styles.css
+		cd test-app
+		vite build --base /dist/
     `();
 
 	await runEsbuild({
 		dev: true,
 		format: "esm",
-		outdir: "./e2e/build/esm",
+		outdir: "./test-app/build/esm",
 		minify: false,
 	});
 });
@@ -155,7 +157,7 @@ task("watch-js", async () => {
 	const opts = {
 		dev: true,
 		format: "esm",
-		outdir: "./e2e/build/esm",
+		outdir: "./test-app/build/esm",
 		minify: false,
 	};
 

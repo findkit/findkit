@@ -1,9 +1,10 @@
 import { test, expect } from "@playwright/test";
+import { staticEntry } from "../e2e/helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 
 test("input is visually correct", async ({ page }) => {
-	await page.goto("/single-group");
+	await page.goto(staticEntry("/single-group"));
 
 	const input = page.locator('[aria-label="Search input"]');
 	const button = page.locator("text=open");
@@ -17,7 +18,7 @@ test("input is visually correct", async ({ page }) => {
 });
 
 test("can show backdrop", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
@@ -39,7 +40,7 @@ test("can show backdrop", async ({ page }) => {
 });
 
 test("centers the content with width css", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
@@ -60,7 +61,7 @@ test("centers the content with width css", async ({ page }) => {
 });
 
 test("can set modal top", async ({ page }) => {
-	await page.goto("/external-input-dummy");
+	await page.goto(staticEntry("/external-input-dummy"));
 
 	await page.evaluate(async () => {
 		const { FindkitUI, css, html } = MOD;
@@ -98,7 +99,7 @@ test("can set modal top", async ({ page }) => {
 });
 
 test("modal slides under the backdrop container", async ({ page }) => {
-	await page.goto("/external-input-dummy");
+	await page.goto(staticEntry("/external-input-dummy"));
 
 	await page.evaluate(async () => {
 		const { FindkitUI, css, html } = MOD;
@@ -141,7 +142,7 @@ test("modal slides under the backdrop container", async ({ page }) => {
 });
 
 test("can use load() with styles", async ({ page }) => {
-	await page.goto("/manual-load");
+	await page.goto(staticEntry("/manual-load"));
 
 	const input = page.locator('[aria-label="Search input"]');
 	const button = page.locator("text=open");
@@ -153,7 +154,7 @@ test("can use load() with styles", async ({ page }) => {
 });
 
 test("can remove the close button", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
 		const { FindkitUI, html } = MOD;
@@ -176,7 +177,7 @@ test("can remove the close button", async ({ page }) => {
 });
 
 test("overlay modal", async ({ page }) => {
-	await page.goto("/overlay-modal");
+	await page.goto(staticEntry("/overlay-modal"));
 	const input = page.locator("#external-input");
 	const hits = page.locator(".findkit-overlay-container .findkit--hit");
 	await input.fill("valu");
@@ -195,7 +196,7 @@ test("overlay modal", async ({ page }) => {
 });
 
 test("overlay modal without shadow dom", async ({ page }) => {
-	await page.goto("/overlay-modal?no-shadow");
+	await page.goto(staticEntry("/overlay-modal?no-shadow"));
 	const input = page.locator("#external-input");
 	const hits = page.locator(".findkit-overlay-container .findkit--hit");
 	await input.fill("valu");
@@ -214,7 +215,7 @@ test("overlay modal without shadow dom", async ({ page }) => {
 });
 
 test("ResizeObserver offset", async ({ page }) => {
-	await page.goto("/resize-observer");
+	await page.goto(staticEntry("/resize-observer"));
 	const input = page.locator("#external-input");
 	const hits = page.locator(".findkit--hit");
 
@@ -235,7 +236,7 @@ test("ResizeObserver offset", async ({ page }) => {
 });
 
 test("header is shown when scrolled up a bit", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 	await page.setViewportSize({ width: 600, height: 600 });
 
 	const input = page.locator('[aria-label="Search input"]');

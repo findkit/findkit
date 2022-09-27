@@ -52,9 +52,9 @@ const config: PlaywrightTestConfig = {
 	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 	use: {
 		/* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
-		actionTimeout: 0,
+		actionTimeout: 30000,
 		/* Base URL to use in actions like `await page.goto('/')`. */
-		baseURL: "http://localhost:28104",
+		baseURL: "http://localhost:28104/static",
 
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: "on-first-retry",

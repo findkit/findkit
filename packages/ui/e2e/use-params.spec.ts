@@ -1,8 +1,8 @@
 import { test, expect } from "@playwright/test";
-import { getHitHosts, spinnerLocator } from "./helpers";
+import { getHitHosts, spinnerLocator, staticEntry } from "./helpers";
 
 test("can use 'useParams()' to filter results", async ({ page }) => {
-	await page.goto("/use-params");
+	await page.goto(staticEntry("/use-params"));
 	const loading = spinnerLocator(page);
 	await page.locator("text=open").click();
 

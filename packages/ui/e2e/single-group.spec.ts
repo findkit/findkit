@@ -1,11 +1,11 @@
 import { test, expect } from "@playwright/test";
 import type { FindkitUI } from "../src/cdn-entries/index";
-import { getHitHosts, spinnerLocator } from "./helpers";
+import { getHitHosts, spinnerLocator, staticEntry } from "./helpers";
 
 declare const ui: FindkitUI;
 
 test("can load more results when using only one group", async ({ page }) => {
-	await page.goto("/single-group");
+	await page.goto(staticEntry("/single-group"));
 	const hits = page.locator(".findkit--hit");
 	const loading = spinnerLocator(page);
 
@@ -40,7 +40,7 @@ test("can load more results when using only one group", async ({ page }) => {
 });
 
 test("the input is cleared when the modal is closed", async ({ page }) => {
-	await page.goto("/single-group");
+	await page.goto(staticEntry("/single-group"));
 	const hits = page.locator(".findkit--hit");
 
 	await page.locator("text=open").click();
@@ -60,7 +60,7 @@ test("the input is cleared when the modal is closed", async ({ page }) => {
 test("search input is focused on open and restored back to opening element when closing", async ({
 	page,
 }) => {
-	await page.goto("/single-group");
+	await page.goto(staticEntry("/single-group"));
 
 	const button = page.locator("text=open");
 
@@ -82,7 +82,7 @@ test.describe("small window", () => {
 	});
 
 	test("hides the search input on scroll", async ({ page }) => {
-		await page.goto("/single-group", {});
+		await page.goto(staticEntry("/single-group"));
 
 		const button = page.locator("text=open");
 		const input = page.locator('[aria-label="Search input"]');
@@ -113,7 +113,7 @@ test.describe("small window", () => {
 });
 
 test("can open the search progmatically", async ({ page }) => {
-	await page.goto("/single-group");
+	await page.goto(staticEntry("/single-group"));
 	await page.evaluate(async () => {
 		ui.open("mikko");
 	});
@@ -128,7 +128,7 @@ test("can open the search progmatically", async ({ page }) => {
 });
 
 test("can open the search progmatically without terms", async ({ page }) => {
-	await page.goto("/single-group");
+	await page.goto(staticEntry("/single-group"));
 	await page.evaluate(async () => {
 		ui.open();
 	});
@@ -139,7 +139,7 @@ test("can open the search progmatically without terms", async ({ page }) => {
 });
 
 test("emits debounced-search event", async ({ page }) => {
-	await page.goto("/single-group");
+	await page.goto(staticEntry("/single-group"));
 	await page.locator("text=open").click();
 
 	const termsPromise = page.evaluate(async () => {
@@ -161,7 +161,7 @@ test("emits debounced-search event", async ({ page }) => {
 test("can navigate to hit and come back retaining url and input value", async ({
 	page,
 }) => {
-	await page.goto("/single-group");
+	await page.goto(staticEntry("/single-group"));
 	const hits = page.locator(".findkit--hit a");
 	await page.locator("text=open").click();
 
@@ -180,7 +180,7 @@ test("can navigate to hit and come back retaining url and input value", async ({
 });
 
 test("emits hit-click events and can prevent default", async ({ page }) => {
-	await page.goto("/single-group");
+	await page.goto(staticEntry("/single-group"));
 	const hits = page.locator(".findkit--hit a");
 	await page.locator("text=open").click();
 
@@ -208,7 +208,7 @@ test("emits hit-click events and can prevent default", async ({ page }) => {
 });
 
 test("can update groups on the fly", async ({ page }) => {
-	await page.goto("/single-group");
+	await page.goto(staticEntry("/single-group"));
 	await page.locator("text=open").click();
 
 	const hits = page.locator(".findkit--hit a");
@@ -240,7 +240,7 @@ test("can update groups on the fly", async ({ page }) => {
 });
 
 test("can update groups on the fly with update function", async ({ page }) => {
-	await page.goto("/single-group");
+	await page.goto(staticEntry("/single-group"));
 	await page.locator("text=open").click();
 
 	const hits = page.locator(".findkit--hit a");
@@ -263,7 +263,7 @@ test("can update groups on the fly with update function", async ({ page }) => {
 });
 
 test("can infinite scroll", async ({ page }) => {
-	await page.goto("/single-group");
+	await page.goto(staticEntry("/single-group"));
 
 	await page.evaluate(async () => {
 		const anyWindow = window as any;

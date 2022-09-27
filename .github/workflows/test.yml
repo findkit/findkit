@@ -113,7 +113,7 @@ jobs:
           # Sanity check
           ./node_modules/.bin/findkit search -t po8GK3G0r valu
 
-          pnpm run build-e2e
+          pnpm run build-test-app
           pnpm run playwright-test
 
       - name: Comment bundle sizes on PR

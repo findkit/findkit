@@ -1,7 +1,8 @@
 import { test, expect } from "@playwright/test";
+import { staticEntry } from "./helpers";
 
 test("can search with custom input with useInput()", async ({ page }) => {
-	await page.goto("/use-input");
+	await page.goto(staticEntry("/use-input"));
 	const hits = page.locator(".findkit--hit");
 
 	await page.locator("text=open").click();
@@ -19,7 +20,7 @@ test.describe("small window", () => {
 	});
 
 	test("hides the custom search input on scroll", async ({ page }) => {
-		await page.goto("/use-input");
+		await page.goto(staticEntry("/use-input"));
 
 		const button = page.locator("text=open");
 		const input = page.locator(".custom-input");
