@@ -172,9 +172,11 @@ export interface FindkitUIEvents {
 	"groups-change": {
 		groups: GroupDefinition[];
 	};
+
 	"params-change": {
 		params: SearchEngineParams;
 	};
+
 	"hit-click": {
 		hit: SearchResultHit;
 		preventDefault: () => void;
