@@ -27,7 +27,7 @@ import type {
 } from "../slots";
 import type { PreactFunctions } from "./preact-subset";
 
-console.log("test change");
+console.log("test change 2");
 
 export {
 	PreactFunctions,
