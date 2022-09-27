@@ -1,0 +1,61 @@
+name: Publish npm package from PR comment
+
+concurrency:
+  group: "npm-publish"
+
+on:
+  issue_comment:
+    types: [created]
+
+env:
+  AWS_EC2_METADATA_DISABLED: true
+
+jobs:
+  publish:
+    permissions:
+      id-token: write # needed to interact with GitHub's OIDC Token endpoint.
+      contents: read # read the repo itself
+      pull-requests: write
+      issues: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '!release') }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # Fetch full history to get all tags so we can get PREV_VERSION
+          fetch-depth: 0
+      - name: Check allowed users
+        env:
+          allowed_users: "${{ inputs.allowed_users }}"
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const collaborators = await github.rest.repos.listCollaborators({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+
+            console.log(collaborators);
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_WORKFLOW_ROLE_ARN }}
+          aws-region: eu-north-1
+
+      - name: Test AWS creds
+        run: |
+          set -eu
+          aws s3 ls s3://${{ secrets.FINDKIT_CDN_S3 }}/ui
+
+      - name: Publish
+        uses: ./.github/release-action
+        env:
+          FINDKIT_CDN_S3: "${{ secrets.FINDKIT_CDN_S3 }}"
+        with:
+          package: "ui"
+          mode: "prerelease"
+          slack_access_token: "${{ secrets.SLACK_ACCESS_TOKEN }}"
+          slack_channel: "${{ secrets.SLACK_CHANNEL }}"
+          npm_token: "${{ secrets.NPM_TOKEN }}"
