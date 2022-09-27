@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { spinnerLocator } from "./helpers";
+import { spinnerLocator, staticEntry } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 
 test("can set required terms length to zero", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
@@ -23,7 +23,7 @@ test("can set required terms length to zero", async ({ page }) => {
 });
 
 test("can disable shadow dom", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
 		document.getElementById("custom-css")!.innerHTML = `
@@ -51,7 +51,7 @@ test("can disable shadow dom", async ({ page }) => {
 });
 
 test("shadown dom is enabled by default", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
 		document.getElementById("custom-css")!.innerHTML = `
@@ -80,7 +80,7 @@ test("shadown dom is enabled by default", async ({ page }) => {
 test("custom inputs does not mess up the focus management", async ({
 	page,
 }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
@@ -101,7 +101,7 @@ test("custom inputs does not mess up the focus management", async ({
 });
 
 test("updates from history.pushState()", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	const hits = page.locator(".findkit--hit a");
 	const loading = spinnerLocator(page);
@@ -140,7 +140,7 @@ test("updates from history.pushState()", async ({ page }) => {
 });
 
 test("can change terms after fetching all", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
@@ -173,7 +173,7 @@ test("can change terms after fetching all", async ({ page }) => {
 });
 
 test("can bind .open(terms) to a button", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
@@ -213,7 +213,7 @@ test("can bind .open(terms) to a button", async ({ page }) => {
 });
 
 test("can use memory routing", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
@@ -242,7 +242,7 @@ test("can use memory routing", async ({ page }) => {
 });
 
 test("can open modal from link", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
@@ -276,7 +276,7 @@ test("can open modal from link", async ({ page }) => {
 });
 
 test("can cmd links", async ({ page, context }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
@@ -311,7 +311,7 @@ test("can cmd links", async ({ page, context }) => {
 });
 
 test("can customize fetch count", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({

@@ -1,8 +1,8 @@
 import { test, expect } from "@playwright/test";
-import { spinnerLocator } from "./helpers";
+import { spinnerLocator, staticEntry } from "./helpers";
 
 test("refresh restores search results", async ({ page }) => {
-	await page.goto("/hash-router");
+	await page.goto(staticEntry("/hash-router"));
 	const hits = page.locator(".findkit--hit");
 
 	await page.locator("text=open").click();
@@ -18,7 +18,7 @@ test("refresh restores search results", async ({ page }) => {
 });
 
 test("can navigate to full group results and back", async ({ page }) => {
-	await page.goto("/hash-router");
+	await page.goto(staticEntry("/hash-router"));
 	const hits = page.locator(".findkit--hit");
 	const groupTitles = page.locator(".findkit--group-title");
 	const loading = spinnerLocator(page);

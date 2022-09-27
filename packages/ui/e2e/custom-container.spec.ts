@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { getHitHosts, oneEvent } from "./helpers";
+import { getHitHosts, oneEvent, staticEntry } from "./helpers";
 
 test("can render the search view to a custom container", async ({ page }) => {
-	await page.goto("/custom-container");
+	await page.goto(staticEntry("/custom-container"));
 	const hits = page.locator(".findkit--hit");
 
 	const input = page.locator('[aria-label="Search input"]');
@@ -11,10 +11,10 @@ test("can render the search view to a custom container", async ({ page }) => {
 	await hits.first().waitFor({ state: "visible" });
 });
 
-test("can use custom input (.bindInput()) and params-change events", async ({
+test("can use custom input (.bindInput()) and 'params' events", async ({
 	page,
 }) => {
-	await page.goto("/custom-container-customized");
+	await page.goto(staticEntry("/custom-container-customized"));
 	const hits = page.locator(".findkit--hit");
 
 	const input = page.locator("#custom-search-input");
@@ -42,7 +42,7 @@ test("can use custom input (.bindInput()) and params-change events", async ({
 });
 
 test("can use hooks", async ({ page }) => {
-	await page.goto("/custom-container");
+	await page.goto(staticEntry("/custom-container"));
 	const hits = page.locator(".findkit--hit");
 
 	const input = page.locator('[aria-label="Search input"]');

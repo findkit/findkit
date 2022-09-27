@@ -1,11 +1,11 @@
 import { test, expect } from "@playwright/test";
 import type { FindkitUI } from "../src/cdn-entries";
-import { spinnerLocator } from "./helpers";
+import { spinnerLocator, staticEntry } from "./helpers";
 
 declare const ui: FindkitUI;
 
 test("can navigate to full group results and back", async ({ page }) => {
-	await page.goto("/two-groups");
+	await page.goto(staticEntry("/two-groups"));
 	const hits = page.locator(".findkit--hit");
 	const groupTitles = page.locator(".findkit--group-title");
 	const loading = spinnerLocator(page);
@@ -48,7 +48,7 @@ test("can navigate to full group results and back", async ({ page }) => {
 });
 
 test("refresh restores search results", async ({ page }) => {
-	await page.goto("/two-groups");
+	await page.goto(staticEntry("/two-groups"));
 
 	const hits = page.locator(".findkit--hit");
 
@@ -65,7 +65,7 @@ test("refresh restores search results", async ({ page }) => {
 });
 
 test("can navigate directly to a group results", async ({ page }) => {
-	await page.goto("/two-groups?fdk_q=mikko&fdk_id=valu");
+	await page.goto(staticEntry("/two-groups?fdk_q=mikko&fdk_id=valu"));
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
@@ -74,7 +74,7 @@ test("can navigate directly to a group results", async ({ page }) => {
 });
 
 test("can navigate directly to the second group results", async ({ page }) => {
-	await page.goto("/two-groups?fdk_q=valu&fdk_id=statement");
+	await page.goto(staticEntry("/two-groups?fdk_q=valu&fdk_id=statement"));
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
@@ -83,7 +83,7 @@ test("can navigate directly to the second group results", async ({ page }) => {
 });
 
 test("back button works", async ({ page }) => {
-	await page.goto("/two-groups");
+	await page.goto(staticEntry("/two-groups"));
 	const hits = page.locator(".findkit--hit");
 	const groupTitles = page.locator(".findkit--group-title");
 	const loading = spinnerLocator(page);
@@ -113,7 +113,7 @@ test("back button works", async ({ page }) => {
 });
 
 test("forward button restores search terms", async ({ page }) => {
-	await page.goto("/two-groups");
+	await page.goto(staticEntry("/two-groups"));
 	const hits = page.locator(".findkit--hit");
 	const input = page.locator("input:visible");
 
@@ -132,7 +132,7 @@ test("forward button restores search terms", async ({ page }) => {
 });
 
 test("escape closes the modal", async ({ page }) => {
-	await page.goto("/two-groups");
+	await page.goto(staticEntry("/two-groups"));
 	const hits = page.locator(".findkit--hit");
 	const input = page.locator("input:visible");
 
@@ -149,7 +149,7 @@ test("escape closes the modal", async ({ page }) => {
 test("fetch counts", async ({ page }) => {
 	const hits = page.locator(".findkit--hit");
 
-	await page.goto("/two-groups");
+	await page.goto(staticEntry("/two-groups"));
 
 	await page.evaluate(async () => {
 		const anyWindow = window as any;
@@ -204,7 +204,7 @@ test("fetches only once when navigating directly to results", async ({
 }) => {
 	const hits = page.locator(".findkit--hit");
 
-	await page.goto("/two-groups");
+	await page.goto(staticEntry("/two-groups"));
 
 	await page.evaluate(async () => {
 		const anyWindow = window as any;

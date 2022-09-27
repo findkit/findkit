@@ -113,7 +113,7 @@ jobs:
           # Sanity check
           ./node_modules/.bin/findkit search -t po8GK3G0r valu
 
-          pnpm run build-e2e
+          pnpm run build-test-app
           pnpm run playwright-test
 
       - name: Comment bundle sizes on PR
@@ -190,6 +190,28 @@ jobs:
       - name: Fail suite if e2e failed
         if: ${{ env.VISUAL_FAIL == '1' }}
         run: exit 1
+
+      - name: Remove visual fail label
+        uses: actions/github-script@v6
+        if: ${{ github.event_name == 'pull_request' && env.VISUAL_FAIL != '1' }}
+        with:
+          script: |
+            const labels = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+
+            const visualFailLabel = labels.data.find(label => label.name === 'VISUAL FAIL');
+
+            if (visualFailLabel) {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                name: 'VISUAL FAIL'
+              });
+            }
 
       - name: Check bundle sizes
         run: cd packages/ui && pnpm run size-limit

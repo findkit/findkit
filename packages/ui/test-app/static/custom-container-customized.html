@@ -50,7 +50,7 @@
 				});
 			});
 
-			ui.events.on("params-change", (e) => {
+			ui.events.on("params", (e) => {
 				const tag = e.params.tagQuery[0][0];
 				for (const button of document.querySelectorAll(".buttons button")) {
 					button.disabled = button.value === tag;

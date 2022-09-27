@@ -1,11 +1,12 @@
 import { expect, test } from "@playwright/test";
 import type { FindkitUI } from "../src/cdn-entries/index";
+import { staticEntry } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 declare const ui: FindkitUI;
 
 test("can set ui language", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	const closeButton = page.locator(".findkit--close-button");
 
@@ -25,7 +26,7 @@ test("can set ui language", async ({ page }) => {
 });
 
 test("can change ui language on the fly", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	const closeButton = page.locator(".findkit--close-button");
 
@@ -51,7 +52,7 @@ test("can change ui language on the fly", async ({ page }) => {
 });
 
 test("can customize ui language", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	const closeButton = page.locator(".findkit--close-button");
 
@@ -76,7 +77,7 @@ test("can customize ui language", async ({ page }) => {
 });
 
 test("can customize ui language on the fly", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	const closeButton = page.locator(".findkit--close-button");
 
@@ -104,7 +105,7 @@ test("can customize ui language on the fly", async ({ page }) => {
 });
 
 test("reads <html lang>", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	const closeButton = page.locator(".findkit--close-button");
 
@@ -125,7 +126,7 @@ test("reads <html lang>", async ({ page }) => {
 });
 
 test("Detects <html lang> mutations", async ({ page }) => {
-	await page.goto("/dummy");
+	await page.goto(staticEntry("/dummy"));
 
 	const closeButton = page.locator(".findkit--close-button");
 

@@ -1,4 +1,5 @@
 import { test, expect, Page } from "@playwright/test";
+import { staticEntry } from "./helpers";
 
 async function testNavigationAndFocus(page: Page) {
 	const input = page.locator("#external-input");
@@ -38,19 +39,19 @@ async function testNavigationAndFocus(page: Page) {
 }
 
 test("can use overlay modal with proper focus management", async ({ page }) => {
-	await page.goto("/overlay-modal");
+	await page.goto(staticEntry("/overlay-modal"));
 	await testNavigationAndFocus(page);
 });
 
 test("can use overlay modal with proper focus management without shadow dom", async ({
 	page,
 }) => {
-	await page.goto("/overlay-modal?no-shadow");
+	await page.goto(staticEntry("/overlay-modal?no-shadow"));
 	await testNavigationAndFocus(page);
 });
 
 test("keyboard navigation scrolls", async ({ page }) => {
-	await page.goto("/overlay-modal");
+	await page.goto(staticEntry("/overlay-modal"));
 
 	const input = page.locator("#external-input");
 	const hits = page.locator(".findkit--hit");

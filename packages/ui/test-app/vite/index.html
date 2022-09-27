@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Search UI Test</title>
+
+		<script type="module">
+			import { FindkitUI } from "../e2e/build/esm/index.js";
+			import React from "react";
+
+			console.log("react", React);
+
+			const ui = new FindkitUI({
+				publicToken: "po8GK3G0r",
+				async load() {
+					return import("../e2e/build/esm/implementation.js");
+				},
+				params: {
+					tagQuery: [["domain/valu.fi"]],
+				},
+			});
+
+			Object.assign(window, { ui });
+
+			ui.openFrom("button");
+		</script>
+	</head>
+	<body>
+		<button id="open-button" type="button">open</button>
+	</body>
+</html>
