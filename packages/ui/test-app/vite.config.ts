@@ -6,6 +6,7 @@ export default defineConfig({
 		rollupOptions: {
 			input: {
 				fullscreen: resolve(__dirname, "vite/fullscreen.html"),
+				// embed: resolve(__dirname, "vite/embed.html"),
 			},
 		},
 	},
