@@ -746,7 +746,7 @@ export class SearchEngine {
 
 	#handleGroupsChange = () => {
 		const self = this;
-		this.events.emit("groups-change", {
+		this.events.emit("groups", {
 			get groups() {
 				return self.getGroupsSnapshot();
 			},
@@ -755,7 +755,7 @@ export class SearchEngine {
 		const group = this.state.nextGroupDefinitions[0];
 		assertNonNullable(group, "first group missing");
 
-		this.events.emit("params-change", {
+		this.events.emit("params", {
 			get params() {
 				return self.getParamsSnapshot();
 			},

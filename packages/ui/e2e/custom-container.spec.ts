@@ -11,7 +11,7 @@ test("can render the search view to a custom container", async ({ page }) => {
 	await hits.first().waitFor({ state: "visible" });
 });
 
-test("can use custom input (.bindInput()) and params-change events", async ({
+test("can use custom input (.bindInput()) and 'params' events", async ({
 	page,
 }) => {
 	await page.goto(staticEntry("/custom-container-customized"));

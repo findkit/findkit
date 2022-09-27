@@ -169,11 +169,17 @@ export interface FindkitUIEvents {
 	 */
 	close: {};
 
-	"groups-change": {
+	/**
+	 * Emitted when groups change
+	 */
+	groups: {
 		groups: GroupDefinition[];
 	};
 
-	"params-change": {
+	/**
+	 * Emitted when the search params change
+	 */
+	params: {
 		params: SearchEngineParams;
 	};
 
