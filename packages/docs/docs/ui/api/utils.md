@@ -25,7 +25,23 @@ select("button.close", HTMLButtonElement, (button) => {
 
 ### `css` {#css}
 
-Tagged template literal for Prettier CSS formating and syntax highlighting.
-To be used with the `FinkditUI` [`css`](/ui/api/#css) option.
+Tagged template literal for Prettier CSS formating and syntax highlighting. To
+be used with the `FinkditUI` [`css`](/ui/api/#css) option. This is just a no-op
+function, it returns the string passed to it as is.
 
 <Api page="ui.css" />
+
+```ts
+import { css } from "@findkit/ui";
+
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	header: false,
+	css: css`
+		.findkit--modal-container {
+			/* dynamically updating header height */
+			top: var(--top-offset);
+		}
+	`,
+});
+```

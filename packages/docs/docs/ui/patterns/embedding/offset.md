@@ -29,7 +29,9 @@ the following is properly implemented:
 
 - There's a close button
 - The close button can be focused using keyboard
-- Fetching status is indicated
+- Search fetch status is indicated
+- Lazy loading status is not actually that important because it can load in the
+  background while the user types search terms
 
 These can be implemented using the methods and events exposed by the `FindkitUI`
 instance like in the demo below or in the slot overrides.
