@@ -17,7 +17,7 @@
 	"dependencies": {
 		"@docusaurus/core": "2.1.0",
 		"@docusaurus/preset-classic": "2.1.0",
-		"@findkit/ui": "0.0.1-dev.2fa979c564",
+		"@findkit/ui": "0.0.1-dev.94c733f2db",
 		"@mdx-js/react": "^1.6.22",
 		"@valu/react-intersection-observer": "^1.0.0",
 		"clsx": "^1.2.1",
