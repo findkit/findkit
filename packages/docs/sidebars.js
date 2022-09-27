@@ -34,6 +34,7 @@ const sidebars = {
 				"crawler/meta-tag",
 				"crawler/custom-fields",
 				"crawler/rest-api",
+				"crawler/jwt",
 			],
 		},
 		{
