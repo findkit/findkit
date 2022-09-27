@@ -13,13 +13,28 @@ if [ "$(git status --porcelain)" = "" ]; then
     clean_git=1
 fi
 
+# Update imports in docs
 ./tools/update-import ${version} ./packages/docs/docs/ui/setup.md
 
+# In static file examples
 git ls-files 'packages/ui-examples/static/*/index.html' | xargs -L 1 ./tools/update-import ${version}
 
+# In bundling examples
+for bundled in packages/ui-examples/bundled/*/
+do
+    cd "$bundled"
+    tmp=$(mktemp)
+    jq --arg version "$version" '.dependencies["@findkit/ui"] = $version' package.json > "$tmp"
+    mv "$tmp" package.json
+    cd -
+done
+
+
+# The version shipped with docs
 cd packages/docs
 pnpm install "@findkit/ui@${version}"
 cd -
+
 
 if [ "$clean_git" = "1" ]; then
     git add .
