@@ -63,14 +63,20 @@ const ui = new FindkitUI({
 	`,
 });
 
-// The container element is available after "loaded" event
-ui.events.on("loaded", (e) => {
+ui.events.on("open", (e) => {
+	// Start monitoring the header height when the modal is opened
 	const observer = new ResizeObserver((entries) => {
 		const height = entries[0].borderBoxSize[0].blockSize;
+		// Expose the height as CSS variable to the Findkit UI container
 		e.container.style = `--top-offset: ${height}px`;
 	});
 
 	observer.observe(document.querySelector("header"));
+
+	// Stop monitoring when the modal is closed.
+	ui.events.once("close", () => {
+		observer.disconnect();
+	});
 });
 ```
 

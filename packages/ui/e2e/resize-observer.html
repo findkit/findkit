@@ -31,22 +31,27 @@
 				header: false,
 				css: css`
 					.findkit--modal-container {
-						top: var(--offset-top);
+						top: var(--top-offset);
 					}
 				`,
 			});
 
 			ui.bindInput("#external-input");
 
-			ui.events.on("loaded", (e) => {
-				const header = document.querySelector("header");
-
+			ui.events.on("open", (e) => {
+				// Start monitoring the header height when the modal is opened
 				const observer = new ResizeObserver((entries) => {
 					const height = entries[0].borderBoxSize[0].blockSize;
-					e.container.style = `--offset-top: ${height}px`;
+					// Expose the height as CSS variable to the Findkit UI container
+					e.container.style = `--top-offset: ${height}px`;
 				});
 
-				observer.observe(header);
+				observer.observe(document.querySelector("header"));
+
+				// Stop monitoring when the modal is closed.
+				ui.events.once("close", () => {
+					observer.disconnect();
+				});
 			});
 		</script>
 		<header>

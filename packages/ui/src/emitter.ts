@@ -144,7 +144,12 @@ export interface FindkitUIEvents {
 	/**
 	 * When the modal is opened
 	 */
-	open: {};
+	open: {
+		/**
+		 * The container element
+		 */
+		container: Element;
+	};
 
 	/**
 	 * When modal opening is requested. The implementation loading can happen
