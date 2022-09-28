@@ -8,7 +8,7 @@
 		"node": "18.9.0"
 	},
 	"dependencies": {
-		"@findkit/ui": "0.0.1-dev.88e2bc969d",
+		"@findkit/ui": "0.0.1-dev.eca8dfafa3",
 		"@types/react": "^18.0.21",
 		"@types/react-dom": "^18.0.6",
 		"process": "^0.11.10",
