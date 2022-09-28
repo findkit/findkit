@@ -9,8 +9,8 @@ well. So take care to add loading indicators, focus trapping etc.
 ## Fullscreen Modal
 
 When using the Fullscreen Modal Pattern the `FindkitUI` instance can be created
-globally at module level and only bind the open button inside the React
-component which creates the button
+globally at the module level and only bind the open button inside the React
+component which creates the button.
 
 ```tsx
 const ui = new FindkitUI({
@@ -42,7 +42,7 @@ function SearchButton() {
 The `FindkitUI` can be also rendered into a React Component by using the
 [`container` option](/ui/api/#container) and the React `useEffect()` and
 `useRef()` hooks. This is because React creates the DOM element so we need
-to dispose the `FindkitUI` instance when component is unmounted.
+to dispose the `FindkitUI` instance when the component is unmounted.
 
 ```tsx
 function App() {
@@ -74,8 +74,8 @@ function App() {
 
 	return (
 		<div>
-			<input type="text" ref={inputRef} placeholder="Search" />
-			<div className="custom-container" ref={containerRef} />
+			<input ref={inputRef} type="text" placeholder="Search" />
+			<div ref={containerRef} className="custom-container" />
 		</div>
 	);
 }
