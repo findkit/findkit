@@ -5,7 +5,7 @@ import type {
 	SearchResultHit,
 	UpdateGroupsArgument,
 	UpdateParamsArgument,
-	SearchEngineParams,
+	SearchParams,
 	FindkitURLSearchParams,
 	Status,
 } from "../search-engine";
@@ -27,6 +27,11 @@ import type {
 } from "../slots";
 import type { PreactFunctions } from "./preact-subset";
 
+/**
+ * @deprecated legacy alias of SearchParams
+ */
+export type SearchEgineParams = SearchParams;
+
 export {
 	PreactFunctions,
 	Status,
@@ -36,7 +41,7 @@ export {
 	SearchResultHitWithGroupId,
 	TranslationStrings,
 	Emitter,
-	SearchEngineParams,
+	SearchParams,
 	FindkitUIEvents,
 	FindkitURLSearchParams,
 	RouterBackend,
@@ -340,7 +345,7 @@ export interface FindkitUIOptions {
 	publicToken: string;
 	instanceId?: string;
 	groups?: GroupDefinition[];
-	params?: SearchEngineParams;
+	params?: SearchParams;
 	shadowDom?: boolean;
 	minTerms?: number;
 	css?: string;
@@ -439,7 +444,7 @@ export class FindkitUI {
 	 */
 	updateParams = this.PRIVATE_proxy("updateParams");
 
-	get params(): SearchEngineParams {
+	get params(): SearchParams {
 		return (
 			this.PRIVATE_engine?.getParamsSnapshot() ??
 			this.PRIVATE_options.params ?? {

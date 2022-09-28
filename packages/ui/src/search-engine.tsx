@@ -54,7 +54,7 @@ export interface ResultsWithTotal {
  * Same as FindkitSearchGroupParams but without "from" field since it is managed
  * by the SearchEngine
  */
-export interface SearchEngineParams {
+export interface SearchParams {
 	tagQuery: string[][];
 	createdDecay?: number;
 	modifiedDecay?: number;
@@ -74,7 +74,7 @@ export interface GroupDefinition {
 	title: string;
 	previewSize?: number;
 	scoreBoost?: number;
-	params: SearchEngineParams;
+	params: SearchParams;
 }
 
 /**
@@ -211,8 +211,8 @@ export type UpdateGroupsArgument =
  * @public
  */
 export type UpdateParamsArgument =
-	| SearchEngineParams
-	| ((params: SearchEngineParams) => SearchEngineParams | undefined | void);
+	| SearchParams
+	| ((params: SearchParams) => SearchParams | undefined | void);
 
 const instanceIds = new Set<string>();
 
@@ -318,7 +318,7 @@ export interface SearchEngineOptions {
 	minTerms?: number;
 	events: Emitter<FindkitUIEvents, unknown>;
 	groups?: GroupDefinition[];
-	params?: SearchEngineParams;
+	params?: SearchParams;
 	infiniteScroll?: boolean;
 	container: Element | ShadowRoot;
 	router?: "memory" | "querystring" | "hash" | RouterBackend;
@@ -742,7 +742,7 @@ export class SearchEngine {
 		}
 	};
 
-	getParamsSnapshot(): SearchEngineParams {
+	getParamsSnapshot(): SearchParams {
 		const group = this.state.nextGroupDefinitions[0];
 		// Avoid expensive deep readonly with the any
 		return snapshot(group?.params as any) ?? {};

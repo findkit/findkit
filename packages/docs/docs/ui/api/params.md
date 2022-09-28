@@ -13,6 +13,8 @@ const ui = new FindkitUI({
 });
 ```
 
+<Api page="ui.searchparams" />
+
 ## Dynamic Update
 
 The params can be also dynamically updated using the `ui.updateParams(fn)`
