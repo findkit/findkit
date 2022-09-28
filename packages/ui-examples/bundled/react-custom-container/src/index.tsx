@@ -10,9 +10,13 @@ function App() {
 	const [params, setParams] = useState<SearchEngineParams>();
 	const currentTag = params?.tagQuery?.[0]?.[0];
 
-	const setTag = (tag: string) => {
+	const setTag = (tag: string | null) => {
 		uiRef.current?.updateParams((params) => {
-			params.tagQuery = [[tag]];
+			if (tag) {
+				params.tagQuery = [[tag]];
+			} else {
+				params.tagQuery = [];
+			}
 		});
 	};
 
@@ -53,29 +57,43 @@ function App() {
 
 	return (
 		<div>
-			<h1>Custom Container in React2</h1>
+			<h1>Inside React Component</h1>
 
-			<div>
-				<button
-					disabled={currentTag === "crawler"}
-					onClick={() => {
-						setTag("crawler");
-					}}
-				>
-					crawler
-				</button>
+			<div className="controls">
+				<h2>Filter by tags</h2>
+				<div className="buttons">
+					<button
+						disabled={currentTag === "crawler"}
+						onClick={() => {
+							setTag("crawler");
+						}}
+					>
+						crawler
+					</button>
 
-				<button
-					disabled={currentTag === "ui"}
-					onClick={() => {
-						setTag("ui");
-					}}
-				>
-					ui
-				</button>
+					<button
+						disabled={currentTag === "ui"}
+						onClick={() => {
+							setTag("ui");
+						}}
+					>
+						ui
+					</button>
+
+					<button
+						disabled={currentTag === null}
+						onClick={() => {
+							setTag(null);
+						}}
+					>
+						clear
+					</button>
+				</div>
+
+				<h2>Search terms</h2>
+				<input type="text" ref={inputRef} placeholder="Search" />
 			</div>
 
-			<input type="text" ref={inputRef} placeholder="Search" />
 			<div className="custom-container" ref={containerRef} />
 		</div>
 	);
