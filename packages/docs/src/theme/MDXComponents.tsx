@@ -27,20 +27,20 @@ function Codesandbox(props: {
 		setOpen(true);
 	});
 
+	const openFile = props.example.startsWith("static/")
+		? "index.html"
+		: "src/index.tsx";
+
 	const query = new URLSearchParams({
 		codesandbox: "1",
 		fontsize: "14",
 		hidenavigation: "1",
 		theme: "dark",
-		module: "index.html",
+		module: openFile,
 		view: "preview",
 	}).toString();
 
-	const githubFile = props.example.startsWith("static/")
-		? "index.html"
-		: "src/index.tsx";
-
-	const githubLink = `https://github.com/findkit/findkit/tree/main/packages/ui-examples/${props.example}/${githubFile}`;
+	const githubLink = `https://github.com/findkit/findkit/tree/main/packages/ui-examples/${props.example}/${openFile}`;
 	const codesandboxLink = `https://codesandbox.io/s/github/findkit/findkit/tree/main/packages/ui-examples/${props.example}`;
 	const embedSrc = `https://codesandbox.io/embed/github/findkit/findkit/tree/main/packages/ui-examples/${props.example}?${query}`;
 	const newTabUrl = `https://docs.findkit.com/ui-examples/${props.example}`;
