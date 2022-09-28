@@ -84,10 +84,10 @@ ui.events.on("open", (e) => {
 
 ### Fixed Height
 
-<Codesandbox example="modal-offset" />
+<Codesandbox example="static/modal-offset" />
 
 ### ResizeObserver Demo
 
-<Codesandbox example="offset-modal-resize-observer" />
+<Codesandbox example="static/offset-modal-resize-observer" />
 
 [resizeobserver]: https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver

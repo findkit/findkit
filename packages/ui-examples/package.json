@@ -2,6 +2,7 @@
 	"name": "@findkit/ui-examples",
 	"private": true,
 	"scripts": {
+		"dev": "vite",
 		"serve": "serve -l 48439",
 		"build-ui-examples": "vite build",
 		"build": "vite build"

@@ -39,4 +39,4 @@ const ui = new FindkitUI({
 
 ## Demo
 
-<Codesandbox example="raw-embed" />
+<Codesandbox example="static/raw-embed" />

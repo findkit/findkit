@@ -43,4 +43,4 @@ ui.events.on("open", () => {
 
 ## Demo
 
-<Codesandbox example="simple" />
+<Codesandbox example="static/simple" />
