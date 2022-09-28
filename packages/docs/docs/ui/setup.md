@@ -40,4 +40,4 @@ will be using the npm import but it can be replaced with the CDN import.
 
 ## Try it!
 
-<Codesandbox example="simple" />
+<Codesandbox example="static/simple" />
