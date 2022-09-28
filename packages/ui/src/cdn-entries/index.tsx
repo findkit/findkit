@@ -388,12 +388,12 @@ type Methods<Klass> = {
  * @public
  */
 export class FindkitUI {
-	#engine?: SearchEngine;
-	#loading = false;
+	private PRIVATE_engine?: SearchEngine;
+	private PRIVATE_loading = false;
 
-	#options: FindkitUIOptions;
+	private PRIVATE_options: FindkitUIOptions;
 	readonly events: Emitter<FindkitUIEvents, FindkitUI>;
-	#resources = new Resources();
+	private PRIVATE_resources = new Resources();
 
 	/**
 	 * The container element. Available after the "loaded" event.
@@ -401,10 +401,10 @@ export class FindkitUI {
 	container?: Element;
 
 	constructor(options: FindkitUIOptions) {
-		this.#options = options;
+		this.PRIVATE_options = options;
 		this.events = new Emitter(this);
 
-		if (this.#isAlreadyOpened() || options.modal === false) {
+		if (this.PRIVATE_isAlreadyOpened() || options.modal === false) {
 			void this.open();
 		}
 
@@ -414,31 +414,35 @@ export class FindkitUI {
 	/**
 	 * Close the modal
 	 */
-	close = this.#proxy("close");
+	close = this.PRIVATE_proxy("close");
 
 	/**
 	 * Update the translation strings
 	 */
-	setUIStrings = this.#proxy("setUIStrings");
+	setUIStrings = this.PRIVATE_proxy("setUIStrings");
 
 	/**
 	 * Update groups
 	 */
-	updateGroups = this.#proxy("updateGroups");
+	updateGroups = this.PRIVATE_proxy("updateGroups");
 
 	get groups(): GroupDefinition[] {
-		return this.#engine?.getGroupsSnapshot() ?? this.#options.groups ?? [];
+		return (
+			this.PRIVATE_engine?.getGroupsSnapshot() ??
+			this.PRIVATE_options.groups ??
+			[]
+		);
 	}
 
 	/**
 	 * Update search params
 	 */
-	updateParams = this.#proxy("updateParams");
+	updateParams = this.PRIVATE_proxy("updateParams");
 
 	get params(): SearchEngineParams {
 		return (
-			this.#engine?.getParamsSnapshot() ??
-			this.#options.params ?? {
+			this.PRIVATE_engine?.getParamsSnapshot() ??
+			this.PRIVATE_options.params ?? {
 				tagQuery: [],
 			}
 		);
@@ -449,24 +453,24 @@ export class FindkitUI {
 	 */
 	dispose() {
 		this.close();
-		this.#resources.dispose();
+		this.PRIVATE_resources.dispose();
 	}
 
 	/**
 	 * Create proxy method for SearchEngine which is called once the engine is
 	 * loaded
 	 */
-	#proxy<Method extends Methods<SearchEngine>>(method: Method) {
+	private PRIVATE_proxy<Method extends Methods<SearchEngine>>(method: Method) {
 		return (...args: MethodParameters<typeof SearchEngine, Method>) => {
-			this.#withEngine((engine: any) => {
+			this.PRIVATE_withEngine((engine: any) => {
 				engine[method](...args);
 			});
 		};
 	}
 
-	#withEngine(fn: (engine: SearchEngine) => void) {
-		if (this.#engine) {
-			fn(this.#engine);
+	private PRIVATE_withEngine(fn: (engine: SearchEngine) => void) {
+		if (this.PRIVATE_engine) {
+			fn(this.PRIVATE_engine);
 		} else {
 			this.events.once("loaded", (e) => {
 				fn(e.__engine);
@@ -478,15 +482,15 @@ export class FindkitUI {
 	 * The instance id
 	 */
 	get id() {
-		return this.#options.instanceId ?? "fdk";
+		return this.PRIVATE_options.instanceId ?? "fdk";
 	}
 
-	#isAlreadyOpened() {
+	private PRIVATE_isAlreadyOpened() {
 		if (typeof window === "undefined") {
 			return false;
 		}
 		let search = location.search;
-		if (this.#options.router === "hash") {
+		if (this.PRIVATE_options.router === "hash") {
 			search = location.hash.slice(1);
 		}
 
@@ -494,17 +498,17 @@ export class FindkitUI {
 		return params.has(this.id + "_q");
 	}
 
-	preload = async () => this.#initEngine();
+	preload = async () => this.PRIVATE_initEngine();
 
-	#getStyleSheets(): string[] {
+	PRIVATE_getStyleSheets(): string[] {
 		const sheets = [];
 
-		if (!this.#options.load) {
+		if (!this.PRIVATE_options.load) {
 			sheets.push(cdnFile("styles.css"));
 		}
 
-		if (this.#options.styleSheet) {
-			sheets.push(this.#options.styleSheet);
+		if (this.PRIVATE_options.styleSheet) {
+			sheets.push(this.PRIVATE_options.styleSheet);
 		}
 
 		return sheets;
@@ -512,20 +516,20 @@ export class FindkitUI {
 
 	open(terms?: string) {
 		this.events.emit("request-open", {
-			preloaded: !!this.#engine,
+			preloaded: !!this.PRIVATE_engine,
 		});
 		preconnect();
-		void this.#initEngine();
-		this.#withEngine((engine) => {
+		void this.PRIVATE_initEngine();
+		this.PRIVATE_withEngine((engine) => {
 			engine.open(terms);
 		});
 	}
 
-	async #loadImplementation() {
+	private async PRIVATE_loadImplementation() {
 		let promise: Promise<{ js: Implementation; css?: string }>;
 
-		if (this.#options.load) {
-			promise = this.#options.load();
+		if (this.PRIVATE_options.load) {
+			promise = this.PRIVATE_options.load();
 		} else {
 			promise = loadScriptFromGlobal<Implementation>(
 				"FINDKIT_" + FINDKIT_VERSION,
@@ -534,7 +538,9 @@ export class FindkitUI {
 		}
 
 		const preloadStylesPromise = Promise.all(
-			this.#getStyleSheets().map(async (href) => preloadStylesheet(href)),
+			this.PRIVATE_getStyleSheets().map(async (href) =>
+				preloadStylesheet(href),
+			),
 		);
 
 		await preloadStylesPromise;
@@ -542,36 +548,41 @@ export class FindkitUI {
 		return await promise;
 	}
 
-	async #initEngine() {
-		if (this.#loading || this.#engine) {
+	private async PRIVATE_initEngine() {
+		if (this.PRIVATE_loading || this.PRIVATE_engine) {
 			return;
 		}
 
-		this.#loading = true;
+		this.PRIVATE_loading = true;
 
-		const impl = await this.#loadImplementation();
+		const impl = await this.PRIVATE_loadImplementation();
 
 		Object.assign(lazyImplementation, impl.js);
 		Object.assign(preact, impl.js.preact);
 
-		const { styleSheet: _1, load: _2, css: userCSS, ...rest } = this.#options;
+		const {
+			styleSheet: _1,
+			load: _2,
+			css: userCSS,
+			...rest
+		} = this.PRIVATE_options;
 
 		const allCSS = [impl.css, userCSS].filter(Boolean).join("\n");
 
 		const createEngine = (container?: Element) => {
-			this.#resources.create(() => {
+			this.PRIVATE_resources.create(() => {
 				const { engine, host } = impl.js.init({
 					...rest,
 					container,
 					css: allCSS,
-					styleSheets: this.#getStyleSheets(),
+					styleSheets: this.PRIVATE_getStyleSheets(),
 					instanceId: this.id,
 					events: this.events,
-					searchEndpoint: this.#options.searchEndpoint,
+					searchEndpoint: this.PRIVATE_options.searchEndpoint,
 				});
 
-				this.#engine = engine;
-				this.#loading = true;
+				this.PRIVATE_engine = engine;
+				this.PRIVATE_loading = true;
 				this.container = host;
 				this.events.emit("loaded", { __engine: engine, container: host });
 
@@ -579,14 +590,14 @@ export class FindkitUI {
 			});
 		};
 
-		if (this.#options.container) {
-			select(this.#options.container, Element, createEngine);
+		if (this.PRIVATE_options.container) {
+			select(this.PRIVATE_options.container, Element, createEngine);
 		} else {
 			createEngine();
 		}
 	}
 
-	#handleOpenClick = (e: {
+	private PRIVATE_handleOpenClick = (e: {
 		target: unknown;
 		preventDefault(): void;
 		metaKey?: boolean;
@@ -612,9 +623,9 @@ export class FindkitUI {
 	 * @returns cleanup function
 	 */
 	trapFocus(selector: ElementSelector<HTMLElement>) {
-		const resources = this.#resources.child();
+		const resources = this.PRIVATE_resources.child();
 		select(selector, HTMLElement, (...elements) => {
-			this.#withEngine((engine) => {
+			this.PRIVATE_withEngine((engine) => {
 				resources.create(() => engine.trapFocus(elements));
 			});
 		});
@@ -633,14 +644,16 @@ export class FindkitUI {
 	 * @returns unbind function
 	 */
 	openFrom(selector: ElementSelector<HTMLElement>) {
-		const resources = this.#resources.child();
+		const resources = this.PRIVATE_resources.child();
 
 		select(selector, HTMLElement, (...elements) => {
 			// Use `Resources` to create the the bindings. This ensures that
 			// bindings are not created if the unbind function is called before
 			// the DOMContentLoaded event.
 			for (const el of elements) {
-				resources.create(() => listen(el, "click", this.#handleOpenClick));
+				resources.create(() =>
+					listen(el, "click", this.PRIVATE_handleOpenClick),
+				);
 				resources.create(() =>
 					listen(el, "mouseover", this.preload, {
 						once: true,
@@ -654,13 +667,13 @@ export class FindkitUI {
 	}
 
 	bindInput(selector: ElementSelector<HTMLInputElement>) {
-		const resources = this.#resources.child();
+		const resources = this.PRIVATE_resources.child();
 
 		select(selector, HTMLInputElement, (...elements) => {
 			for (const input of elements) {
 				resources.create(() => listen(input, "focus", this.preload));
 
-				this.#withEngine((engine) => {
+				this.PRIVATE_withEngine((engine) => {
 					resources.create(() => engine.bindInput(input));
 				});
 			}

@@ -236,22 +236,25 @@ const SINGLE_GROUP_NAME = Object.freeze({
  * @public
  */
 export class FindkitURLSearchParams {
-	#params: URLSearchParams;
-	#instanceId: string;
+	PRIVATE_params: URLSearchParams;
+	PRIVATE_instanceId: string;
 
 	constructor(instanceId: string, search: string) {
-		this.#instanceId = instanceId;
-		this.#params = new URLSearchParams(search);
+		this.PRIVATE_instanceId = instanceId;
+		this.PRIVATE_params = new URLSearchParams(search);
 	}
 
 	getGroupId() {
-		return this.#params.get(this.#instanceId + "_id")?.trim() || undefined;
+		return (
+			this.PRIVATE_params.get(this.PRIVATE_instanceId + "_id")?.trim() ||
+			undefined
+		);
 	}
 
 	next(fn: (params: FindkitURLSearchParams) => void) {
 		const next = new FindkitURLSearchParams(
-			this.#instanceId,
-			this.#params.toString(),
+			this.PRIVATE_instanceId,
+			this.PRIVATE_params.toString(),
 		);
 		fn(next);
 		return next;
@@ -259,43 +262,45 @@ export class FindkitURLSearchParams {
 
 	clearGroupId() {
 		return this.next((next) => {
-			next.#params.delete(next.#instanceId + "_id");
+			next.PRIVATE_params.delete(next.PRIVATE_instanceId + "_id");
 		});
 	}
 
 	clearAll() {
 		return this.next((next) => {
-			next.#params.delete(next.#instanceId + "_id");
-			next.#params.delete(next.#instanceId + "_q");
+			next.PRIVATE_params.delete(next.PRIVATE_instanceId + "_id");
+			next.PRIVATE_params.delete(next.PRIVATE_instanceId + "_q");
 		});
 	}
 
 	setGroupId(id: string) {
 		return this.next((next) => {
-			next.#params.set(next.#instanceId + "_id", id);
+			next.PRIVATE_params.set(next.PRIVATE_instanceId + "_id", id);
 		});
 	}
 
 	setTerms(terms: string) {
 		return this.next((next) => {
-			next.#params.set(next.#instanceId + "_q", terms.trim());
+			next.PRIVATE_params.set(next.PRIVATE_instanceId + "_q", terms.trim());
 		});
 	}
 
 	isActive() {
-		return this.#params.has(this.#instanceId + "_q");
+		return this.PRIVATE_params.has(this.PRIVATE_instanceId + "_q");
 	}
 
 	getTerms() {
-		return (this.#params.get(this.#instanceId + "_q") || "").trim();
+		return (
+			this.PRIVATE_params.get(this.PRIVATE_instanceId + "_q") || ""
+		).trim();
 	}
 
 	toString() {
-		return this.#params.toString();
+		return this.PRIVATE_params.toString();
 	}
 
 	toURLSearchParams() {
-		return this.#params;
+		return this.PRIVATE_params;
 	}
 }
 
@@ -357,27 +362,27 @@ export interface SearchEngineOptions {
  *
  */
 export class SearchEngine {
-	#requestId = 0;
-	#pendingRequestIds: Map<number, AbortController> = new Map();
+	PRIVATE_requestId = 0;
+	PRIVATE_pendingRequestIds: Map<number, AbortController> = new Map();
 
 	readonly router: RouterBackend;
-	#fetcher: FindkitFetcher;
+	private PRIVATE_fetcher: FindkitFetcher;
 	readonly instanceId: string;
 	readonly state: State;
 	readonly publicToken: string;
-	#searchEndpoint: string | undefined;
-	#throttleTime: number;
-	#fetchCount: number;
-	#minTerms: number;
+	private PRIVATE_searchEndpoint: string | undefined;
+	private PRIVATE_throttleTime: number;
+	private PRIVATE_fetchCount: number;
+	private PRIVATE_minTerms: number;
 	/**
 	 * Search terms from the input that are throttle to be used as the search
 	 * terms
 	 */
-	#throttlingTerms = "";
-	#throttleTimerID?: ReturnType<typeof setTimeout>;
+	private PRIVATE_throttlingTerms = "";
+	private PRIVATE_throttleTimerID?: ReturnType<typeof setTimeout>;
 
-	#resources = new Resources();
-	#container: Element | ShadowRoot;
+	private PRIVATE_resources = new Resources();
+	private PRIVATE_container: Element | ShadowRoot;
 
 	events: Emitter<FindkitUIEvents, unknown>;
 
@@ -400,7 +405,7 @@ export class SearchEngine {
 		this.instanceId = options.instanceId ?? "fdk";
 		this.publicToken = options.publicToken;
 		this.events = options.events;
-		this.#container = options.container;
+		this.PRIVATE_container = options.container;
 
 		if (instanceIds.has(this.instanceId)) {
 			throw new Error(
@@ -431,7 +436,7 @@ export class SearchEngine {
 			];
 		}
 
-		const lang = options.ui?.lang ?? this.#getDocumentLang();
+		const lang = options.ui?.lang ?? this.PRIVATE_getDocumentLang();
 
 		this.state = proxy<State>({
 			usedTerms: undefined,
@@ -462,31 +467,33 @@ export class SearchEngine {
 		});
 		devtools(this.state);
 
-		this.#resources.create(() =>
+		this.PRIVATE_resources.create(() =>
 			subscribeKey(
 				this.state,
 				"nextGroupDefinitions",
-				this.#handleGroupsChange,
+				this.PRIVATE_handleGroupsChange,
 			),
 		);
 
 		if (options.monitorDocumentElementChanges !== false) {
-			this.#monitorDocumentElementLang();
+			this.PRIVATE_monitorDocumentElementLang();
 		}
 
 		this.publicToken = options.publicToken;
-		this.#searchEndpoint = options.searchEndpoint;
+		this.PRIVATE_searchEndpoint = options.searchEndpoint;
 
-		this.#fetcher = findkitFetch;
-		this.#throttleTime = options.throttleTime ?? 200;
-		this.#fetchCount = options.fetchCount ?? 20;
-		this.#minTerms = options.minTerms ?? 2;
+		this.PRIVATE_fetcher = findkitFetch;
+		this.PRIVATE_throttleTime = options.throttleTime ?? 200;
+		this.PRIVATE_fetchCount = options.fetchCount ?? 20;
+		this.PRIVATE_minTerms = options.minTerms ?? 2;
 
-		this.#syncInputs(initialSearchParams.getTerms());
+		this.PRIVATE_syncInputs(initialSearchParams.getTerms());
 
-		this.#resources.create(() => this.router.listen(this.#handleAddressChange));
+		this.PRIVATE_resources.create(() =>
+			this.router.listen(this.PRIVATE_handleAddressChange),
+		);
 
-		this.#handleAddressChange();
+		this.PRIVATE_handleAddressChange();
 	}
 
 	setUIStrings(lang: string, overrides?: Partial<TranslationStrings>) {
@@ -496,7 +503,7 @@ export class SearchEngine {
 		}
 	}
 
-	#moveKeyboardCursor(direction: "down" | "up") {
+	private PRIVATE_moveKeyboardCursor(direction: "down" | "up") {
 		const currentId = this.state.keyboardCursor;
 
 		// Up does not do anything on start
@@ -504,7 +511,7 @@ export class SearchEngine {
 			return;
 		}
 
-		const items = this.#container.querySelectorAll("[data-kb]");
+		const items = this.PRIVATE_container.querySelectorAll("[data-kb]");
 
 		let index: undefined | number = undefined;
 
@@ -556,9 +563,9 @@ export class SearchEngine {
 		}
 	}
 
-	#selectKeyboardCursor() {
+	private PRIVATE_selectKeyboardCursor() {
 		// Find the currently selected item
-		const item = this.#container.querySelector(`[data-kb-current]`);
+		const item = this.PRIVATE_container.querySelector(`[data-kb-current]`);
 
 		let actionElement: HTMLElement | undefined | null = null;
 
@@ -584,14 +591,14 @@ export class SearchEngine {
 	 * SPA frameworks update the <html lang> when doing client side routing with
 	 * the History API. Listen to those changes
 	 */
-	#monitorDocumentElementLang() {
+	PRIVATE_monitorDocumentElementLang() {
 		if (typeof window === "undefined") {
 			return;
 		}
 
-		this.#resources.create(() => {
+		this.PRIVATE_resources.create(() => {
 			const observer = new MutationObserver(() => {
-				this.state.ui.lang = this.#getDocumentLang();
+				this.state.ui.lang = this.PRIVATE_getDocumentLang();
 			});
 
 			observer.observe(document.documentElement, {
@@ -603,7 +610,7 @@ export class SearchEngine {
 		});
 	}
 
-	#getDocumentLang() {
+	private PRIVATE_getDocumentLang() {
 		if (typeof document === "undefined") {
 			return "en";
 		}
@@ -622,42 +629,42 @@ export class SearchEngine {
 		return this.router.formatHref(params.toString());
 	}
 
-	#debouncedSearchTimer?: ReturnType<typeof setTimeout>;
+	private PRIVATE_debouncedSearchTimer?: ReturnType<typeof setTimeout>;
 
-	#emitDebouncedSearchEvent(terms: string) {
-		clearTimeout(this.#debouncedSearchTimer);
-		this.#debouncedSearchTimer = setTimeout(() => {
+	private PRIVATE_emitDebouncedSearchEvent(terms: string) {
+		clearTimeout(this.PRIVATE_debouncedSearchTimer);
+		this.PRIVATE_debouncedSearchTimer = setTimeout(() => {
 			this.events.emit("debounced-search", {
 				terms,
 			});
 		}, 2000);
 	}
 
-	#handleAddressChange = () => {
+	private PRIVATE_handleAddressChange = () => {
 		const currentTerms = this.findkitParams.getTerms();
 		this.state.searchParams = this.router.getSearchParamsString();
 		const nextParams = this.findkitParams;
 		if (!this.findkitParams.isActive()) {
-			this.#statusTransition("closed");
-			this.#throttlingTerms = "";
+			this.PRIVATE_statusTransition("closed");
+			this.PRIVATE_throttlingTerms = "";
 			this.state.currentGroupId = undefined;
 			return;
 		}
 
-		this.#statusTransition("waiting");
+		this.PRIVATE_statusTransition("waiting");
 
 		const terms = nextParams.getTerms();
 		const reset = terms !== currentTerms;
 
 		this.state.currentGroupId = nextParams.getGroupId();
 
-		void this.#fetch({ terms, reset });
+		void this.PRIVATE_fetch({ terms, reset });
 	};
 
-	#clearTimeout = () => {
-		if (this.#throttleTimerID) {
-			clearTimeout(this.#throttleTimerID);
-			this.#throttleTimerID = undefined;
+	private PRIVATE_clearTimeout = () => {
+		if (this.PRIVATE_throttleTimerID) {
+			clearTimeout(this.PRIVATE_throttleTimerID);
+			this.PRIVATE_throttleTimerID = undefined;
 		}
 	};
 
@@ -668,29 +675,32 @@ export class SearchEngine {
 		this.router.update(params.toString(), options);
 	};
 
-	#handleInputChange(terms: string, options?: { force?: boolean }) {
-		if (this.#throttlingTerms === terms.trim()) {
+	private PRIVATE_handleInputChange(
+		terms: string,
+		options?: { force?: boolean },
+	) {
+		if (this.PRIVATE_throttlingTerms === terms.trim()) {
 			return;
 		}
 
-		this.#throttlingTerms = terms.trim();
+		this.PRIVATE_throttlingTerms = terms.trim();
 
 		if (options?.force === true) {
-			this.setTerms(this.#throttlingTerms);
+			this.setTerms(this.PRIVATE_throttlingTerms);
 			return;
 		}
 
-		if (this.#throttleTimerID) {
+		if (this.PRIVATE_throttleTimerID) {
 			return;
 		}
 
-		this.#throttleTimerID = setTimeout(() => {
-			this.setTerms(this.#throttlingTerms);
-		}, this.#throttleTime);
+		this.PRIVATE_throttleTimerID = setTimeout(() => {
+			this.setTerms(this.PRIVATE_throttlingTerms);
+		}, this.PRIVATE_throttleTime);
 	}
 
 	setTerms(terms: string) {
-		this.#clearTimeout();
+		this.PRIVATE_clearTimeout();
 		this.updateAddressBar(this.findkitParams.setTerms(terms));
 	}
 
@@ -744,7 +754,7 @@ export class SearchEngine {
 		return snapshot(groups as any) ?? [];
 	}
 
-	#handleGroupsChange = () => {
+	private PRIVATE_handleGroupsChange = () => {
 		const self = this;
 		this.events.emit("groups", {
 			get groups() {
@@ -760,61 +770,70 @@ export class SearchEngine {
 				return self.getParamsSnapshot();
 			},
 		});
-		this.#clearTimeout();
+		this.PRIVATE_clearTimeout();
 		const terms = this.findkitParams.getTerms();
-		void this.#fetch({ reset: true, terms });
+		void this.PRIVATE_fetch({ reset: true, terms });
 	};
 
-	#searchMoreDebounce?: ReturnType<typeof setTimeout>;
+	private PRIVATE_searchMoreDebounce?: ReturnType<typeof setTimeout>;
 
 	searchMore(options?: { now?: boolean }) {
-		clearTimeout(this.#searchMoreDebounce);
+		clearTimeout(this.PRIVATE_searchMoreDebounce);
 		if (options?.now === true) {
-			this.#actualSearchMore();
+			this.PRIVATE_actualSearchMore();
 		} else {
-			this.#searchMoreDebounce = setTimeout(this.#actualSearchMore, 500);
+			this.PRIVATE_searchMoreDebounce = setTimeout(
+				this.PRIVATE_actualSearchMore,
+				500,
+			);
 		}
 	}
 
-	#actualSearchMore = () => {
+	private PRIVATE_actualSearchMore = () => {
 		// If no usedTerms is set it means first fetch has not completed so no
 		// need to fetch yet
 		if (this.state.usedTerms === undefined) {
 			return;
 		}
 
-		if (this.#isAllresultsFetched()) {
+		if (this.PRIVATE_isAllresultsFetched()) {
 			return;
 		}
 
-		if (this.state.status === "ready" && this.#getSelectedGroup("next")) {
-			void this.#fetch({ reset: false, terms: this.state.usedTerms ?? "" });
+		if (
+			this.state.status === "ready" &&
+			this.PRIVATE_getSelectedGroup("next")
+		) {
+			void this.PRIVATE_fetch({
+				reset: false,
+				terms: this.state.usedTerms ?? "",
+			});
 		}
 	};
 
 	retry() {
 		this.state.error = undefined;
-		void this.#fetch({ reset: true, terms: this.state.usedTerms ?? "" });
+		void this.PRIVATE_fetch({ reset: true, terms: this.state.usedTerms ?? "" });
 	}
 
 	/**
 	 * Aka the "from" value for append requests
 	 */
-	#getFetchedGroupHitCount(groupId: string): number {
+	private PRIVATE_getFetchedGroupHitCount(groupId: string): number {
 		return this.state.resultGroups[groupId]?.hits.length ?? 0;
 	}
 
-	#isAllresultsFetched() {
-		const group = this.#getSelectedGroup("used");
+	private PRIVATE_isAllresultsFetched() {
+		const group = this.PRIVATE_getSelectedGroup("used");
 		if (group) {
 			const total = this.state.resultGroups[group.id]?.total;
-			return this.#getFetchedGroupHitCount(group.id) === total;
+			return this.PRIVATE_getFetchedGroupHitCount(group.id) === total;
 		}
 
 		return false;
 	}
 
-	#getFindkitFetchOptions(options: {
+	private PRIVATE_getFindkitFetchOptions(options: {
 		groups: GroupDefinition[];
 		lang: string | undefined;
 		terms: string;
@@ -832,12 +851,12 @@ export class SearchEngine {
 			.map((group) => {
 				let size = group.previewSize ?? 10;
 				if (options.appendGroupId) {
-					size = this.#fetchCount;
+					size = this.PRIVATE_fetchCount;
 				}
 
 				let from = 0;
 				if (options.appendGroupId && !options.reset) {
-					from = this.#getFetchedGroupHitCount(options.appendGroupId);
+					from = this.PRIVATE_getFetchedGroupHitCount(options.appendGroupId);
 				}
 
 				return cleanUndefined({
@@ -857,14 +876,14 @@ export class SearchEngine {
 			q: options.terms,
 			groups,
 			publicToken: this.publicToken,
-			searchEndpoint: this.#searchEndpoint,
+			searchEndpoint: this.PRIVATE_searchEndpoint,
 		};
 
 		return fullParams;
 	}
 
 	// Poor man's state machine
-	#statusTransition(next: State["status"]) {
+	private PRIVATE_statusTransition(next: State["status"]) {
 		const prev = this.state.status;
 
 		if (next === "closed") {
@@ -900,9 +919,9 @@ export class SearchEngine {
 			});
 
 			const container =
-				this.#container instanceof ShadowRoot
-					? this.#container.host
-					: this.#container;
+				this.PRIVATE_container instanceof ShadowRoot
+					? this.PRIVATE_container.host
+					: this.PRIVATE_container;
 
 			// There is no "open" status because there are technically multiple
 			// open states. So to fire the "open" event we need to infer it from
@@ -917,22 +936,25 @@ export class SearchEngine {
 		}
 	}
 
-	#fetch = async (options: { terms: string; reset: boolean }) => {
+	private PRIVATE_fetch = async (options: {
+		terms: string;
+		reset: boolean;
+	}) => {
 		if (this.state.status === "closed") {
 			return;
 		}
 
 		const groups = this.state.nextGroupDefinitions;
 		const noGroups = groups.length === 0;
-		const tooFewTerms = options.terms.length < this.#minTerms;
+		const tooFewTerms = options.terms.length < this.PRIVATE_minTerms;
 
 		if (tooFewTerms || noGroups) {
 			this.state.resultGroups = {};
-			this.#statusTransition("ready");
+			this.PRIVATE_statusTransition("ready");
 			return;
 		}
 
-		const appendGroup = this.#getSelectedGroup("next");
+		const appendGroup = this.PRIVATE_getSelectedGroup("next");
 
 		if (appendGroup && !options.reset) {
 			const group = this.state.resultGroups[appendGroup.id];
@@ -945,7 +967,7 @@ export class SearchEngine {
 			}
 		}
 
-		const fullParams = this.#getFindkitFetchOptions({
+		const fullParams = this.PRIVATE_getFindkitFetchOptions({
 			groups,
 			terms: options.terms,
 			appendGroupId: appendGroup?.id,
@@ -953,13 +975,13 @@ export class SearchEngine {
 			reset: options.reset,
 		});
 
-		this.#statusTransition("fetching");
+		this.PRIVATE_statusTransition("fetching");
 
-		this.#requestId += 1;
-		const requestId = this.#requestId;
+		this.PRIVATE_requestId += 1;
+		const requestId = this.PRIVATE_requestId;
 
 		const abortController = new AbortController();
-		this.#pendingRequestIds.set(requestId, abortController);
+		this.PRIVATE_pendingRequestIds.set(requestId, abortController);
 
 		this.events.emit("fetch", { terms: options.terms, id: String(requestId) });
 
@@ -967,7 +989,7 @@ export class SearchEngine {
 		// 	setTimeout(resolve, 1000 + Math.random() * 4000),
 		// );
 
-		const response = await this.#fetcher({
+		const response = await this.PRIVATE_fetcher({
 			...fullParams,
 			signal: abortController.signal,
 		}).then(
@@ -985,7 +1007,7 @@ export class SearchEngine {
 			},
 		);
 
-		const stale = !this.#pendingRequestIds.has(requestId);
+		const stale = !this.PRIVATE_pendingRequestIds.has(requestId);
 
 		this.events.emit("fetch-done", {
 			terms: options.terms,
@@ -999,7 +1021,7 @@ export class SearchEngine {
 			return;
 		}
 
-		this.#pendingRequestIds.delete(requestId);
+		this.PRIVATE_pendingRequestIds.delete(requestId);
 
 		if (!response.ok) {
 			console.error("[findkit] fetch failed", response.error);
@@ -1013,10 +1035,11 @@ export class SearchEngine {
 		}
 
 		// Remove all pending requests that were made before this one
-		for (const [pendingRequestId, abortController] of this.#pendingRequestIds) {
+		for (const [pendingRequestId, abortController] of this
+			.PRIVATE_pendingRequestIds) {
 			if (pendingRequestId < requestId) {
 				abortController.abort();
-				this.#pendingRequestIds.delete(pendingRequestId);
+				this.PRIVATE_pendingRequestIds.delete(pendingRequestId);
 			}
 		}
 
@@ -1065,10 +1088,10 @@ export class SearchEngine {
 		this.state.usedGroupDefinitions = groups;
 
 		if (appendGroup && !options.reset) {
-			this.#addAllResults(resWithIds);
+			this.PRIVATE_addAllResults(resWithIds);
 		} else {
 			this.state.resultGroups = resWithIds;
-			this.#emitDebouncedSearchEvent(options.terms);
+			this.PRIVATE_emitDebouncedSearchEvent(options.terms);
 		}
 
 		if (options.reset) {
@@ -1077,14 +1100,16 @@ export class SearchEngine {
 
 		this.state.error = undefined;
 
-		if (this.#pendingRequestIds.size === 0) {
-			this.#statusTransition("ready");
+		if (this.PRIVATE_pendingRequestIds.size === 0) {
+			this.PRIVATE_statusTransition("ready");
 		}
 
-		this.#syncInputs(options.terms);
+		this.PRIVATE_syncInputs(options.terms);
 	};
 
-	#getSelectedGroup(source: "next" | "used"): GroupDefinition | undefined {
+	PRIVATE_getSelectedGroup(
+		source: "next" | "used",
+	): GroupDefinition | undefined {
 		const groups =
 			source === "next"
 				? this.state.nextGroupDefinitions
@@ -1099,12 +1124,12 @@ export class SearchEngine {
 		return groups.find((group) => group.id === id);
 	}
 
-	get #inputs() {
+	private get PRIVATE_inputs() {
 		return this.state.inputs;
 	}
 
-	#syncInputs = (terms: string) => {
-		for (const input of this.#inputs) {
+	private PRIVATE_syncInputs = (terms: string) => {
+		for (const input of this.PRIVATE_inputs) {
 			// only change input value if it does not have focus
 			const activeElement =
 				document.activeElement?.shadowRoot?.activeElement ??
@@ -1119,8 +1144,8 @@ export class SearchEngine {
 	 * Bind input to search. Returns unbind function.
 	 */
 	bindInput = (input: HTMLInputElement) => {
-		const listeners = this.#resources.child();
-		const prev = this.#inputs.find((o) => o.el === input);
+		const listeners = this.PRIVATE_resources.child();
+		const prev = this.PRIVATE_inputs.find((o) => o.el === input);
 
 		const unbind = () => {
 			this.removeInput(input);
@@ -1144,10 +1169,10 @@ export class SearchEngine {
 			// before this is called, use that value to make a search. This is
 			// mainly for lazy loading when the input can be interacted with
 			// before this .addInput() call
-			this.#handleInputChange(input.value);
+			this.PRIVATE_handleInputChange(input.value);
 		}
 
-		this.#resources.create(() => listeners.dispose);
+		this.PRIVATE_resources.create(() => listeners.dispose);
 
 		listeners.create(() =>
 			listen(
@@ -1155,7 +1180,7 @@ export class SearchEngine {
 				"input",
 				(e) => {
 					assertInputEvent(e);
-					this.#handleInputChange(e.target.value);
+					this.PRIVATE_handleInputChange(e.target.value);
 				},
 				{ passive: true },
 			),
@@ -1176,10 +1201,10 @@ export class SearchEngine {
 			listen(input, "keydown", (e) => {
 				if (e.key === "ArrowDown") {
 					e.preventDefault();
-					this.#moveKeyboardCursor("down");
+					this.PRIVATE_moveKeyboardCursor("down");
 				} else if (e.key === "ArrowUp") {
 					e.preventDefault();
-					this.#moveKeyboardCursor("up");
+					this.PRIVATE_moveKeyboardCursor("up");
 				} else if (e.key === "Escape" && this.state.keyboardCursor) {
 					e.preventDefault();
 
@@ -1197,44 +1222,46 @@ export class SearchEngine {
 
 					if (this.state.keyboardCursor) {
 						e.preventDefault();
-						this.#selectKeyboardCursor();
+						this.PRIVATE_selectKeyboardCursor();
 						return;
 					}
 
-					this.#handleInputChange(e.target.value, { force: true });
+					this.PRIVATE_handleInputChange(e.target.value, { force: true });
 				}
 			}),
 		);
 
-		this.#inputs.push(ref({ el: input, unbindEvents: listeners.dispose }));
+		this.PRIVATE_inputs.push(
+			ref({ el: input, unbindEvents: listeners.dispose }),
+		);
 
 		return unbind;
 	};
 
 	removeInput = (rmInput: HTMLInputElement) => {
-		const input = this.#inputs.find((input) => input?.el === rmInput);
+		const input = this.PRIVATE_inputs.find((input) => input?.el === rmInput);
 		input?.unbindEvents();
 
-		const inputIndex = this.#inputs.findIndex((obj) => obj === input);
+		const inputIndex = this.PRIVATE_inputs.findIndex((obj) => obj === input);
 		if (inputIndex !== -1) {
-			this.#inputs.splice(inputIndex, 1);
+			this.PRIVATE_inputs.splice(inputIndex, 1);
 		}
 	};
 
 	trapFocus = (elements: HTMLElement[]) => {
 		this.state.trapElements.push(...elements.map((el) => ref({ el })));
 		return () => {
-			return this.#removeFromFocusTrap(elements);
+			return this.PRIVATE_removeFromFocusTrap(elements);
 		};
 	};
 
-	#removeFromFocusTrap = (elements: HTMLElement[]) => {
+	private PRIVATE_removeFromFocusTrap = (elements: HTMLElement[]) => {
 		this.state.trapElements = this.state.trapElements.filter((ref) => {
 			return !elements.includes(ref.el);
 		});
 	};
 
-	#addAllResults(res: State["resultGroups"]) {
+	private PRIVATE_addAllResults(res: State["resultGroups"]) {
 		for (const key in res) {
 			const more = res[key];
 
@@ -1268,9 +1295,9 @@ export class SearchEngine {
 		this.events.emit("dispose", {});
 		instanceIds.delete(this.instanceId);
 		this.close();
-		this.#resources.dispose();
+		this.PRIVATE_resources.dispose();
 
-		for (const input of this.#inputs) {
+		for (const input of this.PRIVATE_inputs) {
 			this.removeInput(input.el);
 		}
 		this.events.dispose();
