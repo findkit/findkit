@@ -28,7 +28,7 @@ findkit inspect <url>
 
 Custom tags can be added
 
-- In the [`tags` meta tag field](/crawler/meta-tag#tags-string)
+- In the [`tags` meta tag field](/crawler/meta-tag#tags)
 - In `findkit.toml` with the [`tags` field](/crawler/toml/tags) using CSS and regexes
 - With WordPress you can use [our WordPress
   plugin](https://github.com/findkit/wp-findkit) to generate the tags

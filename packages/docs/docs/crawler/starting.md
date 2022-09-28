@@ -31,7 +31,7 @@ previously crawled entries and will only crawl the pages that have have been
 updated since.
 
 Links will not be walked even if
-[`walk_links`](/crawler/toml/#walk_links-boolean) is set to true.
+[`walk_links`](/crawler/toml/#walk_links) is set to true.
 
 ### Single
 
