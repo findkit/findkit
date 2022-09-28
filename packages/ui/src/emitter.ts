@@ -19,19 +19,19 @@ export interface EventObject {
  * Simple event emitter
  */
 export class Emitter<Events extends {}, Source> {
-	#handlers = new Map<keyof Events, Set<Handler>>();
-	#source: Source;
+	PRIVATE_handlers = new Map<keyof Events, Set<Handler>>();
+	PRIVATE_source: Source;
 
 	constructor(source: Source) {
-		this.#source = source;
+		this.PRIVATE_source = source;
 	}
 
 	on<EventName extends keyof Events>(
 		eventName: EventName,
 		handler: (event: Events[EventName] & { source: Source }) => void,
 	) {
-		const set = this.#handlers.get(eventName) || new Set();
-		this.#handlers.set(eventName, set);
+		const set = this.PRIVATE_handlers.get(eventName) || new Set();
+		this.PRIVATE_handlers.set(eventName, set);
 		set.add(handler);
 		return () => {
 			this.off(eventName, handler);
@@ -53,20 +53,20 @@ export class Emitter<Events extends {}, Source> {
 		eventName: EventName,
 		handler: (event: any) => void,
 	) {
-		const set = this.#handlers.get(eventName);
+		const set = this.PRIVATE_handlers.get(eventName);
 		set?.delete(handler);
 	}
 
 	dispose() {
-		this.#handlers.clear();
+		this.PRIVATE_handlers.clear();
 	}
 
 	emit<EventName extends keyof Events>(
 		eventName: EventName,
 		event: Events[EventName],
 	) {
-		const payload = { ...event, ui: this.#source };
-		const set = this.#handlers.get(eventName);
+		const payload = { ...event, ui: this.PRIVATE_source };
+		const set = this.PRIVATE_handlers.get(eventName);
 
 		if (typeof document !== "undefined") {
 			const event = new Event("findkit-ui-event");

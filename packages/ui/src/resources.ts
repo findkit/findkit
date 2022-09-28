@@ -3,20 +3,20 @@
  * `.dispose()`.
  */
 export class Resources {
-	#cleaners = new Set<() => void>();
-	#disposed = false;
-	#onDispose?: () => void;
+	PRIVATE_cleaners = new Set<() => void>();
+	PRIVATE_disposed = false;
+	PRIVATE_onDispose?: () => void;
 
 	constructor(onDispose?: () => void) {
-		this.#onDispose = onDispose;
+		this.PRIVATE_onDispose = onDispose;
 	}
 
 	get disposed() {
-		return this.#disposed;
+		return this.PRIVATE_disposed;
 	}
 
 	get size() {
-		return this.#cleaners.size;
+		return this.PRIVATE_cleaners.size;
 	}
 
 	/**
@@ -26,18 +26,18 @@ export class Resources {
 	create = (createResource: () => () => void) => {
 		// Resource was disposed before it was actually created. Just return a
 		// dummy cleaner.
-		if (this.#disposed) {
+		if (this.PRIVATE_disposed) {
 			return () => {};
 		}
 
 		const cleanup = createResource();
 
-		this.#cleaners.add(cleanup);
+		this.PRIVATE_cleaners.add(cleanup);
 
 		return () => {
 			// Ensure cleaner is executed only once
-			if (this.#cleaners.has(cleanup)) {
-				this.#cleaners.delete(cleanup);
+			if (this.PRIVATE_cleaners.has(cleanup)) {
+				this.PRIVATE_cleaners.delete(cleanup);
 				cleanup();
 			}
 		};
@@ -45,7 +45,7 @@ export class Resources {
 
 	child = (onDispose?: () => void) => {
 		const child = new Resources(() => {
-			this.#cleaners.delete(child.dispose);
+			this.PRIVATE_cleaners.delete(child.dispose);
 			onDispose?.();
 		});
 
@@ -62,13 +62,13 @@ export class Resources {
 	 * Dispose all resources
 	 */
 	dispose = () => {
-		this.#disposed = true;
-		const copy = Array.from(this.#cleaners);
+		this.PRIVATE_disposed = true;
+		const copy = Array.from(this.PRIVATE_cleaners);
 		// Remove the cleaners before calling them to avoid duplicate calls when
 		// cleaners are manually called from other cleaners
-		this.#cleaners.clear();
+		this.PRIVATE_cleaners.clear();
 		copy.forEach((fn) => fn());
-		this.#onDispose?.();
+		this.PRIVATE_onDispose?.();
 	};
 }
 
