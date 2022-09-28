@@ -25,18 +25,6 @@ jobs:
         with:
           # Fetch full history to get all tags so we can get PREV_VERSION
           fetch-depth: 0
-      - name: Check allowed users
-        env:
-          allowed_users: "${{ inputs.allowed_users }}"
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const collaborators = await github.rest.repos.listCollaborators({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-            });
-
-            console.log(collaborators);
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
