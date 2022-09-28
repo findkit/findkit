@@ -65,13 +65,17 @@ jobs:
       - name: Build docusaurus
         run: ./node_modules/.bin/turbo run build --filter @findkit/docs
 
+      - name: Build ui-examples
+        run: ./node_modules/.bin/turbo run build-ui-examples --filter @findkit/ui-examples
+
       - name: Deploy site
         run: |
           set -eu
           mv packages/ui/api-docs-html/api packages/docs/build/ui-api
 
           mkdir -p packages/docs/build/ui-examples
-          cp -r packages/ui-examples/static packages/docs/build/ui-examples/
+          cp -r packages/ui-examples/static packages/docs/build/ui-examples/static
+          cp -r packages/ui-examples/bundled-dist packages/docs/build/ui-examples/bundled
 
           cd packages/docs && pnpm run deploy
         env:

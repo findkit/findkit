@@ -35,6 +35,9 @@ cd packages/docs
 pnpm install "@findkit/ui@${version}"
 cd -
 
+cd packages/ui-examples
+pnpm install "@findkit/ui@${version}"
+cd -
 
 if [ "$clean_git" = "1" ]; then
     git add .

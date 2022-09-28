@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import React, { useEffect, useRef } from "react";
-import { FindkitUI } from "@findkit/ui";
+import { FindkitUI, VERSION } from "@findkit/ui";
 
 const ui = new FindkitUI({
 	publicToken: "p68GxRvaA",
