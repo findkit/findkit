@@ -86,7 +86,7 @@ ui.events.on("open", (e) => {
 
 <Codesandbox example="static/modal-offset" />
 
-### ResizeObserver Demo
+### ResizeObserver
 
 <Codesandbox example="static/offset-modal-resize-observer" />
 
