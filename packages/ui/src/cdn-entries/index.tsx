@@ -30,7 +30,7 @@ import type { PreactFunctions } from "./preact-subset";
 /**
  * @deprecated legacy alias of SearchParams
  */
-export type SearchEgineParams = SearchParams;
+export type SearchEngineParams = SearchParams;
 
 export {
 	PreactFunctions,
