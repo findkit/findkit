@@ -9,6 +9,7 @@ on:
     paths:
       - "packages/docs/**"
       - "packages/ui/**"
+      - "packages/ui-examples/**"
       - ".github/workflows/deploy-docs.yml"
 jobs:
   test:
