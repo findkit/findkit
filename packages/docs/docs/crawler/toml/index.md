@@ -5,19 +5,19 @@ The crawler is configured using a `findkit.toml` file which is authored in a
 
 ## Top-Level Options
 
-### `id: string`
+### `id: string` {#id}
 
 The project identifier within the organization.
 
-### `name: string`
+### `name: string` {#name}
 
 Human readable name of project. Displayed in the Hub.
 
-### `description: string`
+### `description: string` {#description}
 
 Description of the project. Displayed in the Hub.
 
-### `schedule_full_crawl`
+### `schedule_full_crawl: string` {#schedule_full_crawl}
 
 Run the full crawl automatically with the given schedule.
 
@@ -29,7 +29,7 @@ Allowed values
 This is the same as running `findkit crawl start`. Read more from ["Starting
 Crawls"](/crawler/starting#full).
 
-### `schedule_update_crawl`
+### `schedule_update_crawl: string` {#schedule_update_crawl}
 
 This is the same as running `findkit crawl start --updated`.
 Read more from ["Starting Crawls"](/crawler/starting#partial).
@@ -38,7 +38,7 @@ Read more from ["Starting Crawls"](/crawler/starting#partial).
 This option is not available yet.
 :::
 
-### `targets: object[]`
+### `targets: object[]` {#targets}
 
 List "targets" aka domain to crawl content from
 
@@ -46,32 +46,32 @@ List "targets" aka domain to crawl content from
 
 Options for `[[targets]]` sections.
 
-### `use_sitemap: boolean`
+### `use_sitemap: boolean` {#use_sitemap}
 
 Read the site sitemap.
 
 Defaults to `true`.
 
-### `walk_links: boolean`
+### `walk_links: boolean` {#walk_links}
 
 Find site pages by walking the links. If the site has a proper sitemap this
 should be set to false.
 
 Defaults to `true`.
 
-### `content_selector: string`
+### `content_selector: string` {#content_selector}
 
 CSS selector used to select the text content for indexing.
 
 Read more from the [Indexing Content](/crawler/indexing) page.
 
-### `cleanup_selector: string`
+### `cleanup_selector: string` {#cleanup_selector}
 
 CSS selector used to skip elements from indexing.
 
 Read more from the [Indexing Content](/crawler/indexing) page.
 
-### `respect_robots_meta: boolean`
+### `respect_robots_meta: boolean` {#respect_robots_meta}
 
 Respect robots meta tags like
 
@@ -81,16 +81,16 @@ Respect robots meta tags like
 
 Defaults to `true`.
 
-### `respect_robots_txt: boolean`
+### `respect_robots_txt: boolean` {#respect_robots_txt}
 
 Respect `/robots.txt` rules.
 
 Defaults to `true`.
 
-### `max_pages: number`
+### `max_pages: number` {#max_pages}
 
 Max pages to crawl. If this limit is exceeded the crawler will just stop.
 
-### `tags`
+### `tags: Array` {#tags}
 
 Array tagging matchers. [Documented on the dedicated page](tags).
