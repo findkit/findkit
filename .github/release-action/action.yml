@@ -38,7 +38,32 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: "PR Comment: Set PR_RELEASE, PR_SHA and package name"
+      if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '!release') }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          core.exportVariable('PR_RELEASE', "1");
+
+          const pull = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.payload.issue.number
+          });
+
+          core.exportVariable('PR_SHA', pull.data.head.sha);
+
+          const pkg = context.payload.comment.body.match(/!release +(.*)/)?.[1];
+
+          if (pkg) {
+            console.log(`Package name: ${pkg}`);
+            core.exportVariable('pkg', pkg);
+          } else {
+            core.setFailed(`Cannot find package name from the comment`);
+          }
+
     - name: Check allowed users
+      if: ${{ env.PR_RELEASE == '1' }}
       env:
         allowed_users: "${{ inputs.allowed_users }}"
       uses: actions/github-script@v6
@@ -100,30 +125,6 @@ runs:
     - name: Set pkg env
       shell: bash
       run: echo "pkg=${{ inputs.package }}" >> $GITHUB_ENV
-
-    - name: "PR Comment: Set PR_RELEASE, PR_SHA and package name"
-      if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '!release') }}
-      uses: actions/github-script@v6
-      with:
-        script: |
-          core.exportVariable('PR_RELEASE', "1");
-
-          const pull = await github.rest.pulls.get({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: context.payload.issue.number
-          });
-
-          core.exportVariable('PR_SHA', pull.data.head.sha);
-
-          const pkg = context.payload.comment.body.match(/!release +(.*)/)?.[1];
-
-          if (pkg) {
-            console.log(`Package name: ${pkg}`);
-            core.exportVariable('pkg', pkg);
-          } else {
-            core.setFailed(`Cannot find package name from the comment`);
-          }
 
     - name: Switch to PR branch
       if: ${{ env.PR_RELEASE == '1' }}
