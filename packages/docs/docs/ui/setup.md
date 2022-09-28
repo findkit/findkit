@@ -13,8 +13,8 @@ CDN in a module script tag and bind to a button you want to open it from:
 
 You can find the `publicToken` using the `findkit status` command or from the
 project page on the Hub. The script can be placed any where on the website.
-This creates a simple fullscreen modal of the UI but there many other [embedding
-patterns](/ui/patterns/embedding/) for different use cases.
+This creates a simple fullscreen modal of the UI but there are many other
+[embedding patterns](/ui/patterns/embedding/) for different use cases.
 
 ## npm
 
