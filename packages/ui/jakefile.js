@@ -29,7 +29,7 @@ async function runEsbuild(options = {}) {
 		.build({
 			bundle: true,
 			minify: options.minify,
-			target: "es2022",
+			target: "es2021",
 			mangleProps: /^PRIVATE_/,
 			format,
 			tsconfig: "tsconfig.esbuild.json",
