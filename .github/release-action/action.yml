@@ -44,22 +44,36 @@ runs:
       uses: actions/github-script@v6
       with:
         script: |
+          let ok = false;
+
           const allowedUsers = process.env.allowed_users.split("\n");
           if (allowedUsers.includes(context.actor)) {
             console.log(`User ${context.actor} is allowed to release because in the list.`);
+            ok = true;
+          }
+
+          if (!ok) {
+            const collaborators = await github.rest.repos.listCollaborators({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+
+            if (collaborators.data.some((c) => c.login === context.actor)) {
+              console.log(`User ${context.actor} is allowed to release because they are a collaborator.`);
+              ok = true;
+            }
+          }
+
+          if (ok) {
             process.exit(0);
           }
 
-          const collaborators = await github.rest.repos.listCollaborators({
+          await github.rest.issues.createComment({
+            issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
+            body: `Sorry @${context.actor}, you are not allowed to release this package.`,
           });
-
-          console.log(collaborators);
-          if (collaborators.data.some((c) => c.login === context.actor)) {
-            console.log(`User ${context.actor} is allowed to release because they are a collaborator.`);
-            process.exit(0);
-          }
 
           core.setFailed(`User ${context.actor} is not allowed to release`)
 
