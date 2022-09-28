@@ -27,23 +27,23 @@ Plugin](https://github.com/findkit/wp-findkit) to generate this tag.
 
 ## Fields
 
-### `title: string`
+### `title: string` {#title}
 
 The crawler reads the title from the `<title>` tag but this field can used
 provide different title.
 
-### `tags: string[]`
+### `tags: string[]` {#tags}
 
 List of additional [tags](/crawler/tagging) to index the page with.
 
-### `showInSearch: boolean`
+### `showInSearch: boolean` {#showInSearch}
 
 When set to false the crawler won't index the page.
 
-### `created: string`
+### `created: string` {#created}
 
 Page creation date as ISO 8601 string
 
-### `modified: string`
+### `modified: string` {#modified}
 
 Page modification date as ISO 8601 string
