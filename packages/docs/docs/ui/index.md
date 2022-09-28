@@ -10,8 +10,9 @@ The source code is available on
 Feature highlights:
 
 - "Search as you type" experience
-- Accessibile
 - Search result groupping
+- Accessibile
+- Navigable with arrow keys
 - Customizable
 - Automatic lazy loading
 
