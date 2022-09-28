@@ -2,7 +2,9 @@
 	"name": "@findkit/ui-examples",
 	"private": true,
 	"scripts": {
-		"serve": "serve -l 48439"
+		"serve": "serve -l 48439",
+		"build-ui-examples": "vite build",
+		"build": "vite build"
 	},
 	"volta": {
 		"node": "18.9.0"

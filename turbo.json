@@ -9,6 +9,10 @@
 		"build-ui-api-docs": {
 			"outputs": ["api-docs-html/**"],
 			"dependsOn": []
+		},
+		"build-ui-examples": {
+			"outputs": ["bundled-dist/**"],
+			"dependsOn": []
 		}
 	}
 }
