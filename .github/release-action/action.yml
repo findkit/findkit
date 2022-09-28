@@ -63,10 +63,6 @@ runs:
 
           core.setFailed(`User ${context.actor} is not allowed to release`)
 
-    - name: tmp stop
-      shell: bash
-      run: exit 1
-
     # https://github.com/actions/runner/issues/520
     - name: Enable slack messaging
       shell: bash
