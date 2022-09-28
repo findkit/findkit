@@ -15,8 +15,10 @@ const input = Object.fromEntries(
 
 export default defineConfig({
 	root: __dirname + "/bundled",
+	base: process.env.CI ? "/ui-examples/bundled/" : "",
 	build: {
 		outDir: __dirname + "/bundled-dist",
+		emptyOutDir: true,
 		minify: false,
 		target: "esnext",
 		rollupOptions: {
