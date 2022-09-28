@@ -13,7 +13,7 @@ import {
 import {
 	SearchEngine,
 	GroupDefinition,
-	SearchEngineParams,
+	SearchParams,
 	SearchEngineOptions,
 } from "./search-engine";
 import { cn, View } from "./utils";
@@ -387,7 +387,7 @@ export function init(_options: {
 	slots?: Partial<Slots>;
 	events: Emitter<FindkitUIEvents, unknown>;
 	searchEndpoint?: string;
-	params?: SearchEngineParams;
+	params?: SearchParams;
 	groups?: GroupDefinition[];
 	pageScroll?: boolean;
 	modal?: boolean;

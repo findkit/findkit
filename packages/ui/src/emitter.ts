@@ -1,7 +1,7 @@
 import { SearchEngine, Status } from "./cdn-entries";
 import type {
 	GroupDefinition,
-	SearchEngineParams,
+	SearchParams,
 	SearchResultHit,
 } from "./search-engine";
 
@@ -180,7 +180,7 @@ export interface FindkitUIEvents {
 	 * Emitted when the search params change
 	 */
 	params: {
-		params: SearchEngineParams;
+		params: SearchParams;
 	};
 
 	"hit-click": {
