@@ -1,13 +1,13 @@
 import "./styles.css";
 import { createRoot } from "react-dom/client";
 import React, { useEffect, useRef, useState } from "react";
-import { FindkitUI, SearchEngineParams } from "@findkit/ui";
+import { FindkitUI, SearchParams } from "@findkit/ui";
 
 function App() {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const uiRef = useRef<FindkitUI>();
-	const [params, setParams] = useState<SearchEngineParams>();
+	const [params, setParams] = useState<SearchParams>();
 	const currentTag = params?.tagQuery?.[0]?.[0];
 
 	const setTag = (tag: string | null) => {
