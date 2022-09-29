@@ -36,20 +36,20 @@ updating the params from [Slot Overrides](/ui/slot-overrides).
 
 Following keys are available:
 
-### `createdDecay?: number` {#createdDecay}
+### `createdDecay: number` {#createdDecay}
 
 0-1 numerical value for demoting old pages
 
-### `modifiedDecay?: number` {#modifiedDecay}
+### `modifiedDecay: number` {#modifiedDecay}
 
 0-1 numerical value for demoting stagnant pages
 
-### `decayScale?: string` {#decayScale}
+### `decayScale: string` {#decayScale}
 
 To be used with `createdDecay` or `modifiedDecay`. Defines in which timeframe
 decay filter is applied, e.g. "7d".
 
-### `highlightLength?: number` {#highlightLength}
+### `highlightLength: number` {#highlightLength}
 
 The length of returned hilight string. Se to `0` disable highlighting.
 
@@ -57,11 +57,11 @@ The length of returned hilight string. Se to `0` disable highlighting.
 Too large values might slow down the search.
 :::
 
-### `size?: number` {#size}
+### `size: number` {#size}
 
 How many results to fetch in a single request.
 
-### `lang?: string` {#lang}
+### `lang: string` {#lang}
 
 Limit results to the given language.
 
