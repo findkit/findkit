@@ -11,6 +11,7 @@ function checkExists(example: string) {
 		return;
 	}
 
+	// Use eval to avoid webpack bundling the fs module in the browser
 	const fs: typeof import("fs") = eval(`require("fs")`);
 
 	fs.statSync("../ui-examples/" + example);
