@@ -99,19 +99,19 @@ export class FocusTrap {
 
 	containers: HTMLElement[];
 
-	private state = {
+	private PRIVATE_state = {
 		active: false,
 		currentContainerIndex: null as number | null,
 		shifKeyDown: false,
 		usingMouse: false,
 	};
 
-	private options: FocusTrapOptions;
+	private PRIVATE_options: FocusTrapOptions;
 
-	private shadowRoots: Set<ShadowRoot>;
+	private PRIVATE_shadowRoots: Set<ShadowRoot>;
 
 	constructor(options: FocusTrapOptions) {
-		this.options = options;
+		this.PRIVATE_options = options;
 		let elements;
 
 		if (options.containers instanceof NodeList) {
@@ -130,21 +130,21 @@ export class FocusTrap {
 
 		this.containers = elements;
 
-		this.shadowRoots = new Set();
+		this.PRIVATE_shadowRoots = new Set();
 		for (const el of elements) {
 			if (el.shadowRoot) {
-				this.shadowRoots.add(el.shadowRoot);
+				this.PRIVATE_shadowRoots.add(el.shadowRoot);
 			}
 
 			const root = el.getRootNode();
 			if (root instanceof ShadowRoot) {
-				this.shadowRoots.add(root);
+				this.PRIVATE_shadowRoots.add(root);
 			}
 		}
 	}
 
 	isEnabled() {
-		return this.state.active;
+		return this.PRIVATE_state.active;
 	}
 
 	bind(doc: Document | ShadowRoot) {
@@ -167,8 +167,8 @@ export class FocusTrap {
 	 * Enable trap
 	 */
 	enable() {
-		if (this.options.onBeforeEnable) {
-			this.options.onBeforeEnable(this);
+		if (this.PRIVATE_options.onBeforeEnable) {
+			this.PRIVATE_options.onBeforeEnable(this);
 		}
 
 		const activeElement = this.getActiveElement();
@@ -185,11 +185,11 @@ export class FocusTrap {
 		FocusTrap.current = this;
 
 		this.bind(document);
-		for (const root of this.shadowRoots) {
+		for (const root of this.PRIVATE_shadowRoots) {
 			this.bind(root);
 		}
 
-		this.state.active = true;
+		this.PRIVATE_state.active = true;
 
 		if (this.lastFocusedElement) {
 			this.setElementFocus(this.lastFocusedElement);
@@ -209,8 +209,8 @@ export class FocusTrap {
 			}
 		}
 
-		if (this.options.onAfterEnable) {
-			this.options.onAfterEnable(this);
+		if (this.PRIVATE_options.onAfterEnable) {
+			this.PRIVATE_options.onAfterEnable(this);
 		}
 	}
 
@@ -227,36 +227,36 @@ export class FocusTrap {
 			return;
 		}
 
-		if (this.options.onBeforeDisable) {
-			this.options.onBeforeDisable(this);
+		if (this.PRIVATE_options.onBeforeDisable) {
+			this.PRIVATE_options.onBeforeDisable(this);
 		}
 
 		this.unbind(document);
-		for (const root of this.shadowRoots) {
+		for (const root of this.PRIVATE_shadowRoots) {
 			this.unbind(root);
 		}
 
-		this.state.active = false;
+		this.PRIVATE_state.active = false;
 		FocusTrap.current = undefined;
 
 		const skipParent = options && options.ignoreParent;
 		if (!skipParent && this.parent) {
-			if (this.options.onAfterDisable) {
-				this.options.onAfterDisable(this);
+			if (this.PRIVATE_options.onAfterDisable) {
+				this.PRIVATE_options.onAfterDisable(this);
 			}
 			this.parent.enable();
 			this.parent = undefined;
 		} else if (this.elementBeforeTrap) {
 			this.setElementFocus(this.elementBeforeTrap);
 
-			if (this.options.onAfterDisable) {
-				this.options.onAfterDisable(this);
+			if (this.PRIVATE_options.onAfterDisable) {
+				this.PRIVATE_options.onAfterDisable(this);
 			}
 		}
 	}
 
 	setElementFocus(element: FocusableElement) {
-		element.focus(this.options.focusOptions);
+		element.focus(this.PRIVATE_options.focusOptions);
 	}
 
 	/**
@@ -271,20 +271,21 @@ export class FocusTrap {
 		}
 
 		// Shift+tab moves focus backwards
-		const direction = this.state.shifKeyDown ? -1 : 1;
+		const direction = this.PRIVATE_state.shifKeyDown ? -1 : 1;
 
 		// Focus is now in an illegal element but user wants to move the focus.
 		// Let's find the next legal container the focus can actually move to
 		let nextContainerIndex = 0;
 
-		if (this.state.currentContainerIndex == null) {
+		if (this.PRIVATE_state.currentContainerIndex == null) {
 			// on initial activation move focus to the first one when we have no
 			// active containers yet
-			this.state.currentContainerIndex = 0;
+			this.PRIVATE_state.currentContainerIndex = 0;
 		} else {
 			// On subsequent calls move the next (or previous) containers
 			nextContainerIndex =
-				(this.state.currentContainerIndex + direction) % this.containers.length;
+				(this.PRIVATE_state.currentContainerIndex + direction) %
+				this.containers.length;
 
 			// Going backwards to last container
 			if (nextContainerIndex === -1) {
@@ -295,7 +296,7 @@ export class FocusTrap {
 		const nextContainer = this.containers[nextContainerIndex];
 
 		// If going backwards select last tabbable from the new container
-		if (this.state.shifKeyDown) {
+		if (this.PRIVATE_state.shifKeyDown) {
 			const tabbables = this.getTabbables(nextContainer);
 			if (tabbables.length > 0) {
 				const last = tabbables[tabbables.length - 1];
@@ -305,7 +306,7 @@ export class FocusTrap {
 			} else {
 				// The container had no tabbable items update the current
 				// container and restart focus moving attempt
-				this.state.currentContainerIndex = nextContainerIndex;
+				this.PRIVATE_state.currentContainerIndex = nextContainerIndex;
 				this.fixFocus(attempts + 1);
 			}
 		} else {
@@ -314,7 +315,7 @@ export class FocusTrap {
 				this.setElementFocus(tabbables[0]);
 			} else {
 				// The container had no tabbable items...
-				this.state.currentContainerIndex = nextContainerIndex;
+				this.PRIVATE_state.currentContainerIndex = nextContainerIndex;
 				this.fixFocus(attempts + 1);
 			}
 		}
@@ -328,7 +329,7 @@ export class FocusTrap {
 			container.contains(nextElement),
 		);
 		if (nextIndex !== -1) {
-			this.state.currentContainerIndex = nextIndex;
+			this.PRIVATE_state.currentContainerIndex = nextIndex;
 		}
 	}
 
@@ -349,7 +350,7 @@ export class FocusTrap {
 			return false;
 		}
 
-		const containerIndex = this.state.currentContainerIndex || 0;
+		const containerIndex = this.PRIVATE_state.currentContainerIndex || 0;
 		if (!this.isValidTabbable(el, this.containers[containerIndex])) {
 			return false;
 		}
@@ -368,7 +369,7 @@ export class FocusTrap {
 	}
 
 	isValidTabbable(tabbable: Element, container: HTMLElement | undefined) {
-		if (!this.options.validateTabbable) {
+		if (!this.PRIVATE_options.validateTabbable) {
 			return isTabbable(tabbable);
 		}
 
@@ -376,7 +377,7 @@ export class FocusTrap {
 			return false;
 		}
 
-		return this.options.validateTabbable(tabbable, container, this);
+		return this.PRIVATE_options.validateTabbable(tabbable, container, this);
 	}
 
 	getActiveElement() {
@@ -391,9 +392,9 @@ export class FocusTrap {
 			}
 
 			if (!this.isValidFocus(e.target)) {
-				this.state.usingMouse = true;
+				this.PRIVATE_state.usingMouse = true;
 
-				if (this.options.outsideClickDisables) {
+				if (this.PRIVATE_options.outsideClickDisables) {
 					this.disable();
 				}
 			}
@@ -403,7 +404,7 @@ export class FocusTrap {
 				return;
 			}
 
-			this.state.usingMouse = false;
+			this.PRIVATE_state.usingMouse = false;
 		},
 
 		keyDown: (e: {}) => {
@@ -411,12 +412,12 @@ export class FocusTrap {
 				return;
 			}
 
-			if (this.options.escDisables && e.keyCode === 27) {
+			if (this.PRIVATE_options.escDisables && e.keyCode === 27) {
 				this.disable();
 			}
 
 			if (e.shiftKey) {
-				this.state.shifKeyDown = true;
+				this.PRIVATE_state.shifKeyDown = true;
 			}
 		},
 
@@ -426,7 +427,7 @@ export class FocusTrap {
 			}
 
 			if (e.shiftKey) {
-				this.state.shifKeyDown = false;
+				this.PRIVATE_state.shifKeyDown = false;
 			}
 		},
 
@@ -456,7 +457,7 @@ export class FocusTrap {
 
 			// If focus was moved to a illegal element by mouse just revert the
 			// focus back to the previous element
-			if (this.state.usingMouse && prev) {
+			if (this.PRIVATE_state.usingMouse && prev) {
 				this.lastFocusedElement = prev;
 				this.setElementFocus(prev);
 				return;

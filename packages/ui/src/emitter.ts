@@ -19,8 +19,8 @@ export interface EventObject {
  * Simple event emitter
  */
 export class Emitter<Events extends {}, Source> {
-	PRIVATE_handlers = new Map<keyof Events, Set<Handler>>();
-	PRIVATE_source: Source;
+	private PRIVATE_handlers = new Map<keyof Events, Set<Handler>>();
+	private PRIVATE_source: Source;
 
 	constructor(source: Source) {
 		this.PRIVATE_source = source;
