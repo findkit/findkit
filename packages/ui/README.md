@@ -85,3 +85,15 @@ npm install /path/to/findkit/clone/findkit-ui-0.0.1.tgz
 
 Because this is a local build you must disable the CDN usage:
 <https://docs.findkit.com/ui/advanced/disable-cdn>
+
+## Conventions
+
+### Privates
+
+This package uses custom convention for private properties and methods. Every
+private method and property should have the Typescript `private` keyword and
+`PRIVATE_` prefix. The privates are mangled using esbuild when the package
+is published.
+
+The native Javascript privates cannot be used because they produce too much code
+when transpiled down to legacy Javascript and they are too new ship as is.
