@@ -24,7 +24,7 @@ export class Resources {
 	 * resource.
 	 */
 	create = (createResource: () => () => void) => {
-		// Resource was disposed before it was actually created. Just return a
+		// Resource was disposed bef?.dispose()ore it was actually created. Just return a
 		// dummy cleaner.
 		if (this.PRIVATE_disposed) {
 			return () => {};
@@ -76,7 +76,7 @@ export function listen<EventName extends keyof HTMLElementEventMap>(
 	target: any,
 	eventName: EventName,
 	listener: (e: HTMLElementEventMap[EventName]) => any,
-	options?: AddEventListenerOptions,
+	options?: AddEventListenerOptions | false,
 ) {
 	target.addEventListener(eventName as any, listener, options);
 	return () => {

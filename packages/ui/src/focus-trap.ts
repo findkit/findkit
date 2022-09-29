@@ -1,4 +1,5 @@
 import { tabbable, isTabbable, FocusableElement } from "tabbable";
+import { listen, Resources } from "./resources";
 
 function getTabbables(el: HTMLElement) {
 	const tabbables = tabbable(el);
@@ -90,14 +91,14 @@ export class FocusTrap {
 	/**
 	 * Element this focus trap had focus on most recently
 	 */
-	lastFocusedElement?: HTMLElement;
+	private PRIVATE_lastFocusedElement?: HTMLElement;
 
 	/**
 	 * Element that had focus before the trap was enabled
 	 */
 	elementBeforeTrap?: HTMLElement;
 
-	containers: HTMLElement[];
+	private PRIVATE_containers: HTMLElement[];
 
 	private PRIVATE_state = {
 		active: false,
@@ -109,6 +110,8 @@ export class FocusTrap {
 	private PRIVATE_options: FocusTrapOptions;
 
 	private PRIVATE_shadowRoots: Set<ShadowRoot>;
+
+	private PRIVATE_eventListeners?: Resources;
 
 	constructor(options: FocusTrapOptions) {
 		this.PRIVATE_options = options;
@@ -128,7 +131,7 @@ export class FocusTrap {
 			console.warn("No elements passed to FocusTrap");
 		}
 
-		this.containers = elements;
+		this.PRIVATE_containers = elements;
 
 		this.PRIVATE_shadowRoots = new Set();
 		for (const el of elements) {
@@ -147,20 +150,30 @@ export class FocusTrap {
 		return this.PRIVATE_state.active;
 	}
 
-	bind(doc: Document | ShadowRoot) {
-		doc.addEventListener("keydown", this.handlers.keyDown, false);
-		doc.addEventListener("keyup", this.handlers.keyUp, false);
-		doc.addEventListener("focusin", this.handlers.focusIn, false);
-		doc.addEventListener("mousedown", this.handlers.mouseDown, false);
-		doc.addEventListener("mouseup", this.handlers.mouseUp, false);
-	}
+	private PRIVATE_bind(doc: Document | ShadowRoot) {
+		if (!this.PRIVATE_eventListeners) {
+			this.PRIVATE_eventListeners = new Resources();
+		}
 
-	unbind(doc: Document | ShadowRoot) {
-		doc.removeEventListener("keydown", this.handlers.keyDown, false);
-		doc.removeEventListener("keyup", this.handlers.keyUp, false);
-		doc.removeEventListener("focusin", this.handlers.focusIn, false);
-		doc.removeEventListener("mousedown", this.handlers.mouseDown, false);
-		doc.removeEventListener("mouseup", this.handlers.mouseUp, false);
+		this.PRIVATE_eventListeners.create(() =>
+			listen(doc, "keydown", this.PRIVATE_keyDown, false),
+		);
+
+		this.PRIVATE_eventListeners.create(() =>
+			listen(doc, "keyup", this.PRIVATE_keyUp, false),
+		);
+
+		this.PRIVATE_eventListeners.create(() =>
+			listen(doc, "focusin", this.PRIVATE_focusIn, false),
+		);
+
+		this.PRIVATE_eventListeners.create(() =>
+			listen(doc, "mousedown", this.PRIVATE_mouseDown, false),
+		);
+
+		this.PRIVATE_eventListeners.create(() =>
+			listen(doc, "mouseup", this.PRIVATE_mouseUp, false),
+		);
 	}
 
 	/**
@@ -171,7 +184,7 @@ export class FocusTrap {
 			this.PRIVATE_options.onBeforeEnable(this);
 		}
 
-		const activeElement = this.getActiveElement();
+		const activeElement = this.PRIVATE_getActiveElement();
 		if (activeElement instanceof HTMLElement) {
 			this.elementBeforeTrap = activeElement || undefined;
 		}
@@ -184,28 +197,28 @@ export class FocusTrap {
 
 		FocusTrap.current = this;
 
-		this.bind(document);
+		this.PRIVATE_bind(document);
 		for (const root of this.PRIVATE_shadowRoots) {
-			this.bind(root);
+			this.PRIVATE_bind(root);
 		}
 
 		this.PRIVATE_state.active = true;
 
-		if (this.lastFocusedElement) {
-			this.setElementFocus(this.lastFocusedElement);
+		if (this.PRIVATE_lastFocusedElement) {
+			this.PRIVATE_setElementFocus(this.PRIVATE_lastFocusedElement);
 		} else {
-			const activeElement = this.getActiveElement();
+			const activeElement = this.PRIVATE_getActiveElement();
 			if (
 				activeElement instanceof HTMLElement &&
-				this.isValidFocus(activeElement)
+				this.PRIVATE_isValidFocus(activeElement)
 			) {
 				// If we have a valid focus update container index so tabbing
 				// can work correctly
-				this.updateContainerIndex(activeElement);
+				this.PRIVATE_updateContainerIndex(activeElement);
 			} else {
 				// Move focus to the first tabbable element of the first container
 				// if we don't already have a valid focus
-				this.fixFocus();
+				this.PRIVATE_fixFocus();
 			}
 		}
 
@@ -231,10 +244,8 @@ export class FocusTrap {
 			this.PRIVATE_options.onBeforeDisable(this);
 		}
 
-		this.unbind(document);
-		for (const root of this.PRIVATE_shadowRoots) {
-			this.unbind(root);
-		}
+		this.PRIVATE_eventListeners?.dispose();
+		this.PRIVATE_eventListeners = undefined;
 
 		this.PRIVATE_state.active = false;
 		FocusTrap.current = undefined;
@@ -247,7 +258,7 @@ export class FocusTrap {
 			this.parent.enable();
 			this.parent = undefined;
 		} else if (this.elementBeforeTrap) {
-			this.setElementFocus(this.elementBeforeTrap);
+			this.PRIVATE_setElementFocus(this.elementBeforeTrap);
 
 			if (this.PRIVATE_options.onAfterDisable) {
 				this.PRIVATE_options.onAfterDisable(this);
@@ -255,7 +266,7 @@ export class FocusTrap {
 		}
 	}
 
-	setElementFocus(element: FocusableElement) {
+	private PRIVATE_setElementFocus(element: FocusableElement) {
 		element.focus(this.PRIVATE_options.focusOptions);
 	}
 
@@ -263,9 +274,9 @@ export class FocusTrap {
 	 * Fix focus back to an element inside a container when we detect focus is
 	 * being moved to an illegal element.
 	 */
-	fixFocus(attempts = 0) {
+	private PRIVATE_fixFocus(attempts = 0) {
 		// Avoid infinite recursion
-		if (attempts > this.containers.length) {
+		if (attempts > this.PRIVATE_containers.length) {
 			console.warn("Failed to find focusable containers");
 			return;
 		}
@@ -285,38 +296,38 @@ export class FocusTrap {
 			// On subsequent calls move the next (or previous) containers
 			nextContainerIndex =
 				(this.PRIVATE_state.currentContainerIndex + direction) %
-				this.containers.length;
+				this.PRIVATE_containers.length;
 
 			// Going backwards to last container
 			if (nextContainerIndex === -1) {
-				nextContainerIndex = this.containers.length - 1;
+				nextContainerIndex = this.PRIVATE_containers.length - 1;
 			}
 		}
 
-		const nextContainer = this.containers[nextContainerIndex];
+		const nextContainer = this.PRIVATE_containers[nextContainerIndex];
 
 		// If going backwards select last tabbable from the new container
 		if (this.PRIVATE_state.shifKeyDown) {
-			const tabbables = this.getTabbables(nextContainer);
+			const tabbables = this.PRIVATE_getTabbables(nextContainer);
 			if (tabbables.length > 0) {
 				const last = tabbables[tabbables.length - 1];
 				if (last) {
-					this.setElementFocus(last);
+					this.PRIVATE_setElementFocus(last);
 				}
 			} else {
 				// The container had no tabbable items update the current
 				// container and restart focus moving attempt
 				this.PRIVATE_state.currentContainerIndex = nextContainerIndex;
-				this.fixFocus(attempts + 1);
+				this.PRIVATE_fixFocus(attempts + 1);
 			}
 		} else {
-			const tabbables = this.getTabbables(nextContainer);
+			const tabbables = this.PRIVATE_getTabbables(nextContainer);
 			if (tabbables.length > 0 && tabbables[0]) {
-				this.setElementFocus(tabbables[0]);
+				this.PRIVATE_setElementFocus(tabbables[0]);
 			} else {
 				// The container had no tabbable items...
 				this.PRIVATE_state.currentContainerIndex = nextContainerIndex;
-				this.fixFocus(attempts + 1);
+				this.PRIVATE_fixFocus(attempts + 1);
 			}
 		}
 	}
@@ -324,8 +335,8 @@ export class FocusTrap {
 	/**
 	 * Update currently active trap container index
 	 */
-	updateContainerIndex(nextElement: Node) {
-		const nextIndex = this.containers.findIndex((container) =>
+	private PRIVATE_updateContainerIndex(nextElement: Node) {
+		const nextIndex = this.PRIVATE_containers.findIndex((container) =>
 			container.contains(nextElement),
 		);
 		if (nextIndex !== -1) {
@@ -336,10 +347,10 @@ export class FocusTrap {
 	/**
 	 * Returns true if the element is valid tabblable in our containers
 	 */
-	isValidFocus(el: Element) {
+	private PRIVATE_isValidFocus(el: Element) {
 		let inContainer = false;
 
-		for (const container of this.containers) {
+		for (const container of this.PRIVATE_containers) {
 			if (el === container || container.contains(el)) {
 				inContainer = true;
 				break;
@@ -351,24 +362,29 @@ export class FocusTrap {
 		}
 
 		const containerIndex = this.PRIVATE_state.currentContainerIndex || 0;
-		if (!this.isValidTabbable(el, this.containers[containerIndex])) {
+		if (
+			!this.PRIVATE_isValidTabbable(el, this.PRIVATE_containers[containerIndex])
+		) {
 			return false;
 		}
 
 		return true;
 	}
 
-	getTabbables(container: HTMLElement | undefined) {
+	private PRIVATE_getTabbables(container: HTMLElement | undefined) {
 		if (!container) {
 			throw new Error("Cannot pass undefined to getTabbables");
 		}
 
 		return getTabbables(container).filter((tabbable) => {
-			return this.isValidTabbable(tabbable, container);
+			return this.PRIVATE_isValidTabbable(tabbable, container);
 		});
 	}
 
-	isValidTabbable(tabbable: Element, container: HTMLElement | undefined) {
+	private PRIVATE_isValidTabbable(
+		tabbable: Element,
+		container: HTMLElement | undefined,
+	) {
 		if (!this.PRIVATE_options.validateTabbable) {
 			return isTabbable(tabbable);
 		}
@@ -380,96 +396,95 @@ export class FocusTrap {
 		return this.PRIVATE_options.validateTabbable(tabbable, container, this);
 	}
 
-	getActiveElement() {
+	private PRIVATE_getActiveElement() {
 		const el = document.activeElement;
 		return el?.shadowRoot?.activeElement ?? el;
 	}
 
-	handlers = {
-		mouseDown: (e: {}) => {
-			if (!isValidEvent(e)) {
-				return;
-			}
+	private PRIVATE_mouseDown = (e: {}) => {
+		if (!isValidEvent(e)) {
+			return;
+		}
 
-			if (!this.isValidFocus(e.target)) {
-				this.PRIVATE_state.usingMouse = true;
+		if (!this.PRIVATE_isValidFocus(e.target)) {
+			this.PRIVATE_state.usingMouse = true;
 
-				if (this.PRIVATE_options.outsideClickDisables) {
-					this.disable();
-				}
-			}
-		},
-		mouseUp: (e: {}) => {
-			if (!isValidEvent(e)) {
-				return;
-			}
-
-			this.PRIVATE_state.usingMouse = false;
-		},
-
-		keyDown: (e: {}) => {
-			if (!isValidEvent(e)) {
-				return;
-			}
-
-			if (this.PRIVATE_options.escDisables && e.keyCode === 27) {
+			if (this.PRIVATE_options.outsideClickDisables) {
 				this.disable();
 			}
+		}
+	};
 
-			if (e.shiftKey) {
-				this.PRIVATE_state.shifKeyDown = true;
-			}
-		},
+	private PRIVATE_mouseUp = (e: {}) => {
+		if (!isValidEvent(e)) {
+			return;
+		}
 
-		keyUp: (e: {}) => {
-			if (!isValidEvent(e)) {
-				return;
-			}
+		this.PRIVATE_state.usingMouse = false;
+	};
 
-			if (e.shiftKey) {
-				this.PRIVATE_state.shifKeyDown = false;
-			}
-		},
+	private PRIVATE_keyDown = (e: {}) => {
+		if (!isValidEvent(e)) {
+			return;
+		}
 
-		focusIn: (e: {}) => {
-			if (!isValidEvent(e)) {
-				return;
-			}
+		if (this.PRIVATE_options.escDisables && e.keyCode === 27) {
+			this.disable();
+		}
 
-			/**
-			 * Last focused element
-			 */
-			const prev = this.lastFocusedElement;
+		if (e.shiftKey) {
+			this.PRIVATE_state.shifKeyDown = true;
+		}
+	};
 
-			// Update lastly focused element
-			const activeElement = this.getActiveElement();
-			if (activeElement instanceof HTMLElement) {
-				this.lastFocusedElement = activeElement;
-			}
+	private PRIVATE_keyUp = (e: {}) => {
+		if (!isValidEvent(e)) {
+			return;
+		}
 
-			// Keep track of the container we're in
-			this.updateContainerIndex(e.target);
+		if (e.shiftKey) {
+			this.PRIVATE_state.shifKeyDown = false;
+		}
+	};
 
-			// Focus still inside our containers. Focus can move freely here. Nothing to do.
-			if (this.isValidFocus(e.target)) {
-				return;
-			}
+	private PRIVATE_focusIn = (e: {}) => {
+		if (!isValidEvent(e)) {
+			return;
+		}
 
-			// If focus was moved to a illegal element by mouse just revert the
-			// focus back to the previous element
-			if (this.PRIVATE_state.usingMouse && prev) {
-				this.lastFocusedElement = prev;
-				this.setElementFocus(prev);
-				return;
-			}
+		/**
+		 * Last focused element
+		 */
+		const prev = this.PRIVATE_lastFocusedElement;
 
-			// !!! Focus is moving to an element outside of the containers!
+		// Update lastly focused element
+		const activeElement = this.PRIVATE_getActiveElement();
+		if (activeElement instanceof HTMLElement) {
+			this.PRIVATE_lastFocusedElement = activeElement;
+		}
 
-			// Prevent other focusIn handlers from executing
-			e.stopImmediatePropagation();
+		// Keep track of the container we're in
+		this.PRIVATE_updateContainerIndex(e.target);
 
-			// Fix focus back to a legal element inside the containers
-			this.fixFocus();
-		},
+		// Focus still inside our containers. Focus can move freely here. Nothing to do.
+		if (this.PRIVATE_isValidFocus(e.target)) {
+			return;
+		}
+
+		// If focus was moved to a illegal element by mouse just revert the
+		// focus back to the previous element
+		if (this.PRIVATE_state.usingMouse && prev) {
+			this.PRIVATE_lastFocusedElement = prev;
+			this.PRIVATE_setElementFocus(prev);
+			return;
+		}
+
+		// !!! Focus is moving to an element outside of the containers!
+
+		// Prevent other focusIn handlers from executing
+		e.stopImmediatePropagation();
+
+		// Fix focus back to a legal element inside the containers
+		this.PRIVATE_fixFocus();
 	};
 }
