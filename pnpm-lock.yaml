@@ -25,6 +25,7 @@ importers:
       '@docusaurus/preset-classic': 2.1.0
       '@findkit/ui': 0.0.1-dev.9d1d00def9
       '@mdx-js/react': ^1.6.22
+      '@types/node': ^16.0.0
       '@valu/react-intersection-observer': ^1.0.0
       clsx: ^1.2.1
       netlify-cli: ^11.5.1
@@ -45,6 +46,7 @@ importers:
       typescript: 4.8.2
     devDependencies:
       '@docusaurus/module-type-aliases': 2.1.0_sfoxds7t5ydpegc3knd667wn6m
+      '@types/node': 16.11.56
       netlify-cli: 11.5.1
 
   packages/eslint-config:

@@ -3,6 +3,19 @@ import { useIntersectionObserver } from "@valu/react-intersection-observer";
 // Import the original mapper
 import MDXComponents from "@theme-original/MDXComponents";
 
+/**
+ * Throw error during build the if the example does not exist
+ */
+function checkExists(example: string) {
+	if (typeof window !== "undefined") {
+		return;
+	}
+
+	const fs: typeof import("fs") = eval(`require("fs")`);
+
+	fs.statSync("../ui-examples/" + example);
+}
+
 function Api(props: { page: string; children: any }) {
 	return (
 		<>
@@ -22,6 +35,7 @@ function Codesandbox(props: {
 	link?: boolean;
 	children?: any;
 }) {
+	checkExists(props.example);
 	const [open, setOpen] = useState(false);
 	const ref = useIntersectionObserver(() => {
 		setOpen(true);
