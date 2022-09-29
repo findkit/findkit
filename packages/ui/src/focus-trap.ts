@@ -1,4 +1,5 @@
 import { tabbable, isTabbable, FocusableElement } from "tabbable";
+import { listen, Resources } from "./resources";
 
 function getTabbables(el: HTMLElement) {
 	const tabbables = tabbable(el);
@@ -110,6 +111,8 @@ export class FocusTrap {
 
 	private PRIVATE_shadowRoots: Set<ShadowRoot>;
 
+	private PRIVATE_eventListeners?: Resources;
+
 	constructor(options: FocusTrapOptions) {
 		this.PRIVATE_options = options;
 		let elements;
@@ -148,19 +151,29 @@ export class FocusTrap {
 	}
 
 	private PRIVATE_bind(doc: Document | ShadowRoot) {
-		doc.addEventListener("keydown", this.PRIVATE_keyDown, false);
-		doc.addEventListener("keyup", this.PRIVATE_keyUp, false);
-		doc.addEventListener("focusin", this.PRIVATE_focusIn, false);
-		doc.addEventListener("mousedown", this.PRIVATE_mouseDown, false);
-		doc.addEventListener("mouseup", this.PRIVATE_mouseUp, false);
-	}
+		if (!this.PRIVATE_eventListeners) {
+			this.PRIVATE_eventListeners = new Resources();
+		}
 
-	private PRIVATE_unbind(doc: Document | ShadowRoot) {
-		doc.removeEventListener("keydown", this.PRIVATE_keyDown, false);
-		doc.removeEventListener("keyup", this.PRIVATE_keyUp, false);
-		doc.removeEventListener("focusin", this.PRIVATE_focusIn, false);
-		doc.removeEventListener("mousedown", this.PRIVATE_mouseDown, false);
-		doc.removeEventListener("mouseup", this.PRIVATE_mouseUp, false);
+		this.PRIVATE_eventListeners.create(() =>
+			listen(doc, "keydown", this.PRIVATE_keyDown, false),
+		);
+
+		this.PRIVATE_eventListeners.create(() =>
+			listen(doc, "keyup", this.PRIVATE_keyUp, false),
+		);
+
+		this.PRIVATE_eventListeners.create(() =>
+			listen(doc, "focusin", this.PRIVATE_focusIn, false),
+		);
+
+		this.PRIVATE_eventListeners.create(() =>
+			listen(doc, "mousedown", this.PRIVATE_mouseDown, false),
+		);
+
+		this.PRIVATE_eventListeners.create(() =>
+			listen(doc, "mouseup", this.PRIVATE_mouseUp, false),
+		);
 	}
 
 	/**
@@ -231,10 +244,8 @@ export class FocusTrap {
 			this.PRIVATE_options.onBeforeDisable(this);
 		}
 
-		this.PRIVATE_unbind(document);
-		for (const root of this.PRIVATE_shadowRoots) {
-			this.PRIVATE_unbind(root);
-		}
+		this.PRIVATE_eventListeners?.dispose();
+		this.PRIVATE_eventListeners = undefined;
 
 		this.PRIVATE_state.active = false;
 		FocusTrap.current = undefined;
