@@ -41,7 +41,7 @@ to the search UI.
 
 Try it on Codesandbox
 
-<Codesandbox example="custom-input" />
+<Codesandbox example="static/custom-input" />
 
 ## Props
 
@@ -72,7 +72,7 @@ and Utils](/ui/slot-overrides/hooks) for details.
 Here's an example how to use the custom hooks to create custom filtering buttons
 into the search UI:
 
-<Codesandbox example="use-params" />
+<Codesandbox example="static/use-params" />
 
 ## Caveats
 

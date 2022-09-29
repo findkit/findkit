@@ -51,7 +51,7 @@ The content below the header.
 
 The containing element for the header and the content elements. This slot can be
 used to customize the element positioning. For example it can be used to
-<Codesandbox link example="external-input">completely remove the header</Codesandbox>
+<Codesandbox link example="static/external-input">completely remove the header</Codesandbox>
 or add side panels with tag filters etc.
 
 <Api page="ui.slots.layout" />

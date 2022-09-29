@@ -73,4 +73,4 @@ groups are ordered by their highest score result. TODO: link to the option dokum
 
 ## Try it!
 
-<Codesandbox example="grouping" />
+<Codesandbox example="static/grouping" />
