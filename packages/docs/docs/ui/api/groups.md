@@ -1,7 +1,7 @@
-# Grouping
+# Groups
 
-To group search results you can define a `groups` array with titles and group specific search
-[`params`](/ui/api/params).
+To group search results you can define a `groups` array with titles and group
+specific search [Search Params](/ui/api/params).
 
 [Live demo at the bottom 👇](#try-it)
 
@@ -14,6 +14,7 @@ const ui = new FindkitUI({
 			id: "pages",
 			previewSize: 3,
 			params: {
+				// Search Params
 				tagQuery: [["html"]],
 			},
 		},
@@ -32,6 +33,19 @@ const ui = new FindkitUI({
 When a search is made with this configuration it will display results from each
 group as searches are made. The result amount per group is determined by the
 `previewSize` key.
+
+:::caution
+The `groups` option cannot be mixed with the `params` option. Eg. this does not work:
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	params: {}  // ❌ Broken!!
+	groups: [], // ❌ Broken!!
+});
+```
+
+:::
 
 ## Dynamic Update
 

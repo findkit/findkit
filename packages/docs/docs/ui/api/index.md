@@ -77,7 +77,7 @@ Customize search request params. See [Search Params](/ui/api/params).
 
 ### `groups: object[]` {#groups}
 
-Group search results. See [Grouping](/ui/groups).
+Group search results. See [Groups](/ui/api/groups).
 
 <Api page="ui.findkituioptions.groups" />
 
@@ -157,7 +157,7 @@ How many results to fetch in a single request.
 
 TODO
 
-## Methods and Properties {#class}
+## Methods {#methods}
 
 Following methods are available on the `FindkitUI` instance.
 
@@ -233,3 +233,29 @@ Update the groups.
 TODO: More detailed docs.
 
 <Api page="ui.findkitui.updategroups" />
+
+## Properties {#properties}
+
+### `.events` {#event}
+
+Event emitter object. See [Events](/ui/api/events).
+
+<Api page="ui.findkitui.events" />
+
+### `.events` {#event}
+
+Event emitter object. See [Events](/ui/api/events).
+
+<Api page="ui.findkitui.events" />
+
+### `.params` {#params-prop}
+
+The current [Search Params](/ui/api/params)
+
+<Api page="ui.findkitui.params" />
+
+### `.groups` {#groups-prop}
+
+The current [Groups](/ui/api/groups)
+
+<Api page="ui.findkitui.groups" />

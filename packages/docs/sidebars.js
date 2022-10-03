@@ -47,9 +47,13 @@ const sidebars = {
 					type: "category",
 					label: "API",
 					link: { type: "doc", id: "ui/api/index" },
-					items: ["ui/api/params", "ui/api/events", "ui/api/utils"],
+					items: [
+						"ui/api/params",
+						"ui/api/groups",
+						"ui/api/events",
+						"ui/api/utils",
+					],
 				},
-				"ui/groups",
 				"ui/styling",
 				"ui/tech",
 				{

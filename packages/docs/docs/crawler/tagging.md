@@ -1,7 +1,7 @@
 # Tagging Pages
 
 The crawler can tag the content for [filtering](/ui/api/params) and
-[grouping](/ui/groups).
+[grouping](/ui/api/groups).
 
 By default following tags are added
 

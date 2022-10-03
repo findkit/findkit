@@ -15,7 +15,7 @@ TODO: example
 
 ### `useGroups()` {#useGroups}
 
-Hook for updating the [groups](/ui/groups).
+Hook for updating the [groups](/ui/api/groups).
 
 TODO: example
 
