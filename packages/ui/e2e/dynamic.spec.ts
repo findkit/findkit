@@ -330,3 +330,43 @@ test("can customize fetch count", async ({ page }) => {
 	await loadMore.click();
 	await expect(hits).toHaveCount(6);
 });
+
+test("can use preact import", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI, preact, html } = MOD;
+
+		const { useState } = preact;
+
+		function Counter() {
+			const [count, setCount] = useState(0);
+
+			return html`<button class="counter" onClick=${() => setCount(count + 1)}>
+				${count}
+			</button>`;
+		}
+
+		const ui = new FindkitUI({
+			publicToken: "po8GK3G0r",
+			slots: {
+				Header(props) {
+					return html`
+						${props.children}
+						<${Counter} />
+					`;
+				},
+			},
+		});
+
+		ui.open();
+	});
+
+	const counter = page.locator(".counter");
+	await expect(counter.first()).toBeVisible();
+
+	await counter.click();
+	await counter.click();
+
+	await expect(counter.first()).toHaveText("2");
+});

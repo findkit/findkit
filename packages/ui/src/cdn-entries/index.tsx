@@ -210,6 +210,8 @@ function createShellFunction<Key extends Methods<Implementation>>(name: Key) {
 	};
 }
 
+const preactImplementation: PreactFunctions = {} as any;
+
 /**
  * HTM (Hyperscript Tagged Markup) tagged template literal.
  * https://github.com/developit/htm
@@ -230,7 +232,29 @@ export const h = createShellFunction("h");
  *
  * @public
  */
-export const preact: PreactFunctions = {} as any;
+export const preact: PreactFunctions = new Proxy(
+	{},
+	{
+		get: (cache: any, prop) => {
+			const anyPreact = preactImplementation as any;
+
+			// Generate and cache proxy functions to ensure stable indendities
+			if (!cache[prop]) {
+				cache[prop] = (...args: any[]) => {
+					if (!anyPreact) {
+						throw new Error(
+							`[findkit] Cannot use '${String(prop)}': Preact not loaded yet!`,
+						);
+					}
+
+					return anyPreact[prop](...args);
+				};
+			}
+
+			return cache[prop];
+		},
+	},
+) as any;
 
 /**
  * Use search terms
@@ -563,7 +587,7 @@ export class FindkitUI {
 		const impl = await this.PRIVATE_loadImplementation();
 
 		Object.assign(lazyImplementation, impl.js);
-		Object.assign(preact, impl.js.preact);
+		Object.assign(preactImplementation, impl.js.preact);
 
 		const {
 			styleSheet: _1,
