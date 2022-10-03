@@ -74,7 +74,7 @@ Title of the group. Displayed within the search results.
 
 ### `params: object`
 
-See [Search Params](/ui/api/params).
+The same as [Search Params](/ui/api/params).
 
 ### `previewSize?: number`
 
