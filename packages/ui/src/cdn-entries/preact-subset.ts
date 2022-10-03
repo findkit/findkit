@@ -35,13 +35,21 @@ interface Context<T> {
  * Small subset of commonly used Preact functions
  */
 export interface PreactFunctions {
-	useCallback<T extends Function>(callback: T, deps: DependencyList): T;
-	useState<S>(initialState: S | (() => S)): [S, Dispatch<SetStateAction<S>>];
-	useEffect(effect: EffectCallback, deps?: DependencyList): void;
-	useRef<T>(initialValue: T): MutableRefObject<T>;
-	useMemo<T>(factory: () => T, deps: DependencyList | undefined): T;
-	useContext<T>(context: Context<T>): T;
+	useCallback<T extends Function>(
+		this: void,
+		callback: T,
+		deps: DependencyList,
+	): T;
+	useState<S>(
+		this: void,
+		initialState: S | (() => S),
+	): [S, Dispatch<SetStateAction<S>>];
+	useEffect(this: void, effect: EffectCallback, deps?: DependencyList): void;
+	useRef<T>(this: void, initialValue: T): MutableRefObject<T>;
+	useMemo<T>(this: void, factory: () => T, deps: DependencyList | undefined): T;
+	useContext<T>(this: void, context: Context<T>): T;
 	createContext<T>(
+		this: void,
 		// If you thought this should be optional, see
 		// https://github.com/DefinitelyTyped/DefinitelyTyped/pull/24509#issuecomment-382213106
 		defaultValue: T,
