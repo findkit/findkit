@@ -9,3 +9,5 @@ content directly on the search results view such as
 - Etc.
 
 TODO how to...
+
+<div data-fdk-custom-field="price_eur" data-fdk-type="number">12345</div>
