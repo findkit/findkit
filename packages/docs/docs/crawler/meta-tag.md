@@ -47,3 +47,45 @@ Page creation date as ISO 8601 string
 ### `modified: string` {#modified}
 
 Page modification date as ISO 8601 string
+
+### `customFields: object` {#customFields}
+
+Add custom fields to the indexed document. Following types are available:
+
+- `keyword`: Plain string
+- `number`: A number
+- `date`: ISO 8601 formated date string
+
+In TypeScript terms the `customFields` format is
+
+```ts
+type CustomFields = {
+	[customField: string]:
+		| { type: "date"; value: string }
+		| { type: "keyword"; value: string }
+		| { type: "number"; value: number };
+};
+```
+
+Example
+
+```html
+<script id="findkit" type="application/json">
+	{
+		"customFields": {
+			"thumbnail": {
+				"type": "keyword",
+				"value": "https://example.com/image.jpg"
+			},
+			"price": {
+				"type": "number",
+				"value": 10
+			},
+			"eventStarts": {
+				"type": "date",
+				"value": "2022-10-03T12:18:52.233Z"
+			}
+		}
+	}
+</script>
+```
