@@ -268,3 +268,22 @@ test("header is shown when scrolled up a bit", async ({ page }) => {
 
 	await expect(page).toHaveScreenshot();
 });
+
+test("can render custom fields", async ({ page }) => {
+	await page.goto(staticEntry("/custom-fields"));
+
+	const button = page.locator("text=open");
+	const input = page.locator('[aria-label="Search input"]');
+	const hits = page.locator(".findkit--hit");
+	const img = page.locator(".findkit--hit img");
+	const titles = page.locator(".findkit--hit h2");
+
+	await button.click();
+	await input.type("mikko");
+
+	await hits.first().waitFor({ state: "visible" });
+
+	await expect(page).toHaveScreenshot({
+		mask: [img, titles],
+	});
+});

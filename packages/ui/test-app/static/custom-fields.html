@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Search UI Test</title>
+
+		<link rel="stylesheet" href="/shared.css" />
+
+		<script type="module">
+			import { FindkitUI, html, css } from "/build/esm/index.js";
+
+			const ui = new FindkitUI({
+				publicToken: "po8GK3G0r",
+				params: {
+					tagQuery: [["domain/statement.fi"]],
+				},
+
+				css: css`
+					.thumb {
+						height: 100px;
+						object-fit: contain;
+						align-self: flex-start;
+					}
+				`,
+				slots: {
+					Hit(props) {
+						const thumb = props.hit.customFields.thumbnail?.value;
+
+						return html`
+							<h2>${props.hit.title}</h2>
+							${thumb ? html`<img class="thumb" src="${thumb}" />` : null}
+						`;
+					},
+				},
+			});
+
+			Object.assign(window, { ui });
+
+			ui.openFrom("button");
+		</script>
+	</head>
+	<body>
+		<button id="open-button" type="button">open</button>
+	</body>
+</html>

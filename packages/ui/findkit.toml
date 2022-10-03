@@ -14,3 +14,4 @@ content_selector = "main,.content,#main,.post"
 host = "www.statement.fi"
 use_sitemap = true
 content_selector = "main,.content,#main,.post"
+deny_patterns = ["/suosituimmat"]
