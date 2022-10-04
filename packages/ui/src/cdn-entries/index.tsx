@@ -499,6 +499,34 @@ export class FindkitUI {
 	}
 
 	/**
+	 * Bind an event handler to the emitter
+	 *
+	 * @returns a function to unbind the handler
+	 */
+	on<EventName extends keyof FindkitUIEvents>(
+		eventName: EventName,
+		handler: (
+			event: FindkitUIEvents[EventName] & { source: FindkitUI },
+		) => void,
+	) {
+		return this.events.on(eventName, handler);
+	}
+
+	/**
+	 * Bind an event handler to the emitter
+	 *
+	 * @returns a function to unbind the handler
+	 */
+	once<EventName extends keyof FindkitUIEvents>(
+		eventName: EventName,
+		handler: (
+			event: FindkitUIEvents[EventName] & { source: FindkitUI },
+		) => void,
+	) {
+		return this.events.once(eventName, handler);
+	}
+
+	/**
 	 * The search terms used on the last search
 	 */
 	terms() {
