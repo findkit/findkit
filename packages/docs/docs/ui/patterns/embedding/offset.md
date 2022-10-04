@@ -63,7 +63,7 @@ const ui = new FindkitUI({
 	`,
 });
 
-ui.events.on("open", (e) => {
+ui.on("open", (e) => {
 	// Start monitoring the header height when the modal is opened
 	const observer = new ResizeObserver((entries) => {
 		const height = entries[0].borderBoxSize[0].blockSize;
@@ -74,7 +74,7 @@ ui.events.on("open", (e) => {
 	observer.observe(document.querySelector("header"));
 
 	// Stop monitoring when the modal is closed.
-	ui.events.once("close", () => {
+	ui.once("close", () => {
 		observer.disconnect();
 	});
 });

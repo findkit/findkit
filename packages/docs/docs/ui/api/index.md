@@ -234,19 +234,31 @@ TODO: More detailed docs.
 
 <Api page="ui.findkitui.updategroups" />
 
+### `.on()` {#on}
+
+Args
+
+- `eventName: string`
+- `callback: (event) => void`
+
+Bind event handled to an event. Returns an unbind function. See
+[Events](/ui/api/events/)
+
+<Api page="ui.findkitui.on" />
+
+### `.once()` {#once}
+
+Args
+
+- `eventName: string`
+- `callback: (event) => void`
+
+Like `.on()` but unbound immediately after the first event. See
+[Events](/ui/api/events/)
+
+<Api page="ui.findkitui.once" />
+
 ## Properties {#properties}
-
-### `.events` {#event}
-
-Event emitter object. See [Events](/ui/api/events).
-
-<Api page="ui.findkitui.events" />
-
-### `.events` {#event}
-
-Event emitter object. See [Events](/ui/api/events).
-
-<Api page="ui.findkitui.events" />
 
 ### `.params` {#params-prop}
 
@@ -259,3 +271,7 @@ The current [Search Params](/ui/api/params)
 The current [Groups](/ui/api/groups)
 
 <Api page="ui.findkitui.groups" />
+
+### `.terms` {#terms-prop}
+
+The current search terms used on the last completed search request

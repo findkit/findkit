@@ -79,7 +79,7 @@
 			import {
 				FindkitUI,
 				html,
-			} from "https://cdn.findkit.com/ui/v0.0.1-dev.9d1d00def9/esm/index.js";
+			} from "https://cdn.findkit.com/ui/v0.0.1-dev.7980a3b699/esm/index.js";
 
 			const ui = new FindkitUI({
 				publicToken: "p68GxRvaA",
@@ -95,7 +95,7 @@
 				`,
 			});
 
-			ui.events.on("open", (e) => {
+			ui.on("open", (e) => {
 				// Start monitoring the header height when the modal is opened
 				const observer = new ResizeObserver((entries) => {
 					const height = entries[0].borderBoxSize[0].blockSize;
@@ -106,7 +106,7 @@
 				observer.observe(document.querySelector("header"));
 
 				// Stop monitoring when the modal is closed.
-				ui.events.once("close", () => {
+				ui.once("close", () => {
 					observer.disconnect();
 				});
 			});
@@ -123,7 +123,7 @@
 			});
 
 			// Visually indicate when the search is loading
-			ui.events.on("status", (status) => {
+			ui.on("status", (status) => {
 				if (status.next === "fetching") {
 					document.querySelector(".loading").classList.add("active");
 				} else {

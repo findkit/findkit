@@ -144,7 +144,7 @@ test("emits debounced-search event", async ({ page }) => {
 
 	const termsPromise = page.evaluate(async () => {
 		return await new Promise<string>((resolve) => {
-			ui.events.on("debounced-search", (e) => {
+			ui.on("debounced-search", (e) => {
 				resolve(e.terms);
 			});
 		});
@@ -186,7 +186,7 @@ test("emits hit-click events and can prevent default", async ({ page }) => {
 
 	const clickPromise = page.evaluate(async () => {
 		return await new Promise<any>((resolve) => {
-			ui.events.on("hit-click", (e) => {
+			ui.on("hit-click", (e) => {
 				e.preventDefault();
 				resolve({
 					url: e.hit.url,
@@ -268,7 +268,7 @@ test("can infinite scroll", async ({ page }) => {
 	await page.evaluate(async () => {
 		const anyWindow = window as any;
 		anyWindow.COUNT = 0;
-		ui.events.on("fetch", () => {
+		ui.on("fetch", () => {
 			anyWindow.COUNT++;
 		});
 	});

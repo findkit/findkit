@@ -154,7 +154,7 @@ test("fetch counts", async ({ page }) => {
 	await page.evaluate(async () => {
 		const anyWindow = window as any;
 		anyWindow.COUNT = 0;
-		ui.events.on("fetch", () => {
+		ui.on("fetch", () => {
 			anyWindow.COUNT++;
 		});
 	});
@@ -209,7 +209,7 @@ test("fetches only once when navigating directly to results", async ({
 	await page.evaluate(async () => {
 		const anyWindow = window as any;
 		anyWindow.COUNT = 0;
-		ui.events.on("fetch", () => {
+		ui.on("fetch", () => {
 			anyWindow.COUNT++;
 		});
 

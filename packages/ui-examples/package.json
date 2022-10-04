@@ -12,7 +12,7 @@
 		"node": "18.9.0"
 	},
 	"dependencies": {
-		"@findkit/ui": "0.0.1-dev.9d1d00def9",
+		"@findkit/ui": "0.0.1-dev.7980a3b699",
 		"@types/react": "^18.0.21",
 		"@types/react-dom": "^18.0.6",
 		"process": "^0.11.10",
