@@ -442,7 +442,7 @@ export class FindkitUI {
 	private PRIVATE_loading = false;
 
 	private PRIVATE_options: FindkitUIOptions;
-	readonly events: Emitter<FindkitUIEvents, FindkitUI>;
+	private PRIVATE_events: Emitter<FindkitUIEvents, FindkitUI>;
 	private PRIVATE_resources = new Resources();
 
 	/**
@@ -452,13 +452,13 @@ export class FindkitUI {
 
 	constructor(options: FindkitUIOptions) {
 		this.PRIVATE_options = options;
-		this.events = new Emitter(this);
+		this.PRIVATE_events = new Emitter(this);
 
 		if (this.PRIVATE_isAlreadyOpened() || options.modal === false) {
 			void this.open();
 		}
 
-		this.events.emit("init", {});
+		this.PRIVATE_events.emit("init", {});
 	}
 
 	/**
@@ -509,7 +509,7 @@ export class FindkitUI {
 			event: FindkitUIEvents[EventName] & { source: FindkitUI },
 		) => void,
 	) {
-		return this.events.on(eventName, handler);
+		return this.PRIVATE_events.on(eventName, handler);
 	}
 
 	/**
@@ -523,7 +523,7 @@ export class FindkitUI {
 			event: FindkitUIEvents[EventName] & { source: FindkitUI },
 		) => void,
 	) {
-		return this.events.once(eventName, handler);
+		return this.PRIVATE_events.once(eventName, handler);
 	}
 
 	/**
@@ -561,7 +561,7 @@ export class FindkitUI {
 		if (this.PRIVATE_engine) {
 			fn(this.PRIVATE_engine);
 		} else {
-			this.events.once("loaded", (e) => {
+			this.PRIVATE_events.once("loaded", (e) => {
 				fn(e.__engine);
 			});
 		}
@@ -604,7 +604,7 @@ export class FindkitUI {
 	}
 
 	open(terms?: string) {
-		this.events.emit("request-open", {
+		this.PRIVATE_events.emit("request-open", {
 			preloaded: !!this.PRIVATE_engine,
 		});
 		preconnect();
@@ -666,14 +666,17 @@ export class FindkitUI {
 					css: allCSS,
 					styleSheets: this.PRIVATE_getStyleSheets(),
 					instanceId: this.id,
-					events: this.events,
+					events: this.PRIVATE_events,
 					searchEndpoint: this.PRIVATE_options.searchEndpoint,
 				});
 
 				this.PRIVATE_engine = engine;
 				this.PRIVATE_loading = true;
 				this.container = host;
-				this.events.emit("loaded", { __engine: engine, container: host });
+				this.PRIVATE_events.emit("loaded", {
+					__engine: engine,
+					container: host,
+				});
 
 				return engine.dispose;
 			});
