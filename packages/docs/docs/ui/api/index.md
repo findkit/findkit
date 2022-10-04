@@ -260,18 +260,6 @@ Like `.on()` but unbound immediately after the first event. See
 
 ## Properties {#properties}
 
-### `.events` {#event}
-
-Event emitter object. See [Events](/ui/api/events).
-
-<Api page="ui.findkitui.events" />
-
-### `.events` {#event}
-
-Event emitter object. See [Events](/ui/api/events).
-
-<Api page="ui.findkitui.events" />
-
 ### `.params` {#params-prop}
 
 The current [Search Params](/ui/api/params)
@@ -283,3 +271,7 @@ The current [Search Params](/ui/api/params)
 The current [Groups](/ui/api/groups)
 
 <Api page="ui.findkitui.groups" />
+
+### `.terms` {#terms-prop}
+
+The current search terms used on the last completed search request
