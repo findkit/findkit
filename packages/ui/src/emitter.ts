@@ -26,6 +26,11 @@ export class Emitter<Events extends {}, Source> {
 		this.PRIVATE_source = source;
 	}
 
+	/**
+	 * Bind an event handler to the emitter
+	 *
+	 * @returns a function to unbind the handler
+	 */
 	on<EventName extends keyof Events>(
 		eventName: EventName,
 		handler: (event: Events[EventName] & { source: Source }) => void,
@@ -38,6 +43,11 @@ export class Emitter<Events extends {}, Source> {
 		};
 	}
 
+	/**
+	 * Like .on() but will only fire once
+	 *
+	 * @returns a function to unbind the handler
+	 */
 	once<EventName extends keyof Events>(
 		eventName: EventName,
 		handler: (event: Events[EventName] & { source: Source }) => void,
@@ -49,6 +59,9 @@ export class Emitter<Events extends {}, Source> {
 		return off;
 	}
 
+	/**
+	 * Manually unbind an event handler given to .on() or .once()
+	 */
 	off<EventName extends keyof Events>(
 		eventName: EventName,
 		handler: (event: any) => void,
@@ -57,10 +70,18 @@ export class Emitter<Events extends {}, Source> {
 		set?.delete(handler);
 	}
 
+	/**
+	 * Dispose the event emitter by removing all handlers.
+	 *
+	 * Do not call this from `ui.events`! It will break the UI!
+	 */
 	dispose() {
 		this.PRIVATE_handlers.clear();
 	}
 
+	/**
+	 * Emit event to the event handlers
+	 */
 	emit<EventName extends keyof Events>(
 		eventName: EventName,
 		event: Events[EventName],
@@ -94,6 +115,9 @@ export interface StatusChangeEvent {
  * @public
  */
 export interface DebouncedSearchEvent {
+	/**
+	 * The search terms used for the search
+	 */
 	terms: string;
 }
 
@@ -101,7 +125,11 @@ export interface DebouncedSearchEvent {
  * @public
  */
 export interface FetchEvent {
+	/**
+	 * The search terms used for the request
+	 */
 	terms: string;
+
 	/**
 	 * Request id
 	 */
@@ -112,7 +140,11 @@ export interface FetchEvent {
  * @public
  */
 export interface FetchDoneEvent {
+	/**
+	 * The search terms used for the request
+	 */
 	terms: string;
+
 	/**
 	 * Request id
 	 */
