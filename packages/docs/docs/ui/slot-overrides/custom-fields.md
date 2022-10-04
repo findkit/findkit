@@ -20,7 +20,7 @@ const ui = new FindkitUI({
 
 			return html`
                 <h2>${props.hit.title}</h1>
-                <img src="${props.hit.customFields.thumbnail?.value}" />
+                <img src="${fields.thumbnail?.value}" />
             `;
 		},
 	},
