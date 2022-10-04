@@ -12,6 +12,8 @@ The fields are accessible in the [`Hit` slot
 override](/ui/slot-overrides/slots#hit).
 
 ```ts
+import { FindkitUI, html } from "@findkit/ui";
+
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
 	slots: {
