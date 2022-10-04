@@ -1,7 +1,7 @@
 # Events
 
 Events emitted by the `FindkitUI` instance. See [`on()`](/ui/api/#on) and
-[`once()`](/ui/api/#once)
+[`once()`](/ui/api/#once).
 
 Example:
 
@@ -13,7 +13,7 @@ const unsubscribe = ui.on("open", () => {
 
 ## Event Names
 
-The available event names for `.on()` and `.once()`
+The available event names.
 
 ### `open`
 
