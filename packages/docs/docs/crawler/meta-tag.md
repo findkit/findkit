@@ -50,7 +50,11 @@ Page modification date as ISO 8601 string
 
 ### `customFields: object` {#customFields}
 
-Add custom fields to the indexed document. Following types are available:
+Add custom fields to the indexed document which will be returned within the
+search results. See [Custom Fields in Slot
+Overrides](/ui/slot-overrides/custom-fields/).
+
+Following types are available:
 
 - `keyword`: Plain string
 - `number`: A number
