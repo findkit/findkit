@@ -77,6 +77,10 @@ function Codesandbox(props: {
 				dangerouslySetInnerHTML={{
 					__html: JSON.stringify({
 						customFields: {
+							exampleTitle: {
+								type: "keyword",
+								value: props.example,
+							},
 							githubLink: {
 								type: "keyword",
 								value: githubLink,
