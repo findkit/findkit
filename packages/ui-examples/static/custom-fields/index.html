@@ -24,13 +24,9 @@
 				publicToken: "p68GxRvaA",
 				minTerms: 0,
 				params: {
+					// Limit results to pages with the examples
 					tagQuery: [["has_example"]],
 				},
-				css: `
-					ul {
-						margin-top: 0;
-					}
-				`,
 				slots: {
 					Hit(props) {
 						const fields = props.hit.customFields;
@@ -57,6 +53,11 @@
 						`;
 					},
 				},
+				css: `
+					ul {
+						margin-top: 0;
+					}
+				`,
 			});
 
 			ui.openFrom("button.open");

@@ -50,12 +50,16 @@ The content below the header.
 - `content`: The content element
 
 The containing element for the header and the content elements. This slot can be
-used to customize the element positioning. For example it can be used to
-<Codesandbox link example="static/external-input">completely remove the header</Codesandbox>
-or add side panels with tag filters etc.
+used to customize the element positioning.
 
 <Api page="ui.slots.layout" />
 
 ## `Hit`
 
-TODO
+- `children`
+- `hit`: The <Api page="ui.searchresulthit">search result hit</Api>
+
+Used to customize how the search results are rendered. See [Custom
+Fields](/ui/slot-overrides/custom-fields).
+
+<Api page="ui.slots.hit" />

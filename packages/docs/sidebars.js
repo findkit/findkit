@@ -32,7 +32,6 @@ const sidebars = {
 					items: ["crawler/toml/tags"],
 				},
 				"crawler/meta-tag",
-				"crawler/custom-fields",
 				"crawler/rest-api",
 				"crawler/jwt",
 			],
@@ -81,7 +80,11 @@ const sidebars = {
 					type: "category",
 					label: "Slot Overrides",
 					link: { type: "doc", id: "ui/slot-overrides/index" },
-					items: ["ui/slot-overrides/slots", "ui/slot-overrides/hooks"],
+					items: [
+						"ui/slot-overrides/slots",
+						"ui/slot-overrides/hooks",
+						"ui/slot-overrides/custom-fields",
+					],
 				},
 				"ui/translations",
 				{
