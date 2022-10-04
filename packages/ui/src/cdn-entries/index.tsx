@@ -499,6 +499,17 @@ export class FindkitUI {
 	}
 
 	/**
+	 * The search terms used on the last search
+	 */
+	terms() {
+		return this.PRIVATE_engine?.state.usedTerms ?? "";
+	}
+
+	status(): Status {
+		return this.PRIVATE_engine?.state.status ?? "waiting";
+	}
+
+	/**
 	 * Unbind all event listeners, close the modal and remove it from the DOM
 	 */
 	dispose() {

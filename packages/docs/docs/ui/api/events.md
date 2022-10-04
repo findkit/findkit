@@ -10,9 +10,42 @@ const unsubscribe = ui.events.on("open", () => {
 });
 ```
 
+## Emitter
+
+The emitter object at `ui.events` has following methods.
+
+### `.on()` {#on}
+
+Args
+
+- `eventName: string`
+- `callback: (event) => void`
+
+Bind event handled to an event. Returns an unbind function.
+
+### `.once()` {#once}
+
+Args
+
+- `eventName: string`
+- `callback: (event) => void`
+
+Like `.on()` but unbound immediately after the first event.
+
+### `.off()` {#once}
+
+Args
+
+- `eventName: string`
+- `callback: (event) => void`
+
+Unbind the event handler passed to `on()` or `once()` manually.
+
 See the <Api page="ui.emitter" >`Emitter` class</Api> for the events API details
 
 ## Events
+
+The available event names for `.on()` and `.once()`
 
 ### `open`
 
