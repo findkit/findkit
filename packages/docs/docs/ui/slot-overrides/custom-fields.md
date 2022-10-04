@@ -27,7 +27,7 @@ const ui = new FindkitUI({
 });
 ```
 
-in the target page head:
+In the target page head:
 
 ```html
 <script id="findkit" type="application/json">
