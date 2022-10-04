@@ -2,7 +2,7 @@
 
 Custom fields are pieces of content saved within the indexed page which are
 returned when the pages are searched. These can be used to render additional
-content directly on the search results view such as Product price and images on
+content directly on the search results view such as product prices and images on
 E-commerence sites, author names on blogs etc.
 
 Custom fields are defined using the `customFields` entry in the [Crawler Meta
