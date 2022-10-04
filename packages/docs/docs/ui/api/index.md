@@ -242,7 +242,7 @@ Args
 - `callback: (event) => void`
 
 Bind event handled to an event. Returns an unbind function. See
-[Events](/ui/api/events/)
+[Events](/ui/api/events/).
 
 <Api page="ui.findkitui.on" />
 
@@ -254,7 +254,7 @@ Args
 - `callback: (event) => void`
 
 Like `.on()` but unbound immediately after the first event. See
-[Events](/ui/api/events/)
+[Events](/ui/api/events/).
 
 <Api page="ui.findkitui.once" />
 

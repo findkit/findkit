@@ -1,6 +1,7 @@
 # Events
 
-Events emitted by the `FindkitUI` instance are hookable from the `.events` property.
+Events emitted by the `FindkitUI` instance. See [`on()`](/ui/api/#on) and
+[`once()`](/ui/api/#once)
 
 Example:
 
