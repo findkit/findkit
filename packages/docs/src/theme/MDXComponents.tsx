@@ -71,6 +71,29 @@ function Codesandbox(props: {
 
 	return (
 		<div className="codesandbox-example">
+			<script
+				id="findkit"
+				type="application/json"
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify({
+						customFields: {
+							githubLink: {
+								type: "keyword",
+								value: githubLink,
+							},
+							viewLink: {
+								type: "keyword",
+								value: newTabUrl,
+							},
+							codesandboxLink: {
+								type: "keyword",
+								value: codesandboxLink,
+							},
+						},
+						tags: ["has_example"],
+					}),
+				}}
+			></script>
 			Open in a
 			<a href={newTabUrl} target="_blank">
 				new tab
