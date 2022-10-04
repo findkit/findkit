@@ -84,6 +84,107 @@ export class Emitter<Events extends {}, Source> {
 
 /**
  * @public
+ */
+export interface StatusChangeEvent {
+	next: Status;
+	previous: Status;
+}
+
+/**
+ * @public
+ */
+export interface DebouncedSearchEvent {
+	terms: string;
+}
+
+/**
+ * @public
+ */
+export interface FetchEvent {
+	terms: string;
+	/**
+	 * Request id
+	 */
+	id: string;
+}
+
+/**
+ * @public
+ */
+export interface FetchDoneEvent {
+	terms: string;
+	/**
+	 * Request id
+	 */
+	id: string;
+
+	/**
+	 * Whether this request was stale eg. a new request was made before this one finished
+	 */
+	stale: boolean;
+}
+
+/**
+ * @public
+ */
+export interface OpenEvent {
+	/**
+	 * The container element
+	 */
+	container: Element;
+}
+
+/**
+ * @public
+ */
+export interface RequestOpenEvent {
+	/**
+	 * True when the implementation has be already loaded. Use the "open"
+	 * event to detect when implementation was loaded.
+	 */
+	preloaded: boolean;
+}
+
+/**
+ * @public
+ */
+export interface GroupsChangeEvent {
+	groups: GroupDefinition[];
+}
+
+/**
+ * @public
+ */
+export interface ParamsChangeEvent {
+	params: SearchParams;
+}
+
+/**
+ * @public
+ */
+export interface HitClickEvent {
+	hit: SearchResultHit;
+	preventDefault: () => void;
+	target: HTMLElement;
+	terms: string;
+}
+
+/**
+ * @public
+ */
+export interface LoadedEvent {
+	/**
+	 * The container element
+	 */
+	container: Element;
+	/**
+	 * Private API. Do not use.
+	 */
+	__engine: SearchEngine;
+}
+
+/**
+ * @public
  *
  * FindkitUI event definitions
  */
@@ -91,45 +192,23 @@ export interface FindkitUIEvents {
 	/**
 	 * Emitted when the internal UI status changes.
 	 */
-	status: {
-		next: Status;
-		previous: Status;
-	};
+	status: StatusChangeEvent;
 
 	/**
 	 * Emitted when search results have not been updated for a while. Useful for
 	 * analytics
 	 */
-	"debounced-search": {
-		terms: string;
-	};
+	"debounced-search": DebouncedSearchEvent;
 
 	/**
 	 * Search request starts
 	 */
-	fetch: {
-		terms: string;
-		/**
-		 * Request id
-		 */
-		id: string;
-	};
+	fetch: FetchEvent;
 
 	/**
 	 * When a search request finishes
 	 */
-	"fetch-done": {
-		terms: string;
-		/**
-		 * Request id
-		 */
-		id: string;
-
-		/**
-		 * Whether this request was stale eg. a new request was made before this one finished
-		 */
-		stale: boolean;
-	};
+	"fetch-done": FetchDoneEvent;
 
 	/**
 	 * When the FinkitUI instance is created
@@ -144,25 +223,14 @@ export interface FindkitUIEvents {
 	/**
 	 * When the modal is opened
 	 */
-	open: {
-		/**
-		 * The container element
-		 */
-		container: Element;
-	};
+	open: OpenEvent;
 
 	/**
 	 * When modal opening is requested. The implementation loading can happen
 	 * before the modal is actually opened. This can be used to show a loading
 	 * indicator.
 	 */
-	"request-open": {
-		/**
-		 * True when the implementation has be already loaded. Use the "open"
-		 * event to detect when implementation was loaded.
-		 */
-		preloaded: boolean;
-	};
+	"request-open": RequestOpenEvent;
 
 	/**
 	 * When the modal is closed
@@ -172,37 +240,19 @@ export interface FindkitUIEvents {
 	/**
 	 * Emitted when groups change
 	 */
-	groups: {
-		groups: GroupDefinition[];
-	};
+	groups: GroupsChangeEvent;
 
 	/**
 	 * Emitted when the search params change
 	 */
-	params: {
-		params: SearchParams;
-	};
+	params: ParamsChangeEvent;
 
-	"hit-click": {
-		hit: SearchResultHit;
-		preventDefault: () => void;
-		target: HTMLElement;
-		terms: string;
-	};
+	"hit-click": HitClickEvent;
 
 	/**
 	 * When the implementation was loaded and initialized
 	 */
-	loaded: {
-		/**
-		 * The container element
-		 */
-		container: Element;
-		/**
-		 * Private API. Do not use.
-		 */
-		__engine: SearchEngine;
-	};
+	loaded: LoadedEvent;
 }
 
 // interface MyEvents {

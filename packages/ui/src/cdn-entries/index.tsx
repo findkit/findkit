@@ -16,7 +16,19 @@ import type {
 } from "./implementation";
 import type { init } from "../modal";
 import type { CustomFields } from "@findkit/fetch";
-import { Emitter, FindkitUIEvents } from "../emitter";
+import {
+	Emitter,
+	FindkitUIEvents,
+	StatusChangeEvent,
+	DebouncedSearchEvent,
+	FetchDoneEvent,
+	FetchEvent,
+	OpenEvent,
+	RequestOpenEvent,
+	GroupsChangeEvent,
+	ParamsChangeEvent,
+	HitClickEvent,
+} from "../emitter";
 import type { TranslationStrings } from "../translations";
 import { listen, Resources } from "../resources";
 import type {
@@ -33,6 +45,15 @@ import type { PreactFunctions } from "./preact-subset";
 export type SearchEngineParams = SearchParams;
 
 export {
+	StatusChangeEvent,
+	DebouncedSearchEvent,
+	FetchDoneEvent,
+	FetchEvent,
+	OpenEvent,
+	RequestOpenEvent,
+	GroupsChangeEvent,
+	ParamsChangeEvent,
+	HitClickEvent,
 	PreactFunctions,
 	Status,
 	HeaderSlotProps,
