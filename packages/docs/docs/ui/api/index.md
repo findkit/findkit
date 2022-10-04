@@ -234,6 +234,30 @@ TODO: More detailed docs.
 
 <Api page="ui.findkitui.updategroups" />
 
+### `.on()` {#on}
+
+Args
+
+- `eventName: string`
+- `callback: (event) => void`
+
+Bind event handled to an event. Returns an unbind function. See
+[Events](/ui/api/events/)
+
+<Api page="ui.findkitui.on" />
+
+### `.once()` {#once}
+
+Args
+
+- `eventName: string`
+- `callback: (event) => void`
+
+Like `.on()` but unbound immediately after the first event. See
+[Events](/ui/api/events/)
+
+<Api page="ui.findkitui.once" />
+
 ## Properties {#properties}
 
 ### `.events` {#event}
