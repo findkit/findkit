@@ -38,7 +38,7 @@ function App() {
 
 		setParams(ui.params);
 
-		ui.events.on("params", (e) => {
+		ui.on("params", (e) => {
 			setParams(e.params);
 		});
 

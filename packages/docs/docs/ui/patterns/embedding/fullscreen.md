@@ -28,7 +28,7 @@ This can be done using the [`FindkitUI` events](/ui/api/events).
 
 ```ts
 // fired on open request
-ui.events.on("request-open", (e) => {
+ui.on("request-open", (e) => {
 	// Only needed when it is not preloaded (preload trigger or previous usage).
 	if (!e.preloaded) {
 		document.querySelector("#open").disabled = true;
@@ -36,7 +36,7 @@ ui.events.on("request-open", (e) => {
 });
 
 // "open" event is fired when the search UI is actually loaded and opened
-ui.events.on("open", () => {
+ui.on("open", () => {
 	document.querySelector("#open").disabled = false;
 });
 ```

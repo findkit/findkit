@@ -136,7 +136,7 @@
 			});
 
 			// Visually indicate when the search is loading
-			ui.events.on("status", (status) => {
+			ui.on("status", (status) => {
 				if (status.next === "fetching") {
 					document.querySelector(".loading").classList.add("active");
 				} else {

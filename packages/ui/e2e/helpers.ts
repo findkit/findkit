@@ -30,7 +30,7 @@ export async function oneEvent<EventName extends keyof FindkitUIEvents>(
 ): Promise<FindkitUIEvents[EventName]> {
 	return await page.evaluate(async (eventName) => {
 		return await new Promise<any>((resolve) => {
-			const off = ui.events.on(eventName, (e) => {
+			const off = ui.on(eventName, (e) => {
 				off();
 				resolve(e);
 			});
