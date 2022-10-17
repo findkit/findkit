@@ -295,7 +295,7 @@ function FooterContent(props: { allResultsLoaded: boolean; groupId: string }) {
 	}
 
 	if (props.allResultsLoaded) {
-		return <View cn="all-results-shown">All results shown</View>;
+		return <View cn="all-results-shown">{t("all-results-shown")}</View>;
 	}
 
 	return (
