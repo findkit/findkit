@@ -328,7 +328,7 @@ export interface SearchEngineOptions {
 	 */
 	monitorDocumentElementChanges?: boolean;
 	ui?: {
-		lang: string;
+		lang?: string;
 		overrides?: Partial<TranslationStrings>;
 	};
 }
