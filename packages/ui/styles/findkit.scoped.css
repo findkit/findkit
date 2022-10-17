@@ -183,8 +183,6 @@
 .hit-title {
 	margin: 0;
 	border-left: 2px solid var(--brand-color);
-	/* background-color: antiquewhite; */
-	height: var(--space-11);
 	justify-content: center;
 	padding: var(--space-3);
 }
