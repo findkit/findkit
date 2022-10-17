@@ -155,7 +155,14 @@ How many results to fetch in a single request.
 
 ### `ui: object` {#ui}
 
-TODO
+Set the UI language options.
+
+Set to `{lang: "fi"}` to customize the language. If not the language is
+automatically read from the `<html lang>` attribute.
+
+TODO: document custom translations strings
+
+<Api page="ui.findkituioptions.ui" />
 
 ## Methods {#methods}
 
