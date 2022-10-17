@@ -38,7 +38,7 @@ jobs:
           aws s3 ls s3://${{ secrets.FINDKIT_CDN_S3 }}/ui
 
       - name: Publish
-        uses: ./.github/release-action
+        uses: valu-digital/npm-packages/.github/release-action@master
         env:
           FINDKIT_CDN_S3: "${{ secrets.FINDKIT_CDN_S3 }}"
         with:
