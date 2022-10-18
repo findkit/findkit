@@ -252,9 +252,15 @@
 	padding-left: var(--space-3);
 }
 
-.all-results-shown {
+.all-results-shown,
+.group-all-results-shown {
 	opacity: 0.6;
 	color: var(--brand-color);
+}
+
+.group-all-results-shown {
+	margin-left: var(--space-3);
+	margin-top: var(--space-3);
 }
 
 .load-more-button {

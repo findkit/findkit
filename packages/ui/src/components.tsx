@@ -233,7 +233,16 @@ function MultiGroupResults() {
 							total={group.total}
 							hits={group.hits.slice(0, def.previewSize)}
 						/>
-						<SingleGroupLink groupId={def.id}>{t("show-all")}</SingleGroupLink>
+
+						{group.total === group.hits.length ? (
+							<View cn="group-all-results-shown">
+								{group.total === 0 ? t("no-results") : t("all-results-shown")}
+							</View>
+						) : (
+							<SingleGroupLink groupId={def.id}>
+								{t("show-all")}
+							</SingleGroupLink>
+						)}
 					</View>
 				);
 			})}

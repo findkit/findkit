@@ -6,6 +6,7 @@ export const BASE_TRANSLATIONS = {
 	"go-back": "Back",
 	"aria-label-close-search": "Close search",
 	"aria-label-search-input": "Search input",
+	"no-results": "No results",
 };
 
 /**
@@ -26,6 +27,7 @@ export const TRANSLATIONS: Record<string, TranslationStrings> = {
 		"aria-label-close-search": "Sulje haku",
 		"all-results-shown": "Kaikki tulokset näytetty",
 		"aria-label-search-input": "Hakukenttä",
+		"no-results": "Ei hakutuloksia",
 	},
 };
 
