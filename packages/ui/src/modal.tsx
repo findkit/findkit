@@ -398,7 +398,7 @@ export function init(_options: {
 	header?: boolean;
 	router?: SearchEngineOptions["router"];
 	ui?: {
-		lang: string;
+		lang?: string;
 		overrides?: Partial<TranslationStrings>;
 	};
 }) {

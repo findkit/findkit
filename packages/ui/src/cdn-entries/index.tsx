@@ -408,7 +408,7 @@ export interface FindkitUIOptions {
 	lockScroll?: boolean;
 	modal?: boolean;
 	ui?: {
-		lang: string;
+		lang?: string;
 		overrides?: Partial<TranslationStrings>;
 	};
 }
