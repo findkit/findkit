@@ -275,6 +275,11 @@ export class FocusTrap {
 	 * being moved to an illegal element.
 	 */
 	private PRIVATE_fixFocus(attempts = 0) {
+		if (this.PRIVATE_state.usingMouse) {
+			return;
+		}
+
+
 		// Avoid infinite recursion
 		if (attempts > this.PRIVATE_containers.length) {
 			console.warn("Failed to find focusable containers");
@@ -406,12 +411,13 @@ export class FocusTrap {
 			return;
 		}
 
-		if (!this.PRIVATE_isValidFocus(e.target)) {
-			this.PRIVATE_state.usingMouse = true;
+		this.PRIVATE_state.usingMouse = true;
 
-			if (this.PRIVATE_options.outsideClickDisables) {
-				this.disable();
-			}
+		if (
+			!this.PRIVATE_isValidFocus(e.target) &&
+			this.PRIVATE_options.outsideClickDisables
+		) {
+			this.disable();
 		}
 	};
 
@@ -455,7 +461,6 @@ export class FocusTrap {
 		/**
 		 * Last focused element
 		 */
-		const prev = this.PRIVATE_lastFocusedElement;
 
 		// Update lastly focused element
 		const activeElement = this.PRIVATE_getActiveElement();
@@ -468,14 +473,6 @@ export class FocusTrap {
 
 		// Focus still inside our containers. Focus can move freely here. Nothing to do.
 		if (this.PRIVATE_isValidFocus(e.target)) {
-			return;
-		}
-
-		// If focus was moved to a illegal element by mouse just revert the
-		// focus back to the previous element
-		if (this.PRIVATE_state.usingMouse && prev) {
-			this.PRIVATE_lastFocusedElement = prev;
-			this.PRIVATE_setElementFocus(prev);
 			return;
 		}
 

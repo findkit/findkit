@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { assertNotNil } from "@valu/assert";
 import type { FindkitUI } from "../src/cdn-entries/index";
 import { getHitHosts, spinnerLocator, staticEntry } from "./helpers";
 
@@ -298,4 +299,29 @@ test("can infinite scroll", async ({ page }) => {
 	await expect.poll(async () => hits.count()).toBeGreaterThan(count);
 
 	expect(await getFetchCount()).toBe(2);
+});
+
+test("can click url link after scrolling", async ({ page }) => {
+	await page.goto(staticEntry("/single-group"));
+
+	const button = page.locator("text=open");
+	const input = page.locator('[aria-label="Search input"]');
+	const header = page.locator(".findkit--header");
+	const hitUrlLink = page.locator(".findkit--hit-url");
+	// const hitUrlLink = page.locator(".findkit--hit-title-link");
+
+	await button.click();
+	await input.type("mikko");
+
+	await hitUrlLink.first().waitFor({ state: "visible" });
+
+	await page.mouse.wheel(0, 300);
+	await page.waitForTimeout(300);
+	await expect(header).toHaveClass(/hidden/);
+
+	const hitUrl = await hitUrlLink.nth(5).getAttribute("href");
+	assertNotNil(hitUrl);
+
+	await hitUrlLink.nth(5).click();
+	await expect(page).toHaveURL(hitUrl + "/");
 });
