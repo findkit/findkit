@@ -109,6 +109,9 @@ jobs:
   playwright-visual:
     timeout-minutes: 20
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        shard: [1, 2]
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/setup-action
@@ -126,61 +129,12 @@ jobs:
           # Sanity check
           ./node_modules/.bin/findkit search -t po8GK3G0r valu
 
-          pnpm run playwright-visual || {
-            echo VISUAL_FAIL=1 >> $GITHUB_ENV
-          }
+          pnpm run build-test-app
+          pnpm run playwright-visual --shard=${{ matrix.shard }}/${{ strategy.job-total }}
 
-      - name: Update snapshots and notify
-        if: ${{ github.event_name == 'pull_request' && env.VISUAL_FAIL == '1' }}
-        run: |
-          set -x
-          set -eu
-          cd packages/ui
-
-          pr=${{ github.event.number }}
-          link="https://github.com/${GITHUB_REPOSITORY}/pull/${pr}"
-
-          git config user.email "action@github.com"
-          git config user.name "${{ github.actor }}"
-
-          pnpm run playwright-update
-          git status
-
-          if [ "$(git status --porcelain e2e-visual)" = "" ]; then
-            exit 0
-          fi
-
-          git add e2e-visual
-          git commit -m "Update e2e snapshots [skip actions]"
-          git push origin "HEAD:$GITHUB_HEAD_REF"
-          echo "DIFF_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
-
-      - name: Comment about snapshot changes
+      - name: Remove visual fail label if success
         uses: actions/github-script@v6
-        if: ${{ github.event_name == 'pull_request' && env.VISUAL_FAIL == '1' }}
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: 'Hey @${{ github.actor }}! The visual tests failed on ${{ github.event.pull_request.head.sha }}. I updated the snaphots to this PR and added the `VISUAL FAIL` label. See the changes at ${{ env.DIFF_SHA }}. Accept the changes by removing the label or try again by force pushing. Also remember to run tests locally to update the macOS snapshots!'
-            })
-
-            github.rest.issues.addLabels({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              labels: ['VISUAL FAIL']
-            })
-
-      - name: Fail suite if e2e-visual failed
-        if: ${{ env.VISUAL_FAIL == '1' }}
-        run: exit 1
-
-      - name: Remove visual fail label
-        uses: actions/github-script@v6
-        if: ${{ github.event_name == 'pull_request' && env.VISUAL_FAIL != '1' }}
+        if: ${{ github.event_name == 'pull_request' }}
         with:
           script: |
             const labels = await github.rest.issues.listLabelsOnIssue({
@@ -199,3 +153,59 @@ jobs:
                 name: 'VISUAL FAIL'
               });
             }
+
+  playwright-visual-update:
+    if: failure() && github.event_name == 'pull_request'
+    needs: [playwright-visual]
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/setup-action
+
+      - name: Install Playwright Browsers
+        run: cd packages/ui && ./node_modules/.bin/playwright install --with-deps
+
+      - name: Update snapshots and notify
+        run: |
+          set -x
+          set -eu
+          cd packages/ui
+
+          pr=${{ github.event.number }}
+          link="https://github.com/${GITHUB_REPOSITORY}/pull/${pr}"
+
+          git config user.email "action@github.com"
+          git config user.name "${{ github.actor }}"
+
+          pnpm run build-test-app
+          pnpm run playwright-update
+          git status
+
+          if [ "$(git status --porcelain e2e-visual)" = "" ]; then
+            exit 0
+          fi
+
+          git add e2e-visual
+          git commit -m "Update e2e snapshots [skip actions]"
+          git push origin "HEAD:$GITHUB_HEAD_REF"
+          echo "DIFF_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
+      - name: Comment about snapshot changes
+        uses: actions/github-script@v6
+        if: ${{ env.DIFF_SHA != '' }}
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Hey @${{ github.actor }}! The visual tests failed on ${{ github.event.pull_request.head.sha }}. I updated the snaphots to this PR and added the `VISUAL FAIL` label. See the changes at ${{ env.DIFF_SHA }}. Accept the changes by removing the label or try again by force pushing. Also remember to run tests locally to update the macOS snapshots!'
+            })
+
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['VISUAL FAIL']
+            })
