@@ -287,3 +287,42 @@ test("can render custom fields", async ({ page }) => {
 		mask: [img, titles],
 	});
 });
+
+test("group header and footer margins", async ({ page }) => {
+	await page.goto(staticEntry("two-groups"));
+	const hits = page.locator(".findkit--hit");
+
+	const button = page.locator("button", { hasText: "open" });
+
+	const input = page.locator('[aria-label="Search input"]');
+
+	await button.click();
+	await input.fill("noresultswiththisstring");
+
+	await page
+		.locator(".findkit--group-all-results-shown")
+		.first()
+		.waitFor({ state: "visible" });
+
+	await expect(page).toHaveScreenshot({
+		mask: [hits, input],
+	});
+
+	await input.fill("valu");
+
+	await hits.first().waitFor({ state: "visible" });
+	await page.mouse.wheel(0, 500);
+
+	// show more link
+	await expect(page).toHaveScreenshot({
+		mask: [hits, input],
+	});
+
+	await page.locator("text=Show more search results").first().click();
+	await page.locator("text=Back").first().waitFor({ state: "visible" });
+
+	// Show back link
+	await expect(page).toHaveScreenshot({
+		mask: [hits, input],
+	});
+});
