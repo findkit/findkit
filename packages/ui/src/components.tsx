@@ -56,7 +56,7 @@ function SingleGroupLink(props: {
 	return (
 		<View
 			as="a"
-			cn={["single-group-link", "hover-bg", "group-footer"]}
+			cn={["single-group-link", "hover-bg", "group-header-footer-spacing"]}
 			{...kbAttrs}
 			data-kb-action
 			aria-label={t("aria-show-all", { group: props.groupTitle })}
@@ -86,7 +86,7 @@ function AllResultsLink(props: { children: ReactNode }) {
 			as="a"
 			{...kbAttrs}
 			data-kb-action
-			cn={["back-link", "hover-bg"]}
+			cn={["back-link", "hover-bg", "group-header-footer-spacing"]}
 			href={engine.formatHref(nextParams)}
 			onClick={(e) => {
 				e.preventDefault();
@@ -241,7 +241,9 @@ function MultiGroupResults() {
 						/>
 
 						{group.total === group.hits.length ? (
-							<View cn={["group-all-results-shown", "group-footer"]}>
+							<View
+								cn={["group-all-results-shown", "group-header-footer-spacing"]}
+							>
 								{group.total === 0 ? t("no-results") : t("all-results-shown")}
 							</View>
 						) : (

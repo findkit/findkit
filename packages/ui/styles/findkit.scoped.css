@@ -209,7 +209,7 @@
 		stretch;
 }
 
-.group-footer {
+.group-header-footer-spacing {
 	margin-left: var(--space-3);
 	margin-top: var(--space-4);
 	margin-bottom: var(--space-6);
@@ -238,7 +238,7 @@
 }
 
 .back-link {
-	padding-right: var(--space-1-5);
+	padding-right: var(--space-4);
 }
 
 [data-kb-current].back-link,
