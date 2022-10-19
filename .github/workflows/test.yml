@@ -161,12 +161,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          # gonna commit and push, so need all history
+          fetch-depth: 0
+
       - uses: ./.github/setup-action
 
       - name: Install Playwright Browsers
         run: cd packages/ui && ./node_modules/.bin/playwright install --with-deps
 
-      - name: Update snapshots and notify
+      - name: Update snapshots
         run: |
           set -x
           set -eu
@@ -180,6 +184,13 @@ jobs:
 
           pnpm run build-test-app
           pnpm run playwright-update
+
+      - name: Commit snapshots
+        run: |
+          set -x
+          set -eu
+          cd packages/ui
+
           git status
 
           if [ "$(git status --porcelain e2e-visual)" = "" ]; then
