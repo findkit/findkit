@@ -40,7 +40,12 @@ export function FindkitProvider(props: {
 	);
 }
 
-function SingleGroupLink(props: { children: ReactNode; groupId: string }) {
+function SingleGroupLink(props: {
+	children: ReactNode;
+	groupId: string;
+	groupTitle: string;
+}) {
+	const t = useTranslator();
 	const engine = useSearchEngine();
 	const params = useFindkitURLSearchParams();
 	const nextParams = params.setGroupId(props.groupId);
@@ -51,9 +56,10 @@ function SingleGroupLink(props: { children: ReactNode; groupId: string }) {
 	return (
 		<View
 			as="a"
-			cn={["single-group-link", "hover-bg"]}
+			cn={["single-group-link", "hover-bg", "group-footer"]}
 			{...kbAttrs}
 			data-kb-action
+			aria-label={t("aria-show-all", { group: props.groupTitle })}
 			href={engine.formatHref(nextParams)}
 			onClick={(e) => {
 				e.preventDefault();
@@ -95,7 +101,7 @@ function AllResultsLink(props: { children: ReactNode }) {
 
 function GroupTitle(props: { title: string; total: number }) {
 	return (
-		<View as="h1" cn="group-title">
+		<View as="h2" cn="group-title" aria-label={props.title}>
 			{props.title} {props.total > 0 ? `(${props.total})` : ""}
 		</View>
 	);
@@ -147,7 +153,7 @@ function Hit(props: {
 					hit: props.hit,
 				}}
 			>
-				<View as="h2" cn="hit-title">
+				<View as="h3" cn="hit-title">
 					<View
 						as="a"
 						cn={["hit-title-link", "link"]}
@@ -235,11 +241,11 @@ function MultiGroupResults() {
 						/>
 
 						{group.total === group.hits.length ? (
-							<View cn="group-all-results-shown">
+							<View cn={["group-all-results-shown", "group-footer"]}>
 								{group.total === 0 ? t("no-results") : t("all-results-shown")}
 							</View>
 						) : (
-							<SingleGroupLink groupId={def.id}>
+							<SingleGroupLink groupId={def.id} groupTitle={def.title}>
 								{t("show-all")}
 							</SingleGroupLink>
 						)}

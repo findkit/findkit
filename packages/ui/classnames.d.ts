@@ -15,6 +15,7 @@ type ClassNames =
   | "findkit--footer-spinner"
   | "findkit--group"
   | "findkit--group-all-results-shown"
+  | "findkit--group-footer"
   | "findkit--group-title"
   | "findkit--header"
   | "findkit--header-hidden"
@@ -38,4 +39,5 @@ type ClassNames =
   | "findkit--search-input-wrap"
   | "findkit--single-group-link"
   | "findkit--spinner"
-  | "findkit--spinning";
+  | "findkit--spinning"
+  | "findkit--sr-only";
