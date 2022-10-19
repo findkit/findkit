@@ -17,53 +17,22 @@ on:
       - "packages/fetch/**"
       - ".github/workflows/test.yml"
 jobs:
-  test:
+  unit-test:
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - uses: ./.github/setup-action
 
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16.x"
+      - name: Run @findkit/fetch tests
+        run: cd packages/fetch && pnpm run test
 
-      - uses: pnpm/action-setup@v2.0.1
-        with:
-          version: 7.9.5
+      - name: Run @findkit/ui linting and unit tests
+        run: cd packages/ui && pnpm run test
 
-      - uses: valu-digital/slack-action@master
-        with:
-          token: ${{ secrets.SLACK_ACCESS_TOKEN }}
-          channel: "${{ secrets.SLACK_CHANNEL }}"
-
-      - name: Set pnpm store path
-        run: echo "PNPM_STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
-
-      - name: Cache pnpm modules
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.PNPM_STORE_PATH }}
-          key: pnpm-test-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            pnpm-test-${{ runner.os }}-
-
-      - name: Cache playwright browsers
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile --filter @findkit/root --filter @findkit/ui --filter @findkit/fetch
-
-      - name: Build all
+      - name: Check bundle sizes
         run: |
           set -eu
-          ./node_modules/.bin/turbo run build --filter @findkit/ui
 
           cd packages/ui
           gzip esm/*.js
@@ -88,18 +57,36 @@ jobs:
           script: |
             const fs = require('fs');
             const sizes = fs.readFileSync('/tmp/sizes', 'utf8');
-            github.rest.repos.createCommitComment({
+            await github.rest.repos.createCommitComment({
               commit_sha: context.sha,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: sizes
             })
 
-      - name: Run @findkit/fetch tests
-        run: cd packages/fetch && pnpm run test
+      - name: Comment bundle sizes on PR
+        uses: actions/github-script@v6
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          script: |
+            const fs = require('fs');
+            const sizes = fs.readFileSync('/tmp/sizes', 'utf8');
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: sizes
+            });
 
-      - name: Run @findkit/ui linting and unit tests
-        run: cd packages/ui && pnpm run test
+      - name: Check bundle sizes
+        run: cd packages/ui && pnpm run size-limit
+
+  playwright-test:
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/setup-action
 
       - name: Install Playwright Browsers
         run: cd packages/ui && ./node_modules/.bin/playwright install --with-deps
@@ -116,19 +103,15 @@ jobs:
           pnpm run build-test-app
           pnpm run playwright-test
 
-      - name: Comment bundle sizes on PR
-        uses: actions/github-script@v6
-        if: ${{ github.event_name == 'pull_request' }}
-        with:
-          script: |
-            const fs = require('fs');
-            const sizes = fs.readFileSync('/tmp/sizes', 'utf8');
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: sizes
-            })
+  playwright-visual:
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/setup-action
+
+      - name: Install Playwright Browsers
+        run: cd packages/ui && ./node_modules/.bin/playwright install --with-deps
 
       - name: Run Playwright visual tests
         run: |
@@ -136,6 +119,9 @@ jobs:
           set -x
 
           cd packages/ui
+
+          # Sanity check
+          ./node_modules/.bin/findkit search -t po8GK3G0r valu
 
           pnpm run playwright-visual || {
             echo VISUAL_FAIL=1 >> $GITHUB_ENV
@@ -166,8 +152,6 @@ jobs:
           git push origin "HEAD:$GITHUB_HEAD_REF"
           echo "DIFF_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
-          slack-message '<!channel>'"Hey ${{ github.actor }} PR <$link|#$pr> failed visual e2e tests. See the bot comment for instructions."
-
       - name: Comment about snapshot changes
         uses: actions/github-script@v6
         if: ${{ github.event_name == 'pull_request' && env.VISUAL_FAIL == '1' }}
@@ -187,7 +171,7 @@ jobs:
               labels: ['VISUAL FAIL']
             })
 
-      - name: Fail suite if e2e failed
+      - name: Fail suite if e2e-visual failed
         if: ${{ env.VISUAL_FAIL == '1' }}
         run: exit 1
 
@@ -212,13 +196,3 @@ jobs:
                 name: 'VISUAL FAIL'
               });
             }
-
-      - name: Check bundle sizes
-        run: cd packages/ui && pnpm run size-limit
-
-      - uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: playwright-report
-          path: packages/ui/playwright-report/
-          retention-days: 30

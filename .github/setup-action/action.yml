@@ -1,0 +1,50 @@
+name: "Monorepo setup"
+descriptions: "Setup pnpm and caches"
+inputs:
+  cache-key:
+    description: "Key to cache"
+    required: false
+    default: "full"
+runs:
+  using: composite
+  steps:
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16
+
+    - uses: pnpm/action-setup@v2.0.1
+      with:
+        version: 7.9.5
+
+    - name: Set pnpm store path
+      shell: bash
+      run: echo "PNPM_STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
+
+    - name: Cache pnpm modules
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.PNPM_STORE_PATH }}
+        key: pnpm7-${{ runner.os }}-${{ inputs.cache-key }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          pnpm7-${{ runner.os }}-${{ inputs.cache-key }}-
+          pnpm7-${{ runner.os }}-
+
+    - name: Cache turborepo
+      uses: actions/cache@v2
+      with:
+        path: node_modules/.cache/turbo/
+        key: turbo2-${{ runner.os }}-${{ inputs.cache-key }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          turbo2-${{ runner.os }}-${{ inputs.cache-key }}-
+          turbo2-${{ runner.os }}-
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile --filter @findkit/root --filter @findkit/ui --filter @findkit/fetch
+
+    - name: Build all
+      shell: bash
+      run: |
+        set -eu
+        ./node_modules/.bin/turbo run build --filter @findkit/ui
