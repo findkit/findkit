@@ -166,7 +166,7 @@ jobs:
       - name: Install Playwright Browsers
         run: cd packages/ui && ./node_modules/.bin/playwright install --with-deps
 
-      - name: Update snapshots and notify
+      - name: Update snapshots
         run: |
           set -x
           set -eu
@@ -180,6 +180,13 @@ jobs:
 
           pnpm run build-test-app
           pnpm run playwright-update
+
+      - name: Commit snapshots
+        run: |
+          set -x
+          set -eu
+          cd packages/ui
+
           git status
 
           if [ "$(git status --porcelain e2e-visual)" = "" ]; then
