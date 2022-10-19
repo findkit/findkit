@@ -10,7 +10,7 @@ export const BASE_TRANSLATIONS = {
 	"no-results": "No results",
 	"sr-result-count": "Got {{count}} search results for terms {{terms}}",
 	"sr-search-instructions":
-		"Search shows search results automatically as you type. Search results can be browsed with tabulator. Search searches for results in different groups and displays group's search results from best to worst. Search opens to its own window which can be closed with ESC or with Close-button at the end of the search window.",
+		"Search shows search results automatically as you type. Search results can be browsed with tabulator. Search searches for results in different groups and displays group's search results from best to worst. Search opens to its own window which can be closed with the ESC key.",
 };
 
 function renderTranslation(
@@ -45,7 +45,7 @@ export const TRANSLATIONS: Record<string, TranslationStrings> = {
 			"Hakutuloksia {{count}} kappaletta hakusanalla {{terms}}",
 		"no-results": "Ei hakutuloksia",
 		"sr-search-instructions":
-			"Hakutoiminto esittää hakutulokset automaattisesti kirjoittaessasi hakusanaa. Hakutuloksia on mahdollista selata tab-näppäimellä. Haku etsii hakutuloksia useista ryhmistä, ja esittää ryhmän hakutulokset paremmuusjärjestyksessä. Haku aukeaa omaan näkymään, jonka käyttäjä voi sulkea esc-näppäimellä tai haun lopussa olevasta sulje-painikkeesta.",
+			"Hakutoiminto esittää hakutulokset automaattisesti kirjoittaessasi hakusanaa. Hakutuloksia on mahdollista selata tab-näppäimellä. Haku etsii hakutuloksia useista ryhmistä, ja esittää ryhmän hakutulokset paremmuusjärjestyksessä. Haku aukeaa omaan näkymään, jonka käyttäjä voi sulkea esc-näppäimellä.",
 	},
 };
 
