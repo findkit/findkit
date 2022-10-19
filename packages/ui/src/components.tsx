@@ -56,7 +56,7 @@ function SingleGroupLink(props: {
 	return (
 		<View
 			as="a"
-			cn={["single-group-link", "hover-bg"]}
+			cn={["single-group-link", "hover-bg", "group-footer"]}
 			{...kbAttrs}
 			data-kb-action
 			aria-label={t("aria-show-all", { group: props.groupTitle })}
@@ -241,7 +241,7 @@ function MultiGroupResults() {
 						/>
 
 						{group.total === group.hits.length ? (
-							<View cn="group-all-results-shown">
+							<View cn={["group-all-results-shown", "group-footer"]}>
 								{group.total === 0 ? t("no-results") : t("all-results-shown")}
 							</View>
 						) : (
