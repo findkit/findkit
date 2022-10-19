@@ -10,7 +10,7 @@ test("can load more results when using only one group", async ({ page }) => {
 	const hits = page.locator(".findkit--hit");
 	const loading = spinnerLocator(page);
 
-	const button = page.locator("text=open");
+	const button = page.locator("button", { hasText: "open" });
 
 	await button.click();
 
@@ -44,14 +44,14 @@ test("the input is cleared when the modal is closed", async ({ page }) => {
 	await page.goto(staticEntry("/single-group"));
 	const hits = page.locator(".findkit--hit");
 
-	await page.locator("text=open").click();
+	await page.locator("button", { hasText: "open" }).click();
 	await page.locator("input:visible").type("mikko");
 
 	await hits.first().waitFor({ state: "visible" });
 
 	await page.keyboard.press("Escape");
 
-	await page.locator("text=open").click();
+	await page.locator("button", { hasText: "open" }).click();
 
 	expect(await page.locator('[aria-label="Search input"]').inputValue()).toBe(
 		"",
@@ -63,7 +63,7 @@ test("search input is focused on open and restored back to opening element when 
 }) => {
 	await page.goto(staticEntry("/single-group"));
 
-	const button = page.locator("text=open");
+	const button = page.locator("button", { hasText: "open" });
 
 	await button.click();
 
@@ -85,7 +85,7 @@ test.describe("small window", () => {
 	test("hides the search input on scroll", async ({ page }) => {
 		await page.goto(staticEntry("/single-group"));
 
-		const button = page.locator("text=open");
+		const button = page.locator("button", { hasText: "open" });
 		const input = page.locator('[aria-label="Search input"]');
 		const header = page.locator(".findkit--header");
 
@@ -108,7 +108,7 @@ test.describe("small window", () => {
 		await page.keyboard.press("Escape");
 
 		// Should be visible again when opening again
-		await page.locator("text=open").click();
+		await button.click();
 		await expect(header).not.toHaveClass(/hidden/);
 	});
 });
@@ -141,7 +141,8 @@ test("can open the search progmatically without terms", async ({ page }) => {
 
 test("emits debounced-search event", async ({ page }) => {
 	await page.goto(staticEntry("/single-group"));
-	await page.locator("text=open").click();
+	const button = page.locator("button", { hasText: "open" });
+	await button.click();
 
 	const termsPromise = page.evaluate(async () => {
 		return await new Promise<string>((resolve) => {
@@ -164,7 +165,8 @@ test("can navigate to hit and come back retaining url and input value", async ({
 }) => {
 	await page.goto(staticEntry("/single-group"));
 	const hits = page.locator(".findkit--hit a");
-	await page.locator("text=open").click();
+	const button = page.locator("button", { hasText: "open" });
+	await button.click();
 
 	const input = page.locator('[aria-label="Search input"]');
 	await input.type("wordpress");
@@ -183,7 +185,8 @@ test("can navigate to hit and come back retaining url and input value", async ({
 test("emits hit-click events and can prevent default", async ({ page }) => {
 	await page.goto(staticEntry("/single-group"));
 	const hits = page.locator(".findkit--hit a");
-	await page.locator("text=open").click();
+	const button = page.locator("button", { hasText: "open" });
+	await button.click();
 
 	const clickPromise = page.evaluate(async () => {
 		return await new Promise<any>((resolve) => {
@@ -210,7 +213,8 @@ test("emits hit-click events and can prevent default", async ({ page }) => {
 
 test("can update groups on the fly", async ({ page }) => {
 	await page.goto(staticEntry("/single-group"));
-	await page.locator("text=open").click();
+	const button = page.locator("button", { hasText: "open" });
+	await button.click();
 
 	const hits = page.locator(".findkit--hit a");
 	const input = page.locator('[aria-label="Search input"]');
@@ -242,7 +246,8 @@ test("can update groups on the fly", async ({ page }) => {
 
 test("can update groups on the fly with update function", async ({ page }) => {
 	await page.goto(staticEntry("/single-group"));
-	await page.locator("text=open").click();
+	const button = page.locator("button", { hasText: "open" });
+	await button.click();
 
 	const hits = page.locator(".findkit--hit a");
 	const input = page.locator('[aria-label="Search input"]');
@@ -281,7 +286,8 @@ test("can infinite scroll", async ({ page }) => {
 		});
 	}
 
-	await page.locator("text=open").click();
+	const button = page.locator("button", { hasText: "open" });
+	await button.click();
 
 	const hits = page.locator(".findkit--hit a");
 	const input = page.locator('[aria-label="Search input"]');
