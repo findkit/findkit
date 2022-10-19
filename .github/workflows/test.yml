@@ -161,6 +161,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          # gonna commit and push, so need all history
+          fetch-depth: 0
+
       - uses: ./.github/setup-action
 
       - name: Install Playwright Browsers
