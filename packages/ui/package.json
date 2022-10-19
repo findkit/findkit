@@ -15,7 +15,8 @@
 	],
 	"scripts": {
 		"dev:js": "jake watch-js",
-		"dev:css": "postcss --watch styles/index.css --output e2e/build/styles.css",
+		"dev:css": "postcss --watch styles/index.css --output test-app/build/styles.css",
+		"css": "postcss styles/index.css --output e2e/build/styles.css",
 		"dev:serve": "serve -p 28104 test-app",
 		"dev:vite": "cd test-app && vite dev",
 		"tsc": "tsc",

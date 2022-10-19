@@ -231,3 +231,47 @@ test("fetches only once when navigating directly to results", async ({
 
 	expect(await getCount()).toBe(1);
 });
+
+test("can show 'All results shown' and 'No results' on group view", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/two-groups"));
+	const hits = page.locator(".findkit--hit");
+	const input = page.locator("input:visible");
+
+	const firstGroupsHits = page.locator(
+		".findkit--group:nth-child(1) .findkit--hit",
+	);
+	const secondGroupHits = page.locator(
+		".findkit--group:nth-child(2) .findkit--hit",
+	);
+
+	await page.locator("text=open").click();
+	await input.type("esa-matti");
+
+	await hits.first().waitFor({ state: "visible" });
+
+	// Just assert we have some hits in the first group but less than 5 so the
+	// group link will not be show. Also check the second group is empty
+	// This is not the test. Just checking we have the right data.
+	expect(await firstGroupsHits.count()).toBeGreaterThan(0);
+	expect(await firstGroupsHits.count()).toBeLessThan(5);
+	await expect(secondGroupHits).toHaveCount(0);
+
+	// Actual assertions
+	await expect(
+		page.locator(
+			".findkit--group:nth-child(1) .findkit--group-all-results-shown",
+		),
+	).toHaveText("All results shown");
+
+	await expect(
+		page.locator(
+			".findkit--group:nth-child(2) .findkit--group-all-results-shown",
+		),
+	).toHaveText("No results");
+
+	await expect(page.locator(".findkit--content")).not.toHaveText(
+		"Show more search results",
+	);
+});
