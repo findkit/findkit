@@ -11,7 +11,7 @@ test("input is visually correct", async ({ page }) => {
 	const hits = page.locator(".findkit--hit");
 
 	await button.click();
-	await input.fill("valu");
+	await input.fill("mikko");
 	await hits.first().waitFor({ state: "visible" });
 
 	await expect(page.locator(".findkit--header")).toHaveScreenshot();
