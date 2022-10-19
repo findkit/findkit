@@ -39,6 +39,14 @@ runs:
           turbo2-${{ runner.os }}-${{ inputs.cache-key }}-
           turbo2-${{ runner.os }}-
 
+    - name: Cache playwright browsers
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          playwright-${{ runner.os }}-
+
     - name: Install dependencies
       shell: bash
       run: pnpm install --frozen-lockfile --filter @findkit/root --filter @findkit/ui --filter @findkit/fetch
