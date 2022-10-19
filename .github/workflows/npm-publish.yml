@@ -15,7 +15,8 @@ jobs:
   publish:
     permissions:
       id-token: write # needed to interact with GitHub's OIDC Token endpoint.
-      contents: read # read the repo itself
+      contents: write # read the repo itself
+      pull-requests: write
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
