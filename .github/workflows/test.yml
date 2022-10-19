@@ -84,6 +84,9 @@ jobs:
   playwright-test:
     timeout-minutes: 20
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        shard: [1, 2]
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/setup-action
@@ -101,7 +104,7 @@ jobs:
           ./node_modules/.bin/findkit search -t po8GK3G0r valu
 
           pnpm run build-test-app
-          pnpm run playwright-test
+          pnpm run playwright-test --shard=${{ matrix.shard }}/${{ strategy.job-total }}
 
   playwright-visual:
     timeout-minutes: 20
