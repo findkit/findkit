@@ -226,8 +226,13 @@ function SearchInput() {
 
 	return (
 		<View cn="search-input-wrap">
+			{/* XXX add instance-id */}
+			<View cn="sr-only" id="search-instructions">
+				{t("sr-search-instructions")}
+			</View>
 			<View
 				as="input"
+				aria-describedby="search-instructions"
 				cn="search-input"
 				type="text"
 				ref={inputRef}
@@ -330,6 +335,7 @@ function Modal() {
 				"backdrop-visible": visible,
 			}}
 		>
+			<ScreenReaderModalMessages />
 			<View
 				ref={containerRef}
 				{...containerKbAttrs}
@@ -371,6 +377,40 @@ export function Plain() {
 				{content}
 			</Slot>
 		</View>
+	);
+}
+
+function ScreenReaderModalMessages() {
+	const state = useSearchEngineState();
+	const t = useTranslator();
+
+	const terms = state.usedTerms ?? "";
+	const count = Object.values(state.resultGroups).reduce((acc, group) => {
+		return acc + group.total;
+	}, 0);
+
+	const [message, setMessage] = useState("");
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			if (terms.trim()) {
+				setMessage(t("sr-result-count", { count, terms }));
+			} else {
+				setMessage("");
+			}
+		}, 2000);
+
+		return () => {
+			clearTimeout(timer);
+		};
+	}, [count, t, terms]);
+
+	return (
+		<>
+			<View cn="sr-only" aria-live="polite">
+				{message}
+			</View>
+		</>
 	);
 }
 

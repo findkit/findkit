@@ -340,3 +340,13 @@
 		transform: rotate(360deg);
 	}
 }
+
+/* Only for screen readers */
+.sr-only {
+	position: absolute;
+	left: -10000;
+	top: auto;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}

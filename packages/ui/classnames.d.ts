@@ -38,4 +38,5 @@ type ClassNames =
   | "findkit--search-input-wrap"
   | "findkit--single-group-link"
   | "findkit--spinner"
-  | "findkit--spinning";
+  | "findkit--spinning"
+  | "findkit--sr-only";
