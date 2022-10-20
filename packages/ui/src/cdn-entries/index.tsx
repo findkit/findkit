@@ -6,6 +6,7 @@ import type {
 	UpdateGroupsArgument,
 	UpdateParamsArgument,
 	SearchEngineParams,
+	GroupSortMethod,
 } from "../search-engine";
 import type { AddressBar, FindkitURLSearchParams } from "../address-bar";
 import type { Slots, SlotProps, MakeSlotComponents } from "../core-hooks";
@@ -249,6 +250,7 @@ export interface FindkitUIOptions {
 	ui?: {
 		lang: string;
 		overrides?: Partial<TranslationStrings>;
+		groupsSortMethod: GroupSortMethod;
 	};
 }
 

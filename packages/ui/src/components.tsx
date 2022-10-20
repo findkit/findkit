@@ -234,7 +234,8 @@ function MultiGroupResults() {
 			const bBoost = b.def?.scoreBoost ?? 0;
 			const bRelevancy = bScore * bBoost;
 
-			return aRelevancy - bRelevancy;
+			// relevancy should descend
+			return bRelevancy - aRelevancy;
 		} else if (groupsSortMethod === "initial") {
 			return 0;
 		} else if (typeof groupsSortMethod === "function") {

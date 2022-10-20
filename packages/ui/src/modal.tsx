@@ -355,6 +355,7 @@ export function init(options: {
 	ui?: {
 		lang: string;
 		overrides?: Partial<TranslationStrings>;
+		groupsSortMethod: GroupSortMethod;
 	};
 }) {
 	const plainContainer = Boolean(options.container);

@@ -234,7 +234,7 @@ class MultiListener {
 	};
 }
 
-type GroupSortMethod =
+export type GroupSortMethod =
 	| "relevancy"
 	| "initial"
 	| ((a: SortGroup, b: SortGroup) => number);
