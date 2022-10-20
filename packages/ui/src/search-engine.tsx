@@ -76,6 +76,15 @@ export interface GroupDefinition extends SearchEngineParams {
 /**
  * @public
  */
+export interface ResultGroup {
+	hits: SearchResultHit[];
+	total: number;
+	duration?: number;
+}
+
+/**
+ * @public
+ */
 export interface State {
 	/**
 	 * Search terms used on the last completed search
@@ -123,6 +132,11 @@ export interface State {
 		 * UI string overrides
 		 */
 		strings: { [lang: string]: Partial<TranslationStrings> };
+
+		/**
+		 * Result group sorting method
+		 */
+		groupsSortMethod: GroupSortMethod;
 	};
 
 	error:
@@ -133,11 +147,7 @@ export interface State {
 		| undefined;
 
 	resultGroups: {
-		[groupId: string]: {
-			hits: SearchResultHit[];
-			total: number;
-			duration?: number;
-		};
+		[groupId: string]: ResultGroup;
 	};
 }
 
@@ -224,6 +234,15 @@ class MultiListener {
 	};
 }
 
+type GroupSortMethod =
+	| "relevancy"
+	| "initial"
+	| ((a: SortGroup, b: SortGroup) => number);
+export interface SortGroup {
+	group: ResultGroup;
+	def: GroupDefinition;
+}
+
 /**
  * @public
  */
@@ -276,6 +295,7 @@ export class SearchEngine {
 		ui?: {
 			lang: string;
 			overrides?: Partial<TranslationStrings>;
+			groupsSortMethod?: GroupSortMethod;
 		};
 	}) {
 		this.addressBar = createAddressBar();
@@ -329,6 +349,7 @@ export class SearchEngine {
 				strings: {
 					[lang]: ref(options.ui?.overrides ?? {}),
 				},
+				groupsSortMethod: options.ui?.groupsSortMethod ?? "initial",
 			},
 
 			// Ensure groups are unique so mutating one does not mutate the

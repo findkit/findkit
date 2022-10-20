@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useRef } from "react";
-import { SearchEngine, SearchResultHit } from "./search-engine";
+import { SearchEngine, SearchResultHit, State } from "./search-engine";
 import { useSnapshot } from "valtio";
 import { FindkitURLSearchParams } from "./address-bar";
 import { Translator } from "./translations";
@@ -69,7 +69,8 @@ export function useFindkitURLSearchParams() {
 
 export function useSearchEngineState() {
 	const engine = useSearchEngine();
-	return useSnapshot(engine.state);
+	const snapShot = useSnapshot(engine.state);
+	return snapShot as State; // XXX Remove readonlys from state snapshot
 }
 
 export function useInput() {

@@ -220,32 +220,79 @@ function HitList(props: {
 function MultiGroupResults() {
 	const state = useSearchEngineState();
 	const t = useTranslator();
+	const groupsSortMethod = state.ui.groupsSortMethod;
+
+	function sortGroups(a: SortGroup, b: SortGroup) {
+		if (groupsSortMethod === "relevancy") {
+			// search results are in relevancy order within groups
+			// so we only need to compare first results from each group
+			const aScore = a.group.hits[0]?.score ?? 0;
+			const aBoost = a.def?.scoreBoost ?? 0;
+			const aRelevancy = aScore * aBoost;
+
+			const bScore = b.group.hits[0]?.score ?? 0;
+			const bBoost = b.def?.scoreBoost ?? 0;
+			const bRelevancy = bScore * bBoost;
+
+			return aRelevancy - bRelevancy;
+		} else if (groupsSortMethod === "initial") {
+			return 0;
+		} else if (typeof groupsSortMethod === "function") {
+			return groupsSortMethod(a, b);
+		} else {
+			// method out of bounds
+			const _: never = groupsSortMethod;
+			return 0;
+		}
+	}
 
 	return (
 		<>
-			{state.usedGroupDefinitions.map((def, groupIndex) => {
-				let group = state.resultGroups[def.id];
-				if (!group) {
-					group = {
-						hits: [],
-						total: 0,
-						duration: 0,
-					};
-				}
+			{state.usedGroupDefinitions
+				.map((def) => {
+					let group = state.resultGroups[def.id];
+					if (!group) {
+						group = {
+							hits: [],
+							total: 0,
+							duration: 0,
+						};
+					}
 
-				return (
-					<View key={def.id} cn="group">
-						<HitList
-							groupId={def.id}
-							groupIndex={groupIndex}
-							title={def.title}
-							total={group.total}
-							hits={group.hits.slice(0, def.previewSize)}
-						/>
-						<SingleGroupLink groupId={def.id}>{t("show-all")}</SingleGroupLink>
-					</View>
-				);
-			})}
+					return {
+						group,
+						def,
+					};
+				})
+				.sort(sortGroups)
+				.map((group) => {
+					// remove extranous information we added for group ordering
+					return group.def;
+				})
+				.map((def) => {
+					let group = state.resultGroups[def.id];
+					if (!group) {
+						group = {
+							hits: [],
+							total: 0,
+							duration: 0,
+						};
+					}
+
+					return (
+						<View key={def.id} cn="group">
+							<HitList
+								groupId={def.id}
+								title={def.title}
+								total={group.total}
+								hits={group.hits.slice(0, def.previewSize)}
+							/>
+							<SingleGroupLink groupId={def.id}>
+								{t("show-all")}
+							</SingleGroupLink>
+						</View>
+					);
+				})}
 		</>
 	);
 }
