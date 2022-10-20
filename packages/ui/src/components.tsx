@@ -1,4 +1,10 @@
-import React, { MouseEventHandler, ReactNode, useMemo } from "react";
+import React, {
+	MouseEventHandler,
+	ReactNode,
+	useEffect,
+	useMemo,
+	useRef,
+} from "react";
 import { useSnapshot } from "valtio";
 import {
 	FindkitContext,
@@ -9,8 +15,14 @@ import {
 	useTranslator,
 	useKeyboardItemAttributes,
 	useSearchMoreOnReveal,
+	FocusRef,
+	useFindkitContext,
 } from "./core-hooks";
-import { SearchEngine, SearchResultHit } from "./search-engine";
+import {
+	DEFAULT_PREVIEW_SIZE,
+	SearchEngine,
+	SearchResultHit,
+} from "./search-engine";
 import { Slot, Slots } from "./slots";
 import { createTranslator } from "./translations";
 import { cn, scrollToTop, View } from "./utils";
@@ -22,12 +34,14 @@ export function FindkitProvider(props: {
 }) {
 	const state = useSnapshot(props.engine.state);
 	const strings = state.ui.strings[state.ui.lang];
+	const focusRef = useRef<FocusRef>({});
 
 	const context = useMemo(() => {
 		const value: FindkitContextType = {
 			engine: props.engine,
 			translator: createTranslator(state.ui.lang, strings),
 			slots: props.slots ?? {},
+			focusRef,
 		};
 
 		return value;
@@ -46,6 +60,7 @@ function SingleGroupLink(props: {
 	groupTitle: string;
 }) {
 	const t = useTranslator();
+	const { focusRef } = useFindkitContext();
 	const engine = useSearchEngine();
 	const params = useFindkitURLSearchParams();
 	const nextParams = params.setGroupId(props.groupId);
@@ -63,9 +78,15 @@ function SingleGroupLink(props: {
 			href={engine.formatHref(nextParams)}
 			onClick={(e) => {
 				e.preventDefault();
-				if (e.target instanceof HTMLElement) {
-					scrollToTop(e.target);
+				if (!(e.target instanceof HTMLElement)) {
+					return;
 				}
+
+				if (engine.elementHost.activeElement === e.target) {
+					focusRef.current.groupViewFocusNext = true;
+				}
+
+				scrollToTop(e.target);
 				engine.updateAddressBar(nextParams, { push: true });
 			}}
 		>
@@ -231,7 +252,7 @@ function MultiGroupResults() {
 				}
 
 				return (
-					<View key={def.id} cn="group">
+					<View key={def.id} cn="group" data-group-id={def.id}>
 						<HitList
 							groupId={def.id}
 							groupIndex={groupIndex}
@@ -259,7 +280,9 @@ function MultiGroupResults() {
 }
 
 function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
+	const { focusRef } = useFindkitContext();
 	const state = useSearchEngineState();
+	const engine = useSearchEngine();
 	const t = useTranslator();
 	const groupCount = state.usedGroupDefinitions.length;
 	let group = state.resultGroups[props.groupId];
@@ -274,6 +297,33 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	}
 
 	const allResultsLoaded = group.hits.length === group.total;
+
+	useEffect(() => {
+		if (!focusRef.current.groupViewFocusNext) {
+			return;
+		}
+
+		const focusIndex = def?.previewSize ?? DEFAULT_PREVIEW_SIZE;
+
+		const links = engine.container.querySelectorAll("." + cn("hit-title-link"));
+
+		for (const [index, el] of Object.entries(links)) {
+			if (focusIndex.toString() === index && el instanceof HTMLAnchorElement) {
+				el.focus();
+				focusRef.current.groupViewFocusNext = false;
+				break;
+			}
+		}
+	}, [
+		engine,
+		props.groupId,
+		focusRef,
+		def,
+
+		// Not used in the effect but we need to check on every hit change when
+		// the focusable index appears in the results.
+		group.hits,
+	]);
 
 	return (
 		<>

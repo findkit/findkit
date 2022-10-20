@@ -4,10 +4,22 @@ import { useSnapshot } from "valtio";
 import { Translator } from "./translations";
 import { Slots } from "./slots";
 
+/**
+ * Helper state for managing focus. Focus does not affect react rendering so
+ * this does not have to be part of the Valtio state
+ */
+export interface FocusRef {
+	/**
+	 * Focus the next item after the preview items
+	 */
+	groupViewFocusNext?: boolean;
+}
+
 export interface FindkitContextType {
 	engine: SearchEngine | undefined;
 	slots: Partial<Slots>;
 	translator: Translator;
+	focusRef: React.MutableRefObject<FocusRef>;
 }
 
 export const FindkitContext = createContext<FindkitContextType | null>(null);
