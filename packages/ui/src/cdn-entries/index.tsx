@@ -8,7 +8,7 @@ import type {
 	SearchParams,
 	FindkitURLSearchParams,
 	Status,
-	GroupSortMethod,
+	GroupsOrderMethod,
 } from "../search-engine";
 import type { RouterBackend } from "../router";
 import type {
@@ -408,7 +408,7 @@ export interface FindkitUIOptions {
 	router?: "memory" | "querystring" | "hash" | RouterBackend;
 	lockScroll?: boolean;
 	modal?: boolean;
-	groupsSortMethod: GroupSortMethod;
+	groupsOrderMethod?: GroupsOrderMethod;
 	ui?: {
 		lang?: string;
 		overrides?: Partial<TranslationStrings>;
