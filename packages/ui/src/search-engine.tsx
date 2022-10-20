@@ -22,7 +22,8 @@ import { Emitter, FindkitUIEvents } from "./emitter";
 import { TranslationStrings } from "./translations";
 import { listen, Resources } from "./resources";
 
-const DEFAULT_HIGHLIGHT_LENGTH = 250;
+export const DEFAULT_HIGHLIGHT_LENGTH = 250;
+export const DEFAULT_PREVIEW_SIZE = 5;
 
 /**
  * Like the findkit result but real dates instead of the string dates
@@ -427,7 +428,7 @@ export class SearchEngine {
 				{
 					...SINGLE_GROUP_NAME,
 					scoreBoost: 1,
-					previewSize: 5,
+					previewSize: DEFAULT_PREVIEW_SIZE,
 					params: {
 						tagQuery: [],
 						...options.params,
@@ -494,6 +495,16 @@ export class SearchEngine {
 		);
 
 		this.PRIVATE_handleAddressChange();
+	}
+
+	get container() {
+		return this.PRIVATE_container;
+	}
+
+	get elementHost() {
+		return this.PRIVATE_container instanceof ShadowRoot
+			? this.PRIVATE_container
+			: document;
 	}
 
 	setUIStrings(lang: string, overrides?: Partial<TranslationStrings>) {
@@ -849,7 +860,8 @@ export class SearchEngine {
 				return group.id === options.appendGroupId;
 			})
 			.map((group) => {
-				let size = group.previewSize ?? 10;
+				let size = group.previewSize ?? DEFAULT_PREVIEW_SIZE;
+
 				if (options.appendGroupId) {
 					size = this.PRIVATE_fetchCount;
 				}

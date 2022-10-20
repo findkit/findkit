@@ -275,3 +275,49 @@ test("can show 'All results shown' and 'No results' on group view", async ({
 		"Show more search results",
 	);
 });
+
+["no-shadow", "with-shadow"].forEach((qs) => {
+	test(`move focus the next item when navigating into a group (${qs})`, async ({
+		page,
+	}) => {
+		const getFocusedHitUrl = async () => {
+			return await page.evaluate(() => {
+				let activeElement = document.activeElement;
+
+				if (activeElement?.shadowRoot instanceof ShadowRoot) {
+					activeElement = activeElement.shadowRoot.activeElement;
+				}
+
+				if (activeElement instanceof HTMLAnchorElement) {
+					return activeElement.href;
+				}
+			});
+		};
+
+		await page.goto(staticEntry(`/two-groups?${qs}`));
+		const hitLinks = page.locator("a.findkit--hit-title-link");
+
+		await page.locator("button", { hasText: "open" }).click();
+
+		await page.locator("input").fill("valu");
+
+		await hitLinks.first().waitFor({ state: "visible" });
+
+		await page.keyboard.press("Tab");
+		await page.keyboard.press("Tab");
+		await page.keyboard.press("Tab");
+		await page.keyboard.press("Tab");
+		await page.keyboard.press("Tab");
+
+		const lastPreviewUrl = await getFocusedHitUrl();
+		expect(lastPreviewUrl).toBeTruthy();
+
+		// Move to "Show more search results"
+		await page.keyboard.press("Tab");
+		await page.keyboard.press("Enter");
+
+		await expect(hitLinks.nth(5)).toBeFocused();
+
+		expect(lastPreviewUrl).not.toBe(await getFocusedHitUrl());
+	});
+});
