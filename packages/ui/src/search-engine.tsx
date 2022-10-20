@@ -80,6 +80,15 @@ export interface GroupDefinition {
 
 /**
  * @public
+ */
+export interface ResultGroup {
+	hits: SearchResultHit[];
+	total: number;
+	duration?: number;
+}
+
+/**
+ * @public
  *
  * UI status
  */
@@ -161,6 +170,11 @@ export interface State {
 		strings: { [lang: string]: Partial<TranslationStrings> };
 	};
 
+	/**
+	 * Result group sorting method
+	 */
+	groupsSortMethod: GroupSortMethod;
+
 	error:
 		| {
 				source: "fetch" | "other";
@@ -169,11 +183,7 @@ export interface State {
 		| undefined;
 
 	resultGroups: {
-		[groupId: string]: {
-			hits: SearchResultHit[];
-			total: number;
-			duration?: number;
-		};
+		[groupId: string]: ResultGroup;
 	};
 }
 
@@ -332,6 +342,17 @@ export interface SearchEngineOptions {
 		lang?: string;
 		overrides?: Partial<TranslationStrings>;
 	};
+
+	groupsSortMethod: GroupSortMethod;
+}
+
+export type GroupSortMethod =
+	| "relevancy"
+	| "initial"
+	| ((a: SortGroup, b: SortGroup) => number);
+export interface SortGroup {
+	group: ResultGroup;
+	def: GroupDefinition;
 }
 
 /**
@@ -451,6 +472,7 @@ export class SearchEngine {
 			resultGroups: {},
 			header: options.header ?? true,
 			keyboardCursor: undefined,
+			groupsSortMethod: options.groupsSortMethod ?? "initial", // XXX Should default be initial or relevancy ?
 			ui: {
 				lang,
 				strings: {

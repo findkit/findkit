@@ -22,6 +22,7 @@ import {
 	DEFAULT_PREVIEW_SIZE,
 	SearchEngine,
 	SearchResultHit,
+	SortGroup,
 } from "./search-engine";
 import { Slot, Slots } from "./slots";
 import { createTranslator } from "./translations";
@@ -131,7 +132,6 @@ function GroupTitle(props: { title: string; total: number }) {
 function Hit(props: {
 	hit: SearchResultHit;
 	groupId: string;
-	groupIndex: number;
 	hitIndex: number;
 	containerRef: ReturnType<typeof useSearchMoreOnReveal> | undefined;
 }) {
@@ -205,7 +205,7 @@ function Hit(props: {
 
 function HitList(props: {
 	groupId: string;
-	groupIndex: number;
+
 	title?: string;
 	total: number;
 	hits: ReadonlyArray<SearchResultHit>;
@@ -226,7 +226,6 @@ function HitList(props: {
 						hit={hit}
 						hitIndex={index}
 						groupId={props.groupId}
-						groupIndex={props.groupIndex}
 						containerRef={last ? hitRef : undefined}
 					/>
 				);
@@ -238,43 +237,93 @@ function HitList(props: {
 function MultiGroupResults() {
 	const state = useSearchEngineState();
 	const t = useTranslator();
+	const groupsSortMethod = state.groupsSortMethod;
+
+	function sortGroups(a: SortGroup, b: SortGroup) {
+		console.log(groupsSortMethod);
+		console.log(a, b);
+		if (groupsSortMethod === "relevancy") {
+			// search results are in relevancy order within groups
+			// so we only need to compare first results from each group
+			const aScore = a.group.hits[0]?.score ?? 0;
+			const aBoost = a.def?.scoreBoost ?? 0;
+			const aRelevancy = aScore * aBoost;
+
+			const bScore = b.group.hits[0]?.score ?? 0;
+			const bBoost = b.def?.scoreBoost ?? 0;
+			const bRelevancy = bScore * bBoost;
+
+			// relevancy should descend
+			return bRelevancy - aRelevancy;
+		} else if (groupsSortMethod === "initial") {
+			return 0;
+		} else if (typeof groupsSortMethod === "function") {
+			return groupsSortMethod(a, b);
+		} else {
+			// method out of bounds
+			const _: never = groupsSortMethod;
+			return 0;
+		}
+	}
 
 	return (
 		<>
-			{state.usedGroupDefinitions.map((def, groupIndex) => {
-				let group = state.resultGroups[def.id];
-				if (!group) {
-					group = {
-						hits: [],
-						total: 0,
-						duration: 0,
+			{state.usedGroupDefinitions
+				.map((def) => {
+					let group = state.resultGroups[def.id];
+					if (!group) {
+						group = {
+							hits: [],
+							total: 0,
+							duration: 0,
+						};
+					}
+					return {
+						group,
+						def,
 					};
-				}
+				})
+				.sort(sortGroups)
+				.map((resultGroupWithDef) => {
+					return (
+						<View
+							key={resultGroupWithDef.def.id}
+							cn="group"
+							data-group-id={resultGroupWithDef.def.id}
+						>
+							<HitList
+								groupId={resultGroupWithDef.def.id}
+								title={resultGroupWithDef.def.title}
+								total={resultGroupWithDef.group.total}
+								hits={resultGroupWithDef.group.hits.slice(
+									0,
+									resultGroupWithDef.def.previewSize,
+								)}
+							/>
 
-				return (
-					<View key={def.id} cn="group" data-group-id={def.id}>
-						<HitList
-							groupId={def.id}
-							groupIndex={groupIndex}
-							title={def.title}
-							total={group.total}
-							hits={group.hits.slice(0, def.previewSize)}
-						/>
-
-						{group.total === group.hits.length ? (
-							<View
-								cn={["group-all-results-shown", "group-header-footer-spacing"]}
-							>
-								{group.total === 0 ? t("no-results") : t("all-results-shown")}
-							</View>
-						) : (
-							<SingleGroupLink groupId={def.id} groupTitle={def.title}>
-								{t("show-all")}
-							</SingleGroupLink>
-						)}
-					</View>
-				);
-			})}
+							{resultGroupWithDef.group.total ===
+							resultGroupWithDef.group.hits.length ? (
+								<View
+									cn={[
+										"group-all-results-shown",
+										"group-header-footer-spacing",
+									]}
+								>
+									{resultGroupWithDef.group.total === 0
+										? t("no-results")
+										: t("all-results-shown")}
+								</View>
+							) : (
+								<SingleGroupLink
+									groupId={resultGroupWithDef.def.id}
+									groupTitle={resultGroupWithDef.def.title}
+								>
+									{t("show-all")}
+								</SingleGroupLink>
+							)}
+						</View>
+					);
+				})}
 		</>
 	);
 }
@@ -330,7 +379,6 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 			{groupCount > 1 && <AllResultsLink>{t("go-back")}</AllResultsLink>}
 
 			<HitList
-				groupIndex={props.groupIndex}
 				groupId={props.groupId}
 				hits={group.hits}
 				total={group.total}
