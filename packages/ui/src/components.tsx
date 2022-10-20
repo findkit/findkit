@@ -18,7 +18,7 @@ import {
 	useTranslator,
 	useKeyboardItemAttributes,
 } from "./core-hooks";
-import { SearchEngine, SearchResultHit } from "./search-engine";
+import { SearchEngine, SearchResultHit, SortGroup } from "./search-engine";
 import { createTranslator } from "./translations";
 import { cn, scrollToTop, View } from "./utils";
 
@@ -127,7 +127,6 @@ function GroupTitle(props: { title: string; total: number }) {
 function Hit(props: {
 	hit: SearchResultHit;
 	groupId: string;
-	groupIndex: number;
 	hitIndex: number;
 }) {
 	const engine = useSearchEngine();
@@ -194,7 +193,6 @@ function Hit(props: {
 
 function HitList(props: {
 	groupId: string;
-	groupIndex: number;
 	title?: string;
 	total: number;
 	hits: ReadonlyArray<SearchResultHit>;
@@ -212,7 +210,6 @@ function HitList(props: {
 						hit={hit}
 						hitIndex={index}
 						groupId={props.groupId}
-						groupIndex={props.groupIndex}
 					/>
 				);
 			})}
@@ -307,7 +304,6 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 			{groupCount > 1 && <AllResultsLink>{t("go-back")}</AllResultsLink>}
 
 			<HitList
-				groupIndex={props.groupIndex}
 				groupId={props.groupId}
 				hits={group.hits}
 				total={group.total}
