@@ -47,6 +47,8 @@
 					// set 2Group as first group
 					if (groupA.groupDefinition.id === "MeFirst") {
 						return -1;
+					} else if(groupB.groupDefinition.id === "MeFirst"){
+						return 1;
 					} else {
 						// otherwise keep order
 						return 0;
