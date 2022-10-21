@@ -240,17 +240,15 @@ function MultiGroupResults() {
 	const groupOrder = state.groupOrder;
 
 	function orderGroups(a: SortGroup, b: SortGroup) {
-		console.log(groupOrder);
-		console.log(a, b);
 		if (groupOrder === "relevancy") {
 			// search results are in relevancy order within groups
 			// so we only need to compare first results from each group
-			const aScore = a.group.hits[0]?.score ?? 0;
-			const aBoost = a.def?.scoreBoost ?? 0;
+			const aScore = a.results.hits[0]?.score ?? 0;
+			const aBoost = a.groupDefinition?.scoreBoost ?? 0;
 			const aRelevancy = aScore * aBoost;
 
-			const bScore = b.group.hits[0]?.score ?? 0;
-			const bBoost = b.def?.scoreBoost ?? 0;
+			const bScore = b.results.hits[0]?.score ?? 0;
+			const bBoost = b.groupDefinition?.scoreBoost ?? 0;
 			const bRelevancy = bScore * bBoost;
 
 			// relevancy should descend
@@ -279,44 +277,43 @@ function MultiGroupResults() {
 						};
 					}
 					return {
-						group,
-						def,
+						results: group,
+						groupDefinition: def,
 					};
 				})
 				.sort(orderGroups)
-				.map((resultGroupWithDef) => {
+				.map((sortGroup) => {
 					return (
 						<View
-							key={resultGroupWithDef.def.id}
+							key={sortGroup.groupDefinition.id}
 							cn="group"
-							data-group-id={resultGroupWithDef.def.id}
+							data-group-id={sortGroup.groupDefinition.id}
 						>
 							<HitList
-								groupId={resultGroupWithDef.def.id}
-								title={resultGroupWithDef.def.title}
-								total={resultGroupWithDef.group.total}
-								hits={resultGroupWithDef.group.hits.slice(
+								groupId={sortGroup.groupDefinition.id}
+								title={sortGroup.groupDefinition.title}
+								total={sortGroup.results.total}
+								hits={sortGroup.results.hits.slice(
 									0,
-									resultGroupWithDef.def.previewSize,
+									sortGroup.groupDefinition.previewSize,
 								)}
 							/>
 
-							{resultGroupWithDef.group.total ===
-							resultGroupWithDef.group.hits.length ? (
+							{sortGroup.results.total === sortGroup.results.hits.length ? (
 								<View
 									cn={[
 										"group-all-results-shown",
 										"group-header-footer-spacing",
 									]}
 								>
-									{resultGroupWithDef.group.total === 0
+									{sortGroup.results.total === 0
 										? t("no-results")
 										: t("all-results-shown")}
 								</View>
 							) : (
 								<SingleGroupLink
-									groupId={resultGroupWithDef.def.id}
-									groupTitle={resultGroupWithDef.def.title}
+									groupId={sortGroup.groupDefinition.id}
+									groupTitle={sortGroup.groupDefinition.title}
 								>
 									{t("show-all")}
 								</SingleGroupLink>

@@ -351,8 +351,8 @@ export type GroupOrder =
 	| "initial"
 	| ((a: SortGroup, b: SortGroup) => number);
 export interface SortGroup {
-	group: ResultGroup;
-	def: GroupDefinition;
+	results: ResultGroup;
+	groupDefinition: GroupDefinition;
 }
 
 /**
