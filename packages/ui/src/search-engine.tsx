@@ -74,7 +74,7 @@ export interface GroupDefinition {
 	id: string;
 	title: string;
 	previewSize?: number;
-	scoreBoost?: number;
+	relevancyBoost?: number;
 	params: SearchParams;
 }
 
@@ -448,7 +448,7 @@ export class SearchEngine {
 			groups = [
 				{
 					...SINGLE_GROUP_NAME,
-					scoreBoost: 1,
+					relevancyBoost: 1,
 					previewSize: DEFAULT_PREVIEW_SIZE,
 					params: {
 						tagQuery: [],
