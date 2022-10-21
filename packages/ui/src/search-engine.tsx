@@ -173,7 +173,7 @@ export interface State {
 	/**
 	 * Result group sorting method
 	 */
-	groupsOrderMethod: GroupsOrderMethod;
+	groupOrder: GroupOrder;
 
 	error:
 		| {
@@ -343,10 +343,10 @@ export interface SearchEngineOptions {
 		overrides?: Partial<TranslationStrings>;
 	};
 
-	groupsOrderMethod?: GroupsOrderMethod;
+	groupOrder?: GroupOrder;
 }
 
-export type GroupsOrderMethod =
+export type GroupOrder =
 	| "relevancy"
 	| "initial"
 	| ((a: SortGroup, b: SortGroup) => number);
@@ -472,7 +472,7 @@ export class SearchEngine {
 			resultGroups: {},
 			header: options.header ?? true,
 			keyboardCursor: undefined,
-			groupsOrderMethod: options.groupsOrderMethod ?? "initial", // XXX Should default be initial or relevancy ?
+			groupOrder: options.groupOrder ?? "initial", // XXX Should default be initial or relevancy ?
 			ui: {
 				lang,
 				strings: {

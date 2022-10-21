@@ -237,12 +237,12 @@ function HitList(props: {
 function MultiGroupResults() {
 	const state = useSearchEngineState();
 	const t = useTranslator();
-	const groupsOrderMethod = state.groupsOrderMethod;
+	const groupOrder = state.groupOrder;
 
 	function orderGroups(a: SortGroup, b: SortGroup) {
-		console.log(groupsOrderMethod);
+		console.log(groupOrder);
 		console.log(a, b);
-		if (groupsOrderMethod === "relevancy") {
+		if (groupOrder === "relevancy") {
 			// search results are in relevancy order within groups
 			// so we only need to compare first results from each group
 			const aScore = a.group.hits[0]?.score ?? 0;
@@ -255,13 +255,13 @@ function MultiGroupResults() {
 
 			// relevancy should descend
 			return bRelevancy - aRelevancy;
-		} else if (groupsOrderMethod === "initial") {
+		} else if (groupOrder === "initial") {
 			return 0;
-		} else if (typeof groupsOrderMethod === "function") {
-			return groupsOrderMethod(a, b);
+		} else if (typeof groupOrder === "function") {
+			return groupOrder(a, b);
 		} else {
 			// method out of bounds
-			const _: never = groupsOrderMethod;
+			const _: never = groupOrder;
 			return 0;
 		}
 	}
