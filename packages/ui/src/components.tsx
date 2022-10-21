@@ -205,7 +205,6 @@ function Hit(props: {
 
 function HitList(props: {
 	groupId: string;
-
 	title?: string;
 	total: number;
 	hits: ReadonlyArray<SearchResultHit>;
@@ -244,11 +243,11 @@ function MultiGroupResults() {
 			// search results are in relevancy order within groups
 			// so we only need to compare first results from each group
 			const aScore = a.results.hits[0]?.score ?? 0;
-			const aBoost = a.groupDefinition?.scoreBoost ?? 1;
+			const aBoost = a.groupDefinition?.relevancyBoost ?? 1;
 			const aRelevancy = aScore * aBoost;
 
 			const bScore = b.results.hits[0]?.score ?? 0;
-			const bBoost = b.groupDefinition?.scoreBoost ?? 1;
+			const bBoost = b.groupDefinition?.relevancyBoost ?? 1;
 			const bRelevancy = bScore * bBoost;
 
 			// relevancy should descend
