@@ -253,7 +253,7 @@ function MultiGroupResults() {
 
 			// relevancy should descend
 			return bRelevancy - aRelevancy;
-		} else if (groupOrder === "initial") {
+		} else if (groupOrder === "static") {
 			return 0;
 		} else if (typeof groupOrder === "function") {
 			return groupOrder(a, b);

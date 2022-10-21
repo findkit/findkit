@@ -348,7 +348,7 @@ export interface SearchEngineOptions {
 
 export type GroupOrder =
 	| "relevancy"
-	| "initial"
+	| "static"
 	| ((a: SortGroup, b: SortGroup) => number);
 export interface SortGroup {
 	results: ResultGroup;
@@ -472,7 +472,7 @@ export class SearchEngine {
 			resultGroups: {},
 			header: options.header ?? true,
 			keyboardCursor: undefined,
-			groupOrder: options.groupOrder ?? "initial", // XXX Should default be initial or relevancy ?
+			groupOrder: options.groupOrder ?? "static",
 			ui: {
 				lang,
 				strings: {
