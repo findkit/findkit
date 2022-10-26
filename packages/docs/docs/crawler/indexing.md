@@ -16,14 +16,14 @@ Example
 ```
 
 You can use the attribute multiple times on a single page. The crawler will
-extract the text content from all elements with it and combines them to the page
-index. You can use the `findkit inspect <url>` and `findkit crawl test <url>`
-CLI commands to see what the content is actually selected to the index.
+select the text content from all elements with it and combine them to the page
+index. You can use the `findkit inspect <url>` CLI command to view currently indexed content
+and `findkit crawl test <url>` to see what content would selected to index.
 
 ## Custom CSS Selector
 
 If you cannot add the data attributes you can use the `content_selector` field
-in the `findkit.toml` to select content using CSS selector.
+in the `findkit.toml` to select content using CSS selectors.
 
 Example
 
@@ -40,7 +40,7 @@ elements are matched the content is indexed from all of them.
 ## Cleaning Content
 
 Sometimes the selected content can contain some inner elements that you don't
-want to have indexed. These can be cleaned up with the skip data attribute
+want to index. These elements can be removed from indexed content with the skip data attribute
 `data-fdk-skip` or the clean up selector.
 
 ```html
