@@ -1,6 +1,7 @@
 {
 	"name": "@findkit/root",
 	"private": true,
+	"repository": "github:findkit/findkit",
 	"scripts": {
 		"update-imports": "./tools/update-all-imports"
 	},
