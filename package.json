@@ -3,6 +3,7 @@
 	"private": true,
 	"repository": "github:findkit/findkit",
 	"scripts": {
+		"test": "true",
 		"update-imports": "./tools/update-all-imports"
 	},
 	"devDependencies": {
