@@ -232,7 +232,7 @@ test("can update groups on the fly", async ({ page }) => {
 					highlightLength: 10,
 					tagQuery: [["domain/statement.fi"]],
 				},
-				scoreBoost: 1,
+				relevancyBoost: 1,
 				previewSize: 5,
 			},
 		]);
