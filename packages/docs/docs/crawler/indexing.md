@@ -18,7 +18,7 @@ Example
 You can use the attribute multiple times on a single page. The crawler will
 select the text content from all elements with it and combine them to the page
 index. You can use the `findkit inspect <url>` CLI command to view currently indexed content
-and `findkit crawl test <url>` to see what content would selected to index.
+and `findkit crawl test <url>` to see what content would be selected to the index.
 
 ## Custom CSS Selector
 
