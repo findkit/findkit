@@ -122,7 +122,7 @@ Can be defined as a CSS selector or as an `Element` object.
 ### `modal: boolean` {#modal}
 
 Set to `false` to disable the modal mode. This makes sense only when used with
-a custom containe with the [`container`](#container) option.
+a custom container with the [`container`](#container) option.
 
 This disables following:
 

@@ -11,12 +11,12 @@ Feature highlights:
 
 - "Search as you type" experience
 - Search result groupping
-- Accessibile
+- Accessible
 - Navigable with arrow keys
 - Customizable
 - Automatic lazy loading
 
 For more detailed description checkout the [Technical Description](/ui/tech) page.
 
-The library can installed by hot linking it from our CDN or by bundling from the
+The library can be installed by hot linking it from our CDN or by bundling from the
 npm-package. See the [setup](/ui/setup) page for details.
