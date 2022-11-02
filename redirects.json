@@ -2,6 +2,7 @@
 	"mapping": {
 		"/": "https://www.findkit.com",
 		"/docs": "https://docs.findkit.com",
-		"/toml": "https://docs.findkit.com/crawler/toml/"
+		"/toml": "https://docs.findkit.com/crawler/toml/",
+		"/cli": "https://docs.findkit.com/crawler/getting-started/"
 	}
 }
