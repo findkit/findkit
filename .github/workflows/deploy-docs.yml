@@ -15,6 +15,7 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    if: ${{ github.event.repository.name == 'findkit/findkit' }}
     steps:
       - uses: actions/checkout@v3
 
