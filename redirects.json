@@ -1,6 +1,7 @@
 {
 	"mapping": {
 		"/": "https://www.findkit.com",
-		"/docs": "https://docs.findkit.com"
+		"/docs": "https://docs.findkit.com",
+		"/toml": "https://docs.findkit.com/crawler/toml/"
 	}
 }
