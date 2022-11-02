@@ -3,19 +3,18 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>Search UI Test</title>
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
+
 		<link rel="stylesheet" href="/shared.css" />
 
-		<script type="module" id="test">
+		<script type="module">
 			import { FindkitUI } from "/build/esm/index.js";
 
 			const ui = new FindkitUI({
 				publicToken: "po8GK3G0r",
-				router: "hash",
 				groups: [
 					{
-						id: "valu",
-						title: "Valu.fi",
+						id: "FirstGroup",
+						title: "First group",
 						relevancyBoost: 1,
 						previewSize: 5,
 						params: {
@@ -24,16 +23,27 @@
 						},
 					},
 					{
-						id: "statement",
-						title: "Statement.fi",
-						relevancyBoost: 1,
-						previewSize: 5,
+						id: "BoostedGroup1",
+						title: "Group with boost",
 						params: {
-							tagQuery: [["domain/statement.fi"]],
+							tagQuery: [["domain/valu.fi"]],
 							highlightLength: 10,
 						},
+						relevancyBoost: 100,
+						previewSize: 5,
+					},
+					{
+						id: "BoostedGroup2",
+						title: "Group with higher boost",
+						params: {
+							tagQuery: [["domain/valu.fi"]],
+							highlightLength: 10,
+						},
+						relevancyBoost: 101,
+						previewSize: 5,
 					},
 				],
+				groupOrder: "relevancy"
 			});
 
 			Object.assign(window, { ui });

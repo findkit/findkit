@@ -81,6 +81,17 @@ Group search results. See [Groups](/ui/api/groups).
 
 <Api page="ui.findkituioptions.groups" />
 
+### `groupOrder: "relevancy" | "static" | (a,b)=>number`
+
+Group order logic. Defaults to `"static"` which preserves groups array order.
+
+In "relevancy" mode groups are ordered based on the groups most relevants results relevancy.
+Relevancy mode can be affected by groups' option relevancyBoost, which is multiplied with the result relevancy
+
+Also supports custom sort functions.
+
+<Api page="ui.findkituioptions.groupOrder" />
+
 ### `infiniteScroll: boolean` {#infiniteScroll}
 
 Disable automatic result loading on scroll and require button click to load more
@@ -122,7 +133,7 @@ Can be defined as a CSS selector or as an `Element` object.
 ### `modal: boolean` {#modal}
 
 Set to `false` to disable the modal mode. This makes sense only when used with
-a custom containe with the [`container`](#container) option.
+a custom container with the [`container`](#container) option.
 
 This disables following:
 

@@ -3,7 +3,7 @@
 Findkit UI can be also embedded inside frontend frameworks. Here's some
 embedding patterns for React.js.
 
-All the considrations in each pattern if valid when embedding inside React as
+All the considrations in each pattern are valid when embedding inside React as
 well. So take care to add loading indicators, focus trapping etc.
 
 ## Fullscreen Modal

@@ -4,7 +4,7 @@ Slot Overrides are a way to replace some parts of the UI with custom ones. The
 overrrides are basically Preact components since Findkit UI is implemented in
 Preact. Even though Preact components are commonly written using JSX which
 requires a JS compiler, with Findkit UI the components can be created
-using with just plain Javascript without any external tools.
+with just plain Javascript without any external tools.
 
 See [Slots](/ui/slot-overrides/slots) for the available slots.
 

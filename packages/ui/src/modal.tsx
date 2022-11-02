@@ -15,6 +15,7 @@ import {
 	GroupDefinition,
 	SearchParams,
 	SearchEngineOptions,
+	GroupOrder,
 } from "./search-engine";
 import { cn, View } from "./utils";
 import type { Emitter, FindkitUIEvents } from "./emitter";
@@ -437,6 +438,7 @@ export function init(_options: {
 	infiniteScroll?: boolean;
 	header?: boolean;
 	router?: SearchEngineOptions["router"];
+	groupOrder?: GroupOrder;
 	ui?: {
 		lang?: string;
 		overrides?: Partial<TranslationStrings>;

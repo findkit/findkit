@@ -74,8 +74,17 @@ export interface GroupDefinition {
 	id: string;
 	title: string;
 	previewSize?: number;
-	scoreBoost?: number;
+	relevancyBoost?: number;
 	params: SearchParams;
+}
+
+/**
+ * @public
+ */
+export interface ResultGroup {
+	hits: SearchResultHit[];
+	total: number;
+	duration?: number;
 }
 
 /**
@@ -161,6 +170,11 @@ export interface State {
 		strings: { [lang: string]: Partial<TranslationStrings> };
 	};
 
+	/**
+	 * Result group sorting method
+	 */
+	groupOrder: GroupOrder;
+
 	error:
 		| {
 				source: "fetch" | "other";
@@ -169,11 +183,7 @@ export interface State {
 		| undefined;
 
 	resultGroups: {
-		[groupId: string]: {
-			hits: SearchResultHit[];
-			total: number;
-			duration?: number;
-		};
+		[groupId: string]: ResultGroup;
 	};
 }
 
@@ -332,6 +342,17 @@ export interface SearchEngineOptions {
 		lang?: string;
 		overrides?: Partial<TranslationStrings>;
 	};
+
+	groupOrder?: GroupOrder;
+}
+
+export type GroupOrder =
+	| "relevancy"
+	| "static"
+	| ((a: SortGroup, b: SortGroup) => number);
+export interface SortGroup {
+	results: ResultGroup;
+	groupDefinition: GroupDefinition;
 }
 
 /**
@@ -427,7 +448,7 @@ export class SearchEngine {
 			groups = [
 				{
 					...SINGLE_GROUP_NAME,
-					scoreBoost: 1,
+					relevancyBoost: 1,
 					previewSize: DEFAULT_PREVIEW_SIZE,
 					params: {
 						tagQuery: [],
@@ -451,6 +472,7 @@ export class SearchEngine {
 			resultGroups: {},
 			header: options.header ?? true,
 			keyboardCursor: undefined,
+			groupOrder: options.groupOrder ?? "static",
 			ui: {
 				lang,
 				strings: {

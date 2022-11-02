@@ -80,10 +80,10 @@ The same as [Search Params](/ui/api/params).
 
 How many search results to show when all groups are rendered.
 
-### `scoreBoost?: number`
+### `relevancyBoost?: number`
 
-Boost (multiply) the results scores within the group. Meaningful only when the
-groups are ordered by their highest score result. TODO: link to the option dokumentation
+Boost (multiply) the results relevancy within the group. Meaningful only when the
+groups are ordered by relevancy. TODO: link to the option dokumentation
 
 ## Try it!
 
