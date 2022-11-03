@@ -362,7 +362,14 @@ export function Plain() {
 	const state = useSearchEngineState();
 	const containerKbAttrs = useContainerKeyboardAttributes();
 
-	const header = state.header ? <SearchInput /> : null;
+	const header = state.header ? (
+		<Slot
+			name="Header"
+			props={{ Input: SearchInput, CloseButton: CloseButton }}
+		>
+			<SearchInput />
+		</Slot>
+	) : null;
 
 	const content = (
 		<View cn="content">

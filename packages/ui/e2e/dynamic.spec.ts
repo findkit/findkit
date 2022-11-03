@@ -370,3 +370,28 @@ test("can use preact import", async ({ page }) => {
 
 	await expect(counter.first()).toHaveText("2");
 });
+
+test("can use Header slot with 'modal: false'", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI, html } = MOD;
+
+		const container = document.createElement("div");
+		document.body.append(container);
+
+		new FindkitUI({
+			publicToken: "po8GK3G0r",
+			modal: false,
+			container,
+			slots: {
+				Header() {
+					return html`<div class="header-slot">Works</div> `;
+				},
+			},
+		});
+	});
+
+	const headerSlot = page.locator(".header-slot");
+	await expect(headerSlot).toBeVisible();
+});
