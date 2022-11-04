@@ -43,7 +43,7 @@ name = "Example Project"
 description = "Project description"
 
 ## Uncomment to enable automatic scheduled crawling
-#full_crawl_schedule = "weekly"
+#schedule_full_crawl = "weekly"
 
 [[targets]]
 host = "www.example.com"
