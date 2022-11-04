@@ -32,6 +32,17 @@ function useGroupsImplementation() {
 }
 
 /**
+ * Total hit count. Includes all groups if multiple groups are used.
+ */
+function useTotalHitCountImplementation() {
+	const state = useSearchEngineState();
+	return Object.values(state.resultGroups).reduce(
+		(total, group) => total + group.total,
+		0,
+	);
+}
+
+/**
  * @public
  */
 export interface SearchResultHitWithGroupId extends SearchResultHit {
@@ -101,6 +112,7 @@ export interface Implementation {
 	useResults: typeof useResultsImplementation;
 	useTotal: typeof useTotalImplementation;
 	useInput: typeof useInput;
+	useTotalHitCount: typeof useTotalHitCountImplementation;
 	preact: PreactFunctions;
 }
 
@@ -114,6 +126,7 @@ export const js: Implementation = {
 	useTotal: useTotalImplementation,
 	useResults: useResultsImplementation,
 	useInput,
+	useTotalHitCount: useTotalHitCountImplementation,
 	preact: preactFunctions,
 };
 
