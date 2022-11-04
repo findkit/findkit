@@ -154,6 +154,12 @@ outside the Findkit UI context. Ex. in the site header.
 
 ### `router: Router` {#router}
 
+Possible values:
+
+- `"querystring"` (default)
+- `"hash"`
+- `"memory"`
+
 See [Routing](/ui/advanced/routing).
 
 <Api page="ui.findkituioptions.router" />
