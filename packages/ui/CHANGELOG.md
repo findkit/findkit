@@ -6,7 +6,7 @@
 - Fix Content slot with 'modal: false' [64ff4b6](https://github.com/findkit/findkit/commit/64ff4b6) - Esa-Matti Suuronen
 - Fix Header slot with 'modal: false' [94e3c67](https://github.com/findkit/findkit/commit/94e3c67) - Esa-Matti Suuronen
 
-All changes https://github.com/findkit/findkit/compare/ui/v0.1.1...ui/v0.1.1
+All changes https://github.com/findkit/findkit/compare/ui/v0.1.1...ui/v0.1.2
 
 ## v0.1.1
 
