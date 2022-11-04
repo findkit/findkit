@@ -127,3 +127,20 @@ on
 Github](https://github.com/findkit/findkit/blob/main/packages/ui/findkit.toml).
 
 Now you can [setup the UI for your website](/ui/setup).
+
+## Testing changes
+
+You can test the `findkit.toml` changes without deploying them with the `findkit crawl test` command.
+
+```
+findkit crawl test 'https://www.example.com/page'
+```
+
+This will run the crawler on the specified page using the local `findkit.toml`
+and it will print the crawler results.
+
+:::info
+Especially the first test run might take a while as the backend warms up.
+:::
+
+One you are happy with the results you can deploy the changes with `findkit deploy` and the following crawls will use the changes.
