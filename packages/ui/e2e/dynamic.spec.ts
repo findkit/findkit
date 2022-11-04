@@ -395,3 +395,28 @@ test("can use Header slot with 'modal: false'", async ({ page }) => {
 	const headerSlot = page.locator(".header-slot");
 	await expect(headerSlot).toBeVisible();
 });
+
+test("can use Content slot with 'modal: false'", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI, html } = MOD;
+
+		const container = document.createElement("div");
+		document.body.append(container);
+
+		new FindkitUI({
+			publicToken: "po8GK3G0r",
+			modal: false,
+			container,
+			slots: {
+				Content() {
+					return html`<div class="content-slot">Works</div> `;
+				},
+			},
+		});
+	});
+
+	const slot = page.locator(".content-slot");
+	await expect(slot).toBeVisible();
+});
