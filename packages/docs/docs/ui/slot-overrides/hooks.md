@@ -21,6 +21,12 @@ TODO: example
 
 <Api page="ui.usegroups" />
 
+### `useTerms()` {#useTerms}
+
+Return the search terms used for the current search results.
+
+<Api page="ui.useterms" />
+
 ### `useInput()` {#useInput}
 
 Hook for binding custom inputs as the search terms inputs.
