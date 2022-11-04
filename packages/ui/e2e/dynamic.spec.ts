@@ -420,3 +420,41 @@ test("can use Content slot with 'modal: false'", async ({ page }) => {
 	const slot = page.locator(".content-slot");
 	await expect(slot).toBeVisible();
 });
+
+test("can use useTotalHitCount() in Content slot", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI, html, useTotalHitCount } = MOD;
+
+		const container = document.createElement("div");
+		document.body.append(container);
+
+		new FindkitUI({
+			publicToken: "po8GK3G0r",
+			modal: false,
+			container,
+			slots: {
+				Content(props) {
+					const count = useTotalHitCount();
+					return html`<div>
+						<div class="count">${count}</div>
+						<div>${props.children}</div>
+					</div>`;
+				},
+			},
+		});
+	});
+
+	const count = page.locator(".count");
+	await expect(count).toBeVisible();
+	expect(await count.innerText()).toEqual("0");
+
+	await page.locator("input").fill("test");
+
+	await expect
+		.poll(async () => {
+			return count.evaluate((el) => Number(el.textContent) || 0);
+		})
+		.toBeGreaterThan(0);
+});
