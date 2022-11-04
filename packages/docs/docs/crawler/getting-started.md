@@ -65,6 +65,10 @@ Once ready deploy the project:
 findkit deploy
 ```
 
+:::info
+Use must run the deploy every time you make changes to the .toml file
+:::
+
 This creates the project to the Hub but does not run the crawls yet because we didn't
 enable the crawl schedules but now we can manually crawl a single page to try things
 out:
