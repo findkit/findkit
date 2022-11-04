@@ -29,6 +29,12 @@ TODO: example
 
 <Api page="ui.useinput" />
 
+### `useTotalHitCount()` {#useTotalHitCount}
+
+Return total hit count. Includes count from all groups if multiple groups are used.
+
+<Api page="ui.usetotalhitcount" />
+
 ### `preact` {#preact}
 
 Object of commonly used Preact Hooks. See the api docs for details.

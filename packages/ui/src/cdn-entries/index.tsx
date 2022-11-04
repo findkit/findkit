@@ -314,6 +314,11 @@ export const useParams = createShellFunction("useParams");
 export const useGroups = createShellFunction("useGroups");
 
 /**
+ * Return total hit count. Includes count from all groups if multiple groups are used.
+ */
+export const useTotalHitCount = createShellFunction("useTotalHitCount");
+
+/**
  * Returns a ref for binding a inputs to the search
  *
  * Example:
