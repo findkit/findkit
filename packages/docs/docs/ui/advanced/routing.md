@@ -6,7 +6,7 @@ search results using the back button and keep the search terms after a page
 refresh.
 
 Unfortunately not all frameworks play well with the query string modification.
-Alternative the terms can be saved to the url hash eg. after the `#` character
+Alternatively the terms can be saved to the url hash eg. after the `#` character
 or kept completely in memory.
 
 The change the behaviour set the [`router`](/ui/api/#router) option:
