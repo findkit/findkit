@@ -2,7 +2,7 @@
 
 By default FindkitUI saves the current search terms and the possible group to
 the URL Query String using the browser History API so user can come back to the
-search search using the back button and keep the search terms after a page
+search results using the back button and keep the search terms after a page
 refresh.
 
 Unfortunately not all frameworks play well with the query string modification.
