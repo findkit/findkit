@@ -374,7 +374,9 @@ export function Plain() {
 	const content = (
 		<View cn="content">
 			<FetchError />
-			<Results />
+			<Slot name="Content" props={{}}>
+				<Results />
+			</Slot>
 		</View>
 	);
 
