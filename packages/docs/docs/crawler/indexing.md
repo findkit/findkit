@@ -61,3 +61,70 @@ content_selector = ".content, .post"
 # highlight-next-line
 cleanup_selector = ".author-bio"
 ```
+
+## Title selector
+
+Findkit tries to determine page title automatically using default selectors,
+but its behaviour can be customized via options listed below.
+
+Default title selectors in the order of importance:
+
+- findkit data-attribute 'data-fdk-title'
+- `<meta og:title></meta>` element
+- `<title></title>` element
+
+### Meta tag
+
+Title can be defined directly in page [meta](/crawler/meta-tag#title)
+
+### Meta tag CSS-selector
+
+Title CSS-selector can be passed in page [meta](/crawler/meta-tag#titleSelector)
+
+### Data attribute
+
+Title can be defined with default data-attributes.
+
+```html
+<h1 data-fdk-title>Custom Title</h1>
+```
+
+### CSS-selector in findkit.toml
+
+You can pass CSS-selector in findkit.toml. First elements content matching the selector is chosen as title.
+
+Example
+
+```toml
+[[targets]]
+host = "example.com"
+# highlight-next-line
+title_selector = "h1"
+```
+
+## Modifying selected title
+
+After choosing the title, the title can be modified using one of the options below.
+
+### Meta tag titleSelectorRegex
+
+Chosen title can be modified with regex defined in page [meta](/crawler/meta-tag#titleSelectorRegex)
+
+### Config title_selector_regex
+
+Chosen title can be modified with regex defined in findkit.toml
+
+Example
+
+```html
+<h1>Title - Unwanted</h1>
+```
+
+```toml
+[[targets]]
+host = "example.com"
+# highlight-next-line
+title_selector = "h1"
+# highlight-next-line
+title_selector_regex = "([^ ]+)"
+```
