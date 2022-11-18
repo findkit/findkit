@@ -90,7 +90,7 @@ Defaults to `true`.
 ### `deny_patterns: string[]` {#deny_patterns}
 
 Skip paths matching the given pattern.
-Matches against url paths.
+Matches against the url pathname.
 
 Supports strings and regexes. See [skipping pages](../skipping-pages#deny_patterns) for detailed examples.
 
