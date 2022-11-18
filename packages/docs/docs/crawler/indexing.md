@@ -91,7 +91,7 @@ Title can be defined with default data attributes.
 
 ### CSS Selector in findkit.toml
 
-You can pass CSS-selector in findkit.toml. First elements content matching the selector is chosen as title.
+You can pass CSS selector in findkit.toml. First elements content matching the selector is chosen as title.
 
 Example
 
