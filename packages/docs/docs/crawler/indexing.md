@@ -131,7 +131,7 @@ title_selector_regex = "([^ ]+)"
 
 ## Skipping Pages
 
-Your website might include include pages that you do not want to be
+Your website might include pages that you do not want to be
 included in the search index. For this purpose you can use one of the
 options listed below
 
