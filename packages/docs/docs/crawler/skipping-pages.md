@@ -9,9 +9,6 @@ options listed below
 Place `/robots.txt` to website root.
 For more info refer to [documentation](https://developer.mozilla.org/en-US/docs/Glossary/Robots.txt).
 
-If you want to target only findkit with your `/robots.txt` rules you can use
-[user-agent](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent).
-
 You can instruct Findkit Crawler to not to respect `/robots.txt` rules with [respect_robots_txt](/crawler/toml/index#respect_robots_txt) configuration option.
 
 ## Meta Robots Tag
