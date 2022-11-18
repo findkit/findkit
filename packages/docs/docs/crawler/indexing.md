@@ -89,7 +89,7 @@ Title can be defined with default data attributes.
 <h1 data-fdk-title>Custom Title</h1>
 ```
 
-### CSS-selector in findkit.toml
+### CSS Selector in findkit.toml
 
 You can pass CSS-selector in findkit.toml. First elements content matching the selector is chosen as title.
 
