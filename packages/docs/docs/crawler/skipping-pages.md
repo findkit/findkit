@@ -45,8 +45,8 @@ Would cause crawler to skip:
 - `example.com/secret/`
 - `example.com/secret/first_secret`
   But would not skip:
-- `example.com/secret` // extraneous / at the end of deny pattern
-- `example.com/some_folder/secret/` // deny pattern is matched against the start of the URL pathname
+- `example.com/secret` extraneous `/` at the end of deny pattern
+- `example.com/some_folder/secret/` deny pattern is matched against the start of the URL pathname
 
 Example deny pattern regular expression:
 
