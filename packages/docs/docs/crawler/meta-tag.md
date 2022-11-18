@@ -32,6 +32,25 @@ Plugin](https://github.com/findkit/wp-findkit) to generate this tag.
 The crawler reads the title from the `<title>` tag but this field can used
 provide different title.
 
+### `titleSelector: string` {#titleSelector}
+
+Title can be selected with passed CSS-selector.
+
+### `titleSelectorRegex: string` {#titleSelectorRegex}
+
+Title selected via other means can be modified with regular expression.
+
+Example
+
+```html
+<script id="findkit" type="application/json">
+	{
+		"title": "Title - Unwanted",
+		"titleSelectorRegex": "([^ ]+)"
+	}
+</script>
+```
+
 ### `tags: string[]` {#tags}
 
 List of additional [tags](/crawler/tagging) to index the page with.
