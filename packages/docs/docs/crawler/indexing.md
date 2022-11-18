@@ -73,7 +73,7 @@ Default title selectors in the order of importance:
 - `<meta og:title></meta>` element
 - `<title></title>` element
 
-### Meta tag
+### Meta Tag
 
 Title can be defined directly in page [meta](/crawler/meta-tag#title)
 
