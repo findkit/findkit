@@ -69,7 +69,7 @@ but its behaviour can be customized via options listed below.
 
 Default title selectors in the order of importance:
 
-- findkit data-attribute 'data-fdk-title'
+- findkit data attribute `data-fdk-title`
 - `<meta og:title></meta>` element
 - `<title></title>` element
 
