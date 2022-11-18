@@ -89,7 +89,7 @@ Defaults to `true`.
 
 ### `deny_patterns: string[]` {#deny_patterns}
 
-Deny crawling of paths the match the given pattern.
+Skip paths matching the given pattern.
 Matches against url paths.
 
 Supports strings and regexes. See [skipping pages](../skipping-pages#deny_patterns) for detailed examples.
