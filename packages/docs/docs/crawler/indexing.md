@@ -83,7 +83,7 @@ Title CSS-selector can be passed in page [meta](/crawler/meta-tag#titleSelector)
 
 ### Data Attribute
 
-Title can be defined with default data-attributes.
+Title can be defined with default data attributes.
 
 ```html
 <h1 data-fdk-title>Custom Title</h1>
