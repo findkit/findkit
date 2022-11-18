@@ -62,7 +62,7 @@ content_selector = ".content, .post"
 cleanup_selector = ".author-bio"
 ```
 
-## Title selector
+## Title Selector
 
 Findkit tries to determine page title automatically using default selectors,
 but its behaviour can be customized via options listed below.
