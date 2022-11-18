@@ -77,7 +77,7 @@ Default title selectors in the order of importance:
 
 Title can be defined directly in page [meta](/crawler/meta-tag#title)
 
-### Meta tag CSS-selector
+### Meta tag CSS Selector
 
 Title CSS-selector can be passed in page [meta](/crawler/meta-tag#titleSelector)
 
