@@ -87,6 +87,13 @@ Respect `/robots.txt` rules.
 
 Defaults to `true`.
 
+### `deny_patterns: string[]` {#deny_patterns}
+
+Skip paths matching the given pattern.
+Matches against the url pathname.
+
+Supports string prefixes and regexes. See [skipping pages](../skipping-pages#deny_patterns) for detailed examples.
+
 ### `max_pages: number` {#max_pages}
 
 Max pages to crawl. If this limit is exceeded the crawler will just stop.
