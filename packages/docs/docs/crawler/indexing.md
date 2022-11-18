@@ -81,7 +81,7 @@ Title can be defined directly in page [meta](/crawler/meta-tag#title)
 
 Title CSS-selector can be passed in page [meta](/crawler/meta-tag#titleSelector)
 
-### Data attribute
+### Data Attribute
 
 Title can be defined with default data-attributes.
 
