@@ -6,11 +6,12 @@ import {
 } from "./utils";
 import {
 	CustomFields,
-	findkitFetch,
+	createFindkitFetcher,
 	FindkitSearchGroupParams,
+	FindkitFetch,
+	FindkitSearchParams,
 } from "@findkit/fetch";
 
-import { FindkitFetchOptions, FindkitSearchResponse } from "@findkit/fetch";
 import { proxy, ref, snapshot } from "valtio";
 import {
 	RouterBackend,
@@ -194,10 +195,6 @@ export interface State {
 export interface FetcherResponse {
 	hits: SearchResultHit;
 	total: number;
-}
-
-export interface FindkitFetcher {
-	(params: FindkitFetchOptions): Promise<FindkitSearchResponse>;
 }
 
 function assertInputEvent(e: {
@@ -388,7 +385,7 @@ export class SearchEngine {
 	PRIVATE_pendingRequestIds: Map<number, AbortController> = new Map();
 
 	readonly router: RouterBackend;
-	private PRIVATE_fetcher: FindkitFetcher;
+	private PRIVATE_fetcher: FindkitFetch;
 	readonly instanceId: string;
 	readonly state: State;
 	readonly publicToken: string;
@@ -505,7 +502,11 @@ export class SearchEngine {
 		this.publicToken = options.publicToken;
 		this.PRIVATE_searchEndpoint = options.searchEndpoint;
 
-		this.PRIVATE_fetcher = findkitFetch;
+		this.PRIVATE_fetcher = createFindkitFetcher({
+			publicToken: this.publicToken,
+			searchEndpoint: this.PRIVATE_searchEndpoint,
+		}).findkitFetch;
+
 		this.PRIVATE_throttleTime = options.throttleTime ?? 200;
 		this.PRIVATE_fetchCount = options.fetchCount ?? 20;
 		this.PRIVATE_minTerms = options.minTerms ?? 2;
@@ -872,7 +873,7 @@ export class SearchEngine {
 		terms: string;
 		reset: boolean | undefined;
 		appendGroupId: string | undefined;
-	}): FindkitFetchOptions {
+	}): FindkitSearchParams {
 		const groups: FindkitSearchGroupParams[] = options.groups
 			.filter((group) => {
 				if (!options.appendGroupId) {
@@ -906,11 +907,9 @@ export class SearchEngine {
 				});
 			});
 
-		const fullParams: FindkitFetchOptions = {
+		const fullParams: FindkitSearchParams = {
 			q: options.terms,
 			groups,
-			publicToken: this.publicToken,
-			searchEndpoint: this.PRIVATE_searchEndpoint,
 		};
 
 		return fullParams;
