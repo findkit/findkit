@@ -6,9 +6,8 @@ import fetch from "node-fetch";
 
 import { setupServer } from "msw/node";
 import {
-	findkitFetch,
 	createFindkitFetcher,
-	getRequestBody,
+	FindkitSearchResponse,
 	JwtErrorResponse,
 } from "../src/index";
 
@@ -33,111 +32,23 @@ afterEach(async () => {
 	server.resetHandlers();
 });
 
-type FindkitFetchResponse = Awaited<ReturnType<typeof findkitFetch>>;
-
-describe("request body generation", () => {
-	test("without tags", () => {
-		const body = getRequestBody({
-			q: "test",
-			groups: [
-				{
-					tagQuery: [[]],
-					size: 5,
-					from: 0,
-					createdDecay: undefined,
-					modifiedDecay: undefined,
-					decayScale: undefined,
-					highlightLength: undefined,
-					lang: undefined,
-				},
-			],
-		});
-
-		expect(body).toEqual({
-			q: "test",
-			groups: [
-				{
-					tagQuery: [[]],
-					size: 5,
-					from: 0,
-				},
-			],
-		});
-	});
-
-	test("without tags", () => {
-		const body = getRequestBody({
-			q: "test",
-			groups: [
-				{
-					tagQuery: [["tag"]],
-					size: 5,
-					from: 0,
-					createdDecay: undefined,
-					modifiedDecay: undefined,
-					decayScale: undefined,
-					highlightLength: undefined,
-					lang: undefined,
-				},
-			],
-		});
-
-		expect(body).toEqual({
-			q: "test",
-			groups: [
-				{
-					tagQuery: [["tag"]],
-					size: 5,
-					from: 0,
-				},
-			],
-		});
-	});
-
-	test("with lang", () => {
-		const body = getRequestBody({
-			q: "test",
-			groups: [
-				{
-					tagQuery: [["tag"]],
-					size: 5,
-					from: 0,
-					lang: "de",
-					createdDecay: undefined,
-					modifiedDecay: undefined,
-					decayScale: undefined,
-					highlightLength: undefined,
-				},
-			],
-		});
-
-		expect(body).toEqual({
-			q: "test",
-			groups: [
-				{
-					tagQuery: [["tag"]],
-					lang: "de",
-					size: 5,
-					from: 0,
-				},
-			],
-		});
-	});
-});
-
 describe("fetch", () => {
 	test("empty fetch", async () => {
+		const { findkitFetch } = createFindkitFetcher({
+			searchEndpoint: "https://test.invalid/multi-search2",
+		});
+
 		server.use(
 			rest.post("https://test.invalid/multi-search2", (req, res, ctx) => {
-				const resData: FindkitFetchResponse = {
+				const resData: FindkitSearchResponse = {
 					groups: [],
 					duration: 123,
 				};
 				return res(ctx.json(resData));
 			})
 		);
+
 		const res = await findkitFetch({
-			searchEndpoint: "https://test.invalid/multi-search2",
 			q: "",
 			groups: [],
 		});
@@ -145,13 +56,49 @@ describe("fetch", () => {
 		expect(res).toEqual({ duration: 123, groups: [] });
 	});
 
+	test("can use publicToken to generate the endpoint", async () => {
+		const spy = vi.fn();
+
+		const { findkitFetch } = createFindkitFetcher({
+			publicToken: "thetoken",
+		});
+
+		server.use(
+			rest.post(
+				"https://search.findkit.com/c/thetoken/search",
+				(req, res, ctx) => {
+					spy(req.url.toString());
+					const resData: FindkitSearchResponse = {
+						groups: [],
+						duration: 123,
+					};
+					return res(ctx.json(resData));
+				}
+			)
+		);
+
+		const res = await findkitFetch({
+			q: "",
+			groups: [],
+		});
+
+		expect(res).toEqual({ duration: 123, groups: [] });
+		expect(spy).toHaveBeenCalledWith(
+			"https://search.findkit.com/c/thetoken/search?p=thetoken"
+		);
+	});
+
 	test("when no groups are defined add a default that searches everything", async () => {
+		const { findkitFetch } = createFindkitFetcher({
+			searchEndpoint: "https://test.invalid/multi-search2",
+		});
+
 		server.use(
 			rest.post("https://test.invalid/multi-search2", async (req, res, ctx) => {
 				const requestBody = await req.json();
 				expect(requestBody).toEqual({ q: "test", groups: [{ tagQuery: [] }] });
 
-				const resData: FindkitFetchResponse = {
+				const resData: FindkitSearchResponse = {
 					groups: [],
 					duration: 123,
 				};
@@ -159,128 +106,125 @@ describe("fetch", () => {
 			})
 		);
 		const res = await findkitFetch({
-			searchEndpoint: "https://test.invalid/multi-search2",
 			q: "test",
 		});
 
 		expect(res).toEqual({ duration: 123, groups: [] });
 	});
-});
 
-describe("jwt", () => {
-	test("calls getJwtToken() and passes the token as bearer", async () => {
-		const spy = vi.fn();
+	describe("jwt", () => {
+		test("calls getJwtToken() and passes the token in the p query string", async () => {
+			const spy = vi.fn();
 
-		server.use(
-			rest.post("https://test.invalid/multi-search2", (req, res, ctx) => {
-				spy(req.headers.get("authorization"));
-				const resData: FindkitFetchResponse = {
-					groups: [],
-					duration: 123,
-				};
-				return res(ctx.json(resData));
-			})
-		);
+			server.use(
+				rest.post("https://test.invalid/multi-search2", (req, res, ctx) => {
+					spy(req.url.searchParams.get("p"));
 
-		const fetcher = createFindkitFetcher({
-			async getJwtToken() {
-				return { jwt };
-			},
-		});
+					const resData: FindkitSearchResponse = {
+						groups: [],
+						duration: 123,
+					};
+					return res(ctx.json(resData));
+				})
+			);
 
-		const jwt = createJwtToken();
-
-		const res = await fetcher.findkitFetch({
-			searchEndpoint: "https://test.invalid/multi-search2",
-			q: "",
-			groups: [],
-		});
-
-		expect(spy).toHaveBeenCalledTimes(1);
-		expect(spy).toHaveBeenCalledWith("Bearer " + jwt);
-		expect(res).toEqual({ duration: 123, groups: [] });
-	});
-
-	test("calls getJwtToken() only once for multiple fetches", async () => {
-		const spy = vi.fn();
-
-		server.use(
-			rest.post("https://test.invalid/multi-search2", (req, res, ctx) => {
-				const resData: FindkitFetchResponse = {
-					groups: [],
-					duration: 123,
-				};
-				return res(ctx.json(resData));
-			})
-		);
-
-		const fetcher = createFindkitFetcher({
-			async getJwtToken() {
-				spy();
-				return { jwt };
-			},
-		});
-
-		const jwt = createJwtToken();
-
-		for await (const i of Array(5).keys()) {
-			await fetcher.findkitFetch({
+			const { findkitFetch } = createFindkitFetcher({
 				searchEndpoint: "https://test.invalid/multi-search2",
-				q: i.toString(),
+				async getJwtToken() {
+					return { jwt };
+				},
+			});
+
+			const jwt = createJwtToken();
+
+			const res = await findkitFetch({
+				q: "",
 				groups: [],
 			});
-		}
 
-		expect(spy).toHaveBeenCalledTimes(1);
-	});
+			expect(spy).toHaveBeenCalledTimes(1);
+			expect(spy).toHaveBeenCalledWith("jwt:" + jwt);
+			expect(res).toEqual({ duration: 123, groups: [] });
+		});
 
-	test("calls getJwtToken() again when server responds with expired error", async () => {
-		let expired = false;
+		test("calls getJwtToken() only once for multiple fetches", async () => {
+			const spy = vi.fn();
 
-		server.use(
-			rest.post("https://test.invalid/multi-search2", (req, res, ctx) => {
-				if (expired) {
-					expired = false;
-					const data: JwtErrorResponse = {
-						error: { type: "jwt-expired" },
+			server.use(
+				rest.post("https://test.invalid/multi-search2", (req, res, ctx) => {
+					const resData: FindkitSearchResponse = {
+						groups: [],
+						duration: 123,
 					};
-					return res(ctx.status(403), ctx.json(data));
-				}
+					return res(ctx.json(resData));
+				})
+			);
 
-				const resData: FindkitFetchResponse = {
+			const fetcher = createFindkitFetcher({
+				searchEndpoint: "https://test.invalid/multi-search2",
+				async getJwtToken() {
+					spy();
+					return { jwt };
+				},
+			});
+
+			const jwt = createJwtToken();
+
+			for await (const i of Array(5).keys()) {
+				await fetcher.findkitFetch({
+					q: i.toString(),
 					groups: [],
-					duration: 123,
-				};
-				return res(ctx.json(resData));
-			})
-		);
+				});
+			}
 
-		const spy = vi.fn();
-
-		const fetcher = createFindkitFetcher({
-			async getJwtToken() {
-				spy();
-				const jwt = createJwtToken();
-				return { jwt };
-			},
+			expect(spy).toHaveBeenCalledTimes(1);
 		});
 
-		await fetcher.findkitFetch({
-			searchEndpoint: "https://test.invalid/multi-search2",
+		test("calls getJwtToken() again when server responds with expired error", async () => {
+			let expired = false;
 
-			q: "",
-			groups: [],
+			server.use(
+				rest.post("https://test.invalid/multi-search2", (req, res, ctx) => {
+					if (expired) {
+						expired = false;
+						const data: JwtErrorResponse = {
+							code: "jwt-expired",
+						};
+						return res(ctx.status(403), ctx.json(data));
+					}
+
+					const resData: FindkitSearchResponse = {
+						groups: [],
+						duration: 123,
+					};
+					return res(ctx.json(resData));
+				})
+			);
+
+			const spy = vi.fn();
+
+			const fetcher = createFindkitFetcher({
+				searchEndpoint: "https://test.invalid/multi-search2",
+				async getJwtToken() {
+					spy();
+					const jwt = createJwtToken();
+					return { jwt };
+				},
+			});
+
+			await fetcher.findkitFetch({
+				q: "",
+				groups: [],
+			});
+
+			expired = true;
+
+			await fetcher.findkitFetch({
+				q: "",
+				groups: [],
+			});
+
+			expect(spy).toBeCalledTimes(2);
 		});
-
-		expired = true;
-
-		await fetcher.findkitFetch({
-			searchEndpoint: "https://test.invalid/multi-search2",
-
-			q: "",
-			groups: [],
-		});
-
-		expect(spy).toBeCalledTimes(2);
 	});
 });
