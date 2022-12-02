@@ -37,9 +37,26 @@ export interface FindkitFetch {
 /**
  * @public
  */
-export interface JwtErrorResponse {
-	code?: "jwt-expired" | "jwt-invalid";
+export interface FindkitErrorResponse {
+	code?: "jwt-expired" | "jwt-invalid" | "invalid-response-body";
 	message?: string;
+}
+
+async function safeErrorJson(
+	response: Response
+): Promise<FindkitErrorResponse> {
+	const text = await response.text().catch(() => {
+		return "Failed to read response body";
+	});
+
+	try {
+		return JSON.parse(text);
+	} catch {
+		return {
+			code: "invalid-response-body",
+			message: `body: ${text.slice(0, 500)}`,
+		};
+	}
 }
 
 /**
@@ -162,7 +179,7 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 		const res = await fetch(endpoint.toString(), fetchOptions);
 
 		if (res.status === 403) {
-			const error: JwtErrorResponse = await res.json();
+			const error = await safeErrorJson(res);
 
 			if (error.code === "jwt-expired") {
 				refresh();
@@ -173,7 +190,10 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 		}
 
 		if (!res.ok) {
-			throw new Error("[findkit] Bad response from search: " + res.status);
+			const error = await safeErrorJson(res);
+			throw new Error(
+				`[findkit] Bad response ${res.status} from search: ${error.message}`
+			);
 		}
 
 		const responses: FindkitSearchResponse = await res.json();

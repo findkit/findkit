@@ -8,7 +8,7 @@ import { setupServer } from "msw/node";
 import {
 	createFindkitFetcher,
 	FindkitSearchResponse,
-	JwtErrorResponse,
+	FindkitErrorResponse,
 } from "../src/index";
 
 /**
@@ -187,7 +187,7 @@ describe("fetch", () => {
 				rest.post("https://test.invalid/multi-search2", (req, res, ctx) => {
 					if (expired) {
 						expired = false;
-						const data: JwtErrorResponse = {
+						const data: FindkitErrorResponse = {
 							code: "jwt-expired",
 						};
 						return res(ctx.status(403), ctx.json(data));
