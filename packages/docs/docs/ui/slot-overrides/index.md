@@ -80,11 +80,11 @@ into the search UI:
 Do not use hooks imported from the `"preact"` package in the slot override
 components. It will not work because Findkit UI [bundles Preact inside
 itself](/ui/tech) and it works only with hooks bound to it. All hooks must be
-imported from the `@finkdit/ui` package. See [`preact`
+imported from the `@findkit/ui` package. See [`preact`
 util](/ui/slot-overrides/hooks#html).
 
 ```ts
-import { preact } from "@finkdit/ui";
+import { preact } from "@findkit/ui";
 
 const { useState } = preact;
 
