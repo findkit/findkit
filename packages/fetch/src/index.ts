@@ -1,9 +1,12 @@
 /**
  * @public
  */
-export interface FindKitDeveloperOptions {
+export interface FindkitFetchInit {
 	staging?: boolean;
 	logResponseTimes?: boolean;
+	publicToken?: string;
+	searchEndpoint?: string;
+	getJwtToken?: GetJwtToken;
 }
 
 /**
@@ -27,34 +30,43 @@ interface JwtToken {
 /**
  * @public
  */
-export interface FindkitFetchOptions
-	extends FindkitSearchParams,
-		FindKitDeveloperOptions {
-	publicToken?: string;
-	searchEndpoint?: string;
-}
-
-/**
- * @public
- */
 export interface FindkitFetch {
-	(options: FindkitFetchOptions): Promise<FindkitSearchResponse>;
+	(options: FindkitSearchParams): Promise<FindkitSearchResponse>;
 }
 
 /**
  * @public
  */
-export interface JwtErrorResponse {
-	error: {
-		type?: "jwt-expired" | "jwt-invalid";
-	};
+export interface FindkitErrorResponse {
+	code?: "jwt-expired" | "jwt-invalid" | "invalid-response-body";
+	message?: string;
+}
+
+async function safeErrorJson(
+	response: Response
+): Promise<FindkitErrorResponse> {
+	const text = await response.text().catch(() => {
+		return "Failed to read response body";
+	});
+
+	try {
+		return JSON.parse(text);
+	} catch {
+		return {
+			code: "invalid-response-body",
+			message: `body: ${text.slice(0, 500)}`,
+		};
+	}
 }
 
 /**
  * @public
  */
 export interface GetJwtToken {
-	(): Promise<JwtToken>;
+	(options: {
+		publicToken?: string;
+		searchEndpoint: string;
+	}): Promise<JwtToken>;
 }
 
 /**
@@ -81,9 +93,14 @@ if (typeof window !== "undefined") {
 }
 
 /**
+ * Global JWT token fethcer
+ */
+declare const FINDKIT_GET_JWT_TOKEN: GetJwtToken | undefined;
+
+/**
  * @public
  */
-export function createFindkitFetcher(props?: { getJwtToken?: GetJwtToken }) {
+export function createFindkitFetcher(init?: FindkitFetchInit) {
 	let currentJwtTokenPromise: Promise<JwtToken> | null = null;
 
 	/**
@@ -93,13 +110,21 @@ export function createFindkitFetcher(props?: { getJwtToken?: GetJwtToken }) {
 		currentJwtTokenPromise = null;
 	}
 
-	function refresh() {
-		if (typeof props?.getJwtToken === "function") {
-			currentJwtTokenPromise = props.getJwtToken();
-		}
-	}
+	const searchEndpointString = inferSearchEndpoint(init);
 
-	const findkitFetch: FindkitFetch = async (options: FindkitFetchOptions) => {
+	const refresh = () => {
+		const getJwtTokenArg: Parameters<GetJwtToken>[0] = {
+			searchEndpoint: searchEndpointString,
+		};
+
+		if (typeof init?.getJwtToken === "function") {
+			currentJwtTokenPromise = init.getJwtToken(getJwtTokenArg);
+		} else if (typeof FINDKIT_GET_JWT_TOKEN === "function") {
+			currentJwtTokenPromise = FINDKIT_GET_JWT_TOKEN(getJwtTokenArg);
+		}
+	};
+
+	const findkitFetch: FindkitFetch = async (options: FindkitSearchParams) => {
 		if (!options.groups) {
 			options = {
 				...options,
@@ -111,10 +136,7 @@ export function createFindkitFetcher(props?: { getJwtToken?: GetJwtToken }) {
 			};
 		}
 
-		// new implementation
-		const fetchUrl = getSearchEndpoint(options);
 		const started = Date.now();
-		const requestBody = getRequestBody(options);
 
 		if (!currentJwtTokenPromise) {
 			refresh();
@@ -137,33 +159,46 @@ export function createFindkitFetcher(props?: { getJwtToken?: GetJwtToken }) {
 			mode: "cors",
 			credentials: "omit",
 			headers,
-			body: JSON.stringify(requestBody),
+			body: JSON.stringify({
+				q: options.q,
+				groups: options.groups,
+			}),
 		};
 
+		const endpoint = new URL(searchEndpointString);
+
 		if (token) {
-			headers["authorization"] = "Bearer " + token.jwt;
+			if (typeof token.jwt !== "string") {
+				throw new Error(
+					"[findkit] Expected GetJwtToken response to contain a 'jwt' property"
+				);
+			}
+			endpoint.searchParams.set("p", `jwt:${token.jwt}`);
 		}
 
-		const res = await fetch(fetchUrl, fetchOptions);
+		const res = await fetch(endpoint.toString(), fetchOptions);
 
 		if (res.status === 403) {
-			const error: JwtErrorResponse = await res.json();
+			const error = await safeErrorJson(res);
 
-			if (error.error.type === "jwt-expired") {
+			if (error.code === "jwt-expired") {
 				refresh();
 				return findkitFetch(options);
 			}
 
-			throw new Error("[findkit] Permission denied: " + error.error.type);
+			throw new Error("[findkit] Permission denied: " + error.message);
 		}
 
 		if (!res.ok) {
-			throw new Error("[findkit] Bad response from search: " + res.status);
+			const error = await safeErrorJson(res);
+			throw new Error(
+				`[findkit] Bad response ${res.status} from search: ${error.message}`
+			);
 		}
 
 		const responses: FindkitSearchResponse = await res.json();
 
-		if (options.logResponseTimes || logResponseTimes) {
+		if (init?.logResponseTimes || logResponseTimes) {
 			const total = Date.now() - started;
 			const backendDuration = responses.duration;
 
@@ -192,33 +227,22 @@ export function createFindkitFetcher(props?: { getJwtToken?: GetJwtToken }) {
 	};
 }
 
-export function getRequestBody(
-	options: FindkitFetchOptions
-): FindkitSearchParams {
-	return {
-		q: options.q,
-		groups: options.groups,
-	};
-}
-
-function getSearchEndpoint(options: FindkitFetchOptions) {
-	if (options.searchEndpoint) {
-		return options.searchEndpoint;
-	} else if (options.publicToken) {
-		return getProjectSearchEndpoint(options.publicToken);
+function inferSearchEndpoint(options?: FindkitFetchInit) {
+	if (options?.searchEndpoint) {
+		return options?.searchEndpoint;
+	} else if (options?.publicToken) {
+		return createSearchEndpoint(options.publicToken);
 	} else {
 		throw new Error("Unable to determine search endpoint");
 	}
 }
 
-export function getProjectSearchEndpoint(publicToken: string) {
-	return `https://search.findkit.com/c/${publicToken}/search?p=${publicToken}`;
-}
-
 /**
  * @public
  */
-export const findkitFetch: FindkitFetch = createFindkitFetcher().findkitFetch;
+export function createSearchEndpoint(publicToken: string) {
+	return `https://search.findkit.com/c/${publicToken}/search?p=${publicToken}`;
+}
 
 /**
  * @public
