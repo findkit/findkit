@@ -29,8 +29,8 @@ const ui = new FindkitUI({
 
 ## Disabling Shadow DOM
 
-If you want to use your existing stylesheets when you can just disable the
-Shadow DOM creation in `FindkitUI` with `shandowDom: false` option:
+If you want to use your existing stylesheets you can just disable the Shadow DOM
+creation in `FindkitUI` with `shandowDom: false` option:
 
 ```ts
 import { FindkitUI } from "@findkit/ui";
