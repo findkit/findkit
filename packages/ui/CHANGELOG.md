@@ -1,3 +1,11 @@
+## v0.2.0
+
+2022-12-14
+
+Add support for the JWT authentication with the [WordPress plugin](https://github.com/findkit/wp-findkit).
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.1.2...ui/v0.2.0
+
 ## v0.1.2
 
 2022-11-04
