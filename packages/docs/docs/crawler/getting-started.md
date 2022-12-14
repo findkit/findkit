@@ -48,13 +48,15 @@ description = "Project description"
 [[targets]]
 host = "www.example.com"
 use_sitemap = true
-content_selector = "main,.content,#main,.post"
+
+## The page content is automatically extracted but you can
+## be also use explicit content selectors. https://findk.it/selectors
+#content_selector = ".content"
 
 ## You can add multiple domains to single project
 #[[targets]]
 #host = "www.another.example"
 #use_sitemap = true
-#content_selector = "main,.content,#main,.post"
 ```
 
 ## Deploy and Test

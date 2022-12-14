@@ -3,6 +3,7 @@
 		"/": "https://www.findkit.com",
 		"/docs": "https://docs.findkit.com",
 		"/toml": "https://docs.findkit.com/crawler/toml/",
+		"/selectors": "https://docs.findkit.com/crawler/indexing",
 		"/cli": "https://docs.findkit.com/crawler/getting-started/"
 	}
 }

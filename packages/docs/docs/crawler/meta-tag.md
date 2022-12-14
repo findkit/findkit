@@ -34,7 +34,7 @@ provide different title.
 
 ### `titleSelector: string` {#titleSelector}
 
-Title can be selected with passed CSS-selector.
+Title can be selected with passed CSS selector.
 
 ### `titleSelectorRegex: string` {#titleSelectorRegex}
 
@@ -50,6 +50,12 @@ Example
 	}
 </script>
 ```
+
+### `contentSelector: string` {#contentSelector}
+
+Use custom CSS selector to select the content on this page. This will be
+combined with the [`content_selector`](/crawler/toml/#content_selector) TOML
+option.
 
 ### `tags: string[]` {#tags}
 

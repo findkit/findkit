@@ -4,6 +4,10 @@ A very important part of making a good search experience is to select only the
 relevant content for indexing. Eg. avoid adding text which is repeated on
 multiple pages like menus, footers etc.
 
+Findkit crawler automatically extracts the relevant page content but for
+production use cases it is recommended to explicitly select the relevant content
+for indexing with following methods.
+
 ## Data Attribute
 
 If you are just building the site you should just mark the content right in the
