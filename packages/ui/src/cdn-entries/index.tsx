@@ -414,6 +414,7 @@ export interface FindkitUIOptions {
 	lockScroll?: boolean;
 	modal?: boolean;
 	groupOrder?: GroupOrder;
+	fontDivisor?: number;
 	ui?: {
 		lang?: string;
 		overrides?: Partial<TranslationStrings>;

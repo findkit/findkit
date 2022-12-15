@@ -17,6 +17,22 @@ test("input is visually correct", async ({ page }) => {
 	await expect(page.locator(".findkit--header")).toHaveScreenshot();
 });
 
+test("input is visually correct with custom font-size on <html>", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/custom-html-font-size"));
+
+	const input = page.locator('[aria-label="Search input"]');
+	const button = page.locator("text=open");
+	const hits = page.locator(".findkit--hit");
+
+	await button.click();
+	await input.fill("valu");
+	await hits.first().waitFor({ state: "visible" });
+
+	await expect(page.locator(".findkit--header")).toHaveScreenshot();
+});
+
 test("can show backdrop", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
 
