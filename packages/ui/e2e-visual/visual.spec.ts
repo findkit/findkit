@@ -298,6 +298,7 @@ test("can render custom fields", async ({ page }) => {
 	await input.type("mikko");
 
 	await hits.first().waitFor({ state: "visible" });
+	await page.waitForLoadState("networkidle");
 
 	await expect(page).toHaveScreenshot({
 		mask: [img, titles],
