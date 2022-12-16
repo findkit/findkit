@@ -151,7 +151,11 @@ jobs:
                 repo: context.repo.repo,
                 issue_number: context.issue.number,
                 name: 'VISUAL FAIL'
-              });
+              }).catch(error => {
+                if (!String(error).includes("Label does not exist")) {
+                  throw error;
+                }
+              })
             }
 
   playwright-visual-update:

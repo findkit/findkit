@@ -424,6 +424,17 @@ function ScreenReaderModalMessages() {
 	);
 }
 
+function getHtmlFontSize() {
+	return (
+		Number(
+			window
+				.getComputedStyle(document.documentElement)
+				.getPropertyValue("font-size")
+				.replace("px", ""),
+		) || 16
+	);
+}
+
 /**
  * @public
  */
@@ -448,6 +459,7 @@ export function init(_options: {
 	header?: boolean;
 	router?: SearchEngineOptions["router"];
 	groupOrder?: GroupOrder;
+	fontDivisor?: number;
 	ui?: {
 		lang?: string;
 		overrides?: Partial<TranslationStrings>;
@@ -510,9 +522,26 @@ export function init(_options: {
 		host.remove();
 	});
 
+	const fontDivisor = options.fontDivisor ?? getHtmlFontSize();
+
+	// Generates
+	// --findkit--font-8: 0.5rem;
+	// --findkit--font-12: 0.75rem;
+	// --findkit--font-16: 1rem;
+	// --findkit--font-24: 1.5rem;
+	// --findkit--font-42: 2rem;
+	const fontSizes = [8, 12, 16, 24, 32]
+		.map((value) => `--findkit--font-${value}: ${value / fontDivisor}rem;`)
+		.join("\n");
+
 	ReactDOM.render(
 		<StrictMode>
 			<>
+				<style
+					dangerouslySetInnerHTML={{
+						__html: `:host, :root {\n${fontSizes}\n}`,
+					}}
+				/>
 				{options.styleSheets.map((href) => (
 					<link key={href} rel="stylesheet" href={href} />
 				))}
