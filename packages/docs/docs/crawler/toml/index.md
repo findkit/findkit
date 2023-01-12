@@ -40,7 +40,9 @@ This option is not available yet.
 
 ### `targets: object[]` {#targets}
 
-List "targets" aka domain to crawl content from
+List "targets" aka domain to crawl content from.
+
+This is an array of tables. See the TOML spec on Arrays <https://toml.io/en/v1.0.0#array-of-tables>
 
 ## Target Options
 
