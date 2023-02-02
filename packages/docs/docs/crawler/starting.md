@@ -17,12 +17,12 @@ findkit crawl start
 
 This will re-index every page on the site every time.
 
-### Updated
+### Partial
 
-Start crawl on pages that have updated content:
+Run crawl only on pages that have updated content:
 
 ```
-findkit crawl start --updated
+findkit crawl start --partial
 ```
 
 This requires your site to have a proper sitemap with `<lastmod>` (last modified
@@ -33,19 +33,19 @@ updated since.
 Links will not be walked even if
 [`walk_links`](/crawler/toml/#walk_links) is set to true.
 
-### Single
+### Manual
 
-Start crawl on a single url
+Run crawl on a single url
 
 ```
-findkit crawl start --url <url>
+findkit crawl start --manual <url>
 ```
 
 ## Scheduling
 
 Schedule crawls with the `findkit.toml` file using the
 [`schedule_full_crawl`](/crawler/toml/#schedule_full_crawl) and
-[`schedule_update_crawl`](/crawler/toml/#schedule_update_crawl) fields.
+[`schedule_partial_crawl`](/crawler/toml/#schedule_partial_crawl) fields.
 
 The schedules will be active immediately when the TOML file
 is deployed with `findkit deploy`. If you need to disable the

@@ -76,7 +76,7 @@ enable the crawl schedules but now we can manually crawl a single page to try th
 out:
 
 ```
-findkit crawl start --url 'https://www.example.com/page'
+findkit crawl start --manual 'https://www.example.com/page'
 ```
 
 After few seconds you can search for the page
@@ -85,9 +85,9 @@ After few seconds you can search for the page
 findkit search 'keyword'
 ```
 
-and it should return the crawled url if the `keyword` appeared on the page within
-the `content_selector` you defined in the `findkit.toml`. If it did not you can
-inspect the page status and crawled keywords in the index with
+and it should return the crawled url if the `keyword` appeared on the page.
+If it did not you can inspect the page status and crawled keywords in the index
+with
 
 ```
 findkit inspect 'https://www.example.com/page'
