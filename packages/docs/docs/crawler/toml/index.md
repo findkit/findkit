@@ -29,14 +29,10 @@ Allowed values
 This is the same as running `findkit crawl start`. Read more from ["Starting
 Crawls"](/crawler/starting#full).
 
-### `schedule_update_crawl: string` {#schedule_update_crawl}
+### `schedule_partial_crawl: string` {#schedule_partial_crawl}
 
-This is the same as running `findkit crawl start --updated`.
+This is the same as running `findkit crawl start --partial`.
 Read more from ["Starting Crawls"](/crawler/starting#partial).
-
-:::danger
-This option is not available yet.
-:::
 
 ### `targets: object[]` {#targets}
 
