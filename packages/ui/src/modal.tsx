@@ -111,7 +111,7 @@ function useIsScrollingDown(
 				return;
 			}
 
-			const next = e.target.scrollTop;
+			const next = Math.max(0, e.target.scrollTop);
 			const diff = prev.current - next;
 			const threshold = 30;
 
