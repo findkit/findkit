@@ -46,7 +46,7 @@ async function runEsbuild(options = {}) {
 				FINDKIT_VERSION: JSON.stringify(version),
 				FINDKIT_MODULE_FORMAT: JSON.stringify(format),
 				FINDKIT_CDN_ROOT: options.dev
-					? `"http://localhost:28104/build"`
+					? `"/build"`
 					: `"https://cdn.findkit.com/ui/v${version}"`,
 			},
 			plugins: [
