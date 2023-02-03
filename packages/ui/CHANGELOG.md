@@ -1,3 +1,13 @@
+## v0.2.1
+
+2023-02-03
+
+- Fix iOS unwantedly hiding the close button [8a97339](https://github.com/findkit/findkit/commit/8a97339) - Esa-Matti Suuronen
+- Use rems for only font-sizes [9a5c6a3](https://github.com/findkit/findkit/commit/9a5c6a3) - Esa-Matti Suuronen
+- Use relative local root in dev app [e317332](https://github.com/findkit/findkit/commit/e317332) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.2.0...ui/v0.2.1
+
 ## v0.2.0
 
 2022-12-14
