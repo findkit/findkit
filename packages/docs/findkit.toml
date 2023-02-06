@@ -27,7 +27,7 @@ title_selector_regex = '([^\|]+)'
 respect_robots_meta = false
 respect_robots_txt = false
 
-deny_patterns = ["/ui-api/"]
+deny_patterns = ["/ui-api/", "/ui-examples/"]
 
 [[targets.tags]]
 pathname_regex = '^\/([^\\/]+)'
