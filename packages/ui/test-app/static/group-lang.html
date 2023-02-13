@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Search UI Test</title>
+
+		<link rel="stylesheet" href="/shared.css" />
+
+		<script type="module">
+			import { FindkitUI } from "/build/esm/index.js";
+
+			const ui = new FindkitUI({
+				publicToken: "po8GK3G0r",
+				groups: [
+					{
+						id: "en",
+						title: "English group",
+						params: {
+							tagQuery: [["domain/valu.fi"]],
+							highlightLength: 10,
+							lang: "en"
+						},
+					},
+					{
+						id: "fi",
+						title: "Finnish group",
+						params: {
+							tagQuery: [["domain/valu.fi"]],
+							highlightLength: 10,
+							lang: "fi"
+						},
+					},
+				],
+			});
+
+			Object.assign(window, { ui });
+
+			ui.openFrom("button");
+		</script>
+	</head>
+	<body>
+		<button id="open-button" type="button">open</button>
+	</body>
+</html>
