@@ -457,7 +457,7 @@ export function init(_options: {
 
 	if (options.groups && options.params) {
 		console.error(
-			"[STOP]: groups and params passed to Findkit. Use one or the other.",
+			"[ERROR] groups and params passed to Findkit. Use one or the other.",
 		);
 	}
 
