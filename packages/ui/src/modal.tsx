@@ -455,6 +455,12 @@ export function init(_options: {
 }) {
 	const options = { ..._options };
 
+	if (options.groups && options.params) {
+		console.error(
+			"[STOP]: groups and params passed to Findkit. Use one or the other.",
+		);
+	}
+
 	let css = "";
 
 	if (options.modal === false) {
