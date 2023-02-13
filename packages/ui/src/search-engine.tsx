@@ -901,7 +901,7 @@ export class SearchEngine {
 					decayScale: group.params.decayScale,
 					highlightLength:
 						group.params.highlightLength ?? DEFAULT_HIGHLIGHT_LENGTH,
-					lang: options.lang,
+					lang: group.params.lang ?? options.lang,
 					size,
 					from,
 				});
