@@ -1,3 +1,13 @@
+## v0.2.2
+
+2023-03-01
+
+- Fix loading dead lock [e4a3e1b](https://github.com/findkit/findkit/commit/e4a3e1b) - Esa-Matti Suuronen
+- Add console.error for bad configuration [98ccf5b](https://github.com/findkit/findkit/commit/98ccf5b) - Joonas Varis
+- Fix group specific lang [97da192](https://github.com/findkit/findkit/commit/97da192) - Joonas Varis
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.2.1...ui/v0.2.2
+
 ## v0.2.1
 
 2023-02-03
