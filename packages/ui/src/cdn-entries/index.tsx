@@ -330,23 +330,16 @@ export const useTotalHitCount = createShellFunction("useTotalHitCount");
  */
 export const useInput = createShellFunction("useInput");
 
-async function preloadStylesheet(href: string) {
+function preloadStylesheet(href: string) {
 	const link = doc().createElement("link");
 	link.rel = "preload";
 	link.as = "style";
 	link.href = href;
-	const promise = new Promise<void>((resolve, reject) => {
-		listen(link, "load", () => {
-			link.remove();
-			resolve();
-		});
-
-		listen(link, "error", () => {
-			reject(new Error(`[findkit] Failed to load stylesheet "${href}"`));
-		});
+	listen(link, "load", () => {
+		link.remove();
 	});
+
 	doc().head?.appendChild(link);
-	return promise;
 }
 
 async function loadScriptFromGlobal<T>(
@@ -622,27 +615,22 @@ export class FindkitUI {
 		});
 	}
 
-	private async PRIVATE_loadImplementation() {
-		let promise: Promise<{ js: Implementation; css?: string }>;
-
-		if (this.PRIVATE_options.load) {
-			promise = this.PRIVATE_options.load();
-		} else {
-			promise = loadScriptFromGlobal<Implementation>(
-				"FINDKIT_" + FINDKIT_VERSION,
-				cdnFile("implementation.js"),
-			).then((js) => ({ js }));
+	private async PRIVATE_loadImplementation(): Promise<{
+		js: Implementation;
+		css?: string;
+	}> {
+		for (const href of this.PRIVATE_getStyleSheets()) {
+			preloadStylesheet(href);
 		}
 
-		const preloadStylesPromise = Promise.all(
-			this.PRIVATE_getStyleSheets().map(async (href) =>
-				preloadStylesheet(href),
-			),
-		);
+		if (this.PRIVATE_options.load) {
+			return await this.PRIVATE_options.load();
+		}
 
-		await preloadStylesPromise;
-
-		return await promise;
+		return await loadScriptFromGlobal<Implementation>(
+			"FINDKIT_" + FINDKIT_VERSION,
+			cdnFile("implementation.js"),
+		).then((js) => ({ js }));
 	}
 
 	private async PRIVATE_initEngine() {
