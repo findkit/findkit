@@ -1,3 +1,14 @@
+## v0.2.3
+
+2023-03-01
+
+- Detect loaded script using global callback [af9e0af](https://github.com/findkit/findkit/commit/af9e0af) - Esa-Matti Suuronen
+  - Fixes rare edge case when the cdn implementation script did not load
+- Export module format var [e627632](https://github.com/findkit/findkit/commit/e627632) - Esa-Matti Suuronen
+- Fix esbuild error message [88bccab](https://github.com/findkit/findkit/commit/88bccab) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.2.2...ui/v0.2.3
+
 ## v0.2.2
 
 2023-03-01
