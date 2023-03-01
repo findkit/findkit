@@ -96,6 +96,8 @@ declare const FINDKIT_MODULE_FORMAT: "esm" | "cjs";
  */
 export const VERSION = FINDKIT_VERSION;
 
+export const MODULE_FORMAT = FINDKIT_MODULE_FORMAT;
+
 function cdnFile(path: string) {
 	const root = FINDKIT_CDN_ROOT;
 	if (path.endsWith(".js")) {
