@@ -56,14 +56,9 @@ async function runEsbuild(options = {}) {
 				}),
 			],
 		})
-		.then(
-			() => {
-				console.log("JS ok!");
-			},
-			() => {
-				// esbuild logs the error itself
-			},
-		);
+		.then(() => {
+			console.log("JS ok!");
+		});
 
 	return result;
 }

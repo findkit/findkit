@@ -96,6 +96,8 @@ declare const FINDKIT_MODULE_FORMAT: "esm" | "cjs";
  */
 export const VERSION = FINDKIT_VERSION;
 
+export const MODULE_FORMAT = FINDKIT_MODULE_FORMAT;
+
 function cdnFile(path: string) {
 	const root = FINDKIT_CDN_ROOT;
 	if (path.endsWith(".js")) {
@@ -343,41 +345,37 @@ function preloadStylesheet(href: string) {
 }
 
 async function loadScriptFromGlobal<T>(
-	globalName: string,
+	globalCallbackName: string,
 	src: string,
 ): Promise<T> {
-	const existing = (window as any)[globalName];
-	if (existing) {
-		return existing;
-	}
-
 	const script = doc().createElement("script");
 	script.type = "module";
 
-	const promise = new Promise<void>((resolve, reject) => {
-		listen(script, "load", () => {
-			script.remove();
-			resolve();
-		});
+	const promise = new Promise<T>((resolve, reject) => {
+		const timer = setTimeout(() => {
+			reject(new Error(`[findkit] Timeout loading script ${src}`));
+		}, 10000);
 
-		listen(script, "error", () => {
-			reject(new Error("[findkit] Failed to load implementation from: " + src));
+		// Using callback based loading because the script "load" event does not
+		// seem to fire even on modern browsers 100% of the time. 1.3.2023 I
+		// observed Chrome 110 not firing it when the page was loaded with cold
+		// cache. This was with normal script tags, not using the "module" but
+		// module script seem to have their own issues:
+		// https://github.com/whatwg/html/issues/6421
+		Object.assign(window, {
+			[globalCallbackName](js: any) {
+				delete (window as any)[globalCallbackName];
+				clearTimeout(timer);
+				script.remove();
+				resolve(js);
+			},
 		});
 	});
 
 	script.src = src;
 	doc().head?.appendChild(script);
 
-	await promise;
-
-	const output = (window as any)[globalName];
-	if (!output) {
-		throw new Error(
-			`[findkit] Global "${globalName}" was not defined by ${src}`,
-		);
-	}
-
-	return output;
+	return await promise;
 }
 
 /**
@@ -628,7 +626,7 @@ export class FindkitUI {
 		}
 
 		return await loadScriptFromGlobal<Implementation>(
-			"FINDKIT_" + FINDKIT_VERSION,
+			"FINDKIT_LOADED_ " + FINDKIT_VERSION,
 			cdnFile("implementation.js"),
 		).then((js) => ({ js }));
 	}
