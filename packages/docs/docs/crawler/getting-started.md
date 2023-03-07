@@ -11,6 +11,8 @@ Create a Findkit Hub account and organization at
 npm install --global findkit
 ```
 
+You should use Node.js v18 or later.
+
 Authenticate the CLI with the Hub
 
 ```
