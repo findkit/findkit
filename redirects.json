@@ -3,6 +3,8 @@
 		"/": "https://www.findkit.com",
 		"/docs": "https://docs.findkit.com",
 		"/wp": "https://github.com/findkit/wp-findkit",
+		"/api": "https://docs.findkit.com/crawler/rest-api",
+		"/ui": "https://docs.findkit.com/ui",
 		"/toml": "https://docs.findkit.com/crawler/toml/",
 		"/selectors": "https://docs.findkit.com/crawler/indexing",
 		"/cli": "https://docs.findkit.com/crawler/getting-started/"
