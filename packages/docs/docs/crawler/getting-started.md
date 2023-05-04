@@ -38,11 +38,10 @@ later.
 The file looks like this:
 
 ```toml
-## Unique id of the project within your organization
-id = "example"
+## Project Id / Public Token
+id = "p4w0dDvmO"
 
 name = "Example Project"
-description = "Project description"
 
 ## Uncomment to enable automatic scheduled crawling
 #schedule_full_crawl = "weekly"
