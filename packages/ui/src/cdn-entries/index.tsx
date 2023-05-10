@@ -344,16 +344,28 @@ function preloadStylesheet(href: string) {
 	doc().head?.appendChild(link);
 }
 
+const cache = new Map<string, Promise<any>>();
+
 async function loadScriptFromGlobal<T>(
 	globalCallbackName: string,
 	src: string,
 ): Promise<T> {
+	const cacheKey = `${globalCallbackName}:${src}`;
+	const cached = cache.get(cacheKey);
+	if (cached) {
+		return cached;
+	}
+
 	const script = doc().createElement("script");
 	script.type = "module";
 
 	const promise = new Promise<T>((resolve, reject) => {
 		const timer = setTimeout(() => {
-			reject(new Error(`[findkit] Timeout loading script ${src}`));
+			reject(
+				new Error(
+					`[findkit] Timeout loading script ${src} with ${globalCallbackName}`,
+				),
+			);
 		}, 10000);
 
 		// Using callback based loading because the script "load" event does not
@@ -371,6 +383,8 @@ async function loadScriptFromGlobal<T>(
 			},
 		});
 	});
+
+	cache.set(cacheKey, promise);
 
 	script.src = src;
 	doc().head?.appendChild(script);
