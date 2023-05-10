@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Search UI Test</title>
+
+		<link rel="stylesheet" href="/shared.css" />
+
+		<script type="module">
+			import { FindkitUI } from "/build/esm/index.js";
+
+			const ui1 = new FindkitUI({
+				instanceId: "instance-1",
+				publicToken: "po8GK3G0r",
+				params: {
+					tagQuery: [["domain/valu.fi"]],
+				},
+			});
+
+			ui1.openFrom("#open-button1");
+
+			const ui2 = new FindkitUI({
+				instanceId: "instance-2",
+				publicToken: "po8GK3G0r",
+				params: {
+					tagQuery: [["domain/statement.fi"]],
+				},
+			});
+
+			ui2.openFrom("#open-button2");
+		</script>
+	</head>
+	<body>
+		<button id="open-button1" type="button">open 1</button>
+		<button id="open-button2" type="button">open 2</button>
+	</body>
+</html>
