@@ -626,7 +626,7 @@ export class FindkitUI {
 		}
 
 		return await loadScriptFromGlobal<Implementation>(
-			"FINDKIT_LOADED_ " + FINDKIT_VERSION,
+			"FINDKIT_LOADED_" + FINDKIT_VERSION,
 			cdnFile("implementation.js"),
 		).then((js) => ({ js }));
 	}

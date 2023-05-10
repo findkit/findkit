@@ -134,7 +134,7 @@ declare const FINDKIT_VERSION: string;
 
 if (typeof window !== "undefined") {
 	Object.assign(window, { ["FINDKIT_" + FINDKIT_VERSION]: js });
-	const callback = (window as any)["FINDKIT_LOADED_ " + FINDKIT_VERSION];
+	const callback = (window as any)["FINDKIT_LOADED_" + FINDKIT_VERSION];
 	if (typeof callback === "function") {
 		callback(js);
 	}
