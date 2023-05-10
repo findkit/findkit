@@ -1,3 +1,12 @@
+## v0.2.4
+
+2023-05-10
+
+-   Can use multiple instances [7ee2156](https://github.com/findkit/findkit/commit/7ee2156) - Esa-Matti Suuronen
+-   Cleanup callback name [ff5b2e0](https://github.com/findkit/findkit/commit/ff5b2e0) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.2.3...ui/v0.2.4
+
 ## v0.2.3
 
 2023-03-01
