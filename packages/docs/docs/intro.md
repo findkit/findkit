@@ -4,10 +4,6 @@ slug: /
 
 # Findkit
 
-:::danger
-Findkit is not public yet and this documentation is not complete. But if you are
-curious feel free to look around.
-:::
 
 Findkit is a toolkit for building search user interfaces for websites which
 consists of three main components:

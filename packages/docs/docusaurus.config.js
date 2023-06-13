@@ -55,7 +55,7 @@ const config = {
 				},
 			],
 			navbar: {
-				title: "[UNRELEASED]",
+				title: "",
 				logo: {
 					alt: "Findkit logo",
 					src: "img/logo.svg",
