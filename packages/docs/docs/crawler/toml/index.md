@@ -25,6 +25,8 @@ Allowed values
 
 - `weekly`
 - `daily`
+- `every-3-days`
+- `every-2-days`
 
 This is the same as running `findkit crawl start`. Read more from ["Starting
 Crawls"](/crawler/starting#full).
