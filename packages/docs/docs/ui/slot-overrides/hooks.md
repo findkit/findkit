@@ -29,9 +29,24 @@ Return the search terms used for the current search results.
 
 ### `useInput()` {#useInput}
 
-Hook for binding custom inputs as the search terms inputs.
+Hook for binding custom inputs as the search terms inputs. Usually used in the
+[Header slot](/ui/slot-overrides/slots/#header) to override the default search
+input with a fully custom one
 
-TODO: example
+```ts
+import { FindkitUI, html, useInput } from "@findkit/ui";
+
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	slots: {
+		Header(props) {
+            const ref = useInput();
+			return html`<input type="text" ref=${ref} />;
+		},
+	},
+});
+```
+
 
 <Api page="ui.useinput" />
 
