@@ -8,7 +8,7 @@
 
 - `Input`: Component for the close button
 - `CloseButton`: Component for the close button
-- `children`
+- `children`: The original header content
 
 The search input and close button area which hides on scroll.
 
