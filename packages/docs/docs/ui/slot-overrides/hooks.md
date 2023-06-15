@@ -41,7 +41,7 @@ const ui = new FindkitUI({
 	slots: {
 		Header(props) {
             const ref = useInput();
-			return html`<input type="text" ref=${ref} />;
+			return html`<input type="text" ref=${ref} />`;
 		},
 	},
 });
