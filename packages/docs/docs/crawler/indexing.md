@@ -146,7 +146,7 @@ options listed below
 Place `/robots.txt` to website root.
 For more info refer to [documentation](https://developer.mozilla.org/en-US/docs/Glossary/Robots.txt).
 
-You can instruct Findkit Crawler to not to respect `/robots.txt` rules with [respect_robots_txt](/crawler/toml/index#respect_robots_txt) configuration option.
+You can instruct Findkit Crawler to not to respect `/robots.txt` rules with [respect_robots_txt](/crawler/toml#respect_robots_txt) configuration option.
 
 ### Meta Robots Tag
 
@@ -155,7 +155,7 @@ to not index the page or not to follow links on the page.
 
 For more information see Google's [documentation](https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag).
 
-You can instruct Findkit Crawler to not to respect robots meta rules [respect_robots_meta](/crawler/toml/index#respect_robots_meta).
+You can instruct Findkit Crawler to not to respect robots meta rules [respect_robots_meta](/crawler/toml#respect_robots_meta).
 
 ### Deny Patterns {#deny_patterns}
 
