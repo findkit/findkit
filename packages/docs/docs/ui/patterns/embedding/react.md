@@ -25,7 +25,7 @@ function SearchButton() {
 			// Return the unbind function as the effect clean up
 			return ui.openFrom(ref.current);
 		}
-	});
+	}, []);
 
 	return (
 		<button ref={ref} type="button">
