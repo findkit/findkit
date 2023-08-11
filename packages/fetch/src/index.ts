@@ -271,8 +271,9 @@ export interface FindkitSearchGroupParams {
  * @public
  */
 export type FindkitSearchResponse = {
-	groups: GroupSearchResults[];
 	duration: number;
+	showLogo?: boolean;
+	groups: GroupSearchResults[];
 };
 
 /**
