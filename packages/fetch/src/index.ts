@@ -233,7 +233,12 @@ function inferSearchEndpoint(options?: FindkitFetchInit) {
 	} else if (options?.publicToken) {
 		return createSearchEndpoint(options.publicToken);
 	} else {
-		throw new Error("Unable to determine search endpoint");
+		const msg = "[findkit] Unable to determine search endpoint";
+		console.error(
+			`${msg}. The options object must contain either a 'publicToken' or a 'searchEndpoint' property`,
+			options
+		);
+		throw new Error(`${msg}. See logs for details`);
 	}
 }
 
