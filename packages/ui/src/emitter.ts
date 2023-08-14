@@ -154,6 +154,11 @@ export interface FetchDoneEvent {
 	 * Whether this request was stale eg. a new request was made before this one finished
 	 */
 	stale: boolean;
+
+	/**
+	 * Total number of search results
+	 */
+	total: number;
 }
 
 /**
