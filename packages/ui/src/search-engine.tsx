@@ -186,6 +186,12 @@ export interface State {
 	resultGroups: {
 		[groupId: string]: ResultGroup;
 	};
+
+	/**
+	 * Messages returned from the search-endpoint which are rendered before the
+	 * search results
+	 */
+	messages: { id: string; message: string }[];
 }
 
 /**
@@ -479,6 +485,8 @@ export class SearchEngine {
 
 			trapElements: [],
 			inputs: [],
+
+			messages: [],
 
 			// Ensure groups are unique so mutating one does not mutate the
 			// other
@@ -1065,6 +1073,13 @@ export class SearchEngine {
 			// On error just bail out and do not clear the previous results
 			// so the user can see the previus results
 			return;
+		}
+
+		for (const message of response.value.messages ?? []) {
+			const seen = this.state.messages.some((m) => m.id === message.id);
+			if (!seen) {
+				this.state.messages.push(message);
+			}
 		}
 
 		// Remove all pending requests that were made before this one

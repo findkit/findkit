@@ -166,6 +166,27 @@
 	transition: opacity 200ms ease;
 }
 
+.message {
+	display: block;
+	padding: var(--space-3);
+}
+
+.message, .message a {
+	font-weight: bold;
+}
+
+.message a {
+	/* Intentional hard coding because user might have custom colors */
+	color: rgb(184, 97, 150);
+	text-decoration: none;
+}
+
+.message a:hover {
+	text-decoration: underline;
+}
+
+
+
 .highlight {
 	display: block;
 	padding: var(--space-3);

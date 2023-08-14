@@ -279,7 +279,7 @@ export type FindkitSearchResponse = {
 	duration: number;
 	groups: GroupSearchResults[];
 	messages?: {
-		code: string;
+		id: string;
 		message: string;
 	}[];
 };

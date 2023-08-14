@@ -30,6 +30,7 @@ type ClassNames =
   | "findkit--load-more-button"
   | "findkit--logo"
   | "findkit--logo-hide"
+  | "findkit--message"
   | "findkit--modal"
   | "findkit--modal-container"
   | "findkit--modal-visible"
