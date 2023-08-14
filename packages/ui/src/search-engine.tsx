@@ -1042,11 +1042,17 @@ export class SearchEngine {
 
 		const stale = !this.PRIVATE_pendingRequestIds.has(requestId);
 
-		this.events.emit("fetch-done", {
-			terms: options.terms,
-			id: String(requestId),
-			stale,
-		});
+		if (response.ok) {
+			this.events.emit("fetch-done", {
+				terms: options.terms,
+				id: String(requestId),
+				stale,
+				total: response.value.groups.reduce(
+					(total, group) => total + group.total,
+					0,
+				),
+			});
+		}
 
 		// This request was already cleared as there are newer requests ready
 		// before this was
