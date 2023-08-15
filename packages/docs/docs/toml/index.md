@@ -3,6 +3,8 @@
 Findkit crawler and the search endpoint is configured using a `findkit.toml`
 file which is authored in a [TOML format](https://toml.io/).
 
+See also [the example](/toml/example) for overview of how the file is structured.
+
 ## Top-Level Options
 
 ### `id: string` {#id}
