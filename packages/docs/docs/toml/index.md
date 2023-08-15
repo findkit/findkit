@@ -112,6 +112,14 @@ Supports string prefixes and regexes. See [Indexing Content](/crawler/indexing) 
 
 Max pages to crawl. If this limit is exceeded the crawler will just stop.
 
+### `cache_bust: boolean` {#cache_bust}
+
+Add random query string to the crawl http requests. This can cause a lot of load to
+the target webserver as the caches be very likely by passed but it can used to
+ensure that the crawler always sees the latest version of the pages.
+
+Defaults to `false`.
+
 ### `tags: Array` {#tags}
 
 Array tagging matchers. [Documented on the dedicated page](tags).
