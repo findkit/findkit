@@ -1,7 +1,7 @@
-# Crawler Configuration
+# findkit.toml
 
-The crawler is configured using a `findkit.toml` file which is authored in a
-[TOML format](https://toml.io/).
+Findkit crawler and the search endpoint is configured using a `findkit.toml`
+file which is authored in a [TOML format](https://toml.io/).
 
 ## Top-Level Options
 
@@ -99,7 +99,7 @@ Defaults to `true`.
 Skip paths matching the given pattern.
 Matches against the url pathname.
 
-Supports string prefixes and regexes. See [Indexing Content](../indexing) for details.
+Supports string prefixes and regexes. See [Indexing Content](/crawler/indexing) for details.
 
 ### `max_pages: number` {#max_pages}
 
