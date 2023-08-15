@@ -54,7 +54,7 @@ Example
 ### `contentSelector: string` {#contentSelector}
 
 Use custom CSS selector to select the content on this page. This will be
-combined with the [`content_selector`](/crawler/toml/#content_selector) TOML
+combined with the [`content_selector`](/toml/#content_selector) TOML
 option.
 
 ### `tags: string[]` {#tags}

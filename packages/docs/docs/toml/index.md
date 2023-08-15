@@ -1,7 +1,7 @@
-# Crawler Configuration
+# findkit.toml
 
-The crawler is configured using a `findkit.toml` file which is authored in a
-[TOML format](https://toml.io/).
+Findkit crawler and the search endpoint is configured using a `findkit.toml`
+file which is authored in a [TOML format](https://toml.io/).
 
 ## Top-Level Options
 
@@ -49,9 +49,14 @@ List "targets" aka domain to crawl content from.
 
 This is an array of tables. See the TOML spec on Arrays <https://toml.io/en/v1.0.0#array-of-tables>
 
-## Target Options
+## `[[targets]]` {#target-options}
 
 Options for `[[targets]]` sections.
+
+### `host: string` {#host}
+
+Target host to crawl. Just a plain domain name without the `https://` prefix.
+
 
 ### `use_sitemap: boolean` {#use_sitemap}
 
@@ -99,7 +104,7 @@ Defaults to `true`.
 Skip paths matching the given pattern.
 Matches against the url pathname.
 
-Supports string prefixes and regexes. See [Indexing Content](../indexing) for details.
+Supports string prefixes and regexes. See [Indexing Content](/crawler/indexing) for details.
 
 ### `max_pages: number` {#max_pages}
 
@@ -108,3 +113,37 @@ Max pages to crawl. If this limit is exceeded the crawler will just stop.
 ### `tags: Array` {#tags}
 
 Array tagging matchers. [Documented on the dedicated page](tags).
+
+
+## `[search-endpoint]` {#search-endpoint}
+
+Search endpoint configuration.
+
+### `origin_domains: string[]` {#origin_domains}
+
+List of origin domains from which the search endpoint can be accessed eg. the
+domains where the Findkit UI library can installed. The domain is validated
+using the [Origin
+header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin) sent
+by the browsers.
+
+This defaults to the host of the first [target host](#host).
+
+
+### `private: boolean` {#private}
+
+Make search endpoint private by requiring JWT token. Must be combined with
+`public_key`.
+
+Defaults to `false`.
+
+
+### `public_key: boolean` {#private}
+
+When `private` is set to `true` this RS256 public key is used to validate JWT
+tokens in the search requests.
+
+See our [WordPress
+plugin](https://github.com/findkit/wp-findkit#jwt-authentication) for full
+integration.
+

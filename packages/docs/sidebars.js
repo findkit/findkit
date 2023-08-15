@@ -25,16 +25,15 @@ const sidebars = {
 				"crawler/indexing",
 				"crawler/starting",
 				"crawler/tagging",
-				{
-					type: "category",
-					label: "Crawler Configuration (TOML)",
-					link: { type: "doc", id: "crawler/toml/index" },
-					items: ["crawler/toml/tags"],
-				},
 				"crawler/meta-tag",
 				"crawler/rest-api",
-				"crawler/jwt",
 			],
+		},
+		{
+			type: "category",
+			label: "findkit.toml",
+			link: { type: "doc", id: "toml/index" },
+			items: ["toml/tags"],
 		},
 		{
 			type: "category",

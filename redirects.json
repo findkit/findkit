@@ -5,7 +5,8 @@
 		"/wp": "https://github.com/findkit/wp-findkit",
 		"/api": "https://docs.findkit.com/crawler/rest-api",
 		"/ui": "https://docs.findkit.com/ui",
-		"/toml": "https://docs.findkit.com/crawler/toml/",
+		"/toml": "https://docs.findkit.com/toml",
+		"/origin-domains": "https://docs.findkit.com/toml#origin-domains",
 		"/selectors": "https://docs.findkit.com/crawler/indexing",
 		"/cli": "https://docs.findkit.com/crawler/getting-started/"
 	}
