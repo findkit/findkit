@@ -119,6 +119,17 @@ Array tagging matchers. [Documented on the dedicated page](tags).
 
 Search endpoint configuration.
 
+### `origin_domains: string[]` {#origin_domains}
+
+List of origin domains from where the search endpoint can be accessed eg. the
+domains where the Findkit UI library can installed on. The domain is validated
+using the [Origin
+header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin) sent
+by the browsers.
+
+This defaults to the host of the first [target host](#host).
+
+
 ### `private: boolean` {#private}
 
 Make search endpoint private by requiring JWT token. Must be combined with
