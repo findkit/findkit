@@ -1,3 +1,12 @@
+## v0.3.0
+
+2023-08-15
+
+-   Add total to fetch-done event [b1983c0](https://github.com/findkit/findkit/commit/b1983c0) - Joonas Varis
+-   Render search-endpoint messages [3b6f7da](https://github.com/findkit/findkit/commit/3b6f7da) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.2.4...ui/v0.3.0
+
 ## v0.2.4
 
 2023-05-10
