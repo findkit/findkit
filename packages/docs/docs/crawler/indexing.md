@@ -157,7 +157,7 @@ to not index the page or not to follow links on the page.
 For more information see Google's [documentation](https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag).
 
 You can instruct Findkit Crawler to not to respect robots meta rules
-[respect_robots_meta](/crawler/toml#respect_robots_meta).
+[respect_robots_meta](/toml#respect_robots_meta).
 
 ### Deny Patterns {#deny_patterns}
 
