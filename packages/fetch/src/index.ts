@@ -277,8 +277,11 @@ export interface FindkitSearchGroupParams {
  */
 export type FindkitSearchResponse = {
 	duration: number;
-	showLogo?: boolean;
 	groups: GroupSearchResults[];
+	messages?: {
+		id: string;
+		message: string;
+	}[];
 };
 
 /**

@@ -428,6 +428,27 @@ function FooterContent(props: { allResultsLoaded: boolean; groupId: string }) {
 export function Results() {
 	const state = useSearchEngineState();
 
+	return (
+		<>
+			{state.messages.length > 0 && (
+				<div>
+					{state.messages.map((m) => (
+						<View
+							cn="message"
+							key={m.id}
+							dangerouslySetInnerHTML={{ __html: m.message }}
+						/>
+					))}
+				</div>
+			)}
+			<SingleOrGroupResults />
+		</>
+	);
+}
+
+function SingleOrGroupResults() {
+	const state = useSearchEngineState();
+
 	if (
 		state.usedGroupDefinitions.length === 1 &&
 		state.usedGroupDefinitions[0]
