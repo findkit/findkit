@@ -53,6 +53,11 @@ This is an array of tables. See the TOML spec on Arrays <https://toml.io/en/v1.0
 
 Options for `[[targets]]` sections.
 
+### `host: string` {#host}
+
+Target host to crawl. Just a plain domain name without the `https://` prefix.
+
+
 ### `use_sitemap: boolean` {#use_sitemap}
 
 Read the site sitemap.
