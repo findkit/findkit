@@ -3,6 +3,8 @@
 Findkit crawler and the search endpoint is configured using a `findkit.toml`
 file which is authored in a [TOML format](https://toml.io/).
 
+See [the example](/toml/example) for overview of how the file is structured.
+
 ## Top-Level Options
 
 ### `id: string` {#id}
@@ -109,6 +111,14 @@ Supports string prefixes and regexes. See [Indexing Content](/crawler/indexing) 
 ### `max_pages: number` {#max_pages}
 
 Max pages to crawl. If this limit is exceeded the crawler will just stop.
+
+### `cache_bust: boolean` {#cache_bust}
+
+Add random query string to the crawl http requests. This can cause a lot of load to
+the target webserver as the caches will very likely be bypassed but it can be used to
+ensure that the crawler always sees the latest version of the pages.
+
+Defaults to `false`.
 
 ### `tags: Array` {#tags}
 

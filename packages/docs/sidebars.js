@@ -33,7 +33,7 @@ const sidebars = {
 			type: "category",
 			label: "findkit.toml",
 			link: { type: "doc", id: "toml/index" },
-			items: ["toml/tags"],
+			items: ["toml/tags", "toml/example"],
 		},
 		{
 			type: "category",
