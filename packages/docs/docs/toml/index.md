@@ -121,7 +121,7 @@ Search endpoint configuration.
 
 ### `origin_domains: string[]` {#origin_domains}
 
-List of origin domains from where the search endpoint can be accessed eg. the
+List of origin domains from which the search endpoint can be accessed eg. the
 domains where the Findkit UI library can installed on. The domain is validated
 using the [Origin
 header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin) sent
