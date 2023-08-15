@@ -27,7 +27,6 @@ const sidebars = {
 				"crawler/tagging",
 				"crawler/meta-tag",
 				"crawler/rest-api",
-				"crawler/jwt",
 			],
 		},
 		{

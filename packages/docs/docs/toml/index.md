@@ -108,3 +108,26 @@ Max pages to crawl. If this limit is exceeded the crawler will just stop.
 ### `tags: Array` {#tags}
 
 Array tagging matchers. [Documented on the dedicated page](tags).
+
+
+## `[search-endpoint]` {#search-endpoint}
+
+Search endpoint configuration.
+
+### `private: boolean` {#private}
+
+Make search endpoint private by requiring JWT token. Must be combined with
+`public_key`.
+
+Defaults to `false`.
+
+
+### `public_key: boolean` {#private}
+
+When `private` is set to `true` this RS256 public key is used to validate JWT
+tokens in the search requests.
+
+See our [WordPress
+plugin](https://github.com/findkit/wp-findkit#jwt-authentication) for full
+integration.
+
