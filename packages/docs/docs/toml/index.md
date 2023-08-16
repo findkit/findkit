@@ -137,7 +137,7 @@ using the [Origin
 header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin) sent
 by the browsers.
 
-This defaults to the host of the first [target host](#host).
+This defaults to the first [target host](#host).
 
 
 ### `private: boolean` {#private}
