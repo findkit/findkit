@@ -23,6 +23,7 @@ const sidebars = {
 			items: [
 				"crawler/getting-started",
 				"crawler/indexing",
+				"crawler/pdf",
 				"crawler/starting",
 				"crawler/tagging",
 				"crawler/meta-tag",
