@@ -139,6 +139,13 @@ by the browsers.
 
 This defaults to the first [target host](#host).
 
+Example
+
+```toml
+[search-endpoint]
+origin_domains = ["mysite.example"]
+```
+
 
 ### `private: boolean` {#private}
 
