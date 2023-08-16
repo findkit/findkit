@@ -149,7 +149,7 @@ origin_domains = ["mysite.example"]
 
 ### `private: boolean` {#private}
 
-Make search endpoint private by requiring JWT token. Must be combined with
+Make search endpoint private by requiring a JWT token. Must be combined with
 `public_key`.
 
 Defaults to `false`.
