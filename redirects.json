@@ -6,7 +6,7 @@
 		"/api": "https://docs.findkit.com/crawler/rest-api",
 		"/ui": "https://docs.findkit.com/ui",
 		"/toml": "https://docs.findkit.com/toml",
-		"/origin-domains": "https://docs.findkit.com/toml#origin-domains",
+		"/origin-domains": "https://docs.findkit.com/toml#origin_domains",
 		"/selectors": "https://docs.findkit.com/crawler/indexing",
 		"/cli": "https://docs.findkit.com/crawler/getting-started/"
 	}
