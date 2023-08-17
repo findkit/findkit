@@ -57,12 +57,39 @@ export interface ResultsWithTotal {
  * by the SearchEngine
  */
 export interface SearchParams {
+	/**
+	 * https://docs.findkit.com/ui/api/params#tagQuery
+	 */
 	tagQuery: string[][];
+
+	/**
+	 * https://docs.findkit.com/ui/api/params#createdDecay
+	 */
 	createdDecay?: number;
+
+	/**
+	 * https://docs.findkit.com/ui/api/params#modifiedDecay
+	 */
 	modifiedDecay?: number;
+
+	/**
+	 * https://docs.findkit.com/ui/api/params#decayScale
+	 */
 	decayScale?: string;
+
+	/**
+	 * https://docs.findkit.com/ui/api/params#highlightLength
+	 */
 	highlightLength?: number;
+
+	/**
+	 * https://docs.findkit.com/ui/api/params#size
+	 */
 	size?: number;
+
+	/**
+	 * https://docs.findkit.com/ui/api/params#lang
+	 */
 	lang?: string;
 }
 
