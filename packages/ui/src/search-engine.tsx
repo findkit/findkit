@@ -63,6 +63,11 @@ export interface SearchParams {
 	tagQuery: string[][];
 
 	/**
+	 * https://docs.findkit.com/ui/api/params#tagBoost
+	 */
+	tagBoost?: { [tag: string]: number };
+
+	/**
 	 * https://docs.findkit.com/ui/api/params#createdDecay
 	 */
 	createdDecay?: number;
