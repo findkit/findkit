@@ -274,6 +274,7 @@ export interface FindkitSearchParams {
  */
 export interface FindkitSearchGroupParams {
 	tagQuery: string[][];
+	tagBoost?: Record<string, number>;
 	createdDecay?: number;
 	modifiedDecay?: number;
 	decayScale?: string;

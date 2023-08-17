@@ -936,6 +936,7 @@ export class SearchEngine {
 
 				return cleanUndefined({
 					tagQuery: group.params.tagQuery ?? [],
+					tagBoost: group.params.tagBoost,
 					createdDecay: group.params.createdDecay,
 					modifiedDecay: group.params.modifiedDecay,
 					decayScale: group.params.decayScale,
