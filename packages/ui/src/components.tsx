@@ -164,6 +164,7 @@ function Hit(props: {
 			ref={props.containerRef}
 			key={props.hit.url}
 			cn="hit"
+			data-fdk-score={props.hit.score}
 			{...kbAttrs}
 			onClick={handleLinkClick}
 		>
