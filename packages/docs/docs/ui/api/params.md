@@ -96,3 +96,24 @@ For example if there is 100 different sports categories on your website and you 
 show all the search results in a group "Sports". Instead of giving each sport a
 specific tag name and querying it `swimming OR biking OR ...`
 give each sport page a `sport` tag and use it in the query.
+
+### `tagBoost: Record<string, number>` {#tagBoost}
+
+Boost page scores with certain tags.
+
+Example
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	params: {
+		tagBoost: {
+            important: 2,
+        }
+	},
+});
+```
+
+This will increase the search score of pages with `important` tag by x2. It is
+also possible to down boost by using boost numbers less than one. Ex. 0.5 to
+drop the score to half.
