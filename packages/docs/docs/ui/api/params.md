@@ -67,7 +67,7 @@ Limit results to the given language.
 
 ### `tagQuery: string[][]` {#tagQuery}
 
-Limit results to the given "tag query".
+Filter results using tags
 
 Logical AND and OR operators are supported.
 
