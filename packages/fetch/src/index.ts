@@ -246,7 +246,18 @@ function inferSearchEndpoint(options?: FindkitFetchInit) {
  * @public
  */
 export function createSearchEndpoint(publicToken: string) {
-	return `https://search.findkit.com/c/${publicToken}/search?p=${publicToken}`;
+	let version = "c";
+
+	try {
+		const usp = new URLSearchParams(location.hash.slice(1));
+		version = usp.get("__findkit_version") || "c";
+	} catch {
+		// May crash for various reasons, no location object on a server, invalid
+		// query string etc. We really don't care why it fails, since this is for
+		// internal use only.
+	}
+
+	return `https://search.findkit.com/${version}/${publicToken}/search?p=${publicToken}`;
 }
 
 /**
