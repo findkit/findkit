@@ -120,6 +120,13 @@ ensure that the crawler always sees the latest version of the pages.
 
 Defaults to `false`.
 
+
+### `crawl_pdfs: boolean` {#crawl_pdfs}
+
+Crawl PDF files too. See the [PDF docs](/crawler/pdf) for details.
+
+Defaults to `false`.
+
 ### `tags: Array` {#tags}
 
 Array tagging matchers. [Documented on the dedicated page](tags).
@@ -149,7 +156,7 @@ origin_domains = ["mysite.example"]
 
 ### `private: boolean` {#private}
 
-Make search endpoint private by requiring JWT token. Must be combined with
+Make search endpoint private by requiring a JWT token. Must be combined with
 `public_key`.
 
 Defaults to `false`.
