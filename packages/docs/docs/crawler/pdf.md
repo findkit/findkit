@@ -10,7 +10,9 @@ order to find the PDF files as they are commonly not listed in sitemaps.
 
 
 A `pdf` tag is automatically added to all parsed PDF files.
+## Title
 
+PDF title is read from `"content-disposition"` header. If this header is not available title is parsed from url pathname. `/path/to/my-awesome-pdf.pdf` --> `my-awesome-pdf`
 ## Language
 
 The language is taken from the `Content-Language` response header if present,
