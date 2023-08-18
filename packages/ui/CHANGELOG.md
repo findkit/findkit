@@ -1,9 +1,20 @@
+## v0.4.0
+
+2023-08-18
+
+- Add tagBoost to FindkitUI [943f215](https://github.com/findkit/findkit/commit/943f215) - Esa-Matti Suuronen
+  - https://docs.findkit.com/ui/api/params#tagBoost
+- Expose hit score as a data attribute [9252c1b](https://github.com/findkit/findkit/commit/9252c1b) - Esa-Matti Suuronen
+- Add links to SearchParams tsdoc [e5d0247](https://github.com/findkit/findkit/commit/e5d0247) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.3.0...ui/v0.4.0
+
 ## v0.3.0
 
 2023-08-15
 
--   Add total to fetch-done event [b1983c0](https://github.com/findkit/findkit/commit/b1983c0) - Joonas Varis
--   Render search-endpoint messages [3b6f7da](https://github.com/findkit/findkit/commit/3b6f7da) - Esa-Matti Suuronen
+- Add total to fetch-done event [b1983c0](https://github.com/findkit/findkit/commit/b1983c0) - Joonas Varis
+- Render search-endpoint messages [3b6f7da](https://github.com/findkit/findkit/commit/3b6f7da) - Esa-Matti Suuronen
 
 All changes https://github.com/findkit/findkit/compare/ui/v0.2.4...ui/v0.3.0
 
@@ -11,8 +22,8 @@ All changes https://github.com/findkit/findkit/compare/ui/v0.2.4...ui/v0.3.0
 
 2023-05-10
 
--   Can use multiple instances [7ee2156](https://github.com/findkit/findkit/commit/7ee2156) - Esa-Matti Suuronen
--   Cleanup callback name [ff5b2e0](https://github.com/findkit/findkit/commit/ff5b2e0) - Esa-Matti Suuronen
+- Can use multiple instances [7ee2156](https://github.com/findkit/findkit/commit/7ee2156) - Esa-Matti Suuronen
+- Cleanup callback name [ff5b2e0](https://github.com/findkit/findkit/commit/ff5b2e0) - Esa-Matti Suuronen
 
 All changes https://github.com/findkit/findkit/compare/ui/v0.2.3...ui/v0.2.4
 
