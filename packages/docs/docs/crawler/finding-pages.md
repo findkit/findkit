@@ -3,7 +3,7 @@
 Findkit crawler uses following algorithm to find pages to crawl in full mode:
 
 1. It checks for `/robots.txt` for what pages it is allowed to crawl
-2. It reads the sitemaps reported in the `Sitemap:` entries
+2. It reads the sitemaps reported in the `Sitemap:` entries in `/robots.txt`
 3. If sitemaps are found it only crawls the pages reported by the sitemaps
 4. If no sitemaps are found it fallbacks to walking links starting from `/`
     - The start paths can be customised by setting [`start_paths`](/toml/#start_paths)
