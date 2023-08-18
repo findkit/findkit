@@ -68,10 +68,18 @@ Defaults to `true`.
 
 ### `walk_links: boolean` {#walk_links}
 
-Find site pages by walking the links. If the site has a proper sitemap this
-should be set to false.
+Find site pages by walking the links.
 
-Defaults to `true`.
+Is disabled by default but is automatically enabled if no sitemaps are found.
+Can when set to `false` to explicitly disable.
+
+### `start_paths: string[]` {#start_paths}
+
+List of pages where start link walking when [`walk_links`](#walk_links) is
+enabled.
+
+Defaults to `/`
+
 
 ### `content_selector: string` {#content_selector}
 
