@@ -11,5 +11,5 @@ Findkit crawler uses following algorithm to find pages to crawl in full mode:
 This behaviour can be customized by setting [`use_sitemap`](/toml/#use_sitemap)
 and/or [`walk_links`](/toml/#walk_links) explicitly.
 
-[Partial crawl](/crawler/starting#partial) only ever crawls pages reported by
+[Partial crawl](/crawler/starting#partial) only crawls pages reported by
 the sitemaps as it needs the last modified information.
