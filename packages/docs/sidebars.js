@@ -22,6 +22,7 @@ const sidebars = {
 			label: "Crawler",
 			items: [
 				"crawler/getting-started",
+				"crawler/finding-pages",
 				"crawler/indexing",
 				"crawler/pdf",
 				"crawler/starting",
