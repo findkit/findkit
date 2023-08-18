@@ -10,8 +10,6 @@ links with a pathname ending with `.pdf` in order to find the PDF files as they
 are commonly not listed in sitemaps.
 
 
-A `pdf` tag is automatically added to all parsed PDF files.
-
 ## Title
 
 PDF title is read from the filename in the `Content-Disposition` header. If
@@ -35,3 +33,22 @@ The maximum PDF file size is 10 MiB. If the file is bigger the crawler will
 just ignore the file completely. Also our index only indexes roughly the first
 100kb of the parsed text. The PDF parsing is provided as best effort basis. Any
 PDF might be skipped if it is determined to be too complex to parse.
+
+## Tags
+
+A `pdf` tag is automatically added to all parsed PDF files. The tag is by
+default down boosted with `0.2` weight with
+[`tagBoost`](/ui/api/params#tagBoost) to avoid PDFs from appearing as the first
+results as PDFs tend to be longer and thus have higher scores than html
+pages. This behavior can disabled setting pdf boost to 1.
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	params: {
+		tagBoost: {
+            pdf: 1,
+        }
+	},
+});
+```
