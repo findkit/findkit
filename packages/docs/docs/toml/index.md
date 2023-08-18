@@ -70,8 +70,8 @@ Defaults to `true`.
 
 Find site pages by walking the links.
 
-Is disabled by default but is automatically enabled if no sitemaps are found.
-Can when set to `false` to explicitly disable.
+Disabled by default but automatically enabled if no sitemaps are found.
+Fallback behaviour can be disabled by setting to `false`.
 
 ### `start_paths: string[]` {#start_paths}
 
