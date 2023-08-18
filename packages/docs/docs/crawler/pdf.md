@@ -14,9 +14,9 @@ A `pdf` tag is automatically added to all parsed PDF files.
 
 ## Title
 
-PDF title is read from `"content-disposition"` header. If this header is not
-available title is parsed from url pathname. `/path/to/my-awesome-pdf.pdf` -->
-`my-awesome-pdf`
+PDF title is read from the filename in the `Content-Disposition` header. If
+this header is not available title is parsed from url pathname.
+`/path/to/my-awesome-pdf.pdf` --> `my-awesome-pdf`.
 
 ## Language
 
