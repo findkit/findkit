@@ -4,8 +4,7 @@
 You can enable PDF file crawling by setting [`crawl_pdfs`](/toml#crawl_pdfs)
 target option to true in the findkit.toml file.
 
-When [`walk_links`](/toml#walk_links) is set to true any page with a content
-type of `application/pdf` will be parsed as a PDF. If walk links is disabled
+Any page with a content type of `application/pdf` will be parsed as a PDF. If [`walk_links`](/toml#walk_links) is disabled
 the crawler will still walk any links with a pathname ending with `.pdf` in
 order to find the PDF files as they are commonly not listed in sitemaps.
 
