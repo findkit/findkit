@@ -40,6 +40,7 @@ export interface SearchResultHit {
 	highlight: string;
 	tags: ReadonlyArray<string>;
 	customFields: CustomFields;
+	content?: string;
 }
 
 export interface ResultsWithTotal {
@@ -96,6 +97,13 @@ export interface SearchParams {
 	 * https://docs.findkit.com/ui/api/params#lang
 	 */
 	lang?: string;
+
+	/**
+	 * EXPERIMENTAL
+	 *
+	 * Return the hit content as well
+	 */
+	content?: boolean;
 }
 
 /**
@@ -937,6 +945,7 @@ export class SearchEngine {
 				return cleanUndefined({
 					tagQuery: group.params.tagQuery ?? [],
 					tagBoost: group.params.tagBoost,
+					content: group.params.content,
 					createdDecay: group.params.createdDecay,
 					modifiedDecay: group.params.modifiedDecay,
 					decayScale: group.params.decayScale,
