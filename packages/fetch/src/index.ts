@@ -291,7 +291,7 @@ export interface FindkitSearchParams {
  * @public
  */
 export interface FindkitSearchGroupParams {
-	tagQuery: string[][];
+	tagQuery?: string[][];
 	tagBoost?: Record<string, number>;
 	createdDecay?: number;
 	modifiedDecay?: number;

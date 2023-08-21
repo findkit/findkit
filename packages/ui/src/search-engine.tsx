@@ -61,7 +61,7 @@ export interface SearchParams {
 	/**
 	 * https://docs.findkit.com/ui/api/params#tagQuery
 	 */
-	tagQuery: string[][];
+	tagQuery?: string[][];
 
 	/**
 	 * https://docs.findkit.com/ui/api/params#tagBoost
