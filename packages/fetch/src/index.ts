@@ -185,7 +185,11 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 				return findkitFetch(options);
 			}
 
-			throw new Error("[findkit] Permission denied: " + error.message);
+			throw new Error(
+				"[findkit] Permission denied: " + error.message ||
+					// legacy error format
+					(error as any).error
+			);
 		}
 
 		if (!res.ok) {
