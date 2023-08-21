@@ -545,7 +545,7 @@ export class SearchEngine {
 		this.PRIVATE_fetcher = createFindkitFetcher({
 			publicToken: this.publicToken,
 			searchEndpoint: this.PRIVATE_searchEndpoint,
-		}).findkitFetch;
+		}).fetch;
 
 		this.PRIVATE_throttleTime = options.throttleTime ?? 200;
 		this.PRIVATE_fetchCount = options.fetchCount ?? 20;
@@ -949,7 +949,7 @@ export class SearchEngine {
 			});
 
 		const fullParams: FindkitSearchParams = {
-			q: options.terms,
+			terms: options.terms,
 			groups,
 		};
 

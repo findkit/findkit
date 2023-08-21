@@ -2,7 +2,6 @@
  * @public
  */
 export interface FindkitFetchInit {
-	staging?: boolean;
 	logResponseTimes?: boolean;
 	publicToken?: string;
 	searchEndpoint?: string;
@@ -160,7 +159,7 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 			credentials: "omit",
 			headers,
 			body: JSON.stringify({
-				q: options.q,
+				q: options.terms,
 				groups: options.groups,
 			}),
 		};
@@ -221,7 +220,7 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 	};
 
 	return {
-		findkitFetch,
+		fetch: findkitFetch,
 		clear,
 		refresh,
 	};
@@ -264,8 +263,19 @@ export function createSearchEndpoint(publicToken: string) {
  * @public
  */
 export interface FindkitSearchParams {
-	q: string;
+	/**
+	 * Free form text query
+	 */
+	terms: string;
+
+	/**
+	 * Search groups
+	 */
 	groups?: FindkitSearchGroupParams[];
+
+	/**
+	 * Abort signal
+	 */
 	signal?: AbortSignal;
 }
 
@@ -282,6 +292,12 @@ export interface FindkitSearchGroupParams {
 	size?: number;
 	from?: number;
 	lang?: string;
+
+	/**
+	 * EXPERIMENTAL
+	 *
+	 * Return content for each hit. Must be explicitly enabled in the findkit.toml file
+	 */
 	content?: boolean;
 }
 
@@ -314,6 +330,11 @@ export interface GroupSearchResults {
 		highlight: string;
 		tags: string[];
 		customFields: CustomFields;
+
+		/**
+		 * EXPERIMENTAL
+		 * Only present if the content parameter was set in the request
+		 */
 		content?: string;
 	}[];
 }

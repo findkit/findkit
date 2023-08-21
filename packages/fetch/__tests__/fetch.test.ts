@@ -34,7 +34,7 @@ afterEach(async () => {
 
 describe("fetch", () => {
 	test("empty fetch", async () => {
-		const { findkitFetch } = createFindkitFetcher({
+		const { fetch: findkitFetch } = createFindkitFetcher({
 			searchEndpoint: "https://test.invalid/multi-search2",
 		});
 
@@ -49,7 +49,7 @@ describe("fetch", () => {
 		);
 
 		const res = await findkitFetch({
-			q: "",
+			terms: "",
 			groups: [],
 		});
 
@@ -59,7 +59,7 @@ describe("fetch", () => {
 	test("can use publicToken to generate the endpoint", async () => {
 		const spy = vi.fn();
 
-		const { findkitFetch } = createFindkitFetcher({
+		const { fetch: findkitFetch } = createFindkitFetcher({
 			publicToken: "thetoken",
 		});
 
@@ -78,7 +78,7 @@ describe("fetch", () => {
 		);
 
 		const res = await findkitFetch({
-			q: "",
+			terms: "",
 			groups: [],
 		});
 
@@ -89,7 +89,7 @@ describe("fetch", () => {
 	});
 
 	test("when no groups are defined add a default that searches everything", async () => {
-		const { findkitFetch } = createFindkitFetcher({
+		const { fetch: findkitFetch } = createFindkitFetcher({
 			searchEndpoint: "https://test.invalid/multi-search2",
 		});
 
@@ -106,7 +106,7 @@ describe("fetch", () => {
 			})
 		);
 		const res = await findkitFetch({
-			q: "test",
+			terms: "test",
 		});
 
 		expect(res).toEqual({ duration: 123, groups: [] });
@@ -128,7 +128,7 @@ describe("fetch", () => {
 				})
 			);
 
-			const { findkitFetch } = createFindkitFetcher({
+			const { fetch: findkitFetch } = createFindkitFetcher({
 				searchEndpoint: "https://test.invalid/multi-search2",
 				async getJwtToken() {
 					return { jwt };
@@ -138,7 +138,7 @@ describe("fetch", () => {
 			const jwt = createJwtToken();
 
 			const res = await findkitFetch({
-				q: "",
+				terms: "",
 				groups: [],
 			});
 
@@ -171,8 +171,8 @@ describe("fetch", () => {
 			const jwt = createJwtToken();
 
 			for await (const i of Array(5).keys()) {
-				await fetcher.findkitFetch({
-					q: i.toString(),
+				await fetcher.fetch({
+					terms: i.toString(),
 					groups: [],
 				});
 			}
@@ -212,15 +212,15 @@ describe("fetch", () => {
 				},
 			});
 
-			await fetcher.findkitFetch({
-				q: "",
+			await fetcher.fetch({
+				terms: "",
 				groups: [],
 			});
 
 			expired = true;
 
-			await fetcher.findkitFetch({
-				q: "",
+			await fetcher.fetch({
+				terms: "",
 				groups: [],
 			});
 
