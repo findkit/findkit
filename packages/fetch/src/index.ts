@@ -39,6 +39,10 @@ export interface FindkitFetch {
 export interface FindkitErrorResponse {
 	code?: "jwt-expired" | "jwt-invalid" | "invalid-response-body";
 	message?: string;
+	/**
+	 * @deprecated use message field instead
+	 */
+	error?: string;
 }
 
 async function safeErrorJson(
@@ -186,16 +190,16 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 			}
 
 			throw new Error(
-				"[findkit] Permission denied: " + error.message ||
-					// legacy error format
-					(error as any).error
+				"[findkit] Permission denied3: " + (error.message || error.error)
 			);
 		}
 
 		if (!res.ok) {
 			const error = await safeErrorJson(res);
 			throw new Error(
-				`[findkit] Bad response ${res.status} from search: ${error.message}`
+				`[findkit] Bad response ${res.status} from search: ${
+					error.message || error.error
+				}`
 			);
 		}
 
