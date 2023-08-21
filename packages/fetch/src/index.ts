@@ -2,7 +2,6 @@
  * @public
  */
 export interface FindkitFetchInit {
-	staging?: boolean;
 	logResponseTimes?: boolean;
 	publicToken?: string;
 	searchEndpoint?: string;
@@ -40,6 +39,10 @@ export interface FindkitFetch {
 export interface FindkitErrorResponse {
 	code?: "jwt-expired" | "jwt-invalid" | "invalid-response-body";
 	message?: string;
+	/**
+	 * @deprecated use message field instead
+	 */
+	error?: string;
 }
 
 async function safeErrorJson(
@@ -160,7 +163,7 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 			credentials: "omit",
 			headers,
 			body: JSON.stringify({
-				q: options.q,
+				q: options.terms,
 				groups: options.groups,
 			}),
 		};
@@ -186,13 +189,17 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 				return findkitFetch(options);
 			}
 
-			throw new Error("[findkit] Permission denied: " + error.message);
+			throw new Error(
+				"[findkit] Permission denied3: " + (error.message || error.error)
+			);
 		}
 
 		if (!res.ok) {
 			const error = await safeErrorJson(res);
 			throw new Error(
-				`[findkit] Bad response ${res.status} from search: ${error.message}`
+				`[findkit] Bad response ${res.status} from search: ${
+					error.message || error.error
+				}`
 			);
 		}
 
@@ -221,7 +228,7 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 	};
 
 	return {
-		findkitFetch,
+		fetch: findkitFetch,
 		clear,
 		refresh,
 	};
@@ -264,8 +271,19 @@ export function createSearchEndpoint(publicToken: string) {
  * @public
  */
 export interface FindkitSearchParams {
-	q: string;
+	/**
+	 * Free form text query
+	 */
+	terms: string;
+
+	/**
+	 * Search groups
+	 */
 	groups?: FindkitSearchGroupParams[];
+
+	/**
+	 * Abort signal
+	 */
 	signal?: AbortSignal;
 }
 
@@ -273,7 +291,7 @@ export interface FindkitSearchParams {
  * @public
  */
 export interface FindkitSearchGroupParams {
-	tagQuery: string[][];
+	tagQuery?: string[][];
 	tagBoost?: Record<string, number>;
 	createdDecay?: number;
 	modifiedDecay?: number;
@@ -282,6 +300,13 @@ export interface FindkitSearchGroupParams {
 	size?: number;
 	from?: number;
 	lang?: string;
+
+	/**
+	 * EXPERIMENTAL
+	 *
+	 * Return content for each hit. Must be explicitly enabled in the findkit.toml file
+	 */
+	content?: boolean;
 }
 
 /**
@@ -313,5 +338,11 @@ export interface GroupSearchResults {
 		highlight: string;
 		tags: string[];
 		customFields: CustomFields;
+
+		/**
+		 * EXPERIMENTAL
+		 * Only present if the content parameter was set in the request
+		 */
+		content?: string;
 	}[];
 }

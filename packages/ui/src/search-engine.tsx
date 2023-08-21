@@ -40,6 +40,7 @@ export interface SearchResultHit {
 	highlight: string;
 	tags: ReadonlyArray<string>;
 	customFields: CustomFields;
+	content?: string;
 }
 
 export interface ResultsWithTotal {
@@ -60,7 +61,7 @@ export interface SearchParams {
 	/**
 	 * https://docs.findkit.com/ui/api/params#tagQuery
 	 */
-	tagQuery: string[][];
+	tagQuery?: string[][];
 
 	/**
 	 * https://docs.findkit.com/ui/api/params#tagBoost
@@ -96,6 +97,13 @@ export interface SearchParams {
 	 * https://docs.findkit.com/ui/api/params#lang
 	 */
 	lang?: string;
+
+	/**
+	 * EXPERIMENTAL
+	 *
+	 * Return the hit content as well
+	 */
+	content?: boolean;
 }
 
 /**
@@ -545,7 +553,7 @@ export class SearchEngine {
 		this.PRIVATE_fetcher = createFindkitFetcher({
 			publicToken: this.publicToken,
 			searchEndpoint: this.PRIVATE_searchEndpoint,
-		}).findkitFetch;
+		}).fetch;
 
 		this.PRIVATE_throttleTime = options.throttleTime ?? 200;
 		this.PRIVATE_fetchCount = options.fetchCount ?? 20;
@@ -937,6 +945,7 @@ export class SearchEngine {
 				return cleanUndefined({
 					tagQuery: group.params.tagQuery ?? [],
 					tagBoost: group.params.tagBoost,
+					content: group.params.content,
 					createdDecay: group.params.createdDecay,
 					modifiedDecay: group.params.modifiedDecay,
 					decayScale: group.params.decayScale,
@@ -949,7 +958,7 @@ export class SearchEngine {
 			});
 
 		const fullParams: FindkitSearchParams = {
-			q: options.terms,
+			terms: options.terms,
 			groups,
 		};
 
