@@ -282,6 +282,7 @@ export interface FindkitSearchGroupParams {
 	size?: number;
 	from?: number;
 	lang?: string;
+	content?: boolean;
 }
 
 /**
@@ -313,5 +314,6 @@ export interface GroupSearchResults {
 		highlight: string;
 		tags: string[];
 		customFields: CustomFields;
+		content?: string;
 	}[];
 }
