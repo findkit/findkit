@@ -69,7 +69,7 @@ findkit deploy
 ```
 
 :::info
-Use must run the deploy every time you make changes to the .toml file
+You must run the deploy every time you make changes to the .toml file
 :::
 
 This creates the project to the Hub but does not run the crawls yet because we didn't
