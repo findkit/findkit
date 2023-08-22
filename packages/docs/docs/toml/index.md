@@ -118,7 +118,9 @@ Supports string prefixes and regexes. See [Indexing Content](/crawler/indexing) 
 
 ### `max_pages: number` {#max_pages}
 
-Max pages to crawl. If this limit is exceeded the crawler will just stop.
+Max pages to crawl. 
+This is a safety limit to make sure the crawler stops in the case where
+the site generates pages and links inifinitely.
 
 ### `cache_bust: boolean` {#cache_bust}
 
