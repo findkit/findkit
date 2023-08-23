@@ -1,4 +1,23 @@
-export const BASE_TRANSLATIONS = {
+/**
+ * @public
+ *
+ * Available translations strings
+ */
+export interface TranslationStrings {
+	close: string;
+	"show-all": string;
+	"aria-show-all": string;
+	"all-results-shown": string;
+	"load-more": string;
+	"go-back": string;
+	"aria-label-close-search": string;
+	"aria-label-search-input": string;
+	"no-results": string;
+	"sr-result-count": string;
+	"sr-search-instructions": string;
+}
+
+export const BASE_TRANSLATIONS: TranslationStrings = {
 	close: "Close",
 	"show-all": "Show more search results",
 	"aria-show-all": "Show all search results in the group {{group}}",
@@ -21,14 +40,6 @@ function renderTranslation(
 		return data?.[key]?.toString() ?? "[MISSING]";
 	});
 }
-
-/**
- * @public
- *
- * Available translations strings
- *
- */
-export type TranslationStrings = typeof BASE_TRANSLATIONS;
 
 export const TRANSLATIONS: Record<string, TranslationStrings> = {
 	en: BASE_TRANSLATIONS,
