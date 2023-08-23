@@ -94,6 +94,27 @@ test("can add custom language variant", async ({ page }) => {
 	await expect(closeButton).toHaveText("custom");
 });
 
+test("can customize build-in languages", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({ publicToken: "po8GK3G0r" });
+		ui.addTranslation("en", { close: "custom" });
+		ui.addTranslation("fi", { close: "muokkaus" });
+		Object.assign(window, { ui });
+		ui.open();
+	});
+
+	const closeButton = page.locator(".findkit--close-button");
+	await expect(closeButton).toHaveText("custom");
+
+	await page.evaluate(async () => {
+		ui.setLanguage("fi");
+	});
+
+	await expect(closeButton).toHaveText("muokkaus");
+});
+
 test("monitors <html lang>", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
 
