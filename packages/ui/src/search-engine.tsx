@@ -2,6 +2,7 @@ import { devtools, subscribeKey } from "valtio/utils";
 import {
 	assertNonNullable,
 	cleanUndefined,
+	deprecationNotice,
 	scrollIntoViewIfNeeded,
 } from "./utils";
 import {
@@ -206,7 +207,7 @@ export interface State {
 		lang: string;
 
 		/**
-		 * UI string overrides
+		 * UI string translation overrides
 		 */
 		strings: { [lang: string]: Partial<TranslationStrings> };
 	};
@@ -578,11 +579,26 @@ export class SearchEngine {
 			: document;
 	}
 
+	/**
+	 * @deprecated use addTranslation and setLanguage instead
+	 */
 	setUIStrings(lang: string, overrides?: Partial<TranslationStrings>) {
+		deprecationNotice(
+			"Using deprecated .setUIStrings() method. See https://findk.it/translations",
+		);
 		this.state.ui.lang = lang;
 		if (overrides) {
 			this.state.ui.strings[lang] = ref(overrides);
 		}
+	}
+
+	addTranslation(lang: string, translation: Partial<TranslationStrings>) {
+		this.state.ui.strings[lang] = ref(translation);
+	}
+
+	setLanguage(language: string) {
+		this.state.ui.lang = language;
+		this.events.emit("language", { language });
 	}
 
 	private PRIVATE_moveKeyboardCursor(direction: "down" | "up") {
@@ -680,7 +696,11 @@ export class SearchEngine {
 
 		this.PRIVATE_resources.create(() => {
 			const observer = new MutationObserver(() => {
-				this.state.ui.lang = this.PRIVATE_getDocumentLang();
+				const language = this.PRIVATE_getDocumentLang();
+				if (language !== this.state.ui.lang) {
+					this.state.ui.lang = language;
+					this.events.emit("language", { language });
+				}
 			});
 
 			observer.observe(document.documentElement, {
@@ -697,7 +717,7 @@ export class SearchEngine {
 			return "en";
 		}
 
-		return document.documentElement.lang.slice(0, 2).toLowerCase();
+		return document.documentElement.lang;
 	}
 
 	/**

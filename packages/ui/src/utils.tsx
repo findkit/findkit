@@ -114,3 +114,31 @@ export function scrollIntoViewIfNeeded(
 		});
 	}
 }
+
+export function isProd() {
+	if (typeof location !== "undefined") {
+		if (
+			location.port ||
+			location.hostname === "localhost" ||
+			location.hostname.endsWith(".test")
+		) {
+			return false;
+		}
+	}
+
+	try {
+		if (process.env.NODE_ENV === "production") {
+			return true;
+		}
+	} catch {
+		// `process` might not defined or transpiled in some enviroments
+	}
+
+	return true;
+}
+
+export function deprecationNotice(message: string) {
+	if (!isProd()) {
+		console.warn(`[Findkit] DEPRECATED ${message}`);
+	}
+}

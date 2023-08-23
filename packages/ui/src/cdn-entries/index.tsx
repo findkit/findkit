@@ -485,9 +485,22 @@ export class FindkitUI {
 	close = this.PRIVATE_proxy("close");
 
 	/**
-	 * Update the translation strings
+	 * @deprecated use addTranslation and setLanguage instead
 	 */
 	setUIStrings = this.PRIVATE_proxy("setUIStrings");
+
+	/**
+	 * Set the current UI language
+	 */
+	setLanguage = this.PRIVATE_proxy("setLanguage");
+
+	/**
+	 * Set the UI translations transt for a given language
+	 *
+	 * @params lang - language code
+	 * @params translations - translations object
+	 */
+	addTranslation = this.PRIVATE_proxy("addTranslation");
 
 	/**
 	 * Update groups

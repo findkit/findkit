@@ -69,12 +69,16 @@ export interface Translator {
 
 export function createTranslator(
 	lang: string,
-	extra?: Partial<TranslationStrings>,
+	overrides: { [lang: string]: Partial<TranslationStrings> },
 ): Translator {
+	// prefer locale like "en-US" but fallback to "en" if there is not US
+	// specific translations
+	const short = lang.trim().toLowerCase().slice(0, 2);
+
 	const translations = {
 		...BASE_TRANSLATIONS,
-		...TRANSLATIONS[lang],
-		...extra,
+		...(TRANSLATIONS[lang] || TRANSLATIONS[short] || {}),
+		...(overrides[lang] || overrides[short] || {}),
 	};
 
 	return (key, data) => {

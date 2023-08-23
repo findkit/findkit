@@ -209,6 +209,13 @@ export interface HitClickEvent {
 /**
  * @public
  */
+export interface LanguageChangeEvent {
+	language: string;
+}
+
+/**
+ * @public
+ */
 export interface LoadedEvent {
 	/**
 	 * The container element
@@ -290,6 +297,11 @@ export interface FindkitUIEvents {
 	 * When the implementation was loaded and initialized
 	 */
 	loaded: LoadedEvent;
+
+	/**
+	 * Emitted when the language changes in <html lang>
+	 */
+	language: LanguageChangeEvent;
 }
 
 // interface MyEvents {

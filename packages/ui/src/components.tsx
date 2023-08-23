@@ -34,7 +34,7 @@ export function FindkitProvider(props: {
 	slots?: Partial<Slots>;
 }) {
 	const state = useSnapshot(props.engine.state);
-	const strings = state.ui.strings[state.ui.lang];
+	const strings = state.ui.strings;
 	const focusRef = useRef<FocusRef>({});
 
 	const context = useMemo(() => {

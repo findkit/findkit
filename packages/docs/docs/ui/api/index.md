@@ -258,6 +258,17 @@ TODO: More detailed docs.
 
 <Api page="ui.findkitui.updategroups" />
 
+### `.setLanguage(lang)` {#setLanguage}
+
+Set the current UI language.
+
+### `.addTranslation(lang, translation)` {#addTranslation}
+
+Add new UI translation. Can be used to override existing translation strings.
+
+TODO: Add link to type.
+
+
 ### `.on()` {#on}
 
 Args
