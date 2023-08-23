@@ -46,6 +46,31 @@ test("can add custom language", async ({ page }) => {
 	await expect(closeButton).toHaveText("wut");
 });
 
+test("can add custom language lazily", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({ publicToken: "po8GK3G0r" });
+		Object.assign(window, { ui });
+		ui.open();
+	});
+
+	const closeButton = page.locator(".findkit--close-button");
+	await expect(closeButton).toHaveText("Close");
+
+	await page.evaluate(async () => {
+		ui.setLanguage("wat");
+	});
+
+	await page.evaluate(async () => {
+		ui.addTranslation("wat", {
+			close: "wut",
+		});
+	});
+
+	await expect(closeButton).toHaveText("wut");
+});
+
 test("can add custom language variant", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
 
