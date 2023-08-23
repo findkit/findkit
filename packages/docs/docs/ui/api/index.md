@@ -242,19 +242,41 @@ The modal cannot be opened any more after it is disposed.
 
 <Api page="ui.findkitui.dispose" />
 
-### `.updateParams()` {#updateParams}
+### `.updateParams(fn)` {#updateParams}
 
-Update the search params.
+Update the search params. It calls the given function immediately giving the
+internal params object as the first parameter. The object can mutated or a new
+one can be returned. A new search will be issued immediately.
 
-TODO: More detailed docs.
+Example
+
+```ts
+ui.updateParams((params) => {
+	params.tagQuery = [["domain/another.example"]];
+});
+```
 
 <Api page="ui.findkitui.updateparams" />
 
-### `.updateGroups()` {#updateGroups}
+### `.updateGroups(fn)` {#updateGroups}
 
-Update the groups.
+Update the groups. The callback function works like in
+[`updateParams`](#updateParams) but the previously defined groups are spread to
+the function params.
 
-TODO: More detailed docs.
+Example
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	groups: [{ tagQuery: [["html"]] }, { tagQuery: [["pdf"]] }],
+});
+
+ui.updateGroups((pages, pdf) => {
+	pages.previewSize = 5;
+	pdf.previewSize = 5;
+});
+```
 
 <Api page="ui.findkitui.updategroups" />
 
