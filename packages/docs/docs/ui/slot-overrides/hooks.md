@@ -56,6 +56,13 @@ Return total hit count. Includes count from all groups if multiple groups are us
 
 <Api page="ui.usetotalhitcount" />
 
+### `useLanguage()` {#useTotalHitCount}
+
+Return the current UI language. Can be used to implement custom ui string
+translations on slot overrides.
+
+<Api page="ui.uselanguage" />
+
 ### `preact` {#preact}
 
 Object of commonly used Preact Hooks. See the api docs for details.

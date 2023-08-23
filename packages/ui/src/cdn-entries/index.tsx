@@ -332,6 +332,11 @@ export const useTotalHitCount = createShellFunction("useTotalHitCount");
  */
 export const useInput = createShellFunction("useInput");
 
+/**
+ * Get the current ui language
+ */
+export const useLanguage = createShellFunction("useLanguage");
+
 function preloadStylesheet(href: string) {
 	const link = doc().createElement("link");
 	link.rel = "preload";
