@@ -74,9 +74,22 @@ When a search hit is clicked.
 
 <Api page="ui.hitclickevent">Event Object Interface</Api>
 
+### `language`
+
+Emitted when
+
+- `<html lang>` is initially read
+- `<html lang>` is mutated
+- Language is set explicitly with [`setLanguage`](/ui/api/#setLanguage)
+
+
+<Api page="ui.languagechangeevent">Event Object Interface</Api>
+
 ### `dispose`
 
 Emitted when the `FindkitUI` instance is discarded with the `.dispose()` method.
+
+
 
 ---
 

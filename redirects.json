@@ -9,6 +9,7 @@
 		"/origin-domains": "https://docs.findkit.com/toml#origin_domains",
 		"/selectors": "https://docs.findkit.com/crawler/indexing",
 		"/cli": "https://docs.findkit.com/crawler/getting-started/",
-		"/translations": "https://docs.findkit.com/ui/translations"
+		"/translations": "https://docs.findkit.com/ui/translations",
+		"/strings": "https://docs.findkit.com/ui-api/ui.findkitui.translationstrings/"
 	}
 }

@@ -567,6 +567,8 @@ export class SearchEngine {
 		);
 
 		this.PRIVATE_handleAddressChange();
+
+		this.events.emit("language", { language: this.state.ui.lang });
 	}
 
 	get container() {

@@ -299,7 +299,7 @@ export interface FindkitUIEvents {
 	loaded: LoadedEvent;
 
 	/**
-	 * Emitted when the language changes in <html lang>
+	 * Emitted when the UI language changes
 	 */
 	language: LanguageChangeEvent;
 }

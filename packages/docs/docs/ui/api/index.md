@@ -284,12 +284,19 @@ ui.updateGroups((pages, pdf) => {
 
 Set the current UI language.
 
+<Api page="ui.findkitui.setlanguage" />
+
 ### `.addTranslation(lang, translation)` {#addTranslation}
 
-Add new UI translation. Can be used to override existing translation strings.
+Add a new UI translation. Can be used to override existing translation strings
+as well. See <Api
+page="ui.findkitui.translationstrings">TranslationStrings</Api> for available
+the available transtion strings.
 
-TODO: Add link to type.
+The `lang` param should match with the `<html lang>` attribute or what was
+explicitly passed to [`.setLanguage()`](#setLanguage).
 
+<Api page="ui.findkitui.addtranslation" />
 
 ### `.on()` {#on}
 

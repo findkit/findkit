@@ -1,7 +1,7 @@
 /**
  * @public
  *
- * Available translations strings
+ * UI strings available for translation
  */
 export interface TranslationStrings {
 	close: string;
