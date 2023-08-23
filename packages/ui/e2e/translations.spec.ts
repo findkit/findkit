@@ -100,6 +100,15 @@ test("emits language events", async ({ page }) => {
 		ui.open();
 	});
 
+	// emits initial language on start
+	await expect
+		.poll(async () => {
+			return await page.evaluate(async () => {
+				return (window as any).languageEvents;
+			});
+		})
+		.toEqual(["en"]);
+
 	await page.evaluate(async () => {
 		ui.setLanguage("sv");
 	});
@@ -110,7 +119,7 @@ test("emits language events", async ({ page }) => {
 				return (window as any).languageEvents;
 			});
 		})
-		.toEqual(["sv"]);
+		.toEqual(["en", "sv"]);
 
 	await page.evaluate(async () => {
 		document.documentElement.lang = "fi";
@@ -122,5 +131,5 @@ test("emits language events", async ({ page }) => {
 				return (window as any).languageEvents;
 			});
 		})
-		.toEqual(["sv", "fi"]);
+		.toEqual(["en", "sv", "fi"]);
 });
