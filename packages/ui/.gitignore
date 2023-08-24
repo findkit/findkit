@@ -7,3 +7,4 @@ findkit-ui-*.tgz
 api-docs-html
 test-results
 implementation.js
+/test-app/classnames.d.ts
