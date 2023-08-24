@@ -18,7 +18,7 @@ test("change ui language", async ({ page }) => {
 	await expect(closeButton).toHaveText("Close");
 
 	await page.evaluate(async () => {
-		ui.setLanguage("fi");
+		ui.setLang("fi");
 	});
 
 	await expect(closeButton).toHaveText("Sulje");
@@ -40,7 +40,7 @@ test("can add custom language", async ({ page }) => {
 		ui.addTranslation("wat", {
 			close: "wut",
 		});
-		ui.setLanguage("wat");
+		ui.setLang("wat");
 	});
 
 	await expect(closeButton).toHaveText("wut");
@@ -59,7 +59,7 @@ test("can add custom language lazily", async ({ page }) => {
 	await expect(closeButton).toHaveText("Close");
 
 	await page.evaluate(async () => {
-		ui.setLanguage("wat");
+		ui.setLang("wat");
 	});
 
 	await page.evaluate(async () => {
@@ -77,7 +77,7 @@ test("can add custom language variant", async ({ page }) => {
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({ publicToken: "po8GK3G0r" });
 		ui.addTranslation("en-xx", { close: "custom" });
-		ui.setLanguage("en");
+		ui.setLang("en");
 		Object.assign(window, { ui });
 		ui.open();
 	});
@@ -88,7 +88,7 @@ test("can add custom language variant", async ({ page }) => {
 	await expect(closeButton).toHaveText("Close");
 
 	await page.evaluate(async () => {
-		ui.setLanguage("en-xx");
+		ui.setLang("en-xx");
 	});
 
 	await expect(closeButton).toHaveText("custom");
@@ -109,7 +109,7 @@ test("can customize build-in languages", async ({ page }) => {
 	await expect(closeButton).toHaveText("custom");
 
 	await page.evaluate(async () => {
-		ui.setLanguage("fi");
+		ui.setLang("fi");
 	});
 
 	await expect(closeButton).toHaveText("muokkaus");
@@ -140,7 +140,7 @@ test("emits language events", async ({ page }) => {
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({ publicToken: "po8GK3G0r" });
 		const languageEvents: string[] = [];
-		ui.on("language", (e) => languageEvents.push(e.language));
+		ui.on("lang", (e) => languageEvents.push(e.lang));
 
 		Object.assign(window, { ui, languageEvents });
 		ui.open();
@@ -156,7 +156,7 @@ test("emits language events", async ({ page }) => {
 		.toEqual(["en"]);
 
 	await page.evaluate(async () => {
-		ui.setLanguage("sv");
+		ui.setLang("sv");
 	});
 
 	await expect
@@ -180,7 +180,7 @@ test("emits language events", async ({ page }) => {
 		.toEqual(["en", "sv", "fi"]);
 });
 
-test("does not cause extra fetches when setting params on 'language' event", async ({
+test("does not cause extra fetches when setting params on 'lang' event", async ({
 	page,
 }) => {
 	await page.goto(staticEntry("/language-event?fdk_q=test"));
@@ -191,5 +191,5 @@ test("does not cause extra fetches when setting params on 'language' event", asy
 		return (window as any).uiEvents;
 	});
 
-	expect(events).toEqual(["language", "fetch"]);
+	expect(events).toEqual(["lang", "fetch"]);
 });

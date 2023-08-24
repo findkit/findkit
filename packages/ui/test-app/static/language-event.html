@@ -14,8 +14,8 @@
             const uiEvents = [];
             Object.assign(window, { uiEvents });
 
-			ui.on("language", (event) => {
-                uiEvents.push("language");
+			ui.on("lang", (event) => {
+                uiEvents.push("lang");
 				ui.updateParams((params) => {
 					params.tagQuery = [["domain/valu.fi"]];
 				});

@@ -280,11 +280,11 @@ ui.updateGroups((pages, pdf) => {
 
 <Api page="ui.findkitui.updategroups" />
 
-### `.setLanguage(lang)` {#setLanguage}
+### `.setLang(lang)` {#setLang}
 
 Set the current UI language.
 
-<Api page="ui.findkitui.setlanguage" />
+<Api page="ui.findkitui.setLang" />
 
 ### `.addTranslation(lang, translation)` {#addTranslation}
 
@@ -294,7 +294,7 @@ page="ui.findkitui.translationstrings">TranslationStrings</Api> for available
 the available transtion strings.
 
 The `lang` param should match with the `<html lang>` attribute or what was
-explicitly passed to [`.setLanguage()`](#setLanguage).
+explicitly passed to [`setLang`](#setLang).
 
 <Api page="ui.findkitui.addtranslation" />
 

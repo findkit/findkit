@@ -467,9 +467,9 @@ export function init(_options: {
 }) {
 	const options = { ..._options };
 
-	if (options.ui) {
+	if (options.ui?.overrides) {
 		deprecationNotice(
-			"Using deprecated `ui` constructor option. See https://findk.it/translations",
+			"Using deprecated `ui.overrides` constructor option. See https://findk.it/translations",
 		);
 	}
 

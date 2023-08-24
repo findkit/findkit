@@ -569,7 +569,7 @@ export class SearchEngine {
 
 		this.state.currentGroupId = initialSearchParams.getGroupId();
 
-		this.events.emit("language", { language: this.state.ui.lang });
+		this.events.emit("lang", { lang: this.state.ui.lang });
 
 		this.PRIVATE_resources.create(() =>
 			subscribeKey(
@@ -627,9 +627,9 @@ export class SearchEngine {
 		this.state.ui.strings[lang] = ref(translation);
 	}
 
-	setLanguage(language: string) {
-		this.state.ui.lang = language;
-		this.events.emit("language", { language });
+	setLang(lang: string) {
+		this.state.ui.lang = lang;
+		this.events.emit("lang", { lang });
 	}
 
 	private PRIVATE_moveKeyboardCursor(direction: "down" | "up") {
@@ -727,10 +727,10 @@ export class SearchEngine {
 
 		this.PRIVATE_resources.create(() => {
 			const observer = new MutationObserver(() => {
-				const language = this.PRIVATE_getDocumentLang();
-				if (language !== this.state.ui.lang) {
-					this.state.ui.lang = language;
-					this.events.emit("language", { language });
+				const lang = this.PRIVATE_getDocumentLang();
+				if (lang !== this.state.ui.lang) {
+					this.state.ui.lang = lang;
+					this.events.emit("lang", { lang });
 				}
 			});
 
@@ -993,6 +993,14 @@ export class SearchEngine {
 					from = this.PRIVATE_getFetchedGroupHitCount(options.appendGroupId);
 				}
 
+				let lang = group.params.lang ?? options.lang;
+				if (lang) {
+					// The search-endpoint only understands two letter language
+					// codes so we can ignore the rest if it happens to have a
+					// country code like en-US for example
+					lang = lang.toLowerCase().slice(0, 2);
+				}
+
 				return cleanUndefined({
 					tagQuery: group.params.tagQuery ?? [],
 					tagBoost: group.params.tagBoost,
@@ -1002,7 +1010,7 @@ export class SearchEngine {
 					decayScale: group.params.decayScale,
 					highlightLength:
 						group.params.highlightLength ?? DEFAULT_HIGHLIGHT_LENGTH,
-					lang: group.params.lang ?? options.lang,
+					lang,
 					size,
 					from,
 				});
