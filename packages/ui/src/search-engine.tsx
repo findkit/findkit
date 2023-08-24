@@ -547,6 +547,9 @@ export class SearchEngine {
 		this.PRIVATE_minTerms = options.minTerms ?? 2;
 	}
 
+	PRIVATE_started = false;
+	PRIVATE_pendingInputs: Set<HTMLInputElement> = new Set();
+
 	/**
 	 * "Start the search engine" eg. start listening to input, url etc.
 	 * changes.
@@ -557,6 +560,8 @@ export class SearchEngine {
 	 * "language" event without extra search reqeusts.
 	 */
 	start() {
+		this.PRIVATE_started = true;
+
 		const initialSearchParams = new FindkitURLSearchParams(
 			this.instanceId,
 			this.router.getSearchParamsString(),
@@ -585,6 +590,14 @@ export class SearchEngine {
 		);
 
 		this.PRIVATE_handleAddressChange();
+
+		// handleAddressChange() must called before binding the inputs because
+		// it will clear the search terms otherwise
+		for (const input of this.PRIVATE_pendingInputs) {
+			this.bindInput(input);
+		}
+
+		this.PRIVATE_pendingInputs.clear();
 	}
 
 	get container() {
@@ -1278,12 +1291,17 @@ export class SearchEngine {
 	 * Bind input to search. Returns unbind function.
 	 */
 	bindInput = (input: HTMLInputElement) => {
-		const listeners = this.PRIVATE_resources.child();
-		const prev = this.PRIVATE_inputs.find((o) => o.el === input);
-
 		const unbind = () => {
 			this.removeInput(input);
 		};
+
+		// Must delay input listening till "engine start" eg. .start() call
+		if (!this.PRIVATE_started) {
+			this.PRIVATE_pendingInputs.add(input);
+			return unbind;
+		}
+
+		const prev = this.PRIVATE_inputs.find((o) => o.el === input);
 
 		if (prev) {
 			return unbind;
@@ -1305,6 +1323,8 @@ export class SearchEngine {
 			// before this .addInput() call
 			this.PRIVATE_handleInputChange(input.value);
 		}
+
+		const listeners = this.PRIVATE_resources.child();
 
 		this.PRIVATE_resources.create(() => listeners.dispose);
 
@@ -1373,6 +1393,7 @@ export class SearchEngine {
 	};
 
 	removeInput = (rmInput: HTMLInputElement) => {
+		this.PRIVATE_pendingInputs.delete(rmInput);
 		const input = this.PRIVATE_inputs.find((input) => input?.el === rmInput);
 		input?.unbindEvents();
 
