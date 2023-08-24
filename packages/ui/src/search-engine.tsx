@@ -993,6 +993,14 @@ export class SearchEngine {
 					from = this.PRIVATE_getFetchedGroupHitCount(options.appendGroupId);
 				}
 
+				let lang = group.params.lang ?? options.lang;
+				if (lang) {
+					// The search-endpoint only understands two letter language
+					// codes so we can ignore the rest if it happens to have a
+					// country code like en-US for example
+					lang = lang.toLowerCase().slice(0, 2);
+				}
+
 				return cleanUndefined({
 					tagQuery: group.params.tagQuery ?? [],
 					tagBoost: group.params.tagBoost,
@@ -1002,7 +1010,7 @@ export class SearchEngine {
 					decayScale: group.params.decayScale,
 					highlightLength:
 						group.params.highlightLength ?? DEFAULT_HIGHLIGHT_LENGTH,
-					lang: group.params.lang ?? options.lang,
+					lang,
 					size,
 					from,
 				});
