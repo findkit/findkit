@@ -449,6 +449,7 @@ export class SearchEngine {
 
 	private PRIVATE_resources = new Resources();
 	private PRIVATE_container: Element | ShadowRoot;
+	private PRIVATE_monitorDocumentElementLangActive: boolean | undefined;
 
 	events: Emitter<FindkitUIEvents, unknown>;
 
@@ -472,6 +473,8 @@ export class SearchEngine {
 		this.publicToken = options.publicToken;
 		this.events = options.events;
 		this.PRIVATE_container = options.container;
+		this.PRIVATE_monitorDocumentElementLangActive =
+			options.monitorDocumentElementChanges;
 
 		if (instanceIds.has(this.instanceId)) {
 			throw new Error(
@@ -480,11 +483,6 @@ export class SearchEngine {
 		}
 
 		instanceIds.add(this.instanceId);
-
-		const initialSearchParams = new FindkitURLSearchParams(
-			this.instanceId,
-			this.router.getSearchParamsString(),
-		);
 
 		let groups = options.groups;
 
@@ -506,7 +504,7 @@ export class SearchEngine {
 
 		this.state = proxy<State>({
 			usedTerms: undefined,
-			currentGroupId: initialSearchParams.getGroupId(),
+			currentGroupId: undefined,
 			searchParams: this.router.getSearchParamsString(),
 			lang: undefined,
 			lockScroll: options.lockScroll ?? true,
@@ -536,18 +534,6 @@ export class SearchEngine {
 		});
 		devtools(this.state);
 
-		this.PRIVATE_resources.create(() =>
-			subscribeKey(
-				this.state,
-				"nextGroupDefinitions",
-				this.PRIVATE_handleGroupsChange,
-			),
-		);
-
-		if (options.monitorDocumentElementChanges !== false) {
-			this.PRIVATE_monitorDocumentElementLang();
-		}
-
 		this.publicToken = options.publicToken;
 		this.PRIVATE_searchEndpoint = options.searchEndpoint;
 
@@ -559,6 +545,43 @@ export class SearchEngine {
 		this.PRIVATE_throttleTime = options.throttleTime ?? 200;
 		this.PRIVATE_fetchCount = options.fetchCount ?? 20;
 		this.PRIVATE_minTerms = options.minTerms ?? 2;
+	}
+
+	PRIVATE_started = false;
+	PRIVATE_pendingInputs: Set<HTMLInputElement> = new Set();
+
+	/**
+	 * "Start the search engine" eg. start listening to input, url etc.
+	 * changes.
+	 *
+	 * This is in separate method so the users can modify the engine
+	 * state before it starts listening to changes. For example this allows
+	 * users to modify the ui object with updateParams() in the "loaded" and
+	 * "language" event without extra search reqeusts.
+	 */
+	start() {
+		this.PRIVATE_started = true;
+
+		const initialSearchParams = new FindkitURLSearchParams(
+			this.instanceId,
+			this.router.getSearchParamsString(),
+		);
+
+		this.state.currentGroupId = initialSearchParams.getGroupId();
+
+		this.events.emit("language", { language: this.state.ui.lang });
+
+		this.PRIVATE_resources.create(() =>
+			subscribeKey(
+				this.state,
+				"nextGroupDefinitions",
+				this.PRIVATE_handleGroupsChange,
+			),
+		);
+
+		if (this.PRIVATE_monitorDocumentElementLangActive !== false) {
+			this.PRIVATE_monitorDocumentElementLang();
+		}
 
 		this.PRIVATE_syncInputs(initialSearchParams.getTerms());
 
@@ -568,7 +591,13 @@ export class SearchEngine {
 
 		this.PRIVATE_handleAddressChange();
 
-		this.events.emit("language", { language: this.state.ui.lang });
+		// handleAddressChange() must called before binding the inputs because
+		// it will clear the search terms otherwise
+		for (const input of this.PRIVATE_pendingInputs) {
+			this.bindInput(input);
+		}
+
+		this.PRIVATE_pendingInputs.clear();
 	}
 
 	get container() {
@@ -1262,12 +1291,17 @@ export class SearchEngine {
 	 * Bind input to search. Returns unbind function.
 	 */
 	bindInput = (input: HTMLInputElement) => {
-		const listeners = this.PRIVATE_resources.child();
-		const prev = this.PRIVATE_inputs.find((o) => o.el === input);
-
 		const unbind = () => {
 			this.removeInput(input);
 		};
+
+		// Must delay input listening till "engine start" eg. .start() call
+		if (!this.PRIVATE_started) {
+			this.PRIVATE_pendingInputs.add(input);
+			return unbind;
+		}
+
+		const prev = this.PRIVATE_inputs.find((o) => o.el === input);
 
 		if (prev) {
 			return unbind;
@@ -1289,6 +1323,8 @@ export class SearchEngine {
 			// before this .addInput() call
 			this.PRIVATE_handleInputChange(input.value);
 		}
+
+		const listeners = this.PRIVATE_resources.child();
 
 		this.PRIVATE_resources.create(() => listeners.dispose);
 
@@ -1357,6 +1393,7 @@ export class SearchEngine {
 	};
 
 	removeInput = (rmInput: HTMLInputElement) => {
+		this.PRIVATE_pendingInputs.delete(rmInput);
 		const input = this.PRIVATE_inputs.find((input) => input?.el === rmInput);
 		input?.unbindEvents();
 

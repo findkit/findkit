@@ -672,6 +672,14 @@ export class FindkitUI {
 
 		const impl = await this.PRIVATE_loadImplementation();
 
+		if (typeof location !== "undefined") {
+			const usp = new URLSearchParams(location.search);
+			const delay = Number(usp.get("__fdk_simulate_slow_load"));
+			if (delay) {
+				await new Promise((resolve) => setTimeout(resolve, delay));
+			}
+		}
+
 		Object.assign(lazyImplementation, impl.js);
 		Object.assign(preactImplementation, impl.js.preact);
 
@@ -703,6 +711,7 @@ export class FindkitUI {
 					__engine: engine,
 					container: host,
 				});
+				engine.start();
 
 				return engine.dispose;
 			});
