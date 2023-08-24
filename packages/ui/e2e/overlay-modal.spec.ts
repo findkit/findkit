@@ -70,3 +70,15 @@ test("keyboard navigation scrolls", async ({ page }) => {
 		})
 		.toBeGreaterThan(50);
 });
+
+test("works if user manages to write to the input before the implementation loads", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/overlay-modal?__fdk_simulate_slow_load=500"));
+	const input = page.locator("#external-input");
+	const hits = page.locator(".findkit-overlay-container .findkit--hit a");
+
+	await input.fill("test");
+
+	await expect(hits.first()).toBeVisible();
+});
