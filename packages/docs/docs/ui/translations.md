@@ -56,7 +56,7 @@ params.
 ```ts
 const ui = new FindkitUI({ publicToken: "<TOKEN>" });
 
-// Invoked on intial <html lang> read any later updates
+// Invoked on intial <html lang> read and any later updates
 ui.on("language", (e) => {
 	const code = e.language.toLowerCase().slice(0, 2);
 
