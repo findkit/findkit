@@ -179,3 +179,17 @@ test("emits language events", async ({ page }) => {
 		})
 		.toEqual(["en", "sv", "fi"]);
 });
+
+test("does not cause extra fetches when setting params on 'language' event", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/language-event?fdk_q=test"));
+	const hits = page.locator(".findkit--hit");
+	await expect(hits.first()).toBeVisible();
+
+	const events = await page.evaluate(async () => {
+		return (window as any).uiEvents;
+	});
+
+	expect(events).toEqual(["language", "fetch"]);
+});

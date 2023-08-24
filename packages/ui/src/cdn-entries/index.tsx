@@ -703,6 +703,7 @@ export class FindkitUI {
 					__engine: engine,
 					container: host,
 				});
+				engine.start();
 
 				return engine.dispose;
 			});
