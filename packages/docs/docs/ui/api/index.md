@@ -170,14 +170,36 @@ How many results to fetch in a single request.
 
 <Api page="ui.findkituioptions.fetchCount" />
 
-### `ui: object` {#ui}
+### `ui.lang: object` {#ui.lang}
 
-Set the UI language options.
+Set the UI language. See [`setLang`](#setLang). If not defined the language is
+read from the `<html lang>` attribute
 
-Set to `{lang: "fi"}` to customize the language. If not the language is
-automatically read from the `<html lang>` attribute.
+<Api page="ui.findkituioptions.ui" />
 
-TODO: document custom translations strings
+### `ui.translations: object` {#ui.translations}
+
+Set the UI language options. See [`addTranslation`](#addTranslation).
+
+Example
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	ui: {
+        lang: "sv",
+        // Add translations
+        translations: {
+            sv: {
+                close: "Stänga"
+                // ... https://findk.it/strings
+            }
+        }
+    }
+});
+```
+
+
 
 <Api page="ui.findkituioptions.ui" />
 

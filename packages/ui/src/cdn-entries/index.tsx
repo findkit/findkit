@@ -427,7 +427,13 @@ export interface FindkitUIOptions {
 	fontDivisor?: number;
 	ui?: {
 		lang?: string;
+
+		/**
+		 * @deprecated use translations or ui.addTranslation() instead
+		 */
 		overrides?: Partial<TranslationStrings>;
+
+		translations?: { [lang: string]: Partial<TranslationStrings> };
 	};
 }
 

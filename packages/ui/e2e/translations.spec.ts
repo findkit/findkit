@@ -24,6 +24,28 @@ test("change ui language", async ({ page }) => {
 	await expect(closeButton).toHaveText("Sulje");
 });
 
+test("change ui language with constructor params", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "po8GK3G0r",
+			ui: {
+				lang: "xx",
+				translations: {
+					xx: {
+						close: "custom",
+					},
+				},
+			},
+		});
+		ui.open();
+	});
+
+	const closeButton = page.locator(".findkit--close-button");
+	await expect(closeButton).toHaveText("custom");
+});
+
 test("can add custom language", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
 

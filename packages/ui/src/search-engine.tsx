@@ -209,7 +209,7 @@ export interface State {
 		/**
 		 * UI string translation overrides
 		 */
-		strings: { [lang: string]: Partial<TranslationStrings> };
+		translations: { [lang: string]: Partial<TranslationStrings> };
 	};
 
 	/**
@@ -384,7 +384,13 @@ export interface SearchEngineOptions {
 	monitorDocumentElementChanges?: boolean;
 	ui?: {
 		lang?: string;
+
+		/**
+		 * @deprecated
+		 */
 		overrides?: Partial<TranslationStrings>;
+
+		translations?: { [lang: string]: Partial<TranslationStrings> };
 	};
 
 	groupOrder?: GroupOrder;
@@ -502,6 +508,16 @@ export class SearchEngine {
 
 		const lang = options.ui?.lang ?? this.PRIVATE_getDocumentLang();
 
+		const translations: State["ui"]["translations"] = {
+			[lang]: ref(options.ui?.overrides ?? {}),
+		};
+
+		for (const [lang, translation] of Object.entries(
+			options.ui?.translations ?? {},
+		)) {
+			translations[lang] = ref(translation);
+		}
+
 		this.state = proxy<State>({
 			usedTerms: undefined,
 			currentGroupId: undefined,
@@ -517,9 +533,7 @@ export class SearchEngine {
 			groupOrder: options.groupOrder ?? "static",
 			ui: {
 				lang,
-				strings: {
-					[lang]: ref(options.ui?.overrides ?? {}),
-				},
+				translations,
 			},
 
 			trapElements: [],
@@ -619,12 +633,12 @@ export class SearchEngine {
 		);
 		this.state.ui.lang = lang;
 		if (overrides) {
-			this.state.ui.strings[lang] = ref(overrides);
+			this.state.ui.translations[lang] = ref(overrides);
 		}
 	}
 
 	addTranslation(lang: string, translation: Partial<TranslationStrings>) {
-		this.state.ui.strings[lang] = ref(translation);
+		this.state.ui.translations[lang] = ref(translation);
 	}
 
 	setLang(lang: string) {
