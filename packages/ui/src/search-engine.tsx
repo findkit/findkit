@@ -484,7 +484,7 @@ export class SearchEngine {
 
 		if (instanceIds.has(this.instanceId)) {
 			throw new Error(
-				`[findkit] Instance id "${this.instanceId}" already exists. Pass in custom "instanceId" to avoid conflicts.`,
+				`[findkit] Conflicting instance id "${this.instanceId}". See https://findk.it/instanceid`,
 			);
 		}
 

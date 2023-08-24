@@ -101,8 +101,21 @@ results.
 
 ### `instanceId: string` {#instanceId}
 
-When using multiple `FindkitUI` instances you must provide a custom `instanceId`
-to avoid conflicts in the query strings and idendifying class names.
+When using multiple `FindkitUI` instances you must provide a custom
+`instanceId` to avoid conflicts in the query strings and idendifying class
+names. This is needed for examle when you have global site search and a more
+specific search running on the same page.
+
+:::note
+If you have only one search setup and you are getting an error about a
+conflicting instance id it means you are accidentally doing multiple `new
+Findkit()` calls without calling [`dispose`](#dispose) on the previous
+instance.
+
+If you are creating the FindkitUI instance inside a React component you must
+call the `dispose` method on a `useEffect` cleanup. See the [React custom
+container example](/ui/patterns/embedding/react#custom-container).
+:::
 
 Defaults to `"fdk"`.
 
