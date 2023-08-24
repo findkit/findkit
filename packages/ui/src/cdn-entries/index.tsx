@@ -335,7 +335,7 @@ export const useInput = createShellFunction("useInput");
 /**
  * Get the current ui language
  */
-export const useLanguage = createShellFunction("useLanguage");
+export const useLang = createShellFunction("useLang");
 
 function preloadStylesheet(href: string) {
 	const link = doc().createElement("link");
@@ -492,7 +492,7 @@ export class FindkitUI {
 	/**
 	 * Set the current UI language
 	 */
-	setLanguage = this.PRIVATE_proxy("setLanguage");
+	setLang = this.PRIVATE_proxy("setLang");
 
 	/**
 	 * Set the UI translations transt for a given language

@@ -210,7 +210,7 @@ export interface HitClickEvent {
  * @public
  */
 export interface LanguageChangeEvent {
-	language: string;
+	lang: string;
 }
 
 /**
@@ -301,7 +301,7 @@ export interface FindkitUIEvents {
 	/**
 	 * Emitted when the UI language changes
 	 */
-	language: LanguageChangeEvent;
+	lang: LanguageChangeEvent;
 }
 
 // interface MyEvents {

@@ -45,7 +45,7 @@ function useTotalHitCountImplementation() {
 /**
  * @public
  */
-export function useLanguageImplementation() {
+export function useLangImplementation() {
 	return useSearchEngineState().ui.lang;
 }
 
@@ -118,7 +118,7 @@ export interface Implementation {
 	useTerms: typeof useTermsImplementation;
 	useResults: typeof useResultsImplementation;
 	useTotal: typeof useTotalImplementation;
-	useLanguage: typeof useLanguageImplementation;
+	useLang: typeof useLangImplementation;
 	useInput: typeof useInput;
 	useTotalHitCount: typeof useTotalHitCountImplementation;
 	preact: PreactFunctions;
@@ -135,7 +135,7 @@ export const js: Implementation = {
 	useResults: useResultsImplementation,
 	useInput,
 	useTotalHitCount: useTotalHitCountImplementation,
-	useLanguage: useLanguageImplementation,
+	useLang: useLangImplementation,
 	preact: preactFunctions,
 };
 

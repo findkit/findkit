@@ -2,7 +2,7 @@
 
 Findkit UI can work with multlingual webites. It automatically sets the UI
 language translation based on the `<html lang>` attribute. It can be also
-manually set using the [`setLanguage`](/ui/api/#setLanguage) method.
+manually set using the [`setLang`](/ui/api/#setLang) method.
 Currently Findkit UI comes with english and finnish translations but additional
 languages can be added with [`addTranslation`](/ui/api/#addTranslation).
 
@@ -18,7 +18,7 @@ ui.addTranslation("fi-savo", {
 	// See https://findk.it/strings for all available strings
 });
 
-ui.setLanguage("fi-savo");
+ui.setLang("fi-savo");
 ```
 
 The language will always fallback to the less spefic translations. For example
@@ -37,7 +37,7 @@ specifically depending on your situation.
 If your framework automatically changes the `<html lang>` attribute on such
 navigation then Findkit UI will automatically detect that and update the UI
 strings accordingly. Otherwise you must call
-[`setLanguage`](/ui/api/#setLanguage) explicitly on navigation.
+[`setLang`](/ui/api/#setLang) explicitly on navigation.
 
 ### Language Based Search Params
 
@@ -49,7 +49,7 @@ language changes. You must update them with
 [`updateParams`](/ui/api/#updateParams) or with
 [`updateGroups`](/ui/api/#updateGroups).
 
-FindkitUI provides a [`language`](/ui/api/events#language) event which is
+FindkitUI provides a [`lang`](/ui/api/events#lang) event which is
 emitted when the language changes which can be used to dynamically set the
 params.
 
@@ -57,11 +57,10 @@ params.
 const ui = new FindkitUI({ publicToken: "<TOKEN>" });
 
 // Invoked on intial <html lang> read and any later updates
-ui.on("language", (e) => {
-	const code = e.language.toLowerCase().slice(0, 2);
-
+ui.on("lang", (e) => {
 	ui.updateParams((params) => {
-		params.tagQuery = [[`language/${code}`]];
+		params.lang = e.lang;
+        // Update any tagQueries etc. as well
 	});
 });
 ```
