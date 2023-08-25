@@ -332,6 +332,11 @@ export const useTotalHitCount = createShellFunction("useTotalHitCount");
  */
 export const useInput = createShellFunction("useInput");
 
+/**
+ * Get the current ui language
+ */
+export const useLang = createShellFunction("useLang");
+
 function preloadStylesheet(href: string) {
 	const link = doc().createElement("link");
 	link.rel = "preload";
@@ -422,7 +427,13 @@ export interface FindkitUIOptions {
 	fontDivisor?: number;
 	ui?: {
 		lang?: string;
+
+		/**
+		 * @deprecated use translations or ui.addTranslation() instead
+		 */
 		overrides?: Partial<TranslationStrings>;
+
+		translations?: { [lang: string]: Partial<TranslationStrings> };
 	};
 }
 
@@ -480,9 +491,22 @@ export class FindkitUI {
 	close = this.PRIVATE_proxy("close");
 
 	/**
-	 * Update the translation strings
+	 * @deprecated use addTranslation and setLanguage instead
 	 */
 	setUIStrings = this.PRIVATE_proxy("setUIStrings");
+
+	/**
+	 * Set the current UI language
+	 */
+	setLang = this.PRIVATE_proxy("setLang");
+
+	/**
+	 * Set the UI translations transt for a given language
+	 *
+	 * @params lang - language code
+	 * @params translations - translations object
+	 */
+	addTranslation = this.PRIVATE_proxy("addTranslation");
 
 	/**
 	 * Update groups
@@ -654,6 +678,14 @@ export class FindkitUI {
 
 		const impl = await this.PRIVATE_loadImplementation();
 
+		if (typeof location !== "undefined") {
+			const usp = new URLSearchParams(location.search);
+			const delay = Number(usp.get("__fdk_simulate_slow_load"));
+			if (delay) {
+				await new Promise((resolve) => setTimeout(resolve, delay));
+			}
+		}
+
 		Object.assign(lazyImplementation, impl.js);
 		Object.assign(preactImplementation, impl.js.preact);
 
@@ -685,6 +717,7 @@ export class FindkitUI {
 					__engine: engine,
 					container: host,
 				});
+				engine.start();
 
 				return engine.dispose;
 			});

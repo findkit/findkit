@@ -34,19 +34,19 @@ export function FindkitProvider(props: {
 	slots?: Partial<Slots>;
 }) {
 	const state = useSnapshot(props.engine.state);
-	const strings = state.ui.strings[state.ui.lang];
+	const translations = state.ui.translations;
 	const focusRef = useRef<FocusRef>({});
 
 	const context = useMemo(() => {
 		const value: FindkitContextType = {
 			engine: props.engine,
-			translator: createTranslator(state.ui.lang, strings),
+			translator: createTranslator(state.ui.lang, translations),
 			slots: props.slots ?? {},
 			focusRef,
 		};
 
 		return value;
-	}, [props.engine, props.slots, state.ui.lang, strings]);
+	}, [props.engine, props.slots, state.ui.lang, translations]);
 
 	return (
 		<FindkitContext.Provider value={context}>

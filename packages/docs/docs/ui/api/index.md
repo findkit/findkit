@@ -170,14 +170,39 @@ How many results to fetch in a single request.
 
 <Api page="ui.findkituioptions.fetchCount" />
 
-### `ui: object` {#ui}
+### `ui.lang: string` {#ui.lang}
 
-Set the UI language options.
+Set the UI language. If not defined the language is read from the `<html lang>`
+attribute. See [`setLang`](#setLang).
 
-Set to `{lang: "fi"}` to customize the language. If not the language is
-automatically read from the `<html lang>` attribute.
+<Api page="ui.findkituioptions.ui" />
 
-TODO: document custom translations strings
+### `ui.translations: object` {#ui.translations}
+
+Add the UI translations. See [`addTranslation`](#addTranslation).
+
+See <Api page="ui.findkitui.translationstrings">TranslationStrings</Api> for
+the available transtion strings.
+
+Example
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	ui: {
+        lang: "sv",
+        // Add translations
+        translations: {
+            sv: {
+                close: "Stänga"
+                // ... https://findk.it/strings
+            }
+        }
+    }
+});
+```
+
+
 
 <Api page="ui.findkituioptions.ui" />
 
@@ -242,21 +267,61 @@ The modal cannot be opened any more after it is disposed.
 
 <Api page="ui.findkitui.dispose" />
 
-### `.updateParams()` {#updateParams}
+### `.updateParams(fn)` {#updateParams}
 
-Update the search params.
+Update the search params. It calls the given function immediately giving the
+internal params object as the first parameter. The object can mutated or a new
+one can be returned. A new search will be issued immediately.
 
-TODO: More detailed docs.
+Example
+
+```ts
+ui.updateParams((params) => {
+	params.tagQuery = [["domain/another.example"]];
+});
+```
 
 <Api page="ui.findkitui.updateparams" />
 
-### `.updateGroups()` {#updateGroups}
+### `.updateGroups(fn)` {#updateGroups}
 
-Update the groups.
+Update the groups. The callback function works like in
+[`updateParams`](#updateParams) but the previously defined groups are spread to
+the function params.
 
-TODO: More detailed docs.
+Example
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	groups: [{ tagQuery: [["html"]] }, { tagQuery: [["pdf"]] }],
+});
+
+ui.updateGroups((pages, pdf) => {
+	pages.previewSize = 5;
+	pdf.previewSize = 5;
+});
+```
 
 <Api page="ui.findkitui.updategroups" />
+
+### `.setLang(lang)` {#setLang}
+
+Set the current UI language. See [`ui.lang`](#ui.lang).
+
+<Api page="ui.findkitui.setLang" />
+
+### `.addTranslation(lang, translation)` {#addTranslation}
+
+Add a new UI translation. Can be used to override existing translation strings
+as well. See <Api
+page="ui.findkitui.translationstrings">TranslationStrings</Api> for the
+available transtion strings.
+
+See [`ui.translations`](#ui.translations).
+
+
+<Api page="ui.findkitui.addtranslation" />
 
 ### `.on()` {#on}
 

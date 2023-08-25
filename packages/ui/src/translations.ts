@@ -1,4 +1,23 @@
-export const BASE_TRANSLATIONS = {
+/**
+ * @public
+ *
+ * UI strings available for translation
+ */
+export interface TranslationStrings {
+	close: string;
+	"show-all": string;
+	"aria-show-all": string;
+	"all-results-shown": string;
+	"load-more": string;
+	"go-back": string;
+	"aria-label-close-search": string;
+	"aria-label-search-input": string;
+	"no-results": string;
+	"sr-result-count": string;
+	"sr-search-instructions": string;
+}
+
+export const BASE_TRANSLATIONS: TranslationStrings = {
 	close: "Close",
 	"show-all": "Show more search results",
 	"aria-show-all": "Show all search results in the group {{group}}",
@@ -21,14 +40,6 @@ function renderTranslation(
 		return data?.[key]?.toString() ?? "[MISSING]";
 	});
 }
-
-/**
- * @public
- *
- * Available translations strings
- *
- */
-export type TranslationStrings = typeof BASE_TRANSLATIONS;
 
 export const TRANSLATIONS: Record<string, TranslationStrings> = {
 	en: BASE_TRANSLATIONS,
@@ -58,12 +69,16 @@ export interface Translator {
 
 export function createTranslator(
 	lang: string,
-	extra?: Partial<TranslationStrings>,
+	overrides: { [lang: string]: Partial<TranslationStrings> },
 ): Translator {
+	// prefer locale like "en-US" but fallback to "en" if there is not US
+	// specific translations
+	const short = lang.trim().toLowerCase().slice(0, 2);
+
 	const translations = {
 		...BASE_TRANSLATIONS,
-		...TRANSLATIONS[lang],
-		...extra,
+		...(TRANSLATIONS[lang] || TRANSLATIONS[short] || {}),
+		...(overrides[lang] || overrides[short] || {}),
 	};
 
 	return (key, data) => {

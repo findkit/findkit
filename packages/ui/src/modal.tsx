@@ -17,7 +17,7 @@ import {
 	SearchEngineOptions,
 	GroupOrder,
 } from "./search-engine";
-import { cn, View } from "./utils";
+import { cn, deprecationNotice, View } from "./utils";
 import type { Emitter, FindkitUIEvents } from "./emitter";
 import { TranslationStrings } from "./translations";
 import { Slot, Slots } from "./slots";
@@ -466,6 +466,12 @@ export function init(_options: {
 	};
 }) {
 	const options = { ..._options };
+
+	if (options.ui?.overrides) {
+		deprecationNotice(
+			"Using deprecated `ui.overrides` constructor option. Use https://findk.it/ui.translations instead",
+		);
+	}
 
 	if (options.groups && options.params) {
 		console.error(

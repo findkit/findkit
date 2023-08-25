@@ -45,6 +45,13 @@ function useTotalHitCountImplementation() {
 /**
  * @public
  */
+export function useLangImplementation() {
+	return useSearchEngineState().ui.lang;
+}
+
+/**
+ * @public
+ */
 export interface SearchResultHitWithGroupId extends SearchResultHit {
 	groupId: string;
 }
@@ -111,6 +118,7 @@ export interface Implementation {
 	useTerms: typeof useTermsImplementation;
 	useResults: typeof useResultsImplementation;
 	useTotal: typeof useTotalImplementation;
+	useLang: typeof useLangImplementation;
 	useInput: typeof useInput;
 	useTotalHitCount: typeof useTotalHitCountImplementation;
 	preact: PreactFunctions;
@@ -127,6 +135,7 @@ export const js: Implementation = {
 	useResults: useResultsImplementation,
 	useInput,
 	useTotalHitCount: useTotalHitCountImplementation,
+	useLang: useLangImplementation,
 	preact: preactFunctions,
 };
 
