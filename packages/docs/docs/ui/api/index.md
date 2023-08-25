@@ -183,14 +183,15 @@ How many results to fetch in a single request.
 
 <Api page="ui.findkituioptions.fetchCount" />
 
-### `ui.lang: string` {#ui.lang}
+### `lang: string` {#lang}
 
 Set the UI language. If not defined the language is read from the `<html lang>`
-attribute. See [`setLang`](#setLang).
+attribute. See [`setLang`](#setLang). Not to be confused with the
+[`lang`](/ui/api/params#lang) search param filter.
 
-<Api page="ui.findkituioptions.ui" />
+<Api page="ui.findkituioptions.lang" />
 
-### `ui.translations: object` {#ui.translations}
+### `translations: object` {#translations}
 
 Add the UI translations. See [`addTranslation`](#addTranslation).
 
@@ -202,20 +203,18 @@ Example
 ```ts
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
-	ui: {
-        lang: "sv",
-        // Add translations
-        translations: {
-            sv: {
-                close: "Stänga"
-                // ... https://findk.it/strings
-            }
+    lang: "sv",
+    // Add translations
+    translations: {
+        sv: {
+            close: "Stänga"
+            // ... https://findk.it/strings
         }
     }
 });
 ```
 
-<Api page="ui.findkituioptions.ui" />
+<Api page="ui.findkituioptions.translations" />
 
 ### `monitorDocumentLang: boolean` {#monitorDocumentLang}
 
@@ -327,7 +326,7 @@ ui.updateGroups((pages, pdf) => {
 
 ### `.setLang(lang)` {#setLang}
 
-Set the current UI language. See [`ui.lang`](#ui.lang).
+Set the current UI language. See [`lang`](#lang).
 
 <Api page="ui.findkitui.setLang" />
 
@@ -338,7 +337,7 @@ as well. See <Api
 page="ui.findkitui.translationstrings">TranslationStrings</Api> for the
 available transtion strings.
 
-See [`ui.translations`](#ui.translations).
+See [`translations`](#translations).
 
 
 <Api page="ui.findkitui.addtranslation" />

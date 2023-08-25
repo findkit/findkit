@@ -45,7 +45,7 @@ test("can override <html lang>", async ({ page }) => {
 		document.documentElement.lang = "fi";
 		const ui = new MOD.FindkitUI({
 			publicToken: "po8GK3G0r",
-			ui: { lang: "en" },
+			lang: "en",
 		});
 		Object.assign(window, { ui });
 		ui.open();
@@ -84,12 +84,10 @@ test("change ui language with constructor params", async ({ page }) => {
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
 			publicToken: "po8GK3G0r",
-			ui: {
-				lang: "xx",
-				translations: {
-					xx: {
-						close: "custom",
-					},
+			lang: "xx",
+			translations: {
+				xx: {
+					close: "custom",
 				},
 			},
 		});

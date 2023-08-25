@@ -10,7 +10,6 @@
 		"/selectors": "https://docs.findkit.com/crawler/indexing",
 		"/cli": "https://docs.findkit.com/crawler/getting-started/",
 		"/translations": "https://docs.findkit.com/ui/translations",
-		"/ui.translations": "https://docs.findkit.com/ui/api/#ui.translations",
 		"/strings": "https://docs.findkit.com/ui-api/ui.findkitui.translationstrings/"
 	}
 }

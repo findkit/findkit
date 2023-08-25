@@ -63,7 +63,9 @@ How many results to fetch in a single request.
 
 ### `lang: string` {#lang}
 
-Limit results to the given language.
+Limit results to the given language. A two letter language code. Not to be
+confused with the [`lang`](/ui/api/#lang) constructor option which sets the UI
+language.
 
 ### `tagQuery: string[][]` {#tagQuery}
 
