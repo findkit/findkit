@@ -24,6 +24,60 @@ test("change ui language", async ({ page }) => {
 	await expect(closeButton).toHaveText("Sulje");
 });
 
+test("can automatically pick lang form <html lang>", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		document.documentElement.lang = "fi";
+		const ui = new MOD.FindkitUI({ publicToken: "po8GK3G0r" });
+		Object.assign(window, { ui });
+		ui.open();
+	});
+
+	const closeButton = page.locator(".findkit--close-button");
+	await expect(closeButton).toHaveText("Sulje");
+});
+
+test("can override <html lang>", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		document.documentElement.lang = "fi";
+		const ui = new MOD.FindkitUI({
+			publicToken: "po8GK3G0r",
+			ui: { lang: "en" },
+		});
+		Object.assign(window, { ui });
+		ui.open();
+	});
+
+	const closeButton = page.locator(".findkit--close-button");
+	await expect(closeButton).toHaveText("Close");
+});
+
+test("can set monitorDocumentLang: false", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "po8GK3G0r",
+			monitorDocumentLang: false,
+		});
+		Object.assign(window, { ui });
+		ui.open();
+	});
+
+	const closeButton = page.locator(".findkit--close-button");
+	await expect(closeButton).toHaveText("Close");
+
+	// No effect
+	await page.evaluate(async () => {
+		document.documentElement.lang = "fi";
+	});
+
+	await expect(closeButton).toHaveText("Close");
+});
+
 test("change ui language with constructor params", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
 

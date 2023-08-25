@@ -419,7 +419,7 @@ export interface FindkitUIOptions {
 	load?: () => Promise<{ js: Implementation; css?: string }>;
 	searchEndpoint?: string;
 	container?: Element | string;
-	monitorDocumentElementChanges?: boolean;
+	monitorDocumentLang?: boolean;
 	router?: "memory" | "querystring" | "hash" | RouterBackend;
 	lockScroll?: boolean;
 	modal?: boolean;

@@ -381,7 +381,7 @@ export interface SearchEngineOptions {
 	/**
 	 * Monitor <html lang> changes
 	 */
-	monitorDocumentElementChanges?: boolean;
+	monitorDocumentLang?: boolean;
 	ui?: {
 		lang?: string;
 
@@ -455,7 +455,7 @@ export class SearchEngine {
 
 	private PRIVATE_resources = new Resources();
 	private PRIVATE_container: Element | ShadowRoot;
-	private PRIVATE_monitorDocumentElementLangActive: boolean | undefined;
+	private PRIVATE_monitorDocumentLangActive: boolean | undefined;
 
 	events: Emitter<FindkitUIEvents, unknown>;
 
@@ -479,8 +479,7 @@ export class SearchEngine {
 		this.publicToken = options.publicToken;
 		this.events = options.events;
 		this.PRIVATE_container = options.container;
-		this.PRIVATE_monitorDocumentElementLangActive =
-			options.monitorDocumentElementChanges;
+		this.PRIVATE_monitorDocumentLangActive = options.monitorDocumentLang;
 
 		if (instanceIds.has(this.instanceId)) {
 			throw new Error(
@@ -593,7 +592,7 @@ export class SearchEngine {
 			),
 		);
 
-		if (this.PRIVATE_monitorDocumentElementLangActive !== false) {
+		if (this.PRIVATE_monitorDocumentLangActive !== false) {
 			this.PRIVATE_monitorDocumentElementLang();
 		}
 
