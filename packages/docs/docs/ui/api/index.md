@@ -195,7 +195,7 @@ attribute. See [`setLang`](#setLang). Not to be confused with the
 
 Add the UI translations. See [`addTranslation`](#addTranslation).
 
-See <Api page="ui.findkitui.translationstrings">TranslationStrings</Api> for
+See <Api page="ui.translationstrings">TranslationStrings</Api> for
 the available transtion strings.
 
 Example
@@ -334,7 +334,7 @@ Set the current UI language. See [`lang`](#lang).
 
 Add a new UI translation. Can be used to override existing translation strings
 as well. See <Api
-page="ui.findkitui.translationstrings">TranslationStrings</Api> for the
+page="ui.translationstrings">TranslationStrings</Api> for the
 available transtion strings.
 
 See [`translations`](#translations).
