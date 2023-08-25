@@ -2,7 +2,7 @@
 
 2023-08-25
 
-- Deprecrate `ui` constructor option and add top-level [`lang`](https://docs.findkit.com/ui/api/#lang) and [`translations`](/ui/api/#translations)
+- Deprecrate `ui` constructor option and add top-level [`lang`](https://docs.findkit.com/ui/api/#lang) and [`translations`](https://docs.findkit.com/ui/api/#translations) options
 - Add [`monitorDocumentLang`](https://docs.findkit.com/ui/api/#monitorDocumentLang) option
 - Add [`useLang`](https://docs.findkit.com/ui/slot-overrides/hooks#useLang) slot override hook
 - Add [`lang`](https://docs.findkit.com/ui/api/events#lang) event
