@@ -170,7 +170,7 @@ How many results to fetch in a single request.
 
 <Api page="ui.findkituioptions.fetchCount" />
 
-### `ui.lang: object` {#ui.lang}
+### `ui.lang: string` {#ui.lang}
 
 Set the UI language. See [`setLang`](#setLang). If not defined the language is
 read from the `<html lang>` attribute
