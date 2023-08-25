@@ -36,7 +36,7 @@ This removes one network request from your website and gives type-safety if you
 are using Typescript as well.
 
 The CDN and npm imports are completely interchangeable. In this documentation
-will be using the npm import but it can be replaced with the CDN import.
+we will be using the npm import but it can be replaced with the CDN import.
 
 ## Try it!
 
