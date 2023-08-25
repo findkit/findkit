@@ -78,6 +78,7 @@ export {
 	SearchEngine,
 	UpdateGroupsArgument,
 	UpdateParamsArgument,
+	LanguageChangeEvent
 };
 
 const doc = () => document;
