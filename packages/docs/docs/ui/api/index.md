@@ -215,9 +215,16 @@ const ui = new FindkitUI({
 });
 ```
 
-
-
 <Api page="ui.findkituioptions.ui" />
+
+### `monitorDocumentLang: boolean` {#monitorDocumentLang}
+
+Update the UI language by monitoring `<html lang>` changes. Useful on
+Single-Page Apps where the langauge can change without a page load.
+
+Defaults to `true`
+
+<Api page="ui.findkituioptions.monitorDocumentLang" />
 
 ## Methods {#methods}
 
