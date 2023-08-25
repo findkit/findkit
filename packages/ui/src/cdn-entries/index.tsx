@@ -27,6 +27,7 @@ import {
 	OpenEvent,
 	RequestOpenEvent,
 	GroupsChangeEvent,
+	LanguageChangeEvent,
 	ParamsChangeEvent,
 	HitClickEvent,
 } from "../emitter";
