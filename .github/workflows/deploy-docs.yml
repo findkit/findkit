@@ -87,7 +87,7 @@ jobs:
       - name: Start Findkit Crawl
         run: |
           set -eu
-          curl --fail-with-body --data '{"mode": "full"}' -H 'content-type: application/json' -H "Authorization: Bearer $FINDKIT_API_KEY"  https://api.findkit.com/v1/projects/p68GxRvaA/crawls
+          curl -v --fail-with-body --data '{"mode": "full"}' -H 'content-type: application/json' -H "Authorization: Bearer $FINDKIT_API_KEY"  https://api.findkit.com/v1/projects/p68GxRvaA/crawls
         env:
           FINDKIT_API_KEY: ${{ secrets.FINDKIT_API_KEY }}
 
