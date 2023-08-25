@@ -1,3 +1,15 @@
+## v0.5.0
+
+2023-08-25
+
+- Deprecrate `ui` constructor option and add top-level [`lang`](https://docs.findkit.com/ui/api/#lang) and [`translations`](/ui/api/#translations)
+- Add [`monitorDocumentLang`](https://docs.findkit.com/ui/api/#monitorDocumentLang) option
+- Add [`useLang`](https://docs.findkit.com/ui/slot-overrides/hooks#useLang) slot override hook
+- Add [`lang`](https://docs.findkit.com/ui/api/events#lang) event
+- Better instanceId error message [f333c83](https://github.com/findkit/findkit/commit/f333c83) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.4.0...ui/v0.5.0
+
 ## v0.4.0
 
 2023-08-18
