@@ -1,6 +1,6 @@
 # Translations
 
-Findkit UI can work with multlingual webites. It automatically sets the UI
+Findkit UI can work with multilingual webites. It automatically sets the UI
 language translation based on the `<html lang>` attribute. It can be also
 manually set using the [`setLang`](/ui/api/#setLang) method.
 Currently Findkit UI comes with english and finnish translations but additional
