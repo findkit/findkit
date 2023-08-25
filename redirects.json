@@ -12,6 +12,7 @@
 		"/cli": "https://docs.findkit.com/crawler/getting-started/",
 		"/translations": "https://docs.findkit.com/ui/translations",
 		"/strings": "https://docs.findkit.com/ui-api/ui.translationstrings/",
-		"/max_pages": "https://docs.findkit.com/toml/#max_pages"
+		"/max_pages": "https://docs.findkit.com/toml/#max_pages",
+		"/instanceid": "https://docs.findkit.com/ui/api/#instanceId"
 	}
 }
