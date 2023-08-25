@@ -207,7 +207,7 @@ const ui = new FindkitUI({
     // Add translations
     translations: {
         sv: {
-            close: "St‰nga"
+            close: "St√§nga"
             // ... https://findk.it/strings
         }
     }
@@ -219,7 +219,7 @@ const ui = new FindkitUI({
 ### `monitorDocumentLang: boolean` {#monitorDocumentLang}
 
 Update the UI language by monitoring `<html lang>` changes. Useful on
-Single-Page Apps where the langauge can change without a page load.
+Single-Page Apps where the language can change without a page load.
 
 Defaults to `true`
 
