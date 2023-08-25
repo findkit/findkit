@@ -172,14 +172,17 @@ How many results to fetch in a single request.
 
 ### `ui.lang: string` {#ui.lang}
 
-Set the UI language. See [`setLang`](#setLang). If not defined the language is
-read from the `<html lang>` attribute
+Set the UI language. If not defined the language is read from the `<html lang>`
+attribute. See [`setLang`](#setLang).
 
 <Api page="ui.findkituioptions.ui" />
 
 ### `ui.translations: object` {#ui.translations}
 
-Set the UI language options. See [`addTranslation`](#addTranslation).
+Add the UI translations. See [`addTranslation`](#addTranslation).
+
+See <Api page="ui.findkitui.translationstrings">TranslationStrings</Api> for
+the available transtion strings.
 
 Example
 
@@ -304,7 +307,7 @@ ui.updateGroups((pages, pdf) => {
 
 ### `.setLang(lang)` {#setLang}
 
-Set the current UI language.
+Set the current UI language. See [`ui.lang`](#ui.lang).
 
 <Api page="ui.findkitui.setLang" />
 
@@ -312,11 +315,11 @@ Set the current UI language.
 
 Add a new UI translation. Can be used to override existing translation strings
 as well. See <Api
-page="ui.findkitui.translationstrings">TranslationStrings</Api> for available
-the available transtion strings.
+page="ui.findkitui.translationstrings">TranslationStrings</Api> for the
+available transtion strings.
 
-The `lang` param should match with the `<html lang>` attribute or what was
-explicitly passed to [`setLang`](#setLang).
+See [`ui.translations`](#ui.translations).
+
 
 <Api page="ui.findkitui.addtranslation" />
 
