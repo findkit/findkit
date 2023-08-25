@@ -103,7 +103,7 @@ results.
 
 When using multiple `FindkitUI` instances you must provide a custom
 `instanceId` to avoid conflicts in the query strings and idendifying class
-names. This is needed for examle when you have global site search and a more
+names. This is needed for example when you have global site search and a more
 specific search running on the same page.
 
 :::note
