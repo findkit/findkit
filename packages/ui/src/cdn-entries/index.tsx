@@ -425,15 +425,26 @@ export interface FindkitUIOptions {
 	modal?: boolean;
 	groupOrder?: GroupOrder;
 	fontDivisor?: number;
+
+	/**
+	 * Set the UI language
+	 */
+	lang?: string;
+	translations?: { [lang: string]: Partial<TranslationStrings> };
+
+	/**
+	 * @deprecated use translations constructor option instead
+	 */
 	ui?: {
+		/**
+		 * @deprecated use translations constructor option instead
+		 */
 		lang?: string;
 
 		/**
-		 * @deprecated use translations or ui.addTranslation() instead
+		 * @deprecated use translations constructor optio instead
 		 */
 		overrides?: Partial<TranslationStrings>;
-
-		translations?: { [lang: string]: Partial<TranslationStrings> };
 	};
 }
 

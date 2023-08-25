@@ -382,16 +382,24 @@ export interface SearchEngineOptions {
 	 * Monitor <html lang> changes
 	 */
 	monitorDocumentLang?: boolean;
+
+	/**
+	 * @deprecated
+	 */
 	ui?: {
+		/**
+		 * @deprecated
+		 */
 		lang?: string;
 
 		/**
 		 * @deprecated
 		 */
 		overrides?: Partial<TranslationStrings>;
-
-		translations?: { [lang: string]: Partial<TranslationStrings> };
 	};
+
+	lang?: string;
+	translations?: { [lang: string]: Partial<TranslationStrings> };
 
 	groupOrder?: GroupOrder;
 }
@@ -505,14 +513,15 @@ export class SearchEngine {
 			];
 		}
 
-		const lang = options.ui?.lang ?? this.PRIVATE_getDocumentLang();
+		const lang =
+			options.lang ?? options.ui?.lang ?? this.PRIVATE_getDocumentLang();
 
 		const translations: State["ui"]["translations"] = {
 			[lang]: ref(options.ui?.overrides ?? {}),
 		};
 
 		for (const [lang, translation] of Object.entries(
-			options.ui?.translations ?? {},
+			options.translations ?? {},
 		)) {
 			translations[lang] = ref(translation);
 		}
