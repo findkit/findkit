@@ -465,8 +465,8 @@ export type MethodParameters<
  */
 type Methods<Klass> = {
 	[Method in keyof Klass]: Klass[Method] extends (...args: any) => any
-		? Method
-		: never;
+	? Method
+	: never;
 }[keyof Klass];
 
 /**
