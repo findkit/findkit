@@ -47,13 +47,14 @@ Allowed values
 
 ### `targets: object[]` {#targets}
 
-List "targets" aka domain to crawl content from.
+List "targets" aka domains to crawl content from. See [`[[targets]]`](#target-options)
 
-This is an array of tables. See the TOML spec on Arrays <https://toml.io/en/v1.0.0#array-of-tables>
 
 ## `[[targets]]` {#target-options}
 
 Options for `[[targets]]` sections.
+
+This is an array of tables. See the TOML [docs on Arrays](https://toml.io/en/v1.0.0#array-of-tables).
 
 ### `host: string` {#host}
 
