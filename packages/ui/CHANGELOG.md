@@ -6,6 +6,8 @@
 - Add [`monitorDocumentLang`](https://docs.findkit.com/ui/api/#monitorDocumentLang) option
 - Add [`useLang`](https://docs.findkit.com/ui/slot-overrides/hooks#useLang) slot override hook
 - Add [`lang`](https://docs.findkit.com/ui/api/events#lang) event
+- Add [`setLang`](https://docs.findkit.com/ui/api/#setLang) method
+- Add [`addTranslation`](https://docs.findkit.com/ui/api/#addTranslation) method
 - Better instanceId error message [f333c83](https://github.com/findkit/findkit/commit/f333c83) - Esa-Matti Suuronen
 
 All changes https://github.com/findkit/findkit/compare/ui/v0.4.0...ui/v0.5.0

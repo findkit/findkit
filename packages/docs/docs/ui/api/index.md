@@ -185,9 +185,14 @@ How many results to fetch in a single request.
 
 ### `lang: string` {#lang}
 
+*New in v0.5.0*
+
 Set the UI language. If not defined the language is read from the `<html lang>`
 attribute. See [`setLang`](#setLang). Not to be confused with the
 [`lang`](/ui/api/params#lang) search param filter.
+
+
+*Replaces deprecated ui.lang in v0.5.0*
 
 <Api page="ui.findkituioptions.lang" />
 
@@ -214,9 +219,13 @@ const ui = new FindkitUI({
 });
 ```
 
+*Replaces deprecated ui.overrides in v0.5.0*
+
 <Api page="ui.findkituioptions.translations" />
 
 ### `monitorDocumentLang: boolean` {#monitorDocumentLang}
+
+*New in v0.5.0*
 
 Update the UI language by monitoring `<html lang>` changes. Useful on
 Single-Page Apps where the language can change without a page load.
@@ -326,11 +335,15 @@ ui.updateGroups((pages, pdf) => {
 
 ### `.setLang(lang)` {#setLang}
 
+*New in v0.5.0*
+
 Set the current UI language. See [`lang`](#lang).
 
 <Api page="ui.findkitui.setLang" />
 
 ### `.addTranslation(lang, translation)` {#addTranslation}
+
+*New in v0.5.0*
 
 Add a new UI translation. Can be used to override existing translation strings
 as well. See <Api
