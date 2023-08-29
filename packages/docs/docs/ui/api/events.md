@@ -76,6 +76,8 @@ When a search hit is clicked.
 
 ### `lang`
 
+*New in v0.5.0*
+
 Emitted when
 
 - `<html lang>` is initially read
