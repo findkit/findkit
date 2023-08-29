@@ -198,6 +198,8 @@ attribute. See [`setLang`](#setLang). Not to be confused with the
 
 ### `translations: object` {#translations}
 
+*New in v0.5.0*
+
 Add the UI translations. See [`addTranslation`](#addTranslation).
 
 See <Api page="ui.translationstrings">TranslationStrings</Api> for
