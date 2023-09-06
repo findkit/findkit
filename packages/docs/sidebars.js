@@ -42,6 +42,12 @@ const sidebars = {
 		},
 		{
 			type: "category",
+			label: "Workers",
+			link: { type: "doc", id: "workers/index" },
+			items: ["workers/events", "workers/runtime"],
+		},
+		{
+			type: "category",
 			label: "UI Library",
 			link: { type: "doc", id: "ui/index" },
 			items: [
