@@ -66,15 +66,6 @@ const sidebars = {
 						"ui/patterns/embedding/content-overlay",
 						"ui/patterns/embedding/raw",
 						"ui/patterns/embedding/react",
-						// {
-						// 	type: "category",
-						// 	label: "Embedding Patterns",
-						// 	link: { type: "doc", id: "ui/patterns/embedding/index" },
-						// 	items: [
-						// 	],
-						// },
-
-						// "ui/patterns/ui/index",
 					],
 				},
 				{
