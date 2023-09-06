@@ -1,6 +1,6 @@
  # Example
 
- Example of [`findkit.toml`](/toml)
+ Full example of a [`findkit.toml`](/toml) file.
 
 
 ```toml
