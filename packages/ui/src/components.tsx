@@ -454,6 +454,7 @@ function SingleOrGroupResults() {
 		state.usedGroupDefinitions.length === 1 &&
 		state.usedGroupDefinitions[0]
 	) {
+		// Only single group defined so the view is always single
 		return (
 			<SingleGroupResults
 				groupIndex={0}
@@ -461,9 +462,11 @@ function SingleOrGroupResults() {
 			/>
 		);
 	} else if (state.currentGroupId === undefined) {
+		// There's multiple groups but no group is selected, must show the groups view
 		return <MultiGroupResults />;
 	}
 
+	// Multiple groups with a selected group. Show the single view (for that group)
 	const index = state.usedGroupDefinitions.findIndex(
 		(group) => group.id === state.currentGroupId,
 	);

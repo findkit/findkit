@@ -41,4 +41,6 @@ type ClassNames =
   | "findkit--single-group-link"
   | "findkit--spinner"
   | "findkit--spinning"
-  | "findkit--sr-only";
+  | "findkit--sr-only"
+  | "findkit--view-groups"
+  | "findkit--view-single";

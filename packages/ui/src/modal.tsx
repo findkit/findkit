@@ -8,6 +8,7 @@ import {
 	useInput,
 	useTranslator,
 	useContainerKeyboardAttributes,
+	useView,
 } from "./core-hooks";
 
 import {
@@ -265,6 +266,7 @@ function CloseButton() {
 }
 
 function Modal() {
+	const view = useView();
 	const engine = useSearchEngine();
 	const state = useSearchEngineState();
 	const containerRef = useRef<HTMLDivElement | null>(null);
@@ -340,7 +342,13 @@ function Modal() {
 			<View
 				ref={containerRef}
 				{...containerKbAttrs}
-				cn={{ modal: true, "modal-visible": visible }}
+				cn={{
+					modal: true,
+					"modal-visible": visible,
+
+					["view-groups"]: view === "groups",
+					["view-single"]: view === "single",
+				}}
 			>
 				<Slot
 					name="Layout"
@@ -361,6 +369,7 @@ export function Plain() {
 	const engine = useSearchEngine();
 	const state = useSearchEngineState();
 	const containerKbAttrs = useContainerKeyboardAttributes();
+	const view = useView();
 
 	const header = state.header ? (
 		<Slot
@@ -381,7 +390,15 @@ export function Plain() {
 	);
 
 	return (
-		<View {...containerKbAttrs} cn="plain" data-id={engine.instanceId}>
+		<View
+			{...containerKbAttrs}
+			cn={{
+				plain: true,
+				["view-groups"]: view === "groups",
+				["view-single"]: view === "single",
+			}}
+			data-id={engine.instanceId}
+		>
 			<Slot name="Layout" props={{ header, content }}>
 				{header}
 				{content}
