@@ -4,7 +4,7 @@
 
 - Add horizontal test snapshots [248a4e9](https://github.com/findkit/findkit/commit/248a4e9) - Esa-Matti Suuronen
   - Example <https://codesandbox.io/s/findkit-horizontal-nkdnl7?file=/index.html>
-- Add view-groups and view-single classes [d36feb9](https://github.com/findkit/findkit/commit/d36feb9) - Esa-Matti Suuronen
+- Add `findkit--view-groups` and `findkit--view-single` classes [d36feb9](https://github.com/findkit/findkit/commit/d36feb9) - Esa-Matti Suuronen
 - Export LanguageChangeEvent [9d2dcfc](https://github.com/findkit/findkit/commit/9d2dcfc) - Esa-Matti Suuronen
 
 All changes https://github.com/findkit/findkit/compare/ui/v0.5.0...ui/v0.5.1
