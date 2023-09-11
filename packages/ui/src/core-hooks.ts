@@ -44,6 +44,27 @@ export function useSearchEngine(): SearchEngine {
 	return context.engine;
 }
 
+/**
+ * Returns "groups" when multiple groups are shown and "single" when only one
+ */
+export function useView(): "groups" | "single" {
+	const state = useSearchEngineState();
+
+	if (
+		state.usedGroupDefinitions.length === 1 &&
+		state.usedGroupDefinitions[0]
+	) {
+		// Only single group defined so the view is always single
+		return "single";
+	} else if (state.currentGroupId) {
+		// Multiple groups with a selected group. Show the single view (for that group)
+		return "single";
+	}
+
+	// If there's multiple groups and no group is selected, must show the groups view
+	return "groups";
+}
+
 export function useFindkitURLSearchParams(): FindkitURLSearchParams {
 	const state = useSearchEngineState();
 	const engine = useSearchEngine();

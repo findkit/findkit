@@ -343,3 +343,25 @@ test("group header and footer margins", async ({ page }) => {
 		mask: [hits, input],
 	});
 });
+
+test("can horizonally position groups", async ({ page }) => {
+	await page.goto(staticEntry("horizontal-groups"));
+
+	const input = page.locator('[aria-label="Search input"]');
+	const hits = page.locator(".findkit--hit");
+	const backLink = page.locator("text=Back");
+	const allLink = page.locator("text=Show more search results");
+
+	await input.fill("wordpress");
+	await hits.first().waitFor({ state: "visible" });
+
+	await expect(page).toHaveScreenshot({ mask: [hits] });
+
+	await allLink.first().click();
+
+	await expect(backLink).toBeVisible();
+
+	await page.mouse.wheel(0, -1000);
+
+	await expect(page).toHaveScreenshot({ mask: [hits] });
+});
