@@ -72,7 +72,7 @@ Fallback behaviour can be disabled by setting to `false`.
 
 ### `start_paths: string[]` {#start_paths}
 
-List of pages where start link walking when [`walk_links`](#walk_links) is
+List of pages where to start link walking when [`walk_links`](#walk_links) is
 enabled.
 
 Defaults to `/`
