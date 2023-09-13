@@ -182,7 +182,7 @@ Make search endpoint private by requiring a JWT token. Must be combined with
 Defaults to `false`.
 
 
-### `public_key: boolean` {#private}
+### `public_key: boolean` {#public_key}
 
 When `private` is set to `true` this RS256 public key is used to validate JWT
 tokens in the search requests.
