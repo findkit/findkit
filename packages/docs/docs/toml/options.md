@@ -138,6 +138,19 @@ Defaults to `false`.
 
 Array tagging matchers. [Documented on the dedicated page](tags).
 
+### `request_headers: Object` {#headers}
+
+Request headers to be sent with the http requests the crawler sends out. These
+can be for example used to authenticate the crawler with non public websites.
+
+Example
+
+```toml
+[[targets]]
+host = "intra.example.com"
+# Send basic auth header
+request_headers = { Authorization = "Basic ZmluZGtpdDpodW50ZXIyCg==" }
+```
 
 ## `[search-endpoint]` {#search-endpoint}
 
