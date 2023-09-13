@@ -184,8 +184,8 @@ Defaults to `false`.
 
 ### `public_key: boolean` {#public_key}
 
-When `private` is set to `true` this RS256 public key is used to validate JWT
-tokens in the search requests.
+When `private` is set to `true` this RS256 public key is used to validate the
+JWT tokens in the search requests.
 
 See our [WordPress
 plugin](https://github.com/findkit/wp-findkit#jwt-authentication) for full
