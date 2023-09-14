@@ -38,18 +38,22 @@ Title can be selected with passed CSS selector.
 
 ### `titleSelectorRegex: string` {#titleSelectorRegex}
 
-Title selected via other means can be modified with regular expression.
+Title can cleaned up with with a regex.
+The first caputre group will be used as the title.
 
 Example
 
 ```html
 <script id="findkit" type="application/json">
 	{
-		"title": "Title - Unwanted",
-		"titleSelectorRegex": "([^ ]+)"
+		"title": "Page Title - Unwanted",
+		"titleSelectorRegex": "(.+) -.*"
 	}
 </script>
 ```
+
+will pick `Page Title` as the title.
+
 
 ### `contentSelector: string` {#contentSelector}
 
