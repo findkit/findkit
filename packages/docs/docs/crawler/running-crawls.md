@@ -1,6 +1,8 @@
 # Running Crawls
 
-Findkit can crawl pages in three modes. Full, partial and manual.
+Findkit can crawl pages in three modes. Full, partial and manual and the crawls
+can be started from the Hub, CLI, REST API or from the [schedules](#scheduling)
+depending on the crawl mode.
 
 ## Full Crawl {#full}
 
@@ -55,9 +57,9 @@ findkit crawl start --manual "https://www.example.com/page"
 ```
 
 
-## Scheduling
+## Scheduling {#scheduling}
 
-Schedule crawls with the `findkit.toml` file using the
+Schedule crawls in the `findkit.toml` file using the
 [`schedule_full_crawl`](/toml/options#schedule_full_crawl) and
 [`schedule_partial_crawl`](/toml/options#schedule_partial_crawl) fields.
 
