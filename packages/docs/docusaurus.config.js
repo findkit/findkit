@@ -87,6 +87,23 @@ const config = {
 							},
 						],
 					},
+					{
+						title: "Follow us for updates",
+						items: [
+							{
+								label: "Newsletter",
+								href: "https://mailchi.mp/510383ab413a/findkit-newsletter",
+							},
+							{
+								label: "Twitter / X",
+								href: "https://twitter.com/findkitcom",
+							},
+							{
+								label: "RSS",
+								href: "https://www.findkit.com/feed/",
+							},
+						],
+					},
 				],
 				// copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
 			},
