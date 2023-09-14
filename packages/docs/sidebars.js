@@ -85,7 +85,6 @@ const sidebars = {
 						"ui/api-docs",
 						"ui/advanced/disable-cdn",
 						"ui/advanced/routing",
-						"ui/advanced/custom-strings",
 					],
 				},
 			],
