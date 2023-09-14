@@ -96,10 +96,10 @@ article a:not([href^="/"]):not([href^="#"]):after {
 
 @keyframes highlight-target {
 	0%  {
-		transform: scale(1);	
+		transform: scale(1);
 	}
 	50%  {
-		transform: scale(2);	
+		transform: scale(2);
 	}
 	100% {
 	    transform: scale(1);
@@ -113,5 +113,5 @@ article a:not([href^="/"]):not([href^="#"]):after {
 *:target > .hash-link::before {
 	animation-name: highlight-target;
 	animation-delay: 1s;
-	animation-duration: 0.5s;	
+	animation-duration: 0.5s;
 }
