@@ -73,6 +73,14 @@ Page creation date as ISO 8601 string
 
 Page modification date as ISO 8601 string
 
+### `superwords: string[]` {#superwords}
+
+Add "superwords" to the indexed document. When a search keyword matches a
+superword the matching search result score will get a boost that will be always
+bigger than normal results. This can be used to implement "Pinned Results" that
+are always shown before other results. Superwords are not included in search
+highlights.
+
 ### `customFields: object` {#customFields}
 
 Add custom fields to the indexed document which will be returned within the
