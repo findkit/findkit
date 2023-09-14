@@ -85,20 +85,6 @@ article a:not([href^="/"]):not([href^="#"]):after {
     opacity: 0.5 !important;
 }
 
-@keyframes highlight-target {
-	0%   {}
-	25%  {}
-	50%  {
-		transform: scale(1);	
-	}
-	75%  {
-		transform: scale(2);	
-	}
-	100% {
-	    transform: scale(1);
-	}
-}
-
 *:target > .hash-link {
 	opacity: 1 !important;
 }
@@ -108,11 +94,24 @@ article a:not([href^="/"]):not([href^="#"]):after {
     display: inline-block;	
 }
 
+@keyframes highlight-target {
+	0%  {
+		transform: scale(1);	
+	}
+	50%  {
+		transform: scale(2);	
+	}
+	100% {
+	    transform: scale(1);
+	}
+}
+
 /**
 * Show visual indication to the user when the page is loaded with an anchor
 * link or when the user clicks on an anchor link.
 */
 *:target > .hash-link::before {
 	animation-name: highlight-target;
-	animation-duration: 1.5s;	
+	animation-delay: 1s;
+	animation-duration: 0.5s;	
 }
