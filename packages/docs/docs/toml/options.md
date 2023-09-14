@@ -26,13 +26,13 @@ Allowed values
 - `every-3-days`
 - `every-2-days`
 
-This is the same as running `findkit crawl start`. Read more from ["Starting
-Crawls"](/crawler/starting#full).
+This is the same as running `findkit crawl start`. Read more from ["Running
+Crawls"](/crawler/running-crawls#full).
 
 ### `schedule_partial_crawl: string` {#schedule_partial_crawl}
 
 This is the same as running `findkit crawl start --partial`.
-Read more from ["Starting Crawls"](/crawler/starting#partial).
+Read more from ["Running Crawls"](/crawler/running-crawls#partial).
 
 Allowed values
 

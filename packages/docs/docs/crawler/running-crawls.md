@@ -1,8 +1,8 @@
-# Finding Pages
+# Running Crawls
 
 Findkit can crawl pages in three modes. Full, partial and manual.
 
-## Full Crawl
+## Full Crawl {#full}
 
 Findkit crawler uses following algorithm to find pages to crawl in full mode:
 
@@ -15,8 +15,7 @@ Findkit crawler uses following algorithm to find pages to crawl in full mode:
 This behaviour can be customized by setting [`use_sitemap`](/toml/options#use_sitemap)
 and/or [`walk_links`](/toml/options#walk_links) explicitly.
 
-[Partial crawl](/crawler/starting#partial) only crawls pages reported by
-the sitemaps as it needs the last modified information.
+This will re-index every page on the site every time.
 
 Full crawl can be started from the Hub, CLI, REST API and from a schdule
 defined in the toml config.
@@ -28,11 +27,12 @@ findkit crawl start
 ```
 
 
-## Partial Crawl
+## Partial Crawl {#partial}
 
 Partial crawl only checks for sitemaps and only crawls the pages where the last
 modified timestamp has changed since the last crawl. This can greatly save
-crawl quotas compared to full crawls.
+crawl quotas compared to full crawls. The `walk_links` option is always
+ignored.
 
 Partial crawl can be started from the Hub, CLI, REST API or from a schdule.
 
@@ -42,10 +42,10 @@ Example
 findkit crawl start --partial
 ```
 
-## Manual Crawl
+## Manual Crawl {#partial}
 
-Manual crawl will crawl only the urls you spesify when start the crawl. Manual
-crawls can be started using CLI and REST API.
+Manual crawl will crawl only the urls you spesify when starting the crawl.
+Manual crawls can be started using CLI and REST API.
 
 Example
 
@@ -54,3 +54,13 @@ Example
 findkit crawl start --manual "https://www.example.com/page"
 ```
 
+
+## Scheduling
+
+Schedule crawls with the `findkit.toml` file using the
+[`schedule_full_crawl`](/toml/options#schedule_full_crawl) and
+[`schedule_partial_crawl`](/toml/options#schedule_partial_crawl) fields.
+
+The schedules will be active immediately when the TOML file
+is deployed with `findkit deploy`. If you need to disable the
+schedules just comment them out and run the deploy.
