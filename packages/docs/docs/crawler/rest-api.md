@@ -53,9 +53,9 @@ Authorization: Bearer {{API_KEY}}
 }
 ```
 
-### Partial Crawl {#partial-crawl}
+### Manual Crawl {#manual-crawl}
 
-Start a [manual crawl](/crawler/running-crawls#partial).
+Start a [manual crawl](/crawler/running-crawls#manual).
 
 ```
 POST https://api.findkit.com/v1/projects/{{PUBLIC_TOKEN}}/crawls
