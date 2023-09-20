@@ -9,7 +9,7 @@ Go to your project in the Findkit Hub and generate the API KEY in ***Settings***
 ## Examples
 
 Substitude with `{{PUBLIC_TOKEN}}` with the project public token found from the
-project page in Hub and `{{API_KEY}}` with generate api key.
+project page in Hub and `{{API_KEY}}` with the generated api key.
 
 ### `curl` {#curl}
 
