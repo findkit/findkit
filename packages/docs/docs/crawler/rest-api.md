@@ -11,18 +11,6 @@ Go to your project in the Findkit Hub and generate the API KEY in ***Settings***
 Substitude with `{{PUBLIC_TOKEN}}` with the project public token found from the
 project page in Hub and `{{API_KEY}}` with the generated api key.
 
-### `curl` {#curl}
-
-```
-curl -X POST \
-    --fail-with-body \
-    --data '{"mode": "manual", "urls": ["https://example.com/page"]}' \
-    -H 'Content-Type: application/json' \
-    -H "Authorization: Bearer {{API_KEY}}" \
-    https://api.findkit.com/v1/projects/{{PUBLIC_TOKEN}}/crawls
-```
-
-
 The following examples use the [httpYac](https://httpyac.github.io/) format.
 
 ### Full Crawl {#full-crawl}
