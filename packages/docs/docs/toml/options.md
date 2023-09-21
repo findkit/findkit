@@ -152,6 +152,28 @@ host = "intra.example.com"
 request_headers = { Authorization = "Basic ZmluZGtpdDpodW50ZXIyCg==" }
 ```
 
+### `concurrency: number` {#concurrency}
+
+How many concurrent requests to make on your sites. Defaults to `5` but if you
+encounter "429 Too Many Requests" or "503 Service Unavailable" errors you might
+want to lower this value.
+
+### `crawl_delay: number` {#crawl_delay}
+
+If lowering `concurrency` to `1` is not enough you can try add additional delay
+between the requests. Note that this is counted towards your subscription crawl
+time. The delay is set in milliseconds.
+
+Example
+
+```toml
+[[targets]]
+host = "example.com"
+# Send only one request every 500ms
+concurrency = 1
+crawl_delay = 500
+```
+
 ## `[search-endpoint]` {#search-endpoint}
 
 Search endpoint configuration.
