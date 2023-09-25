@@ -2,7 +2,11 @@
 
 2023-09-25
 
-- Add star icon to superword matches [8970f65](https://github.com/findkit/findkit/commit/8970f65) - Esa-Matti Suuronen
+- Add star icon and `findkit--superwords-match` class to [superword matches](https://docs.findkit.com/crawler/meta-tag#superwords)  in hits [8970f65](https://github.com/findkit/findkit/commit/8970f65) - Esa-Matti Suuronen
+
+
+<img width="816" alt="image" src="https://github.com/findkit/findkit/assets/225712/8d1ae859-bf01-4dd7-98a3-2d89d42fec1d">
+
 
 All changes https://github.com/findkit/findkit/compare/ui/v0.5.1...ui/v0.6.0
 
