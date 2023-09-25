@@ -171,6 +171,15 @@
 	transition: opacity 200ms ease;
 }
 
+.superwords-match {}
+
+.superwords-match-icon {
+	margin-right: var(--space-2);
+}
+.superwords-match-icon path {
+	fill: var(--brand-color);
+}
+
 .message {
 	display: block;
 	padding: var(--space-3);
@@ -212,8 +221,9 @@
 	font-size: var(--font-16);
 	margin: 0;
 	border-left: 2px solid var(--brand-color);
-	justify-content: center;
+	align-items: center;
 	padding: var(--space-3);
+	flex-direction: row;
 }
 
 .hit-url {

@@ -338,6 +338,7 @@ export interface GroupSearchResults {
 		highlight: string;
 		tags: string[];
 		customFields: CustomFields;
+		superwordsMatch: boolean;
 
 		/**
 		 * EXPERIMENTAL

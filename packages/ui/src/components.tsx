@@ -129,6 +129,26 @@ function GroupTitle(props: { title: string; total: number }) {
 	);
 }
 
+function StarIcon(props: { title: string }) {
+	return (
+		<div title={props.title} className={cn("superwords-match-icon")}>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="20"
+				height="20"
+				version="1.1"
+				viewBox="0 0 100 100"
+			>
+				<path
+					strokeWidth="0.265"
+					d="M94.386 132.14L54.12 112.87l-38.7 22.244 5.884-44.248-33.115-29.933 43.901-8.077 18.235-40.744 21.248 39.257 44.384 4.751L85.19 88.46z"
+					transform="matrix(.76096 0 0 .76096 10.374 -6.016)"
+				></path>
+			</svg>
+		</div>
+	);
+}
+
 function Hit(props: {
 	hit: SearchResultHit;
 	groupId: string;
@@ -136,6 +156,7 @@ function Hit(props: {
 	containerRef: ReturnType<typeof useSearchMoreOnReveal> | undefined;
 }) {
 	const engine = useSearchEngine();
+	const t = useTranslator();
 	const kbAttrs = useKeyboardItemAttributes(
 		`hit-${props.groupId}-${props.hitIndex}`,
 	);
@@ -163,7 +184,7 @@ function Hit(props: {
 		<View
 			ref={props.containerRef}
 			key={props.hit.url}
-			cn="hit"
+			cn={{ hit: true, "superwords-match": props.hit.superwordsMatch }}
 			data-fdk-score={props.hit.score}
 			{...kbAttrs}
 			onClick={handleLinkClick}
@@ -176,6 +197,10 @@ function Hit(props: {
 				}}
 			>
 				<View as="h3" cn="hit-title">
+					{props.hit.superwordsMatch ? (
+						<StarIcon title={t("superwords-match")} />
+					) : null}
+
 					<View
 						as="a"
 						cn={["hit-title-link", "link"]}

@@ -365,3 +365,23 @@ test("can horizonally position groups", async ({ page }) => {
 
 	await expect(page).toHaveScreenshot({ mask: [hits] });
 });
+
+test("superword matches are marked with class name and an icon", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("superwords-match"));
+
+	const input = page.locator('[aria-label="Search input"]');
+	const hits = page.locator(".findkit--hit");
+
+	await input.fill("wordpress");
+	await hits.first().waitFor({ state: "visible" });
+
+	await expect(hits.first()).toHaveClass(/findkit--superwords-match/);
+	await expect(hits.first().locator("svg")).toHaveCount(1);
+
+	await expect(hits.nth(2)).not.toHaveClass(/findkit--superwords-match/);
+	await expect(hits.nth(2).locator("svg")).toHaveCount(0);
+
+	await expect(hits.first()).toHaveScreenshot();
+});

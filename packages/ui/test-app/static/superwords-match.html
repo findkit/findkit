@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Search UI Test</title>
+
+		<link rel="stylesheet" href="/shared.css" />
+
+		<script type="module">
+			import { FindkitUI } from "/build/esm/index.js";
+
+			const ui = new FindkitUI({
+				publicToken: "pwrOBq0GR",
+				searchEndpoint:
+					"https://search.findkit.com/n/pwrOBq0GR/search?p=pwrOBq0GR",
+			});
+
+			Object.assign(window, { ui });
+
+			ui.openFrom("button");
+			ui.open();
+		</script>
+	</head>
+
+	<body>
+		<button id="open-button" type="button">open</button>
+	</body>
+</html>
