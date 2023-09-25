@@ -39,6 +39,7 @@ export interface SearchResultHit {
 	title: string;
 	url: string;
 	highlight: string;
+	superwordsMatch: boolean;
 	tags: ReadonlyArray<string>;
 	customFields: CustomFields;
 	content?: string;

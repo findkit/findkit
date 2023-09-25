@@ -42,5 +42,7 @@ type ClassNames =
   | "findkit--spinner"
   | "findkit--spinning"
   | "findkit--sr-only"
+  | "findkit--superwords-match"
+  | "findkit--superwords-match-icon"
   | "findkit--view-groups"
   | "findkit--view-single";
