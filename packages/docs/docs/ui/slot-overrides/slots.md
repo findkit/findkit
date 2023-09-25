@@ -91,3 +91,5 @@ const ui = new FindkitUI({
 	},
 });
 ```
+
+<Codesandbox example="static/hit-slot" />
