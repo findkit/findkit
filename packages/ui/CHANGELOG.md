@@ -1,3 +1,11 @@
+## v0.6.0
+
+2023-09-25
+
+- Add star icon to superword matches [8970f65](https://github.com/findkit/findkit/commit/8970f65) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.5.1...ui/v0.6.0
+
 ## v0.5.1
 
 2023-09-11
