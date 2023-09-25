@@ -67,6 +67,8 @@ Fields](/ui/slot-overrides/custom-fields).
 Example
 
 ```tsx
+import { FindkitUI, html } from "@findkit/ui";
+
 const ui = new FindkitUI({
 	publicToken: "pwrOBq0GR",
 	slots: {
@@ -76,6 +78,7 @@ const ui = new FindkitUI({
 					<h2>
 						${props.hit.superwordsMatch ? "🔥" : ""}
 						<a href=${props.hit.url}>${props.hit.title}</a>
+						(${props.hit.score})
 					</h2>
 					<p
 						class="highlight"

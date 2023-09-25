@@ -54,7 +54,6 @@ Example
 
 will pick `Page Title` as the title.
 
-
 ### `contentSelector: string` {#contentSelector}
 
 Use custom CSS selector to select the content on this page. This will be
@@ -84,6 +83,12 @@ superword the matching search result score will get a boost that will be always
 bigger than normal results. This can be used to implement "Pinned Results" that
 are always shown before other results. Superwords are not included in search
 highlights.
+
+On match `superwordsMatch: true` will be added to the response hit object which can be used to style the superword
+matches. FindkitUI will automatically add a `findkit--superwords-match` class
+to the result hit container element. See [`Hit`
+slot](/ui/slot-overrides/slots#hit) for more advanced search result
+customizations.
 
 ### `customFields: object` {#customFields}
 
