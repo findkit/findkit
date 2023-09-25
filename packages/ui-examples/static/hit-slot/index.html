@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Static Template</title>
+		<script type="module">
+			import {
+				FindkitUI,
+				html,
+			} from "https://cdn.findkit.com/ui/v0.5.0/esm/index.js";
+
+			const ui = new FindkitUI({
+				publicToken: "pwrOBq0GR",
+				slots: {
+					Hit(props) {
+						return html`
+							<div>
+								<h2>
+									${props.hit.superwordsMatch ? "🔥" : ""}
+									<a href=${props.hit.url}>${props.hit.title}</a>
+									(${props.hit.score})
+								</h2>
+								<p
+									class="highlight"
+									dangerouslySetInnerHTML=${{ __html: props.hit.highlight }}
+								></p>
+								tags: ${props.hit.tags.join(", ")}
+							</div>
+						`;
+					},
+				},
+			});
+
+			ui.openFrom("button.open");
+			ui.open("wordpress");
+		</script>
+	</head>
+
+	<body>
+		<button class="open" type="button">open</button>
+	</body>
+</html>

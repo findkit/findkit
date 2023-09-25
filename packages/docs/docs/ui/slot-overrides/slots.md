@@ -63,3 +63,31 @@ Used to customize how the search results are rendered. See [Custom
 Fields](/ui/slot-overrides/custom-fields).
 
 <Api page="ui.slots.hit" />
+
+Example
+
+```tsx
+import { FindkitUI, html } from "@findkit/ui";
+
+const ui = new FindkitUI({
+	publicToken: "pwrOBq0GR",
+	slots: {
+		Hit(props) {
+			return html`
+				<div>
+					<h2>
+						${props.hit.superwordsMatch ? "🔥" : ""}
+						<a href=${props.hit.url}>${props.hit.title}</a>
+						(${props.hit.score})
+					</h2>
+					<p
+						class="highlight"
+						dangerouslySetInnerHTML=${{ __html: props.hit.highlight }}
+					></p>
+					tags: ${props.hit.tags.join(", ")}
+				</div>
+			`;
+		},
+	},
+});
+```
