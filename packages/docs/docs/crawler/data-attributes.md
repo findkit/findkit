@@ -1,6 +1,6 @@
 # Data Attributes
 
-## `data-fdk-content` {data-fdk-content}
+## `data-fdk-content` {#data-fdk-content}
 
 Used for marking content for indexing.
 
@@ -13,7 +13,7 @@ Example
 </div>
 ```
 
-## `data-fdk-content-no-highlight` {data-fdk-content-no-highlight}
+## `data-fdk-content-no-highlight` {#data-fdk-content-no-highlight}
 
 Used for marking content for indexing in a way that it will not be shown in the search result highlight.
 
@@ -26,7 +26,7 @@ Example
 </div>
 ```
 
-## `data-fdk-skip` {data-fdk-skip}
+## `data-fdk-skip` {#data-fdk-skip}
 
 Used for marking content to be skipped from indexing.
 
@@ -39,7 +39,7 @@ Example
 </div>
 ```
 
-## `data-fdk-tags` {data-fdk-tags}
+## `data-fdk-tags` {#data-fdk-tags}
 
 Used for marking content as tags. Several tags need to be space separated.
 
@@ -51,7 +51,7 @@ Example
 
 --> `tags: ["red", "blue", "green", "orange"]`
 
-## `data-fdk-title` {data-fdk-title}
+## `data-fdk-title` {#data-fdk-title}
 
 Used for marking page title from HTML.
 
@@ -61,7 +61,7 @@ Example
 <h1 data-fdk-title>Page Title</h1>
 ```
 
-## `data-fdk-superwords` {data-fdk-superwords}
+## `data-fdk-superwords` {#data-fdk-superwords}
 
 Used for marking superwords. For details see [docs](/crawler/meta-tag#superwords)
 Several superwords need to be separated by spaces.
