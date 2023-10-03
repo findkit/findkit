@@ -1,28 +1,41 @@
 # Data Attributes
 
+The crawler automatically recognizes following data attributes in the page HTML.
+
 ## `data-fdk-content` {#data-fdk-content}
 
-Used for marking content for indexing.
+Used for marking content for indexing. When at least one `data-fdk-content` is
+present on the page the automatic content selection in the crawler will be
+disabled and the content will be picked only from the elements with the
+attribute.
 
 Example
 
 ```html
-<div class="content" data-fdk-content>
-	I will be indexed.
-	<div class="child">As will I.</div>
-</div>
+<main>
+    <div data-fdk-content>
+        I will be indexed.
+        <div>As will I.</div>
+    </div>
+
+    <p>
+    I won't be indexed because containing element or any of its parents does
+    not have the data-fdk-content attribute
+    </p>
+</main>
 ```
+
 
 ## `data-fdk-content-no-highlight` {#data-fdk-content-no-highlight}
 
-Used for marking content for indexing in a way that it will not be shown in the search result highlight.
+Used for marking content for indexing in a way that it will not be shown in the
+search result highlight.
 
 Example
 
 ```html
-<div class="content" data-fdk-content-no-highlight>
-	I will be indexed, but not returned in highlight
-	<div class="child">As will I.</div>
+<div data-fdk-content-no-highlight>
+	I will be indexed, but not returned in the result highlight
 </div>
 ```
 
@@ -33,9 +46,18 @@ Used for marking content to be skipped from indexing.
 Example
 
 ```html
-<div class="skipped-content" data-fdk-skip>
+<div data-fdk-skip>
 	I wont be indexed.
-	<div class="child">As wont I.</div>
+	<div>As won't I.</div>
+</div>
+```
+
+It can also exclude content from `data-fdk-content` elements
+
+```html
+<div data-fdk-content>
+	I will be indexed.
+	<div data-fdk-skip>But I won't be</div>
 </div>
 ```
 
@@ -46,10 +68,10 @@ Used for marking content as tags. Several tags need to be space separated.
 Example
 
 ```html
-<div class="color-tags" data-fdk-tags>red blue green orange</div>
+<div data-fdk-tags>red blue green orange</div>
 ```
 
---> `tags: ["red", "blue", "green", "orange"]`
+Would equal to a meta tag with `tags: ["red", "blue", "green", "orange"]`
 
 ## `data-fdk-title` {#data-fdk-title}
 
@@ -69,7 +91,7 @@ Several superwords need to be separated by spaces.
 Example
 
 ```html
-<div class="superwords" data-fdk-superwords>superman spiderman</div>
+<div data-fdk-superwords>superman spiderman</div>
 ```
 
---> `superwords: ["superman", "spiderman"]`
+Would equal to a meta tag with `superwords: ["superman", "spiderman"]` 
