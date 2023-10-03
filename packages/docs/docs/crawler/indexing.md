@@ -21,6 +21,8 @@ Example
 <div class="content" data-fdk-content>The content text...</div>
 ```
 
+For full list of data-attributes see [data-attributes](/crawler/data-attributes).
+
 You can use the attribute multiple times on a single page. The crawler will
 select the text content from all elements with it and combine them to the page
 index. You can use the `findkit inspect <url>` CLI command to view currently indexed content
