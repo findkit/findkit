@@ -77,10 +77,16 @@ enabled.
 
 Defaults to `/`
 
-
 ### `content_selector: string` {#content_selector}
 
 CSS selector used to select the text content for indexing.
+
+Read more from the [Indexing Content](/crawler/indexing) page.
+
+### `content_no_highlight_selector: string` {#content_no_highlight_selector}
+
+CSS selector used to select the text content for indexing that should not be highlighted.
+Eg. Post taxonomies.
 
 Read more from the [Indexing Content](/crawler/indexing) page.
 
