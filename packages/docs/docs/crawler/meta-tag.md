@@ -60,6 +60,12 @@ Use custom CSS selector to select the content on this page. This will be
 combined with the [`content_selector`](/toml/#content_selector) TOML
 option.
 
+### `contentNoHighlightSelector: string` {#contentNoHighlightSelector}
+
+Use custom CSS selector to select the content on this page that should be queryable but not highlighted on the result excerpt. This will be
+combined with the [`content_no_highlight_selector`](/toml/#content_no_highlight_selector) TOML
+option.
+
 ### `tags: string[]` {#tags}
 
 List of additional [tags](/crawler/tagging) to index the page with.
