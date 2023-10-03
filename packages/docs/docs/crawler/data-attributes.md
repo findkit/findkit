@@ -29,7 +29,11 @@ Example
 ## `data-fdk-content-no-highlight` {#data-fdk-content-no-highlight}
 
 Used for marking content for indexing in a way that it will not be shown in the
-search result highlight.
+search result highlight. If you don't wan't to text to appear on the page use
+the [`contentNoHighlight`](/crawler/meta-tag#contentNoHighlight) meta tag field
+instead. Hidden elements can harmful for Google SEO because
+[it may be interrepted as
+spam](https://developers.google.com/search/docs/essentials/spam-policies#hidden-text-and-links).
 
 Example
 

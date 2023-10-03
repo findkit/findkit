@@ -54,16 +54,24 @@ Example
 
 will pick `Page Title` as the title.
 
+
 ### `contentSelector: string` {#contentSelector}
 
 Use custom CSS selector to select the content on this page. This will be
 combined with the [`content_selector`](/toml/#content_selector) TOML
 option.
 
-### `contentNoHighlightSelector: string` {#contentNoHighlightSelector}
+### `contentNoHighlight: string` {#contentNoHighlight}
 
-Use custom CSS selector to select the content on this page that should be queryable but not highlighted on the result excerpt. This will be
-combined with the [`content_no_highlight_selector`](/toml/#content_no_highlight_selector) TOML
+Add text to the index that is searchable but not highlighted on the result
+excerpts. Commonly used to add synonyms and other content that is not part of
+the main content text.
+
+### `contentNoHighlightSelector: string` {#contentNoHighlight}
+
+CSS selector used to get value for [`contentNoHighlight`](#contentNoHighlight)
+from the page. This will be combined with the
+[`content_no_highlight_selector`](/toml/options#content_no_highlight_selector) TOML
 option.
 
 ### `tags: string[]` {#tags}
