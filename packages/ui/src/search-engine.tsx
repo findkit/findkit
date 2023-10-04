@@ -107,6 +107,10 @@ export interface SearchParams {
 	 * Return the hit content as well
 	 */
 	content?: boolean;
+
+	filter?: any;
+
+	sort?: any;
 }
 
 /**
@@ -1020,6 +1024,8 @@ export class SearchEngine {
 				}
 
 				return cleanUndefined({
+					filter: group.params.filter,
+					sort: group.params.sort,
 					tagQuery: group.params.tagQuery ?? [],
 					tagBoost: group.params.tagBoost,
 					content: group.params.content,
