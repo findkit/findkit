@@ -388,3 +388,33 @@
 	height: 1px;
 	overflow: hidden;
 }
+
+.slot-error {
+	border: 1px dashed red;
+	padding: var(--space-3);
+	background-color: rgba(255, 0, 0, 0.1);
+}
+
+.slot-error-title {
+	color: red;
+}
+.slot-error-details {
+	padding: var(--space-2);
+}
+
+.slot-error-message,
+.slot-error-props {
+	padding: var(--space-2);
+	overflow: auto;
+	background-color: black;
+	color: white;
+}
+
+.slot-error-message {
+	height: 40px;
+	justify-content: center;
+}
+
+.slot-error-props {
+	height: 150px;
+}

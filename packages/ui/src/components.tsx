@@ -192,6 +192,12 @@ function Hit(props: {
 			<Slot
 				name="Hit"
 				key={props.hit.url}
+				errorChildren={
+					<>
+						{props.hit.title}
+						<a href={props.hit.url}>{props.hit.url}</a>
+					</>
+				}
 				props={{
 					hit: props.hit,
 				}}
