@@ -118,6 +118,8 @@ export function scrollIntoViewIfNeeded(
 export function isProd() {
 	if (typeof location !== "undefined") {
 		if (
+			/__force_findkit_dev__/.test(location.href) ||
+			location.protocol === "http:" ||
 			location.port ||
 			location.hostname === "localhost" ||
 			location.hostname.endsWith(".test")
