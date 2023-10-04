@@ -53,7 +53,8 @@
 .plain {
 }
 
-.view-groups {}
+.view-groups {
+}
 
 .view-single {
 }
@@ -171,7 +172,8 @@
 	transition: opacity 200ms ease;
 }
 
-.superwords-match {}
+.superwords-match {
+}
 
 .superwords-match-icon {
 	margin-right: var(--space-2);
@@ -185,7 +187,8 @@
 	padding: var(--space-3);
 }
 
-.message, .message a {
+.message,
+.message a {
 	font-weight: bold;
 }
 
@@ -198,8 +201,6 @@
 .message a:hover {
 	text-decoration: underline;
 }
-
-
 
 .highlight {
 	display: block;
