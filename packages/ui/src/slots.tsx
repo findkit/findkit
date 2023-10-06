@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
+import { ErrorContainer } from "./components";
 import { useFindkitContext } from "./core-hooks";
 import { SearchResultHit } from "./search-engine";
-import { isProd, View } from "./utils";
 
 // Rules for slot definitions:
 //   - Use interfaces with `@public` tag for the props
@@ -106,37 +106,6 @@ export interface SlotProps<Name extends keyof Slots> {
 	children: ReactNode;
 }
 
-function SlotError(props: {
-	name: string;
-	children: ReactNode;
-	props: any;
-	error: string | null;
-}) {
-	let propsString = null;
-	try {
-		propsString = JSON.stringify(props.props, null, 2);
-	} catch {}
-
-	return (
-		<View cn="slot-error">
-			<View cn="slot-error-title">
-				Error rendering slot override "{props.name}"
-			</View>
-			{props.children ? (
-				<View cn="slot-error-details">{props.children}</View>
-			) : null}
-			<View as="pre" cn="slot-error-message">
-				{props.error}
-			</View>
-			{propsString && propsString !== "{}" && !isProd() ? (
-				<View as="pre" cn="slot-error-props">
-					{propsString}
-				</View>
-			) : null}
-		</View>
-	);
-}
-
 function SlotInner<Name extends keyof Slots>(props: SlotProps<Name>) {
 	const context = useFindkitContext();
 
@@ -179,13 +148,13 @@ export class Slot<Name extends keyof Slots> extends React.Component<
 		if (this.state.error !== null) {
 			return (
 				this.props.errorFallback ?? (
-					<SlotError
-						name={this.props.name}
+					<ErrorContainer
+						title={`Error rendering slot "${this.props.name}"`}
 						props={this.props.props}
 						error={this.state.error}
 					>
 						{this.props.errorChildren}
-					</SlotError>
+					</ErrorContainer>
 				)
 			);
 		}
