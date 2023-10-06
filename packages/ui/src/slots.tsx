@@ -98,6 +98,11 @@ export interface Slots {
 	 * Layout component which wraps the header and content
 	 */
 	Layout(props: LayoutSlotProps): any;
+
+	/**
+	 * The magnifying glass icon in the default search input
+	 */
+	SearchInputIcon(props: { children: any }): any;
 }
 
 export interface SlotProps<Name extends keyof Slots> {
