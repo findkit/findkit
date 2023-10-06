@@ -3,7 +3,7 @@
 2023-10-06
 
 - Add error boundaries to slot overrides [db119c8](https://github.com/findkit/findkit/commit/db119c8) - Esa-Matti Suuronen
-  - If a custom slot override error it won't bring down to whole search UI. Only the specific slot.
+  - If a custom slot override errors it won't bring down to whole search UI. Only the specific slot.
 - Derive button hover background from `--brand-color` [1c7ed5c](https://github.com/findkit/findkit/commit/1c7ed5c) - Esa-Matti Suuronen
   - `--hover-bg-color` is now gone. If you need to set custom bg hover color use `.findkit--hover-bg { background-color: mycolor }`
 - Inherit font-family for form controls (button, input etc) [a93b1ab](https://github.com/findkit/findkit/commit/a93b1ab) - Esa-Matti Suuronen
