@@ -85,10 +85,7 @@ Read more from the [Indexing Content](/crawler/indexing) page.
 
 ### `content_no_highlight_selector: string` {#content_no_highlight_selector}
 
-CSS selector used to select the text content for indexing that should not be highlighted.
-Eg. Post taxonomies.
-
-Read more from the [Indexing Content](/crawler/indexing) page.
+Get value for [`contentNoHighlight`](/crawler/meta-tag#contentNoHighlight) using a CSS selector.
 
 ### `cleanup_selector: string` {#cleanup_selector}
 
