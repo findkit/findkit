@@ -969,7 +969,10 @@ export class SearchEngine {
 
 	retry() {
 		this.state.error = undefined;
-		void this.PRIVATE_fetch({ reset: true, terms: this.state.usedTerms ?? "" });
+		void this.PRIVATE_fetch({
+			reset: true,
+			terms: this.findkitParams.getTerms() || this.state.usedTerms || "",
+		});
 	}
 
 	/**
