@@ -4,7 +4,7 @@ import { FindkitUI, css, VERSION } from "@findkit/ui";
 const ui = new FindkitUI({
 	publicToken: "p68GxRvaA",
 	css: css`
-		.magnifying-glass-lightning {
+		.findkit--magnifying-glass-lightning {
 			visibility: visible;
 		}
 	`,
