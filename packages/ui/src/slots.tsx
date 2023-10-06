@@ -82,7 +82,7 @@ export interface Slots {
 	/**
 	 * Component override for the result item
 	 */
-	Hit(props: { hit: SearchResultHit }): any;
+	Hit(props: { hit: SearchResultHit; children: any }): any;
 
 	/**
 	 * Header component which hides automatically when scrolling down
