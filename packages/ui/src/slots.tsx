@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import { ErrorContainer } from "./components";
 import { useFindkitContext } from "./core-hooks";
 import { SearchResultHit } from "./search-engine";
 
@@ -81,7 +82,7 @@ export interface Slots {
 	/**
 	 * Component override for the result item
 	 */
-	Hit(props: { hit: SearchResultHit }): any;
+	Hit(props: { hit: SearchResultHit; children: any }): any;
 
 	/**
 	 * Header component which hides automatically when scrolling down
@@ -99,11 +100,13 @@ export interface Slots {
 	Layout(props: LayoutSlotProps): any;
 }
 
-export function Slot<Name extends keyof Slots>(props: {
+export interface SlotProps<Name extends keyof Slots> {
 	name: Name;
 	props: Omit<Parameters<Slots[Name]>[0], "children">;
 	children: ReactNode;
-}) {
+}
+
+function SlotInner<Name extends keyof Slots>(props: SlotProps<Name>) {
 	const context = useFindkitContext();
 
 	const SlotComponent = context.slots[props.name] as any;
@@ -113,4 +116,53 @@ export function Slot<Name extends keyof Slots>(props: {
 	}
 
 	return <SlotComponent {...props.props}>{props.children}</SlotComponent>;
+}
+
+export class Slot<Name extends keyof Slots> extends React.Component<
+	SlotProps<Name> & { errorFallback?: ReactNode; errorChildren?: ReactNode },
+	{ error: string | null }
+> {
+	constructor(props: any) {
+		super(props);
+		this.state = { error: null };
+	}
+
+	static getDerivedStateFromError(error: Error) {
+		return { error: String(error.message ?? error) };
+	}
+
+	componentDidCatch(error: any) {
+		queueMicrotask(() => {
+			console.error(
+				`[findkit] Error rendering slot override "${this.props.name}"`,
+				this.props.props,
+			);
+			// Throw the error again out of this stack frame to avoid crashing
+			// the app but to generate a global unhandled error which can be
+			// capture by error tracking tools like Sentry
+			throw error;
+		});
+	}
+
+	render() {
+		if (this.state.error !== null) {
+			return (
+				this.props.errorFallback ?? (
+					<ErrorContainer
+						title={`Error rendering slot "${this.props.name}"`}
+						props={this.props.props}
+						error={this.state.error}
+					>
+						{this.props.errorChildren}
+					</ErrorContainer>
+				)
+			);
+		}
+
+		return (
+			<SlotInner name={this.props.name} props={this.props.props}>
+				{this.props.children}
+			</SlotInner>
+		);
+	}
 }

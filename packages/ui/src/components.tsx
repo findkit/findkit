@@ -26,7 +26,7 @@ import {
 } from "./search-engine";
 import { Slot, Slots } from "./slots";
 import { createTranslator } from "./translations";
-import { cn, scrollToTop, View } from "./utils";
+import { cn, isProd, scrollToTop, View } from "./utils";
 
 export function FindkitProvider(props: {
 	children: ReactNode;
@@ -192,6 +192,12 @@ function Hit(props: {
 			<Slot
 				name="Hit"
 				key={props.hit.url}
+				errorChildren={
+					<>
+						{props.hit.title}
+						<a href={props.hit.url}>{props.hit.url}</a>
+					</>
+				}
 				props={{
 					hit: props.hit,
 				}}
@@ -561,5 +567,36 @@ export function Spinner(props: { spinning?: boolean }) {
 				spinning: props.spinning !== false && state.status === "fetching",
 			}}
 		></View>
+	);
+}
+
+export function ErrorContainer(props: {
+	title: ReactNode;
+	children: ReactNode;
+	props?: any;
+	error: string | null;
+}) {
+	let propsString = null;
+	try {
+		propsString = JSON.stringify(props.props, null, 2);
+	} catch {}
+
+	return (
+		<View cn="error">
+			<View as="h2" cn="error-title">
+				{props.title}
+			</View>
+
+			{props.children ? <View cn="error-details">{props.children}</View> : null}
+
+			<View as="pre" cn="error-message">
+				{props.error}
+			</View>
+			{propsString && propsString !== "{}" && !isProd() ? (
+				<View as="pre" cn="error-props">
+					{propsString}
+				</View>
+			) : null}
+		</View>
 	);
 }

@@ -969,7 +969,10 @@ export class SearchEngine {
 
 	retry() {
 		this.state.error = undefined;
-		void this.PRIVATE_fetch({ reset: true, terms: this.state.usedTerms ?? "" });
+		void this.PRIVATE_fetch({
+			reset: true,
+			terms: this.findkitParams.getTerms() || this.state.usedTerms || "",
+		});
 	}
 
 	/**
@@ -1200,6 +1203,11 @@ export class SearchEngine {
 				source: "fetch",
 				message: response.error.message,
 			};
+
+			if (this.PRIVATE_pendingRequestIds.size === 0) {
+				this.PRIVATE_statusTransition("ready");
+			}
+
 			// On error just bail out and do not clear the previous results
 			// so the user can see the previus results
 			return;

@@ -16,6 +16,8 @@ export interface TranslationStrings {
 	"sr-result-count": string;
 	"sr-search-instructions": string;
 	"superwords-match": string;
+	"error-title": string;
+	"try-again": string;
 }
 
 export const BASE_TRANSLATIONS: TranslationStrings = {
@@ -32,6 +34,8 @@ export const BASE_TRANSLATIONS: TranslationStrings = {
 	"sr-search-instructions":
 		"Search shows search results automatically as you type. Search results can be browsed with tabulator. Search searches for results in different groups and displays group's search results from best to worst. Search opens to its own window which can be closed with the ESC key.",
 	"superwords-match": "Pinned search result",
+	"error-title": "Unexpected error",
+	"try-again": "Try again",
 };
 
 function renderTranslation(
@@ -60,6 +64,8 @@ export const TRANSLATIONS: Record<string, TranslationStrings> = {
 		"sr-search-instructions":
 			"Hakutoiminto esittää hakutulokset automaattisesti kirjoittaessasi hakusanaa. Hakutuloksia on mahdollista selata tab-näppäimellä. Haku etsii hakutuloksia useista ryhmistä, ja esittää ryhmän hakutulokset paremmuusjärjestyksessä. Haku aukeaa omaan näkymään, jonka käyttäjä voi sulkea esc-näppäimellä.",
 		"superwords-match": "Nostettu hakutulos",
+		"error-title": "Odottamaton virhe",
+		"try-again": "Yritä uudelleen",
 	},
 };
 

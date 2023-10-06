@@ -1,7 +1,13 @@
 import { FocusTrap } from "./focus-trap";
 import React, { StrictMode, useRef, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { Results, FindkitProvider, Logo, Spinner } from "./components";
+import {
+	Results,
+	FindkitProvider,
+	Logo,
+	Spinner,
+	ErrorContainer,
+} from "./components";
 import {
 	useSearchEngineState,
 	useSearchEngine,
@@ -197,28 +203,26 @@ function Cross() {
 function FetchError() {
 	const state = useSearchEngineState();
 	const engine = useSearchEngine();
+	const t = useTranslator();
 
 	if (!state.error) {
 		return null;
 	}
 
 	return (
-		<View cn="error-container">
-			<View cn="error-title" as="h1">
-				Oops, something went wrong 🤦‍♂️
-			</View>
-			<View cn="error-message" as="pre">
-				{state.error?.message}
-			</View>
-			<View
-				as="button"
-				cn="retry-button"
-				type="button"
-				onClick={() => engine.retry()}
-			>
-				Try again
-			</View>
-		</View>
+		<ErrorContainer title={t("error-title")} error={state.error?.message ?? ""}>
+			<div>
+				Fetch errored
+				<View
+					as="button"
+					cn="retry-button"
+					type="button"
+					onClick={() => engine.retry()}
+				>
+					{t("try-again")}
+				</View>
+			</div>
+		</ErrorContainer>
 	);
 }
 
