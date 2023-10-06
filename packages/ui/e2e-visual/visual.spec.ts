@@ -434,3 +434,139 @@ test("custom search input icon", async ({ page }) => {
 
 	await expect(header).toHaveScreenshot();
 });
+
+test("can restore findkit icon branding", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			css: `
+				.findkit--magnifying-glass-lightning {
+					visibility: visible;
+				}
+			`,
+		});
+
+		ui.open("");
+	});
+
+	const header = page.locator(".findkit--header");
+	await header.first().waitFor({ state: "visible" });
+
+	await expect(header).toHaveScreenshot();
+});
+
+test("form controls (button, input) inherit parent font-family in modal", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI, html } = MOD;
+
+		const css = `
+			body {
+				font-family: "Comic Sans MS", "Comic Sans", cursive;
+			}
+		`;
+
+		const style = document.createElement("style");
+		style.innerHTML = css;
+		document.head.appendChild(style);
+
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			params: {
+				size: 1,
+			},
+			infiniteScroll: false,
+			slots: {
+				Header(props) {
+					return html`
+						<input type="text" value="test" />
+						<button>test</button>
+						<textarea>test</textarea>
+						<select>
+							<option>test</option>
+						</select>
+
+						${props.children}
+					`;
+				},
+			},
+		});
+
+		ui.open("gaming");
+	});
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	await expect(page).toHaveScreenshot({
+		mask: [hits],
+	});
+});
+
+test("form controls (button, input) inherit parent font-family in a custom container", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI, html } = MOD;
+
+		const css = `
+			body {
+				font-family: "Comic Sans MS", "Comic Sans", cursive;
+			}
+			#findkit-container {
+				display: flex;
+				background: white;
+				height: 100vh;
+			}
+		`;
+
+		const style = document.createElement("style");
+		style.innerHTML = css;
+		document.head.appendChild(style);
+
+		const container = document.createElement("div");
+		container.id = "findkit-container";
+		document.body.appendChild(container);
+
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			container,
+			params: {
+				size: 1,
+			},
+			infiniteScroll: false,
+			modal: false,
+			slots: {
+				Header(props) {
+					return html`
+						<input type="text" value="test" />
+						<button>test</button>
+						<textarea>test</textarea>
+						<select>
+							<option>test</option>
+						</select>
+
+						${props.children}
+					`;
+				},
+			},
+		});
+
+		ui.open("gaming");
+	});
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	await expect(page).toHaveScreenshot({
+		mask: [hits],
+	});
+});

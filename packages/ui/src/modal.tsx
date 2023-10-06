@@ -349,6 +349,7 @@ function Modal() {
 			data-id={engine.instanceId}
 			cn={{
 				backdrop: true,
+				container: true,
 				"modal-container": true,
 				"backdrop-visible": visible,
 			}}
@@ -408,6 +409,7 @@ export function Plain() {
 		<View
 			{...containerKbAttrs}
 			cn={{
+				container: true,
 				plain: true,
 				["view-groups"]: view === "groups",
 				["view-single"]: view === "single",

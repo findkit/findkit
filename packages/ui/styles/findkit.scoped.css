@@ -1,3 +1,7 @@
+.container button, input, textarea, select {
+	font-family: inherit;
+}
+
 .modal {
 	overflow: auto;
 	height: 100%;
@@ -330,6 +334,10 @@
 .search-input-icon-container .magnifying-glass {
 	position: absolute;
 	left: var(--findkit--space-5);
+}
+
+.magnifying-glass-lightning {
+	visibility: hidden;
 }
 
 .search-input-icon-container-hide {
