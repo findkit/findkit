@@ -1,4 +1,7 @@
-.container button, input, textarea, select {
+.container button,
+input,
+textarea,
+select {
 	font-family: inherit;
 }
 
@@ -102,9 +105,6 @@
 		color: rgb(163, 163, 163);
 	}
 }
-
-
-
 
 .search-input-wrap {
 	height: var(--space-14);
@@ -331,7 +331,6 @@
 
 	/* click through */
 	pointer-events: none;
-
 }
 
 .search-input-icon-container .magnifying-glass {
