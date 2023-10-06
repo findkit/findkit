@@ -8,7 +8,7 @@
   - `--hover-bg-color` is now gone. If you need to set custom bg hover color use `.findkit--hover-bg { background-color: mycolor }`
 - Inherit font-family for form controls (button, input etc) [a93b1ab](https://github.com/findkit/findkit/commit/a93b1ab) - Esa-Matti Suuronen
 - Hide findkit branding by default from the search input icon [47568bb](https://github.com/findkit/findkit/commit/47568bb) - Esa-Matti Suuronen
-  - Removes the lightning from the magnifying glass icon. If you want it back add `.magnifying-glass-lightning { visibility: visible }`
+  - Removes the lightning from the magnifying glass icon. If you want it back add `.findkit--magnifying-glass-lightning { visibility: visible }`
 - Add SearchInputIcon slot [1e83692](https://github.com/findkit/findkit/commit/1e83692) - Esa-Matti Suuronen
 - Unify error component and add error translations [d824a84](https://github.com/findkit/findkit/commit/d824a84) - Esa-Matti Suuronen
 - Fix retry button shown on fetch error [7fcbdae](https://github.com/findkit/findkit/commit/7fcbdae) - Esa-Matti Suuronen
