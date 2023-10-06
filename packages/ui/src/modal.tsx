@@ -229,6 +229,7 @@ function FetchError() {
 function SearchInput() {
 	const inputRef = useInput();
 	const t = useTranslator();
+	const state = useSearchEngineState();
 
 	return (
 		<View cn="search-input-wrap">
@@ -245,7 +246,17 @@ function SearchInput() {
 				aria-label={t("aria-label-search-input")}
 			/>
 			<Spinner />
-			<Logo />
+			<View
+				cn={{
+					["search-input-icon-container"]: true,
+					["search-input-icon-container-hide"]: state.status === "fetching",
+				}}
+			>
+				<Slot name="SearchInputIcon" props={{}} errorFallback={<Logo />}>
+					{/* Too small to render the default error component. Just log the error. */}
+					<Logo />
+				</Slot>
+			</View>
 		</View>
 	);
 }
