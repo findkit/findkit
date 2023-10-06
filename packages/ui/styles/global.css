@@ -27,7 +27,7 @@
 	--background-color: white;
 	--brand-color: rgb(184, 97, 150);
 	--hover-bg-color: rgba(184, 97, 150, 0.103);
-	--findkit--modal-animation-duration: 200ms;
+	--modal-animation-duration: 200ms;
 
 	/**
 	* Do not inherit any styles outside the shadow root
@@ -49,3 +49,4 @@
 	flex-direction: column;
 	box-sizing: border-box;
 }
+
