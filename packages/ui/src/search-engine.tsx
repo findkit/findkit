@@ -1011,7 +1011,7 @@ export class SearchEngine {
 				let size = group.previewSize ?? DEFAULT_PREVIEW_SIZE;
 
 				if (options.appendGroupId) {
-					size = this.PRIVATE_fetchCount;
+					size = group.params.size ?? this.PRIVATE_fetchCount;
 				}
 
 				let from = 0;
