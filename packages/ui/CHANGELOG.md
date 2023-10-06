@@ -9,10 +9,10 @@
 - Inherit font-family for form controls (button, input etc) [a93b1ab](https://github.com/findkit/findkit/commit/a93b1ab) - Esa-Matti Suuronen
 - Hide findkit branding by default from the search input icon [47568bb](https://github.com/findkit/findkit/commit/47568bb) - Esa-Matti Suuronen
   - Removes the lightning from the magnifying glass icon. If you want it back add `.findkit--magnifying-glass-lightning { visibility: visible }`
-- Add SearchInputIcon slot [1e83692](https://github.com/findkit/findkit/commit/1e83692) - Esa-Matti Suuronen
+- Add [SearchInputIcon slot](https://docs.findkit.com/ui/slot-overrides/slots#searchinputicon) [1e83692](https://github.com/findkit/findkit/commit/1e83692) - Esa-Matti Suuronen
 - Unify error component and add error translations [d824a84](https://github.com/findkit/findkit/commit/d824a84) - Esa-Matti Suuronen
 - Fix retry button shown on fetch error [7fcbdae](https://github.com/findkit/findkit/commit/7fcbdae) - Esa-Matti Suuronen
-- Add children type to Hit slot props [a94ecb5](https://github.com/findkit/findkit/commit/a94ecb5) - Esa-Matti Suuronen
+- Add children type to [Hit slot props](https://docs.findkit.com/ui-api/ui.slots.hit/) [a94ecb5](https://github.com/findkit/findkit/commit/a94ecb5) - Esa-Matti Suuronen
 - Stop spinner on fetch errors [2ac10d5](https://github.com/findkit/findkit/commit/2ac10d5) - Esa-Matti Suuronen
 - Fix params.size [2105213](https://github.com/findkit/findkit/commit/2105213) - Esa-Matti Suuronen
 - Consider http: and **force_findkit_dev** query string as dev mode [38eaf6e](https://github.com/findkit/findkit/commit/38eaf6e) - Esa-Matti Suuronen
