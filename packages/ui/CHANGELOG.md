@@ -1,3 +1,24 @@
+## v0.7.0
+
+2023-10-06
+
+- Add error boundaries to slot overrides [db119c8](https://github.com/findkit/findkit/commit/db119c8) - Esa-Matti Suuronen
+  - If a custom slot override error it won't bring down to whole search UI. Only the specific slot.
+- Derive button hover background from `--brand-color` [1c7ed5c](https://github.com/findkit/findkit/commit/1c7ed5c) - Esa-Matti Suuronen
+  - `--hover-bg-color` is now gone. If you need to set custom bg hover color use `.findkit--hover-bg { background-color: mycolor }`
+- Inherit font-family for form controls (button, input etc) [a93b1ab](https://github.com/findkit/findkit/commit/a93b1ab) - Esa-Matti Suuronen
+- Hide findkit branding by default from the search input icon [47568bb](https://github.com/findkit/findkit/commit/47568bb) - Esa-Matti Suuronen
+  - Removes the lightning from the magnifying glass icon. If you want it back add `.magnifying-glass-lightning { visibility: visible }`
+- Add SearchInputIcon slot [1e83692](https://github.com/findkit/findkit/commit/1e83692) - Esa-Matti Suuronen
+- Unify error component and add error translations [d824a84](https://github.com/findkit/findkit/commit/d824a84) - Esa-Matti Suuronen
+- Fix retry button shown on fetch error [7fcbdae](https://github.com/findkit/findkit/commit/7fcbdae) - Esa-Matti Suuronen
+- Add children type to Hit slot props [a94ecb5](https://github.com/findkit/findkit/commit/a94ecb5) - Esa-Matti Suuronen
+- Stop spinner on fetch errors [2ac10d5](https://github.com/findkit/findkit/commit/2ac10d5) - Esa-Matti Suuronen
+- Fix params.size [2105213](https://github.com/findkit/findkit/commit/2105213) - Esa-Matti Suuronen
+- Consider http: and **force_findkit_dev** query string as dev mode [38eaf6e](https://github.com/findkit/findkit/commit/38eaf6e) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.6.1...ui/v0.7.0
+
 ## v0.6.1
 
 2023-09-28
