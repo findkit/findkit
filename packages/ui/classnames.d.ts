@@ -31,6 +31,7 @@ type ClassNames =
   | "findkit--link-text"
   | "findkit--load-more-button"
   | "findkit--magnifying-glass"
+  | "findkit--magnifying-glass-lightning"
   | "findkit--message"
   | "findkit--modal"
   | "findkit--modal-container"

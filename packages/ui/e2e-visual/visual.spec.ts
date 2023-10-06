@@ -434,3 +434,26 @@ test("custom search input icon", async ({ page }) => {
 
 	await expect(header).toHaveScreenshot();
 });
+
+test("can restore findkit icon branding", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			css: `
+				.findkit--magnifying-glass-lightning {
+					visibility: visible;
+				}
+			`,
+		});
+
+		ui.open("");
+	});
+
+	const header = page.locator(".findkit--header");
+	await header.first().waitFor({ state: "visible" });
+
+	await expect(header).toHaveScreenshot();
+});

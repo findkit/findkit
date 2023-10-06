@@ -332,6 +332,10 @@
 	left: var(--findkit--space-5);
 }
 
+.magnifying-glass-lightning {
+	visibility: hidden;
+}
+
 .search-input-icon-container-hide {
 	opacity: 0;
 	transition-delay: 1s;
