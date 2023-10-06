@@ -28,4 +28,4 @@ The library changelog is available on the Github repository:
 <https://github.com/findkit/findkit/blob/main/packages/ui/CHANGELOG.md>
 
 If you want to get notified of new releses you can watch the releases on
-Github: Watch -> Custom -> Releses.
+Github: Watch -> Custom -> Releases.
