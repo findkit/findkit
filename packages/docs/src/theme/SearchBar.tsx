@@ -1,7 +1,14 @@
 import React, { useEffect } from "react";
-import { FindkitUI } from "@findkit/ui";
+import { FindkitUI, css, VERSION } from "@findkit/ui";
 
-const ui = new FindkitUI({ publicToken: "p68GxRvaA" });
+const ui = new FindkitUI({
+	publicToken: "p68GxRvaA",
+	css: css`
+		.magnifying-glass-lightning {
+			visibility: visible;
+		}
+	`,
+});
 
 export default function SearchBarWrapper() {
 	useEffect(() => {
