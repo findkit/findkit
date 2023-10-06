@@ -1,3 +1,7 @@
+.container button, input, textarea, select {
+	font-family: inherit;
+}
+
 .modal {
 	overflow: auto;
 	height: 100%;

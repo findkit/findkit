@@ -6,6 +6,7 @@ type ClassNames =
   | "findkit--backdrop"
   | "findkit--backdrop-visible"
   | "findkit--close-button"
+  | "findkit--container"
   | "findkit--content"
   | "findkit--cross"
   | "findkit--error"
