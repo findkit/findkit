@@ -318,6 +318,31 @@ test("can customize fetch count", async ({ page }) => {
 			publicToken: "po8GK3G0r",
 			minTerms: 0,
 			fetchCount: 3,
+			infiniteScroll: false,
+		});
+
+		ui.open();
+	});
+
+	const hits = page.locator(".findkit--hit");
+	const loadMore = page.locator("text=Load more");
+
+	await expect(hits).toHaveCount(3);
+	await loadMore.click();
+	await expect(hits).toHaveCount(6);
+});
+
+test("can customize params.size", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "po8GK3G0r",
+			minTerms: 0,
+			infiniteScroll: false,
+			params: {
+				size: 3,
+			},
 		});
 
 		ui.open();
