@@ -385,3 +385,29 @@ test("superword matches are marked with class name and an icon", async ({
 
 	await expect(hits.first()).toHaveScreenshot();
 });
+
+test("hit error boundary", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			slots: {
+				Hit(props) {
+					if (props.hit.title.includes("Console")) {
+						throw new Error("Test error");
+					}
+
+					return props.children;
+				},
+			},
+		});
+
+		ui.open("gaming");
+	});
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	await expect(page).toHaveScreenshot();
+});
