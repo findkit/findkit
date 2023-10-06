@@ -20,3 +20,12 @@ For more detailed description checkout the [Technical Description](/ui/tech) pag
 
 The library can be installed by hot linking it from our CDN or by bundling from the
 npm-package. See the [setup](/ui/setup) page for details.
+
+## Updates
+
+The library changelog is available on the Github repository:
+
+<https://github.com/findkit/findkit/blob/main/packages/ui/CHANGELOG.md>
+
+If you want to get notified of new releses you can watch the releases on
+Github: Watch -> Custom -> Releses.
