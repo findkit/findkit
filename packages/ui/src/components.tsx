@@ -72,7 +72,7 @@ function SingleGroupLink(props: {
 	return (
 		<View
 			as="a"
-			cn={["single-group-link", "hover-bg", "group-header-footer-spacing"]}
+			cn={["single-group-link", "group-header-footer-spacing"]}
 			{...kbAttrs}
 			data-kb-action
 			aria-label={t("aria-show-all", { group: props.groupTitle })}
@@ -93,6 +93,7 @@ function SingleGroupLink(props: {
 		>
 			<View cn="link-text">{props.children}</View>
 			<Arrow direction="right" />
+			<View cn="hover-bg" />
 		</View>
 	);
 }
@@ -108,7 +109,7 @@ function AllResultsLink(props: { children: ReactNode }) {
 			as="a"
 			{...kbAttrs}
 			data-kb-action
-			cn={["back-link", "hover-bg", "group-header-footer-spacing"]}
+			cn={["back-link", "group-header-footer-spacing"]}
 			href={engine.formatHref(nextParams)}
 			onClick={(e) => {
 				e.preventDefault();
@@ -117,6 +118,7 @@ function AllResultsLink(props: { children: ReactNode }) {
 		>
 			<Arrow direction="left" />
 			<View cn="link-text">{props.children}</View>
+			<View cn="hover-bg" />
 		</View>
 	);
 }
@@ -444,7 +446,7 @@ function FooterContent(props: { allResultsLoaded: boolean; groupId: string }) {
 	return (
 		<View
 			as="button"
-			cn={["load-more-button", "hover-bg"]}
+			cn="load-more-button"
 			type="button"
 			{...kbAttrs}
 			disabled={state.status === "fetching"}
@@ -453,6 +455,7 @@ function FooterContent(props: { allResultsLoaded: boolean; groupId: string }) {
 			}}
 		>
 			{t("load-more")}
+			<View cn="hover-bg" />
 		</View>
 	);
 }

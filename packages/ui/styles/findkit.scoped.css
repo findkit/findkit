@@ -283,16 +283,20 @@
 	align-items: center;
 }
 
-.hover-bg {
-	transition: background-color 400ms ease;
-}
-
-.hover-bg:hover:not([disabled]) {
-	background-color: var(--hover-bg-color);
-}
-
 .load-more-button:disabled {
 	opacity: 0.3;
+}
+
+.hover-bg {
+	position: absolute;
+	inset: 0;
+	transition: opacity 400ms ease;
+	background-color: var(--brand-color);
+	opacity: 0;
+}
+
+:hover > .hover-bg {
+	opacity: 0.1;
 }
 
 .footer-spinner {
@@ -306,9 +310,8 @@
 	background-color: rgba(195, 231, 255, 0.2);
 }
 
-
-
-.spinner, .search-input-icon-container {
+.spinner,
+.search-input-icon-container {
 	position: absolute;
 	display: flex;
 	height: 100%;

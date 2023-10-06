@@ -570,3 +570,57 @@ test("form controls (button, input) inherit parent font-family in a custom conta
 		mask: [hits],
 	});
 });
+
+test("hover background is defived from --brand-color", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			infiniteScroll: false,
+			css: `
+				.findkit--container {
+					--findkit--brand-color: olive;
+				}
+			`,
+			fetchCount: 1,
+			groups: [
+				{
+					title: "Group 1",
+					id: "group1",
+					previewSize: 1,
+					params: { size: 1 },
+				},
+				{
+					title: "Group 2",
+					id: "group2",
+					params: { size: 1 },
+				},
+			],
+		});
+
+		ui.open("styl");
+	});
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	const showMoreButton = page.locator("text=Show more");
+	await showMoreButton.first().hover();
+	await page.waitForTimeout(400);
+	await expect(showMoreButton.first()).toHaveScreenshot();
+
+	await showMoreButton.first().click();
+
+	const backButton = page.locator("text=Back");
+	await backButton.first().hover();
+	await page.waitForTimeout(400);
+	await expect(backButton).toHaveScreenshot();
+
+	const loadMore = page.locator("text=Load more");
+	await loadMore.first().hover();
+	await page.waitForTimeout(400);
+	await expect(loadMore).toHaveScreenshot();
+});
