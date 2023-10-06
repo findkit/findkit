@@ -33,6 +33,8 @@ const ui = new FindkitUI({
 
 ### `SearchInputIcon`
 
+Added in v0.7.0
+
 #### Props
 
 - `children`: The original magnifying glass icon
