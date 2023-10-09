@@ -557,8 +557,8 @@ export class SearchEngine {
 
 			// Ensure groups are unique so mutating one does not mutate the
 			// other
-			usedGroupDefinitions: clone(groups),
-			nextGroupDefinitions: clone(groups),
+			usedGroupDefinitions: ref(clone(groups)),
+			nextGroupDefinitions: ref(clone(groups)),
 		});
 		devtools(this.state);
 
@@ -862,19 +862,28 @@ export class SearchEngine {
 		if (Array.isArray(groupsOrFn)) {
 			nextGroups = groupsOrFn;
 		} else if (typeof groupsOrFn === "function") {
-			const replace = groupsOrFn(...this.state.nextGroupDefinitions);
+			const cloned = clone(this.state.nextGroupDefinitions);
+			const replace = groupsOrFn(...cloned);
 			// The function can return a completely new set of groups which are
 			// used to replace the old ones
 			if (replace) {
 				nextGroups = Array.isArray(replace) ? replace : [replace];
 			} else {
-				nextGroups = this.state.nextGroupDefinitions;
+				nextGroups = cloned;
 			}
 		} else {
 			nextGroups = [groupsOrFn];
 		}
 
-		this.state.nextGroupDefinitions = nextGroups;
+		if (deepEqual(nextGroups, this.state.nextGroupDefinitions)) {
+			return;
+		}
+
+		if (deepEqual(nextGroups, this.state.usedGroupDefinitions)) {
+			return;
+		}
+
+		this.state.nextGroupDefinitions = ref(nextGroups);
 	};
 
 	/**
@@ -1515,4 +1524,33 @@ export class SearchEngine {
 			});
 		}
 	};
+}
+
+function deepEqual(x: any, y: any) {
+	if (Object.is(x, y)) {
+		return true;
+	} else if (
+		typeof x === "object" &&
+		x !== null &&
+		typeof y === "object" &&
+		y !== null
+	) {
+		const xKeys = Object.keys(x);
+		if (xKeys.length !== Object.keys(y).length) {
+			return false;
+		}
+
+		for (const prop of xKeys) {
+			if (y.hasOwnProperty(prop)) {
+				if (!deepEqual(x[prop], y[prop])) {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+
+		return true;
+	}
+	return false;
 }
