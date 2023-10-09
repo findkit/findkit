@@ -30,6 +30,8 @@ import {
 	LanguageChangeEvent,
 	ParamsChangeEvent,
 	HitClickEvent,
+	BindInputEvent,
+	UnbindInputEvent,
 } from "../emitter";
 import type { TranslationStrings } from "../translations";
 import { listen, Resources } from "../resources";
@@ -78,7 +80,9 @@ export {
 	SearchEngine,
 	UpdateGroupsArgument,
 	UpdateParamsArgument,
-	LanguageChangeEvent
+	LanguageChangeEvent,
+	BindInputEvent,
+	UnbindInputEvent,
 };
 
 const doc = () => document;
