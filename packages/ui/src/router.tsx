@@ -10,7 +10,10 @@ export interface RouterBackend {
 	listen(cb: () => void): () => void;
 	getSearchParamsString(): string;
 	formatHref(qs: string): string;
-	update: (params: string, options?: { push?: boolean }) => void;
+	update: (
+		params: string,
+		options?: { push?: boolean; ignore?: boolean },
+	) => void;
 }
 
 /**
@@ -18,6 +21,7 @@ export interface RouterBackend {
  */
 export function createQueryStringBackend(): RouterBackend {
 	initNormalizedHistoryEvent();
+	let ignore = false;
 
 	return {
 		getSearchParamsString: () => location.search,
@@ -25,6 +29,10 @@ export function createQueryStringBackend(): RouterBackend {
 			const next = "?" + params;
 			if (location.search === next) {
 				return;
+			}
+
+			if (options?.ignore) {
+				ignore = true;
 			}
 
 			const args = [undefined, "", next + location.hash] as const;
@@ -36,9 +44,17 @@ export function createQueryStringBackend(): RouterBackend {
 			}
 		},
 		listen: (cb) => {
-			window.addEventListener(NORMALIZED_HISTORY_EVENT, cb);
+			const wrap = () => {
+				if (ignore) {
+					ignore = false;
+				} else {
+					cb();
+				}
+			};
+
+			window.addEventListener(NORMALIZED_HISTORY_EVENT, wrap);
 			return () => {
-				window.removeEventListener(NORMALIZED_HISTORY_EVENT, cb);
+				window.removeEventListener(NORMALIZED_HISTORY_EVENT, wrap);
 			};
 		},
 		formatHref: (qs) => {
@@ -62,13 +78,15 @@ export function createMemoryBackend(): RouterBackend {
 
 	return {
 		getSearchParamsString: () => current,
-		update: (next) => {
+		update: (next, options) => {
 			if (current === next) {
 				return;
 			}
 
 			current = next;
-			emit();
+			if (!options?.ignore) {
+				emit();
+			}
 		},
 		listen: (cb) => {
 			listeners.add(cb);
@@ -88,6 +106,7 @@ export function createMemoryBackend(): RouterBackend {
  */
 export function createURLHashBackend(): RouterBackend {
 	initNormalizedHistoryEvent();
+	let ignore = false;
 
 	const get = () => {
 		// Remove leading "#""
@@ -101,6 +120,10 @@ export function createURLHashBackend(): RouterBackend {
 				return;
 			}
 
+			if (options?.ignore) {
+				ignore = true;
+			}
+
 			const args = [undefined, "", "#" + next] as const;
 
 			if (options?.push) {
@@ -110,9 +133,17 @@ export function createURLHashBackend(): RouterBackend {
 			}
 		},
 		listen: (cb) => {
-			window.addEventListener(NORMALIZED_HISTORY_EVENT, cb);
+			const wrap = () => {
+				if (ignore) {
+					ignore = false;
+				} else {
+					cb();
+				}
+			};
+
+			window.addEventListener(NORMALIZED_HISTORY_EVENT, wrap);
 			return () => {
-				window.removeEventListener(NORMALIZED_HISTORY_EVENT, cb);
+				window.removeEventListener(NORMALIZED_HISTORY_EVENT, wrap);
 			};
 		},
 
