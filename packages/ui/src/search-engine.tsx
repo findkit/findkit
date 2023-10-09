@@ -1124,7 +1124,15 @@ export class SearchEngine {
 
 		const appendGroup = this.PRIVATE_getSelectedGroup("next");
 
-		if (appendGroup && !options.reset) {
+		/**
+		 * Is appending additional results to an group which already has
+		 * results. No appendGroup means the user is in the multi group view
+		 * and reset means the user changed search terms or some other filters
+		 * and the next results will replace all previous results
+		 */
+		const isAppending = Boolean(appendGroup && !options.reset);
+
+		if (isAppending && appendGroup) {
 			const group = this.state.resultGroups[appendGroup.id];
 			if (group) {
 				const fetched = group.hits.length;
@@ -1182,6 +1190,7 @@ export class SearchEngine {
 				terms: options.terms,
 				id: String(requestId),
 				stale,
+				append: isAppending,
 				total: response.value.groups.reduce(
 					(total, group) => total + group.total,
 					0,
@@ -1273,7 +1282,7 @@ export class SearchEngine {
 		this.state.usedTerms = options.terms;
 		this.state.usedGroupDefinitions = groups;
 
-		if (appendGroup && !options.reset) {
+		if (isAppending) {
 			this.PRIVATE_addAllResults(resWithIds);
 		} else {
 			this.state.resultGroups = resWithIds;

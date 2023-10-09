@@ -159,6 +159,13 @@ export interface FetchDoneEvent {
 	 * Total number of search results
 	 */
 	total: number;
+
+	/**
+	 * User is appending additional results to an group which already has
+	 * results. Eg. user is paginating for more results. This is false when the
+	 * user is searching for something new with news terms or filters.
+	 */
+	append: boolean;
 }
 
 /**

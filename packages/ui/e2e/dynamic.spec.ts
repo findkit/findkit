@@ -2,6 +2,9 @@ import { expect, test } from "@playwright/test";
 import { spinnerLocator, staticEntry } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
+declare const ui: InstanceType<
+	typeof import("../src/cdn-entries/index").FindkitUI
+>;
 
 test("can set required terms length to zero", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
@@ -515,4 +518,102 @@ test("calls the global FINDKIT_GET_JWT_TOKEN when defined", async ({
 			});
 		})
 		.toBeGreaterThan(0);
+});
+
+test("fetch-done event", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	const waitForFetchDone = async () => {
+		await page.evaluate(
+			async () => {
+				await new Promise((resolve) => {
+					ui.once("fetch-done", resolve);
+				});
+			},
+			{ timeout: 5_000 },
+		);
+	};
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			infiniteScroll: false,
+			minTerms: 1,
+			fetchCount: 1,
+			groups: [
+				{
+					title: "Group 1",
+					id: "1",
+					params: {},
+					previewSize: 1,
+				},
+				{
+					title: "Group 1",
+					id: "1",
+					params: {},
+					previewSize: 1,
+				},
+			],
+		});
+
+		const testEvents: any[] = [];
+		Object.assign(window, { testEvents });
+
+		ui.on("fetch-done", (e) => {
+			console.log("fetch-done", e);
+			testEvents.push({
+				terms: e.terms,
+				append: e.append,
+			});
+		});
+
+		ui.open();
+		Object.assign(window, { ui });
+	});
+
+	const input = page.locator("input");
+	await input.fill("d");
+
+	await waitForFetchDone();
+
+	const showMore = page.locator("text=Show more");
+	await showMore.first().click();
+
+	await waitForFetchDone();
+
+	const loadMore = page.locator("text=Load more");
+	await loadMore.first().click();
+
+	await waitForFetchDone();
+
+	await input.fill("diamond");
+
+	await waitForFetchDone();
+
+	const testEvents = await page.evaluate(async () => {
+		return (window as any).testEvents as any[];
+	});
+
+	expect(testEvents).toEqual([
+		// Intial search
+		{
+			append: false,
+			terms: "d",
+		},
+		// Group selected
+		{
+			append: true,
+			terms: "d",
+		},
+		// Load more click
+		{
+			append: true,
+			terms: "d",
+		},
+		// New search terms
+		{
+			append: false,
+			terms: "diamond",
+		},
+	]);
 });
