@@ -1437,18 +1437,26 @@ export class SearchEngine {
 			ref({ el: input, unbindEvents: listeners.dispose }),
 		);
 
+		this.events.emit("bind-input", { input });
+
 		return unbind;
 	};
 
 	removeInput = (rmInput: HTMLInputElement) => {
 		this.PRIVATE_pendingInputs.delete(rmInput);
 		const input = this.PRIVATE_inputs.find((input) => input?.el === rmInput);
-		input?.unbindEvents();
+		if (!input) {
+			return;
+		}
+
+		input.unbindEvents();
 
 		const inputIndex = this.PRIVATE_inputs.findIndex((obj) => obj === input);
 		if (inputIndex !== -1) {
 			this.PRIVATE_inputs.splice(inputIndex, 1);
 		}
+
+		this.events.emit("unbind-input", { input: rmInput });
 	};
 
 	trapFocus = (elements: HTMLElement[]) => {

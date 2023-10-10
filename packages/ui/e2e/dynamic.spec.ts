@@ -617,3 +617,88 @@ test("fetch-done event", async ({ page }) => {
 		},
 	]);
 });
+
+test("can use bind-input event", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		document.body.innerHTML = `
+			<input type="text" />
+			<div id="container"></div>
+		`;
+
+		const ui = new MOD.FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			header: false,
+			container: "#container",
+		});
+
+		const testEvents: any[] = [];
+		Object.assign(window, { testEvents });
+
+		ui.on("bind-input", (e1) => {
+			const listener = () => {
+				testEvents.push("input:" + e1.input.value);
+			};
+
+			e1.input.addEventListener("input", listener);
+			ui.on("unbind-input", (e2) => {
+				if (e1.input === e2.input) {
+					e1.input.removeEventListener("input", listener);
+				}
+			});
+		});
+
+		ui.bindInput("input");
+
+		Object.assign(window, { ui });
+	});
+
+	const input = page.locator("input");
+	await input.fill("test1");
+
+	await page.evaluate(async () => {
+		ui.dispose();
+	});
+
+	await input.fill("test2");
+
+	const testEvents = await page.evaluate(async () => {
+		return (window as any).testEvents as any[];
+	});
+
+	expect(testEvents).toEqual(["input:test1"]);
+});
+
+test("bind-input is fired for the build-in input", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "pW1D0p0Dg",
+		});
+
+		const testEvents: any[] = [];
+		Object.assign(window, { testEvents });
+
+		ui.on("bind-input", (e1) => {
+			const listener = () => {
+				testEvents.push("input:" + e1.input.value);
+			};
+			e1.input.addEventListener("input", listener);
+		});
+
+		ui.open();
+
+		Object.assign(window, { ui });
+	});
+
+	const input = page.locator("input");
+	await input.fill("test");
+
+	const testEvents = await page.evaluate(async () => {
+		return (window as any).testEvents as any[];
+	});
+
+	expect(testEvents).toEqual(["input:test"]);
+});
