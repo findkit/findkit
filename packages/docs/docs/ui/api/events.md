@@ -76,7 +76,7 @@ When a search hit is clicked.
 
 ### `lang`
 
-*New in v0.5.0*
+_New in v0.5.0_
 
 Emitted when
 
@@ -84,14 +84,50 @@ Emitted when
 - `<html lang>` is mutated
 - Language is set explicitly with [`setLang`](/ui/api/#setLang)
 
-
 <Api page="ui.languagechangeevent">Event Object Interface</Api>
+
+### `bind-input`
+
+_New in v0.8.0_
+
+Emitted when an input is bound using [`.bindInput()`](/ui/api/#bindInput) or [`useInput()`](/ui/slot-overrides/hooks#useInput).
+This is also called for the build-in input.
+
+<Api page="ui.bindinput">Event Object Interface</Api>
+
+### `unbind-input`
+
+_New in v0.8.0_
+
+When an input is unbound using the unbound method returned from
+[`.bindInput()`](/ui/api/#bindInput). Emitted also when the UI is disposed with
+[`.dispose()`](/ui/api/#dispose).
+
+Use to properly cleanup any listeners you set on the `bind-input` event.
+
+Example
+
+```ts
+ui.on("bind-input", (e1) => {
+	const listener = () => {
+		/* whatever */
+	};
+
+	e1.input.addEventListener("focus", listener);
+
+	ui.once("unbind-input", (e2) => {
+		if (e1.input === e2.input) {
+			e.input.removeEventListener("focus", listener);
+		}
+	});
+});
+```
+
+<Api page="ui.bindinput">Event Object Interface</Api>
 
 ### `dispose`
 
-Emitted when the `FindkitUI` instance is discarded with the `.dispose()` method.
-
-
+Emitted when the `FindkitUI` instance is discarded with the [`.dispose()`](/ui/api/#dispose) method.
 
 ---
 
