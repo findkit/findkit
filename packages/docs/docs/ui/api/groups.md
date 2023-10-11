@@ -82,8 +82,8 @@ How many search results to show when all groups are rendered.
 
 ### `relevancyBoost?: number` {#relevancyBoost}
 
-Boost (multiply) the results relevancy within the group. Meaningful only when the
-groups are ordered by relevancy. TODO: link to the option dokumentation
+Boost (multiply) the results relevancy within the group. Meaningful only when
+[`groupOrder`](/ui/api/#groupOrder) is set to `relevancy`.
 
 ## Try it!
 

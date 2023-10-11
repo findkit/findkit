@@ -85,8 +85,10 @@ Group search results. See [Groups](/ui/api/groups).
 
 Group order logic. Defaults to `"static"` which preserves groups array order.
 
-In "relevancy" mode groups are ordered based on the groups most relevants results relevancy.
-Relevancy mode can be affected by groups' option relevancyBoost, which is multiplied with the result relevancy
+In "relevancy" mode groups are ordered based on the groups highest score.
+Relevancy mode can be affected by groups' option
+[`relevancyBoost`](/ui/api/groups#relevancyBoost), which is multiplied with the
+result relevancy
 
 Also supports custom sort functions.
 
