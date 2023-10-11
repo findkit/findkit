@@ -81,7 +81,7 @@ Group search results. See [Groups](/ui/api/groups).
 
 <Api page="ui.findkituioptions.groups" />
 
-### `groupOrder: "relevancy" | "static" | (a,b)=>number`
+### `groupOrder: "relevancy" | "static" | (a,b)=>number` {#groupOrder}
 
 Group order logic. Defaults to `"static"` which preserves groups array order.
 
