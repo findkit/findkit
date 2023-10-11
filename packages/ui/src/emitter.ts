@@ -159,6 +159,13 @@ export interface FetchDoneEvent {
 	 * Total number of search results
 	 */
 	total: number;
+
+	/**
+	 * User is appending additional results to an group which already has
+	 * results. Eg. user is paginating for more results. This is false when the
+	 * user is searching for something new with news terms or filters.
+	 */
+	append: boolean;
 }
 
 /**
@@ -229,6 +236,20 @@ export interface LoadedEvent {
 
 /**
  * @public
+ */
+export interface BindInputEvent {
+	input: HTMLInputElement;
+}
+
+/**
+ * @public
+ */
+export interface UnbindInputEvent {
+	input: HTMLInputElement;
+}
+
+/**
+ * @public
  *
  * FindkitUI event definitions
  */
@@ -253,6 +274,17 @@ export interface FindkitUIEvents {
 	 * When a search request finishes
 	 */
 	"fetch-done": FetchDoneEvent;
+
+	/**
+	 * When an input is bound to the UI with .bindInput()
+	 */
+	"bind-input": BindInputEvent;
+
+	/**
+	 * When an input is unbound from the UI with the returned unbound from
+	 * .bindInput() or the FindkitUI instance is disposed with .dispose()
+	 */
+	"unbind-input": UnbindInputEvent;
 
 	/**
 	 * When the FinkitUI instance is created
