@@ -542,6 +542,7 @@ export class SearchEngine {
 	readonly publicToken: string;
 	private PRIVATE_searchEndpoint: string | undefined;
 	private PRIVATE_fetchThrottle: number;
+	private PRIVATE_throttleId = 1;
 	private PRIVATE_fetchCount: number;
 	private PRIVATE_minTerms: number;
 	/**
@@ -986,6 +987,8 @@ export class SearchEngine {
 			return;
 		}
 
+		this.PRIVATE_throttleId++;
+
 		this.PRIVATE_throttlingTerms = terms.trim();
 
 		if (options?.force === true) {
@@ -1056,6 +1059,7 @@ export class SearchEngine {
 			return;
 		}
 
+		this.PRIVATE_throttleId++;
 		this.state.nextGroupDefinitions = ref(nextGroups);
 
 		this.events.emit("groups", {
@@ -1336,6 +1340,7 @@ export class SearchEngine {
 
 		this.PRIVATE_requestId += 1;
 		const requestId = this.PRIVATE_requestId;
+		const throttleId = this.PRIVATE_throttleId;
 
 		const abortController = new AbortController();
 		this.PRIVATE_pendingRequestIds.set(requestId, abortController);
@@ -1364,13 +1369,15 @@ export class SearchEngine {
 			},
 		);
 
-		const stale = !this.PRIVATE_pendingRequestIds.has(requestId);
+		// true when there are newer requests ready before this was. Can happen
+		// due to network / search backend latency differences
+		const oldResponse = !this.PRIVATE_pendingRequestIds.has(requestId);
 
 		if (response.ok) {
 			this.events.emit("fetch-done", {
 				terms: options.terms,
 				id: String(requestId),
-				stale,
+				stale: oldResponse || throttleId !== this.PRIVATE_throttleId,
 				append: isAppending,
 				total: response.value.groups.reduce(
 					(total, group) => total + group.total,
@@ -1379,9 +1386,8 @@ export class SearchEngine {
 			});
 		}
 
-		// This request was already cleared as there are newer requests ready
-		// before this was
-		if (stale) {
+		// Never render old results when we have newer ones
+		if (oldResponse) {
 			return;
 		}
 
