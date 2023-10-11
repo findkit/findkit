@@ -64,23 +64,23 @@ There is also a [`useGroups()`](/ui/slot-overrides/hooks#usegroups) hook for upd
 
 Following options are available for each group.
 
-### `id: string`
+### `id: string` {#id}
 
 Unique id of the group. Required.
 
-### `title: string`
+### `title: string` {#title}
 
 Title of the group. Displayed within the search results.
 
-### `params: object`
+### `params: object` {#params}
 
 The same as [Search Params](/ui/api/params).
 
-### `previewSize?: number`
+### `previewSize?: number` {#previewSize}
 
 How many search results to show when all groups are rendered.
 
-### `relevancyBoost?: number`
+### `relevancyBoost?: number` {#relevancyBoost}
 
 Boost (multiply) the results relevancy within the group. Meaningful only when the
 groups are ordered by relevancy. TODO: link to the option dokumentation
