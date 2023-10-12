@@ -13,7 +13,7 @@ import {
 	FindkitSearchParams,
 } from "@findkit/fetch";
 
-import { proxy, ref, snapshot } from "valtio";
+import { proxy, ref } from "valtio";
 import {
 	RouterBackend,
 	createQueryStringBackend,
@@ -1012,24 +1012,19 @@ export class SearchEngine {
 		}
 	};
 
-	getParamsSnapshot(): SearchParams {
+	getParams(): SearchParams {
 		const group = this.state.nextGroupDefinitions[0];
-		// Avoid expensive deep readonly with the any
-		return snapshot(group?.params as any) ?? {};
+		return group?.params ?? {};
 	}
 
-	getGroupsSnapshot(): GroupDefinition[] {
-		const groups = this.state.nextGroupDefinitions;
-		// Avoid expensive deep readonly with the any
-		return snapshot(groups as any) ?? [];
+	getGroups(): GroupDefinition[] {
+		return this.state.nextGroupDefinitions;
 	}
 
 	private PRIVATE_handleGroupsChange = () => {
 		const self = this;
 		this.events.emit("groups", {
-			get groups() {
-				return self.getGroupsSnapshot();
-			},
+			groups: self.getGroups(),
 		});
 
 		const group = this.state.nextGroupDefinitions[0];
@@ -1037,7 +1032,7 @@ export class SearchEngine {
 
 		this.events.emit("params", {
 			get params() {
-				return self.getParamsSnapshot();
+				return self.getParams();
 			},
 		});
 		this.PRIVATE_clearTimeout();

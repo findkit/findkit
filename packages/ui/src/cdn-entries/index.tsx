@@ -535,7 +535,7 @@ export class FindkitUI {
 
 	get groups(): GroupDefinition[] {
 		return (
-			this.PRIVATE_lazyEngine.get()?.getGroupsSnapshot() ??
+			this.PRIVATE_lazyEngine.get()?.getGroups() ??
 			this.PRIVATE_options.groups ??
 			[]
 		);
@@ -548,7 +548,7 @@ export class FindkitUI {
 
 	get params(): SearchParams {
 		return (
-			this.PRIVATE_lazyEngine.get()?.getParamsSnapshot() ??
+			this.PRIVATE_lazyEngine.get()?.getParams() ??
 			this.PRIVATE_options.params ?? {
 				tagQuery: [],
 			}
