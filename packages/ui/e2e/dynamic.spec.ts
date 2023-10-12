@@ -775,3 +775,18 @@ test("no fetches are made before the modal is opened", async ({ page }) => {
 		}),
 	).toEqual(["fetch"]);
 });
+
+test("updated params are synchronously available when loaded", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy"));
+
+	const params = await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({ publicToken: "pW1D0p0Dg" });
+		await ui.preload();
+		ui.updateParams({ tagBoost: { ding: 1 } });
+		return ui.params;
+	});
+
+	expect(params).toEqual({ tagBoost: { ding: 1 } });
+});
