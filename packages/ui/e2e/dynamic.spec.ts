@@ -634,7 +634,7 @@ test("can use bind-input event", async ({ page }) => {
 		});
 
 		const testEvents: any[] = [];
-		Object.assign(window, { testEvents });
+		Object.assign(window, { testEvents, ui });
 
 		ui.on("bind-input", (e1) => {
 			const listener = () => {
@@ -651,7 +651,7 @@ test("can use bind-input event", async ({ page }) => {
 
 		ui.bindInput("input");
 
-		Object.assign(window, { ui });
+		await ui.preload();
 	});
 
 	const input = page.locator("input");
@@ -679,7 +679,7 @@ test("bind-input is fired for the build-in input", async ({ page }) => {
 		});
 
 		const testEvents: any[] = [];
-		Object.assign(window, { testEvents });
+		Object.assign(window, { testEvents, ui });
 
 		ui.on("bind-input", (e1) => {
 			const listener = () => {
@@ -688,9 +688,13 @@ test("bind-input is fired for the build-in input", async ({ page }) => {
 			e1.input.addEventListener("input", listener);
 		});
 
+		const promise = new Promise((resolve) => {
+			ui.once("loaded", resolve);
+		});
+
 		ui.open();
 
-		Object.assign(window, { ui });
+		await promise;
 	});
 
 	const input = page.locator("input");
