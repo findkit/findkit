@@ -3,7 +3,7 @@ import { staticEntry } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 
-test.only("plaa", async ({ page }) => {
+test.skip("plaa", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {

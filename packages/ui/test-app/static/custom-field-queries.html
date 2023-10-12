@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Search UI Test</title>
+
+    <style>
+        header {}
+    </style>
+</head>
+
+<body>
+    <header>
+        <a href="?">clear</a>
+        <input id="external-input" /><button type="button">Random button</button>
+        <form role="search">
+            <fieldset>
+                <legend>Limit by price</legend>
+                <input type="text" name="min" placeholder="min" />
+                <input type="text" name="max" placeholder="max" />
+                <input type="text" name="test" placeholder="test" />
+            </fieldset>
+
+            <fieldset>
+                <legend>Sort</legend>
+                <label>
+                    <input type="radio" name="sort" value="relevancy" />
+                    Most relevant first
+                </label>
+                <label>
+                    <input type="radio" name="sort" value="price_asc" />
+                    Cheapest first
+                </label>
+                <label>
+                    <input type="radio" name="sort" value="price_desc" />
+                    Most expensive first
+                </label>
+            </fieldset>
+            <fieldset>
+                <legend>Language</legend>
+                <select name="lang">
+                    <option value="any">Any</option>
+                    <option value="en">English</option>
+                    <option value="fi">Finnish</option>
+                    <option value="sv">Swedish</option>
+                </select>
+            </fieldset>
+        </form>
+    </header>
+
+    <main>
+        <div class="findkit-container"></div>
+    </main>
+
+    <script type="module">
+        import {FindkitUI, css, html} from "/build/esm/index.js";
+
+        const ui = new FindkitUI({
+            publicToken: "pJMDjpYOE",
+            searchEndpoint:
+                "https://staging---search.findkit.com/c/pJMDjpYOE/search?p=pJMDjpYOE",
+            container: document.querySelector(".findkit-container"),
+            minTerms: 0,
+            header: false,
+            modal: false,
+            css: css`
+					table {
+                        width: max-content;
+					}
+                    th,td {
+                        border: 1px solid gray;
+                        padding: 5px;
+                    }
+				`,
+            // params: {
+            //     filter: {
+            //         tags: {
+            //             $eq: "product",
+            //         },
+            //     },
+            // },
+            slots: {
+                Hit(props) {
+                    // prettier-ignore
+                    return html`
+			                <h2>${props.hit.title}</h2>
+                            <table>
+                                <tr>
+                                    <td>Price</td>
+                                    <td>${props.hit.customFields.price?.value}</td>
+                                </tr>
+                            </table>
+
+                    `;
+                },
+            },
+        });
+
+        ui.on("debounced-search", e =>{
+            console.log("search", e.terms)
+        })
+
+        const form = document.querySelector("form[role=search]");
+
+        function populateForm(form, data) {
+            for (const [key, value] of Object.entries(data)) {
+                const el = form.elements.namedItem(key);
+                if (el instanceof HTMLSelectElement) {
+                    for (const option of el.options) {
+                        if (option.value === value) {
+                            option.selected = true;
+                            break;
+                        }
+                    }
+                } else if (el && "value" in el) {
+                    el.value = value;
+                }
+            }
+        }
+
+        function readParamsFromForm() {
+            const formData = new FormData(form);
+            const min = Number(formData.get("min")) || 0;
+            const max = Number(formData.get("max")) || 0;
+            const sort = formData.get("sort");
+            const lang = formData.get("lang");
+
+            ui.updateParams((params) => {
+                if (!sort || sort === "relevancy") {
+                    delete params.sort;
+                } else if (sort === "price_asc") {
+                    params.sort = {
+                        price: {
+                            $order: "asc",
+                        },
+                    };
+                } else if (sort === "price_desc") {
+                    params.sort = {
+                        price: {
+                            $order: "desc",
+                        },
+                    };
+                }
+
+                if (!lang || lang === "any") {
+                    delete params.lang;
+                } else {
+                    params.lang = lang;
+                }
+
+                params.filter = {
+                    price: {
+                        $gt: min === 0 ? undefined : min,
+                        $lt: max === 0 ? undefined : max,
+                    },
+                };
+            });
+        }
+
+        ui.customRouterData({
+            init: {min: "3", test: "ding"},
+            load: (params) => {
+                // console.log("load", params);
+                populateForm(form, params);
+                readParamsFromForm();
+            },
+            save: (params) => {
+                const data = Object.fromEntries(new FormData(form));
+                // console.log("save", data);
+                return data;
+            },
+        });
+
+        ui.bindInput("#external-input");
+
+        form.addEventListener("input", () => {
+            readParamsFromForm();
+        });
+    </script>
+</body>
+
+</html>
