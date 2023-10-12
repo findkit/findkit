@@ -624,3 +624,24 @@ test("hover background is defived from --brand-color", async ({ page }) => {
 	await page.waitForTimeout(400);
 	await expect(loadMore).toHaveScreenshot();
 });
+
+test("no side scroll", async ({ page }) => {
+	await page.setViewportSize({ width: 300, height: 600 });
+
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+
+		const ui = new FindkitUI({ publicToken: "pW1D0p0Dg" });
+
+		ui.open("diamond");
+	});
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	await page.mouse.wheel(0, 200);
+
+	await expect(page).toHaveScreenshot();
+});
