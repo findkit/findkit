@@ -409,7 +409,9 @@ test("hit error boundary", async ({ page }) => {
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
-	await expect(page).toHaveScreenshot();
+	await expect(page).toHaveScreenshot({
+		mask: [page.locator(".findkit--error-props")],
+	});
 });
 
 test("custom search input icon", async ({ page }) => {

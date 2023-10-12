@@ -1244,11 +1244,11 @@ export class SearchEngine {
 
 			const hits = res.hits.map((hit) => {
 				const { created, modified, ...rest } = hit;
-				return {
+				return ref({
 					...rest,
 					created: new Date(created),
 					modified: new Date(modified),
-				};
+				});
 			});
 
 			let groupId;
