@@ -32,6 +32,7 @@ import {
 	HitClickEvent,
 	BindInputEvent,
 	UnbindInputEvent,
+	lazyValue,
 } from "../emitter";
 import type { TranslationStrings } from "../translations";
 import { listen, Resources } from "../resources";
@@ -469,8 +470,8 @@ export type MethodParameters<
  */
 type Methods<Klass> = {
 	[Method in keyof Klass]: Klass[Method] extends (...args: any) => any
-	? Method
-	: never;
+		? Method
+		: never;
 }[keyof Klass];
 
 /**
@@ -479,12 +480,12 @@ type Methods<Klass> = {
  * @public
  */
 export class FindkitUI {
-	private PRIVATE_engine?: SearchEngine;
 	private PRIVATE_loading = false;
 
 	private PRIVATE_options: FindkitUIOptions;
 	private PRIVATE_events: Emitter<FindkitUIEvents, FindkitUI>;
 	private PRIVATE_resources = new Resources();
+	private PRIVATE_lazyEngine = lazyValue<SearchEngine>();
 
 	/**
 	 * The container element. Available after the "loaded" event.
@@ -532,7 +533,7 @@ export class FindkitUI {
 
 	get groups(): GroupDefinition[] {
 		return (
-			this.PRIVATE_engine?.getGroupsSnapshot() ??
+			this.PRIVATE_lazyEngine.get()?.getGroupsSnapshot() ??
 			this.PRIVATE_options.groups ??
 			[]
 		);
@@ -545,7 +546,7 @@ export class FindkitUI {
 
 	get params(): SearchParams {
 		return (
-			this.PRIVATE_engine?.getParamsSnapshot() ??
+			this.PRIVATE_lazyEngine.get()?.getParamsSnapshot() ??
 			this.PRIVATE_options.params ?? {
 				tagQuery: [],
 			}
@@ -584,11 +585,11 @@ export class FindkitUI {
 	 * The search terms used on the last search
 	 */
 	terms() {
-		return this.PRIVATE_engine?.state.usedTerms ?? "";
+		return this.PRIVATE_lazyEngine.get()?.state.usedTerms ?? "";
 	}
 
 	status(): Status {
-		return this.PRIVATE_engine?.state.status ?? "waiting";
+		return this.PRIVATE_lazyEngine.get()?.state.status ?? "waiting";
 	}
 
 	/**
@@ -605,20 +606,10 @@ export class FindkitUI {
 	 */
 	private PRIVATE_proxy<Method extends Methods<SearchEngine>>(method: Method) {
 		return (...args: MethodParameters<typeof SearchEngine, Method>) => {
-			this.PRIVATE_withEngine((engine: any) => {
+			this.PRIVATE_lazyEngine((engine: any) => {
 				engine[method](...args);
 			});
 		};
-	}
-
-	private PRIVATE_withEngine(fn: (engine: SearchEngine) => void) {
-		if (this.PRIVATE_engine) {
-			fn(this.PRIVATE_engine);
-		} else {
-			this.PRIVATE_events.once("loaded", (e) => {
-				fn(e.__engine);
-			});
-		}
 	}
 
 	/**
@@ -659,11 +650,11 @@ export class FindkitUI {
 
 	open(terms?: string) {
 		this.PRIVATE_events.emit("request-open", {
-			preloaded: !!this.PRIVATE_engine,
+			preloaded: !!this.PRIVATE_lazyEngine.get(),
 		});
 		preconnect();
 		void this.PRIVATE_initEngine();
-		this.PRIVATE_withEngine((engine) => {
+		this.PRIVATE_lazyEngine((engine) => {
 			engine.open(terms);
 		});
 	}
@@ -687,7 +678,7 @@ export class FindkitUI {
 	}
 
 	private async PRIVATE_initEngine() {
-		if (this.PRIVATE_loading || this.PRIVATE_engine) {
+		if (this.PRIVATE_loading || this.PRIVATE_lazyEngine.get()) {
 			return;
 		}
 
@@ -727,13 +718,10 @@ export class FindkitUI {
 					searchEndpoint: this.PRIVATE_options.searchEndpoint,
 				});
 
-				this.PRIVATE_engine = engine;
 				this.PRIVATE_loading = true;
 				this.container = host;
-				this.PRIVATE_events.emit("loaded", {
-					__engine: engine,
-					container: host,
-				});
+				this.PRIVATE_lazyEngine.provide(engine);
+				this.PRIVATE_events.emit("loaded", { container: host });
 				engine.start();
 
 				return engine.dispose;
@@ -775,7 +763,7 @@ export class FindkitUI {
 	trapFocus(selector: ElementSelector<HTMLElement>) {
 		const resources = this.PRIVATE_resources.child();
 		select(selector, HTMLElement, (...elements) => {
-			this.PRIVATE_withEngine((engine) => {
+			this.PRIVATE_lazyEngine((engine) => {
 				resources.create(() => engine.trapFocus(elements));
 			});
 		});
@@ -823,7 +811,7 @@ export class FindkitUI {
 			for (const input of elements) {
 				resources.create(() => listen(input, "focus", this.preload));
 
-				this.PRIVATE_withEngine((engine) => {
+				this.PRIVATE_lazyEngine((engine) => {
 					resources.create(() => engine.bindInput(input));
 				});
 			}
