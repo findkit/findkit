@@ -1,4 +1,4 @@
-import { devtools, subscribeKey } from "valtio/utils";
+import { devtools } from "valtio/utils";
 import {
 	assertNonNullable,
 	cleanUndefined,
@@ -663,14 +663,6 @@ export class SearchEngine {
 		this.events.emit("lang", { lang: this.state.ui.lang });
 		this.PRIVATE_emitCustomRouterData();
 
-		this.PRIVATE_resources.create(() =>
-			subscribeKey(
-				this.state,
-				"nextGroupDefinitions",
-				this.PRIVATE_handleGroupsChange,
-			),
-		);
-
 		if (this.PRIVATE_monitorDocumentLangActive !== false) {
 			this.PRIVATE_monitorDocumentElementLang();
 		}
@@ -1000,6 +992,7 @@ export class SearchEngine {
 		}
 
 		this.state.nextGroupDefinitions = ref(nextGroups);
+		this.PRIVATE_handleGroupsChange();
 	};
 
 	/**
