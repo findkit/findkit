@@ -110,7 +110,7 @@ importers:
       postcss-minify: ^1.1.0
       postcss-ts-classnames: ^0.3.0
       postcss-variables-prefixer: ^1.2.0
-      preact: ^10.10.6
+      preact: ^10.18.1
       prettier: 2.7.1
       react: 18.2.0
       react-dom: 18.2.0
@@ -152,7 +152,7 @@ importers:
       postcss-minify: 1.1.0_postcss@8.4.16
       postcss-ts-classnames: 0.3.0
       postcss-variables-prefixer: 1.2.0_postcss@8.4.16
-      preact: 10.10.6
+      preact: 10.18.1
       prettier: 2.7.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -4415,7 +4415,7 @@ packages:
   /@types/hoist-non-react-statics/3.3.1:
     resolution: {integrity: sha512-iMIqiko6ooLrTh1joXodJK5X9xeEALT1kM5G3ZLhD3hszxBdIEd5C75U834D9mLcINgD4OyZf5uQXjkuYydWvA==}
     dependencies:
-      '@types/react': 18.0.17
+      '@types/react': 18.0.21
       hoist-non-react-statics: 3.3.2
     dev: true
 
@@ -13708,8 +13708,8 @@ packages:
       picocolors: 1.0.0
       source-map-js: 1.0.2
 
-  /preact/10.10.6:
-    resolution: {integrity: sha512-w0mCL5vICUAZrh1DuHEdOWBjxdO62lvcO++jbzr8UhhYcTbFkpegLH9XX+7MadjTl/y0feoqwQ/zAnzkc/EGog==}
+  /preact/10.18.1:
+    resolution: {integrity: sha512-mKUD7RRkQQM6s7Rkmi7IFkoEHjuFqRQUaXamO61E6Nn7vqF/bo7EZCmSyrUnp2UWHw0O7XjZ2eeXis+m7tf4lg==}
     dev: true
 
   /precinct/9.0.1:

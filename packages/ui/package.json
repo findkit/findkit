@@ -100,7 +100,7 @@
 		"postcss-minify": "^1.1.0",
 		"postcss-ts-classnames": "^0.3.0",
 		"postcss-variables-prefixer": "^1.2.0",
-		"preact": "^10.10.6",
+		"preact": "^10.18.1",
 		"prettier": "2.7.1",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
