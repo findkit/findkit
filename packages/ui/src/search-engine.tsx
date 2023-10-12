@@ -311,7 +311,7 @@ export class FindkitURLSearchParams {
 	constructor(instanceId: string, search: string) {
 		this.PRIVATE_instanceId = instanceId;
 		this.PRIVATE_params = new URLSearchParams(search);
-		this.PRIVATE_customDataPrefix = instanceId + ":";
+		this.PRIVATE_customDataPrefix = instanceId + ".c.";
 	}
 
 	setCustomData(data: CustomRouterData) {
@@ -329,20 +329,7 @@ export class FindkitURLSearchParams {
 	}
 
 	customDataEquals(other: FindkitURLSearchParams) {
-		const a = this.getCustomData();
-		const b = other.getCustomData();
-
-		if (Object.keys(a).length !== Object.keys(b).length) {
-			return false;
-		}
-
-		for (const [key, value] of Object.entries(a)) {
-			if (b[key] !== value) {
-				return false;
-			}
-		}
-
-		return true;
+		return deepEqual(this.getCustomData(), other.getCustomData());
 	}
 
 	equals(other: FindkitURLSearchParams) {
@@ -390,10 +377,11 @@ export class FindkitURLSearchParams {
 
 	clearAll() {
 		return this.next((next) => {
-			next.PRIVATE_params.delete(next.PRIVATE_instanceId + "_id");
-			next.PRIVATE_params.delete(next.PRIVATE_instanceId + "_q");
 			for (const key of this.PRIVATE_params.keys()) {
-				if (key.startsWith(this.PRIVATE_customDataPrefix)) {
+				if (
+					key.startsWith(this.PRIVATE_customDataPrefix) ||
+					key.startsWith(this.PRIVATE_instanceId + "_")
+				) {
 					next.PRIVATE_params.delete(key);
 				}
 			}
