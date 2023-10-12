@@ -706,3 +706,30 @@ test("bind-input is fired for the build-in input", async ({ page }) => {
 
 	expect(testEvents).toEqual(["input:test"]);
 });
+
+test("renders nice error when wrongly rendering custom fields", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { html, FindkitUI } = MOD;
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			slots: {
+				Hit(props) {
+					// Crashes because Preact cannot render objects.
+					// Should be: props.hit.customFields.price?.value
+					return html`${props.hit.customFields.price}`;
+				},
+			},
+		});
+
+		ui.open("diamond");
+	});
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	await expect(hits.first()).toContainText('Error rendering slot "Hit"');
+});
