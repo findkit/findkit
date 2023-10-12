@@ -296,13 +296,74 @@ const SINGLE_GROUP_NAME = Object.freeze({
 /**
  * @public
  */
+export interface CustomRouterData {
+	[key: string]: string;
+}
+
+/**
+ * @public
+ */
 export class FindkitURLSearchParams {
-	PRIVATE_params: URLSearchParams;
-	PRIVATE_instanceId: string;
+	private PRIVATE_params: URLSearchParams;
+	private PRIVATE_instanceId: string;
+	private PRIVATE_customDataPrefix: string;
 
 	constructor(instanceId: string, search: string) {
 		this.PRIVATE_instanceId = instanceId;
 		this.PRIVATE_params = new URLSearchParams(search);
+		this.PRIVATE_customDataPrefix = instanceId + ":";
+	}
+
+	setCustomData(data: CustomRouterData) {
+		return this.next((next) => {
+			for (const key of this.PRIVATE_params.keys()) {
+				if (key.startsWith(this.PRIVATE_customDataPrefix)) {
+					next.PRIVATE_params.delete(key);
+				}
+			}
+
+			for (const [key, value] of Object.entries(data)) {
+				next.PRIVATE_params.set(next.PRIVATE_customDataPrefix + key, value);
+			}
+		});
+	}
+
+	customDataEquals(other: FindkitURLSearchParams) {
+		const a = this.getCustomData();
+		const b = other.getCustomData();
+
+		if (Object.keys(a).length !== Object.keys(b).length) {
+			return false;
+		}
+
+		for (const [key, value] of Object.entries(a)) {
+			if (b[key] !== value) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	equals(other: FindkitURLSearchParams) {
+		return (
+			this.getTerms() === other.getTerms() &&
+			this.getGroupId() === other.getGroupId() &&
+			this.customDataEquals(other)
+		);
+	}
+
+	getCustomData() {
+		const customData: CustomRouterData = {};
+
+		for (const [key, value] of this.PRIVATE_params.entries()) {
+			if (key.startsWith(this.PRIVATE_customDataPrefix)) {
+				const cleaned = key.slice(this.PRIVATE_customDataPrefix.length);
+				customData[cleaned] = value;
+			}
+		}
+
+		return customData;
 	}
 
 	getGroupId() {
@@ -331,6 +392,11 @@ export class FindkitURLSearchParams {
 		return this.next((next) => {
 			next.PRIVATE_params.delete(next.PRIVATE_instanceId + "_id");
 			next.PRIVATE_params.delete(next.PRIVATE_instanceId + "_q");
+			for (const key of this.PRIVATE_params.keys()) {
+				if (key.startsWith(this.PRIVATE_customDataPrefix)) {
+					next.PRIVATE_params.delete(key);
+				}
+			}
 		});
 	}
 
@@ -595,6 +661,7 @@ export class SearchEngine {
 		this.state.currentGroupId = initialSearchParams.getGroupId();
 
 		this.events.emit("lang", { lang: this.state.ui.lang });
+		this.PRIVATE_emitCustomRouterData();
 
 		this.PRIVATE_resources.create(() =>
 			subscribeKey(
@@ -803,6 +870,10 @@ export class SearchEngine {
 			return;
 		}
 
+		if (this.PRIVATE_started.get()) {
+			this.PRIVATE_emitCustomRouterData();
+		}
+
 		this.PRIVATE_statusTransition("waiting");
 
 		const terms = nextParams.getTerms();
@@ -820,11 +891,56 @@ export class SearchEngine {
 		}
 	};
 
+	private PRIVATE_customRouterDataHooks: {
+		init: CustomRouterData;
+		load: (data: CustomRouterData) => void;
+		save: () => CustomRouterData;
+	}[] = [];
+
+	customRouterData = <T extends CustomRouterData>(options: {
+		init: T;
+		load: (data: T) => void;
+		save: () => T;
+	}) => {
+		this.PRIVATE_customRouterDataHooks.push(options as any);
+	};
+
+	private PRIVATE_previousCustomRouterData?: FindkitURLSearchParams;
+
+	private PRIVATE_emitCustomRouterData() {
+		if (
+			this.PRIVATE_previousCustomRouterData?.customDataEquals(
+				this.findkitParams,
+			)
+		) {
+			return;
+		}
+
+		this.PRIVATE_previousCustomRouterData = this.findkitParams;
+		const customRouterData = this.findkitParams.getCustomData();
+
+		for (const hook of this.PRIVATE_customRouterDataHooks) {
+			hook.load({
+				...hook.init,
+				...customRouterData,
+			});
+		}
+	}
+
 	updateAddressBar = (
 		params: FindkitURLSearchParams,
-		options?: { push?: boolean },
+		options?: { push?: boolean; ignore?: boolean },
 	) => {
-		this.router.update(params.toString(), options);
+		const customRouterData: CustomRouterData =
+			this.PRIVATE_customRouterDataHooks.reduce((acc, { save }) => {
+				return Object.assign(acc, save());
+			}, {});
+
+		const next = params.setCustomData(customRouterData);
+
+		if (!next.equals(this.findkitParams)) {
+			this.router.update(next.toString(), options);
+		}
 	};
 
 	private PRIVATE_handleInputChange(
@@ -1288,6 +1404,7 @@ export class SearchEngine {
 		// Update the state terms to match the results
 		this.state.usedTerms = options.terms;
 		this.state.usedGroupDefinitions = groups;
+		this.updateAddressBar(this.findkitParams, { ignore: true });
 
 		if (isAppending) {
 			this.PRIVATE_addAllResults(resWithIds);

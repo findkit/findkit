@@ -531,6 +531,8 @@ export class FindkitUI {
 	 */
 	updateGroups = this.PRIVATE_proxy("updateGroups");
 
+	customRouterData = this.PRIVATE_proxy("customRouterData");
+
 	get groups(): GroupDefinition[] {
 		return (
 			this.PRIVATE_lazyEngine.get()?.getGroupsSnapshot() ??
