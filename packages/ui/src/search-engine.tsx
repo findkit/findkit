@@ -20,7 +20,7 @@ import {
 	createURLHashBackend,
 	createMemoryBackend,
 } from "./router";
-import { Emitter, FindkitUIEvents } from "./emitter";
+import { Emitter, FindkitUIEvents, lazyValue } from "./emitter";
 import { TranslationStrings } from "./translations";
 import { listen, Resources } from "./resources";
 
@@ -570,8 +570,7 @@ export class SearchEngine {
 		this.PRIVATE_minTerms = options.minTerms ?? 2;
 	}
 
-	PRIVATE_started = false;
-	PRIVATE_pendingInputs: Set<HTMLInputElement> = new Set();
+	private PRIVATE_started = lazyValue<true>();
 
 	/**
 	 * "Start the search engine" eg. start listening to input, url etc.
@@ -583,8 +582,6 @@ export class SearchEngine {
 	 * "language" event without extra search reqeusts.
 	 */
 	start() {
-		this.PRIVATE_started = true;
-
 		const initialSearchParams = new FindkitURLSearchParams(
 			this.instanceId,
 			this.router.getSearchParamsString(),
@@ -614,13 +611,7 @@ export class SearchEngine {
 
 		this.PRIVATE_handleAddressChange();
 
-		// handleAddressChange() must called before binding the inputs because
-		// it will clear the search terms otherwise
-		for (const input of this.PRIVATE_pendingInputs) {
-			this.bindInput(input);
-		}
-
-		this.PRIVATE_pendingInputs.clear();
+		this.PRIVATE_started.provide(true);
 	}
 
 	get container() {
@@ -1342,108 +1333,102 @@ export class SearchEngine {
 		const unbind = () => {
 			this.removeInput(input);
 		};
-
-		// Must delay input listening till "engine start" eg. .start() call
-		if (!this.PRIVATE_started) {
-			this.PRIVATE_pendingInputs.add(input);
-			return unbind;
-		}
-
 		const prev = this.PRIVATE_inputs.find((o) => o.el === input);
 
 		if (prev) {
 			return unbind;
 		}
 
-		const currentTerms = this.findkitParams.getTerms();
+		this.PRIVATE_started(() => {
+			const currentTerms = this.findkitParams.getTerms();
 
-		if (currentTerms) {
-			// Enable search results linking by copying the terms to the input
-			// from url bar but skip if if the input is active so we wont mess
-			// with the user too much
-			if (input.value.trim() === "" || input !== document.activeElement) {
-				input.value = currentTerms;
-			}
-		} else if (input.value.trim()) {
-			// Other way around. If user manages to write something to the input
-			// before this is called, use that value to make a search. This is
-			// mainly for lazy loading when the input can be interacted with
-			// before this .addInput() call
-			this.PRIVATE_handleInputChange(input.value);
-		}
-
-		const listeners = this.PRIVATE_resources.child();
-
-		this.PRIVATE_resources.create(() => listeners.dispose);
-
-		listeners.create(() =>
-			listen(
-				input,
-				"input",
-				(e) => {
-					assertInputEvent(e);
-					this.PRIVATE_handleInputChange(e.target.value);
-				},
-				{ passive: true },
-			),
-		);
-
-		listeners.create(() =>
-			listen(
-				input,
-				"blur",
-				() => {
-					this.state.keyboardCursor = undefined;
-				},
-				{ passive: true },
-			),
-		);
-
-		listeners.create(() =>
-			listen(input, "keydown", (e) => {
-				if (e.key === "ArrowDown") {
-					e.preventDefault();
-					this.PRIVATE_moveKeyboardCursor("down");
-				} else if (e.key === "ArrowUp") {
-					e.preventDefault();
-					this.PRIVATE_moveKeyboardCursor("up");
-				} else if (e.key === "Escape" && this.state.keyboardCursor) {
-					e.preventDefault();
-
-					// Stop event bubbling to prevent the modal from closing.  Eg.
-					// first esc hit disables the keyboard navigation if active and
-					// the only the second one closes the modal
-					e.stopImmediatePropagation();
-
-					this.state.keyboardCursor = undefined;
-
-					// Input might be hidden so scroll to it to make it visible
-					scrollIntoViewIfNeeded(input);
-				} else if (e.key === "Enter") {
-					assertInputEvent(e);
-
-					if (this.state.keyboardCursor) {
-						e.preventDefault();
-						this.PRIVATE_selectKeyboardCursor();
-						return;
-					}
-
-					this.PRIVATE_handleInputChange(e.target.value, { force: true });
+			if (currentTerms) {
+				// Enable search results linking by copying the terms to the input
+				// from url bar but skip if if the input is active so we wont mess
+				// with the user too much
+				if (input.value.trim() === "" || input !== document.activeElement) {
+					input.value = currentTerms;
 				}
-			}),
-		);
+			} else if (input.value.trim()) {
+				// Other way around. If user manages to write something to the input
+				// before this is called, use that value to make a search. This is
+				// mainly for lazy loading when the input can be interacted with
+				// before this .addInput() call
+				this.PRIVATE_handleInputChange(input.value);
+			}
 
-		this.PRIVATE_inputs.push(
-			ref({ el: input, unbindEvents: listeners.dispose }),
-		);
+			const listeners = this.PRIVATE_resources.child();
 
-		this.events.emit("bind-input", { input });
+			this.PRIVATE_resources.create(() => listeners.dispose);
+
+			listeners.create(() =>
+				listen(
+					input,
+					"input",
+					(e) => {
+						assertInputEvent(e);
+						this.PRIVATE_handleInputChange(e.target.value);
+					},
+					{ passive: true },
+				),
+			);
+
+			listeners.create(() =>
+				listen(
+					input,
+					"blur",
+					() => {
+						this.state.keyboardCursor = undefined;
+					},
+					{ passive: true },
+				),
+			);
+
+			listeners.create(() =>
+				listen(input, "keydown", (e) => {
+					if (e.key === "ArrowDown") {
+						e.preventDefault();
+						this.PRIVATE_moveKeyboardCursor("down");
+					} else if (e.key === "ArrowUp") {
+						e.preventDefault();
+						this.PRIVATE_moveKeyboardCursor("up");
+					} else if (e.key === "Escape" && this.state.keyboardCursor) {
+						e.preventDefault();
+
+						// Stop event bubbling to prevent the modal from closing.  Eg.
+						// first esc hit disables the keyboard navigation if active and
+						// the only the second one closes the modal
+						e.stopImmediatePropagation();
+
+						this.state.keyboardCursor = undefined;
+
+						// Input might be hidden so scroll to it to make it visible
+						scrollIntoViewIfNeeded(input);
+					} else if (e.key === "Enter") {
+						assertInputEvent(e);
+
+						if (this.state.keyboardCursor) {
+							e.preventDefault();
+							this.PRIVATE_selectKeyboardCursor();
+							return;
+						}
+
+						this.PRIVATE_handleInputChange(e.target.value, { force: true });
+					}
+				}),
+			);
+
+			this.PRIVATE_inputs.push(
+				ref({ el: input, unbindEvents: listeners.dispose }),
+			);
+
+			this.events.emit("bind-input", { input });
+		});
 
 		return unbind;
 	};
 
 	removeInput = (rmInput: HTMLInputElement) => {
-		this.PRIVATE_pendingInputs.delete(rmInput);
 		const input = this.PRIVATE_inputs.find((input) => input?.el === rmInput);
 		if (!input) {
 			return;
@@ -1497,8 +1482,10 @@ export class SearchEngine {
 		const nextTerms =
 			terms === undefined ? this.findkitParams.getTerms() : terms;
 
-		this.updateAddressBar(this.findkitParams.setTerms(nextTerms), {
-			push: !this.findkitParams.isActive(),
+		this.PRIVATE_started(() => {
+			this.updateAddressBar(this.findkitParams.setTerms(nextTerms), {
+				push: !this.findkitParams.isActive(),
+			});
 		});
 	};
 

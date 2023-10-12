@@ -1,4 +1,4 @@
-import { SearchEngine, Status } from "./cdn-entries";
+import { Status } from "./cdn-entries";
 import type {
 	GroupDefinition,
 	SearchParams,
@@ -228,10 +228,6 @@ export interface LoadedEvent {
 	 * The container element
 	 */
 	container: Element;
-	/**
-	 * Private API. Do not use.
-	 */
-	__engine: SearchEngine;
 }
 
 /**
@@ -334,6 +330,52 @@ export interface FindkitUIEvents {
 	 * Emitted when the UI language changes
 	 */
 	lang: LanguageChangeEvent;
+}
+
+/**
+ * Promise like value container but synchronous and without error handling-
+ *
+ * Usage
+ *
+ *    const value = lazyValue<string>();
+ *
+ *    value((val) => {
+ *     console.log(val);
+ *    });
+ *
+ *    value.provide("hello");
+ *
+ * The callback will be called only once when the value is provided.
+ * If the value was already provided, the callback will be called immediately.
+ */
+export function lazyValue<T>() {
+	let value: T | undefined;
+	const valueEmitter = new Emitter<{ value: { value: T } }, {}>("lazyValue");
+
+	const valueAccessor = (giveValue: (value: T) => void | undefined) => {
+		if (value !== undefined) {
+			giveValue(value);
+		} else {
+			valueEmitter.once("value", (e) => {
+				value = e.value;
+				giveValue(value);
+			});
+		}
+	};
+
+	return Object.assign(valueAccessor, {
+		get() {
+			return value;
+		},
+		provide: (val: T) => {
+			if (value === undefined) {
+				value = val;
+				valueEmitter.emit("value", { value: val });
+			} else {
+				throw new Error("Value already provided");
+			}
+		},
+	});
 }
 
 // interface MyEvents {
