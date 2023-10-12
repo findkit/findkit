@@ -416,10 +416,8 @@ export class FindkitURLSearchParams {
 		return this.PRIVATE_params.has(this.PRIVATE_instanceId + "_q");
 	}
 
-	getTerms() {
-		return (
-			this.PRIVATE_params.get(this.PRIVATE_instanceId + "_q") || ""
-		).trim();
+	getTerms(): string | undefined {
+		return this.PRIVATE_params.get(this.PRIVATE_instanceId + "_q")?.trim();
 	}
 
 	toString() {
@@ -667,7 +665,7 @@ export class SearchEngine {
 			this.PRIVATE_monitorDocumentElementLang();
 		}
 
-		this.PRIVATE_syncInputs(initialSearchParams.getTerms());
+		this.PRIVATE_syncInputs(initialSearchParams.getTerms() ?? "");
 
 		this.PRIVATE_resources.create(() =>
 			this.router.listen(this.PRIVATE_handleAddressChange),
@@ -852,7 +850,7 @@ export class SearchEngine {
 	}
 
 	private PRIVATE_handleAddressChange = () => {
-		const currentTerms = this.findkitParams.getTerms();
+		const currentTerms = this.findkitParams.getTerms() ?? "";
 		this.state.searchParams = this.router.getSearchParamsString();
 		const nextParams = this.findkitParams;
 		if (!this.findkitParams.isActive()) {
@@ -868,7 +866,7 @@ export class SearchEngine {
 
 		this.PRIVATE_statusTransition("waiting");
 
-		const terms = nextParams.getTerms();
+		const terms = nextParams.getTerms() ?? "";
 		const reset = terms !== currentTerms;
 
 		this.state.currentGroupId = nextParams.getGroupId();
@@ -1036,7 +1034,7 @@ export class SearchEngine {
 			},
 		});
 		this.PRIVATE_clearTimeout();
-		const terms = this.findkitParams.getTerms();
+		const terms = this.findkitParams.getTerms() ?? "";
 		void this.PRIVATE_fetch({ reset: true, terms });
 	};
 
@@ -1604,7 +1602,7 @@ export class SearchEngine {
 			terms === undefined ? this.findkitParams.getTerms() : terms;
 
 		this.PRIVATE_started(() => {
-			this.updateAddressBar(this.findkitParams.setTerms(nextTerms), {
+			this.updateAddressBar(this.findkitParams.setTerms(nextTerms ?? ""), {
 				push: !this.findkitParams.isActive(),
 			});
 		});
