@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { test } from "@playwright/test";
 import { staticEntry } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
