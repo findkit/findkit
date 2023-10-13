@@ -609,8 +609,8 @@ export class SearchEngine {
 
 			// Ensure groups are unique so mutating one does not mutate the
 			// other
-			usedGroupDefinitions: ref(clone(groups)),
-			nextGroupDefinitions: ref(clone(groups)),
+			usedGroupDefinitions: ref(ensureDefaults(clone(groups))),
+			nextGroupDefinitions: ref(ensureDefaults(clone(groups))),
 		});
 		devtools(this.state);
 
@@ -956,7 +956,7 @@ export class SearchEngine {
 		if (Array.isArray(groupsOrFn)) {
 			nextGroups = groupsOrFn;
 		} else if (typeof groupsOrFn === "function") {
-			const cloned = clone(this.state.nextGroupDefinitions);
+			const cloned = ensureDefaults(clone(this.state.nextGroupDefinitions));
 			const replace = groupsOrFn(...cloned);
 			// The function can return a completely new set of groups which are
 			// used to replace the old ones
@@ -1644,4 +1644,28 @@ function deepEqual(x: any, y: any) {
 		return true;
 	}
 	return false;
+}
+
+/**
+ * Ensure that groups have default objects/arrays so it will be easy to update
+ * them in updateGroups(fn) without having to check if they exist.
+ *
+ * Uses mutatation!
+ */
+function ensureDefaults(groups: GroupDefinition[]) {
+	for (const group of groups) {
+		const params = group.params ?? (group.params = {});
+
+		for (const key of ["sort", "filter", "tagBoost"] as const) {
+			if (!params[key]) {
+				params[key] = {};
+			}
+		}
+
+		if (!params.tagQuery) {
+			params.tagQuery = [];
+		}
+	}
+
+	return groups;
 }
