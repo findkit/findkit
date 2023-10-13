@@ -60,7 +60,14 @@ const ui = new FindkitUI({ publicToken: "<TOKEN>" });
 ui.on("lang", (e) => {
 	ui.updateParams((params) => {
 		params.lang = e.lang;
-        // Update any tagQueries etc. as well
+	});
+
+	// OR if you are using multiple groups do
+
+	ui.updateGroups((...groups) => {
+		for (const group of groups) {
+			group.params.lang = e.lang;
+		}
 	});
 });
 ```

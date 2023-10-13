@@ -267,3 +267,121 @@ test("does not cause extra fetches when setting params on 'lang' event", async (
 
 	expect(events).toEqual(["lang", "fetch"]);
 });
+
+test("can limit params lang to based on <html lang>", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI, html } = MOD;
+		document.documentElement.lang = "en";
+
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			minTerms: 0,
+			fetchCount: 10,
+			infiniteScroll: false,
+			slots: {
+				Hit(props) {
+					return html`${props.hit.language}`;
+				},
+			},
+		});
+
+		ui.on("lang", (e) => {
+			ui.updateParams((params) => {
+				params.lang = e.lang;
+			});
+		});
+		ui.open();
+	});
+
+	const hits = page.locator(".findkit--hit");
+	await expect(hits.first()).toBeVisible();
+
+	expect(await hits.allInnerTexts()).toEqual([
+		"en",
+		"en",
+		"en",
+		"en",
+		"en",
+		"en",
+		"en",
+		"en",
+		"en",
+		"en",
+	]);
+
+	await page.evaluate(async () => {
+		document.documentElement.lang = "fi";
+	});
+
+	await expect
+		.poll(async () => hits.allInnerTexts())
+		.toEqual(["fi", "fi", "fi", "fi", "fi", "fi", "fi", "fi", "fi", "fi"]);
+});
+
+test("can limit groups lang to based on <html lang>", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI, html } = MOD;
+		document.documentElement.lang = "en";
+
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			minTerms: 0,
+			fetchCount: 10,
+			infiniteScroll: false,
+			groups: [
+				{
+					id: "1",
+					title: "Group 1",
+					params: {},
+				},
+				{
+					id: "2",
+					title: "Group 2",
+					params: {},
+				},
+			],
+			slots: {
+				Hit(props) {
+					return html`${props.hit.language}`;
+				},
+			},
+		});
+
+		ui.on("lang", (e) => {
+			ui.updateGroups((...groups) => {
+				for (const group of groups) {
+					group.params.lang = e.lang;
+				}
+			});
+		});
+		ui.open();
+	});
+
+	const hits = page.locator(".findkit--hit");
+	await expect(hits.first()).toBeVisible();
+
+	expect(await hits.allInnerTexts()).toEqual([
+		"en",
+		"en",
+		"en",
+		"en",
+		"en",
+		"en",
+		"en",
+		"en",
+		"en",
+		"en",
+	]);
+
+	await page.evaluate(async () => {
+		document.documentElement.lang = "fi";
+	});
+
+	await expect
+		.poll(async () => hits.allInnerTexts())
+		.toEqual(["fi", "fi", "fi", "fi", "fi", "fi", "fi", "fi", "fi", "fi"]);
+});
