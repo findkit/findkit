@@ -162,8 +162,8 @@
 				for (const [key, values] of Object.entries(data)) {
 					const item = form.elements.namedItem(key);
 					for (const value of values.split(",")) {
-						const list = item instanceof RadioNodeList
-                            ? Array.from(item) : [item];
+						const list =
+							item instanceof RadioNodeList ? Array.from(item) : [item];
 						for (const el of list) {
 							if (el instanceof HTMLSelectElement) {
 								for (const option of el.options) {
