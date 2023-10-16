@@ -23,6 +23,7 @@ import {
 import { Emitter, FindkitUIEvents, lazyValue } from "./emitter";
 import { TranslationStrings } from "./translations";
 import { listen, Resources } from "./resources";
+import { Filter } from "./filter-type";
 
 export const DEFAULT_HIGHLIGHT_LENGTH = 250;
 export const DEFAULT_PREVIEW_SIZE = 5;
@@ -52,6 +53,15 @@ export interface ResultsWithTotal {
 	hits: SearchResultHit[];
 	duration?: number;
 	total: number;
+}
+
+/**
+ * @public
+ */
+export interface Sort {
+	[field: string]: {
+		$order: "asc" | "desc";
+	};
 }
 
 /**
@@ -108,9 +118,9 @@ export interface SearchParams {
 	 */
 	content?: boolean;
 
-	filter?: any;
+	filter?: Filter;
 
-	sort?: any;
+	sort?: Sort | Sort[];
 }
 
 /**
