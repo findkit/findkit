@@ -1,4 +1,4 @@
-/* Target both the host element when using shadow dom and the root element when not */
+/* Target the host element when using shadow dom and the root element when not */
 :host,
 :root {
 	/*
