@@ -733,3 +733,45 @@ test("renders nice error when wrongly rendering custom fields", async ({
 
 	await expect(hits.first()).toContainText('Error rendering slot "Hit"');
 });
+
+test("no fetches are made before the modal is opened", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			minTerms: 0,
+		});
+
+		const uiEvents: any[] = [];
+		Object.assign(window, { ui, uiEvents });
+
+		ui.on("fetch", () => {
+			uiEvents.push("fetch");
+		});
+
+		await ui.preload();
+	});
+
+	await page.waitForTimeout(500);
+
+	expect(
+		await page.evaluate(async () => {
+			return (window as any).uiEvents as any[];
+		}),
+	).toEqual([]);
+
+	await page.evaluate(async () => {
+		ui.open();
+	});
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	expect(
+		await page.evaluate(async () => {
+			return (window as any).uiEvents as any[];
+		}),
+	).toEqual(["fetch"]);
+});
