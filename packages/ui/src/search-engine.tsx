@@ -848,8 +848,14 @@ export class SearchEngine {
 	}
 
 	private PRIVATE_handleAddressChange = () => {
+		if (this.PRIVATE_ignoreNextAddressbarUpdate) {
+			this.PRIVATE_ignoreNextAddressbarUpdate = false;
+			return;
+		}
+
 		const currentTerms = this.findkitParams.getTerms() ?? "";
 		this.state.searchParams = this.router.getSearchParamsString();
+
 		const nextParams = this.findkitParams;
 		if (!this.findkitParams.isActive()) {
 			this.PRIVATE_statusTransition("closed");
@@ -915,6 +921,8 @@ export class SearchEngine {
 		}
 	}
 
+	private PRIVATE_ignoreNextAddressbarUpdate = false;
+
 	updateAddressBar = (
 		params: FindkitURLSearchParams,
 		options?: { push?: boolean; ignore?: boolean },
@@ -927,7 +935,13 @@ export class SearchEngine {
 		const next = params.setCustomData(customRouterData);
 
 		if (!next.equals(this.findkitParams)) {
-			this.router.update(next.toString(), options);
+			this.PRIVATE_previousCustomRouterData = next;
+			if (options?.ignore) {
+				this.PRIVATE_ignoreNextAddressbarUpdate = true;
+			}
+			this.router.update(next.toString(), {
+				push: options?.push,
+			});
 		}
 	};
 
