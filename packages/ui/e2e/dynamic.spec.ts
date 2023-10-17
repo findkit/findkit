@@ -523,17 +523,6 @@ test("calls the global FINDKIT_GET_JWT_TOKEN when defined", async ({
 test("fetch-done event", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
 
-	const waitForFetchDone = async () => {
-		await page.evaluate(
-			async () => {
-				await new Promise((resolve) => {
-					ui.once("fetch-done", resolve);
-				});
-			},
-			{ timeout: 5_000 },
-		);
-	};
-
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
 			publicToken: "pW1D0p0Dg",
@@ -571,24 +560,42 @@ test("fetch-done event", async ({ page }) => {
 		Object.assign(window, { ui });
 	});
 
-	const input = page.locator("input");
-	await input.fill("d");
+	const waitForFetchDone = async (fn: () => Promise<any>) => {
+		await page.evaluate(async () => {
+			(window as any).promise = new Promise((resolve) => {
+				ui.once("fetch-done", resolve);
+			});
+		});
 
-	await waitForFetchDone();
+		await fn();
 
-	const showMore = page.locator("text=Show more");
-	await showMore.first().click();
+		await page.evaluate(
+			async () => {
+				return (window as any).promise;
+			},
+			{ timeout: 5_000 },
+		);
+	};
 
-	await waitForFetchDone();
+	await waitForFetchDone(async () => {
+		const input = page.locator("input");
+		await input.fill("d");
+	});
 
-	const loadMore = page.locator("text=Load more");
-	await loadMore.first().click();
+	await waitForFetchDone(async () => {
+		const showMore = page.locator("text=Show more");
+		await showMore.first().click();
+	});
 
-	await waitForFetchDone();
+	await waitForFetchDone(async () => {
+		const loadMore = page.locator("text=Load more");
+		await loadMore.first().click();
+	});
 
-	await input.fill("diamond");
-
-	await waitForFetchDone();
+	await waitForFetchDone(async () => {
+		const input = page.locator("input");
+		await input.fill("diamond");
+	});
 
 	const testEvents = await page.evaluate(async () => {
 		return (window as any).testEvents as any[];
