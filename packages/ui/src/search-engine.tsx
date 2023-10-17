@@ -1061,10 +1061,16 @@ export class SearchEngine {
 
 	private PRIVATE_handleGroupsChange = () => {
 		this.PRIVATE_clearThrottle();
+
+		// Groups have no effect on the address bar but the custom router data
+		// might so we must update it here. We ignore the the update because it
+		// has no internal meaning, it is meaningful only for
+		// .customRouterData() users.
 		this.updateAddressBar(this.PRIVATE_getfindkitParams(), {
 			ignore: true,
 			push: false,
 		});
+
 		const terms =
 			(this.PRIVATE_throttlingTerms ||
 				this.PRIVATE_getfindkitParams().getTerms()) ??
