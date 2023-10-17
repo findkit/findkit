@@ -838,7 +838,7 @@ export class SearchEngine {
 	/**
 	 * Access the current params in the url bar
 	 */
-	get findkitParams() {
+	private PRIVATE_getfindkitParams() {
 		return new FindkitURLSearchParams(this.instanceId, this.state.searchParams);
 	}
 
@@ -863,11 +863,11 @@ export class SearchEngine {
 			return;
 		}
 
-		const currentTerms = this.findkitParams.getTerms() ?? "";
+		const currentTerms = this.PRIVATE_getfindkitParams().getTerms() ?? "";
 		this.state.searchParams = this.router.getSearchParamsString();
 
-		const nextParams = this.findkitParams;
-		if (!this.findkitParams.isActive()) {
+		const nextParams = this.PRIVATE_getfindkitParams();
+		if (!nextParams.isActive()) {
 			this.PRIVATE_statusTransition("closed");
 			this.PRIVATE_throttlingTerms = "";
 			this.state.currentGroupId = undefined;
@@ -914,14 +914,15 @@ export class SearchEngine {
 	private PRIVATE_emitCustomRouterData() {
 		if (
 			this.PRIVATE_previousCustomRouterData?.customDataEquals(
-				this.findkitParams,
+				this.PRIVATE_getfindkitParams(),
 			)
 		) {
 			return;
 		}
 
-		this.PRIVATE_previousCustomRouterData = this.findkitParams;
-		const customRouterData = this.findkitParams.getCustomData();
+		this.PRIVATE_previousCustomRouterData = this.PRIVATE_getfindkitParams();
+		const customRouterData =
+			this.PRIVATE_previousCustomRouterData.getCustomData();
 
 		for (const hook of this.PRIVATE_customRouterDataHooks) {
 			hook.load({
@@ -944,7 +945,7 @@ export class SearchEngine {
 
 		const next = params.setCustomData(customRouterData);
 
-		if (!next.equals(this.findkitParams)) {
+		if (!next.equals(this.PRIVATE_getfindkitParams())) {
 			this.PRIVATE_previousCustomRouterData = next;
 			if (options?.ignore) {
 				this.PRIVATE_ignoreNextAddressbarUpdate = true;
@@ -981,7 +982,7 @@ export class SearchEngine {
 
 	setTerms(terms: string) {
 		this.PRIVATE_clearThrottle();
-		this.updateAddressBar(this.findkitParams.setTerms(terms));
+		this.updateAddressBar(this.PRIVATE_getfindkitParams().setTerms(terms));
 	}
 
 	/**
@@ -1060,9 +1061,14 @@ export class SearchEngine {
 
 	private PRIVATE_handleGroupsChange = () => {
 		this.PRIVATE_clearThrottle();
-		this.updateAddressBar(this.findkitParams, { ignore: true, push: false });
+		this.updateAddressBar(this.PRIVATE_getfindkitParams(), {
+			ignore: true,
+			push: false,
+		});
 		const terms =
-			(this.PRIVATE_throttlingTerms || this.findkitParams.getTerms()) ?? "";
+			(this.PRIVATE_throttlingTerms ||
+				this.PRIVATE_getfindkitParams().getTerms()) ??
+			"";
 
 		void this.PRIVATE_fetch({ reset: true, terms });
 	};
@@ -1107,7 +1113,10 @@ export class SearchEngine {
 		this.state.error = undefined;
 		void this.PRIVATE_fetch({
 			reset: true,
-			terms: this.findkitParams.getTerms() || this.state.usedTerms || "",
+			terms:
+				this.PRIVATE_getfindkitParams().getTerms() ||
+				this.state.usedTerms ||
+				"",
 		});
 	}
 
@@ -1453,7 +1462,7 @@ export class SearchEngine {
 			return groups[0];
 		}
 
-		const id = this.findkitParams.getGroupId();
+		const id = this.PRIVATE_getfindkitParams().getGroupId();
 		return groups.find((group) => group.id === id);
 	}
 
@@ -1487,7 +1496,7 @@ export class SearchEngine {
 		}
 
 		this.PRIVATE_started(() => {
-			const currentTerms = this.findkitParams.getTerms();
+			const currentTerms = this.PRIVATE_getfindkitParams().getTerms();
 
 			if (currentTerms) {
 				// Enable search results linking by copying the terms to the input
@@ -1626,12 +1635,12 @@ export class SearchEngine {
 	}
 
 	open = (terms?: string) => {
-		const nextTerms =
-			terms === undefined ? this.findkitParams.getTerms() : terms;
+		const findkitParams = this.PRIVATE_getfindkitParams();
+		const nextTerms = terms === undefined ? findkitParams.getTerms() : terms;
 
 		this.PRIVATE_started(() => {
-			this.updateAddressBar(this.findkitParams.setTerms(nextTerms ?? ""), {
-				push: !this.findkitParams.isActive(),
+			this.updateAddressBar(findkitParams.setTerms(nextTerms ?? ""), {
+				push: !findkitParams.isActive(),
 			});
 		});
 	};
@@ -1650,7 +1659,7 @@ export class SearchEngine {
 
 	close = () => {
 		if (this.state.status !== "closed") {
-			this.updateAddressBar(this.findkitParams.clearAll(), {
+			this.updateAddressBar(this.PRIVATE_getfindkitParams().clearAll(), {
 				push: true,
 			});
 		}
