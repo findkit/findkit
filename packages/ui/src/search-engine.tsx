@@ -1001,7 +1001,7 @@ export class SearchEngine {
 		}
 	};
 
-	dirtyGroups = false;
+	private PRIVATE_dirtyGroups = false;
 
 	updateGroups = (groupsOrFn: UpdateGroupsArgument) => {
 		let nextGroups: GroupDefinition[] = [];
@@ -1023,7 +1023,7 @@ export class SearchEngine {
 		}
 
 		if (deepEqual(nextGroups, this.state.usedGroupDefinitions)) {
-			this.dirtyGroups = false;
+			this.PRIVATE_dirtyGroups = false;
 			return;
 		}
 
@@ -1043,7 +1043,7 @@ export class SearchEngine {
 		// Use leading invoke throttle for groups update. Eg. the first update
 		// is immediate but the next ones are throttled.
 		if (this.PRIVATE_groupsThrottleTimer) {
-			this.dirtyGroups = true;
+			this.PRIVATE_dirtyGroups = true;
 			return;
 		}
 
@@ -1051,8 +1051,8 @@ export class SearchEngine {
 
 		this.PRIVATE_groupsThrottleTimer = setTimeout(() => {
 			this.PRIVATE_clearThrottle();
-			if (this.dirtyGroups) {
-				this.dirtyGroups = false;
+			if (this.PRIVATE_dirtyGroups) {
+				this.PRIVATE_dirtyGroups = false;
 				this.PRIVATE_handleGroupsChange();
 			}
 		}, this.PRIVATE_throttleTime);
