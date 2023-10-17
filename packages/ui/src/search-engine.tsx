@@ -527,7 +527,8 @@ export class SearchEngine {
 	 * terms
 	 */
 	private PRIVATE_throttlingTerms = "";
-	private PRIVATE_throttleTimerID?: ReturnType<typeof setTimeout>;
+	private PRIVATE_termsThrottleTimer?: ReturnType<typeof setTimeout>;
+	private PRIVATE_groupsThrottleTimer?: ReturnType<typeof setTimeout>;
 
 	private PRIVATE_resources = new Resources();
 	private PRIVATE_container: Element | ShadowRoot;
@@ -682,6 +683,15 @@ export class SearchEngine {
 		return this.PRIVATE_container instanceof ShadowRoot
 			? this.PRIVATE_container
 			: document;
+	}
+
+	getParams(): SearchParams {
+		const group = this.state.nextGroupDefinitions[0];
+		return group?.params ?? {};
+	}
+
+	getGroups(): GroupDefinition[] {
+		return this.state.nextGroupDefinitions;
 	}
 
 	/**
@@ -878,11 +888,11 @@ export class SearchEngine {
 		void this.PRIVATE_fetch({ terms, reset });
 	};
 
-	private PRIVATE_clearTimeout = () => {
-		if (this.PRIVATE_throttleTimerID) {
-			clearTimeout(this.PRIVATE_throttleTimerID);
-			this.PRIVATE_throttleTimerID = undefined;
-		}
+	private PRIVATE_clearThrottle = () => {
+		clearTimeout(this.PRIVATE_termsThrottleTimer);
+		clearTimeout(this.PRIVATE_groupsThrottleTimer);
+		this.PRIVATE_termsThrottleTimer = undefined;
+		this.PRIVATE_groupsThrottleTimer = undefined;
 	};
 
 	private PRIVATE_customRouterDataHooks: {
@@ -960,19 +970,38 @@ export class SearchEngine {
 			return;
 		}
 
-		if (this.PRIVATE_throttleTimerID) {
+		if (this.PRIVATE_termsThrottleTimer) {
 			return;
 		}
 
-		this.PRIVATE_throttleTimerID = setTimeout(() => {
+		this.PRIVATE_termsThrottleTimer = setTimeout(() => {
 			this.setTerms(this.PRIVATE_throttlingTerms);
 		}, this.PRIVATE_throttleTime);
 	}
 
 	setTerms(terms: string) {
-		this.PRIVATE_clearTimeout();
+		this.PRIVATE_clearThrottle();
 		this.updateAddressBar(this.findkitParams.setTerms(terms));
 	}
+
+	/**
+	 * Convenience method for updating on the first group in single group
+	 * scenarios
+	 */
+	updateParams = (params: UpdateParamsArgument) => {
+		if (typeof params === "function") {
+			this.updateGroups((group) => {
+				params(group.params ?? {});
+			});
+		} else {
+			this.updateGroups({
+				...SINGLE_GROUP_NAME,
+				params,
+			});
+		}
+	};
+
+	dirtyGroups = false;
 
 	updateGroups = (groupsOrFn: UpdateGroupsArgument) => {
 		let nextGroups: GroupDefinition[] = [];
@@ -993,61 +1022,48 @@ export class SearchEngine {
 			nextGroups = [groupsOrFn];
 		}
 
-		if (deepEqual(nextGroups, this.state.nextGroupDefinitions)) {
-			return;
-		}
-
 		if (deepEqual(nextGroups, this.state.usedGroupDefinitions)) {
+			this.dirtyGroups = false;
 			return;
 		}
 
 		this.state.nextGroupDefinitions = ref(nextGroups);
-		this.updateAddressBar(this.findkitParams, { ignore: true, push: false });
-		this.PRIVATE_handleGroupsChange();
-	};
 
-	/**
-	 * Convenience method for updating on the first group in single group
-	 * scenarios
-	 */
-	updateParams = (params: UpdateParamsArgument) => {
-		if (typeof params === "function") {
-			this.updateGroups((group) => {
-				params(group.params ?? {});
-			});
-		} else {
-			this.updateGroups({
-				...SINGLE_GROUP_NAME,
-				params,
-			});
-		}
-	};
-
-	getParams(): SearchParams {
-		const group = this.state.nextGroupDefinitions[0];
-		return group?.params ?? {};
-	}
-
-	getGroups(): GroupDefinition[] {
-		return this.state.nextGroupDefinitions;
-	}
-
-	private PRIVATE_handleGroupsChange = () => {
-		const self = this;
 		this.events.emit("groups", {
-			groups: self.getGroups(),
+			groups: this.getGroups(),
 		});
 
 		const group = this.state.nextGroupDefinitions[0];
 		assertNonNullable(group, "first group missing");
 
 		this.events.emit("params", {
-			get params() {
-				return self.getParams();
-			},
+			params: this.getParams(),
 		});
-		this.PRIVATE_clearTimeout();
-		const terms = this.findkitParams.getTerms() ?? "";
+
+		// Use leading invoke throttle for groups update. Eg. the first update
+		// is immediate but the next ones are throttled.
+		if (this.PRIVATE_groupsThrottleTimer) {
+			this.dirtyGroups = true;
+			return;
+		}
+
+		this.PRIVATE_handleGroupsChange();
+
+		this.PRIVATE_groupsThrottleTimer = setTimeout(() => {
+			this.PRIVATE_clearThrottle();
+			if (this.dirtyGroups) {
+				this.dirtyGroups = false;
+				this.PRIVATE_handleGroupsChange();
+			}
+		}, this.PRIVATE_throttleTime);
+	};
+
+	private PRIVATE_handleGroupsChange = () => {
+		this.PRIVATE_clearThrottle();
+		this.updateAddressBar(this.findkitParams, { ignore: true, push: false });
+		const terms =
+			(this.PRIVATE_throttlingTerms || this.findkitParams.getTerms()) ?? "";
+
 		void this.PRIVATE_fetch({ reset: true, terms });
 	};
 
