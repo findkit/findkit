@@ -1002,6 +1002,7 @@ export class SearchEngine {
 		}
 
 		this.state.nextGroupDefinitions = ref(nextGroups);
+		this.updateAddressBar(this.findkitParams, { ignore: true, push: false });
 		this.PRIVATE_handleGroupsChange();
 	};
 
@@ -1402,7 +1403,6 @@ export class SearchEngine {
 		// Update the state terms to match the results
 		this.state.usedTerms = options.terms;
 		this.state.usedGroupDefinitions = groups;
-		this.updateAddressBar(this.findkitParams, { ignore: true });
 
 		if (isAppending) {
 			this.PRIVATE_addAllResults(resWithIds);
