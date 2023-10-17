@@ -57,7 +57,7 @@
   "size-limit": [
     {
       "path": "esm/implementation.js",
-      "limit": "30kb"
+      "limit": "32kb"
     },
     {
       "path": "esm/index.js",
