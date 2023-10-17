@@ -10,9 +10,9 @@ test("can filter and sort (1)", async ({ page }) => {
 	await page.evaluate(async () => {
 		const { FindkitUI, html } = MOD;
 		const ui = new FindkitUI({
-			publicToken: "pJMDjpYOE",
+			publicToken: "pW1D0p0Dg",
 			searchEndpoint:
-				"https://staging---search.findkit.com/c/pJMDjpYOE/search?p=pJMDjpYOE",
+				"https://search.findkit.com/n/pW1D0p0Dg/search?p=pW1D0p0Dg",
 			params: {
 				filter: {
 					price: {
@@ -48,9 +48,9 @@ test("can filter and sort (2)", async ({ page }) => {
 	await page.evaluate(async () => {
 		const { FindkitUI, html } = MOD;
 		const ui = new FindkitUI({
-			publicToken: "pJMDjpYOE",
+			publicToken: "pW1D0p0Dg",
 			searchEndpoint:
-				"https://staging---search.findkit.com/c/pJMDjpYOE/search?p=pJMDjpYOE",
+				"https://search.findkit.com/n/pW1D0p0Dg/search?p=pW1D0p0Dg",
 			params: {
 				filter: {
 					price: {
@@ -86,9 +86,9 @@ test("can dynamically update filter", async ({ page }) => {
 	await page.evaluate(async () => {
 		const { FindkitUI, html } = MOD;
 		const ui = new FindkitUI({
-			publicToken: "pJMDjpYOE",
+			publicToken: "pW1D0p0Dg",
 			searchEndpoint:
-				"https://staging---search.findkit.com/c/pJMDjpYOE/search?p=pJMDjpYOE",
+				"https://search.findkit.com/n/pW1D0p0Dg/search?p=pW1D0p0Dg",
 			params: {
 				sort: {
 					price: {
@@ -168,9 +168,9 @@ test("customRouterData events (1)", async ({ page }) => {
 	await page.evaluate(async () => {
 		const { FindkitUI } = MOD;
 		const ui = new FindkitUI({
-			publicToken: "pJMDjpYOE",
+			publicToken: "pW1D0p0Dg",
 			searchEndpoint:
-				"https://staging---search.findkit.com/c/pJMDjpYOE/search?p=pJMDjpYOE",
+				"https://search.findkit.com/n/pW1D0p0Dg/search?p=pW1D0p0Dg",
 		});
 		const uiEvents: any[] = [];
 		Object.assign(window, { ui, uiEvents });
@@ -224,9 +224,9 @@ test("customRouterData events (2)", async ({ page }) => {
 	await page.evaluate(async () => {
 		const { FindkitUI } = MOD;
 		const ui = new FindkitUI({
-			publicToken: "pJMDjpYOE",
+			publicToken: "pW1D0p0Dg",
 			searchEndpoint:
-				"https://staging---search.findkit.com/c/pJMDjpYOE/search?p=pJMDjpYOE",
+				"https://search.findkit.com/n/pW1D0p0Dg/search?p=pW1D0p0Dg",
 			slots: {
 				Hit(props) {
 					return props.hit.customFields.price?.value;
