@@ -220,15 +220,13 @@
         ui.customRouterData({
             init: {min: "3", test: "ding", sort: "relevancy"},
             load: (params) => {
-                // console.log("load", params);
                 populateForm(form, params);
                 readParamsFromForm();
             },
-            save: (params) => {
+            save: () => {
                 const formData = new FormData(form);
                 const data = Object.fromEntries(formData);
                 data.category = formData.getAll("category").join(",");
-                console.log("save", data);
                 return data;
             },
         });
@@ -236,7 +234,6 @@
         ui.bindInput("input[type=search]");
 
         form.addEventListener("input", () => {
-            console.log("input event");
             readParamsFromForm();
         });
     </script>
