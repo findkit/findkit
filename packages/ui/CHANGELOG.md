@@ -7,7 +7,7 @@
 - Add language type to SearchResultHit [22014a8](https://github.com/findkit/findkit/commit/22014a8) - Esa-Matti Suuronen
 - Remove proxy tracking from the hit objects [4d57c93](https://github.com/findkit/findkit/commit/4d57c93) - Esa-Matti Suuronen
 - Ensure no side scrolling on small screens [412aa2d](https://github.com/findkit/findkit/commit/412aa2d) - Esa-Matti Suuronen
-- Add bind-input and unbind-input events [732c0b1](https://github.com/findkit/findkit/commit/732c0b1) - Esa-Matti Suuronen
+- Add [bind-input](https://docs.findkit.com/ui/api/events#bind-input) and [unbind-input](https://docs.findkit.com/ui/api/events#unbind-input) events [732c0b1](https://github.com/findkit/findkit/commit/732c0b1) - Esa-Matti Suuronen
 - Add `append: boolean` to fetch-done event [095be11](https://github.com/findkit/findkit/commit/095be11) - Esa-Matti Suuronen
 
 All changes https://github.com/findkit/findkit/compare/ui/v0.7.0...ui/v0.8.0
