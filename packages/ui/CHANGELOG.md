@@ -2,7 +2,7 @@
 
 2023-10-17
 
-- Fix leaking form styles [c2a4db4](https://github.com/findkit/findkit/commit/c2a4db4) - Esa-Matti Suuronen
+- Fix leaking form styles when not using shadow dom [c2a4db4](https://github.com/findkit/findkit/commit/c2a4db4) - Esa-Matti Suuronen
 - Upgrade build-in preact [57cdb08](https://github.com/findkit/findkit/commit/57cdb08) - Esa-Matti Suuronen
 - Add language type to SearchResultHit [22014a8](https://github.com/findkit/findkit/commit/22014a8) - Esa-Matti Suuronen
 - Remove proxy tracking from the hit objects [4d57c93](https://github.com/findkit/findkit/commit/4d57c93) - Esa-Matti Suuronen
