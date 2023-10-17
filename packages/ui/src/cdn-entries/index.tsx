@@ -606,8 +606,11 @@ export class FindkitUI {
 	 * Create proxy method for SearchEngine which is called once the engine is
 	 * loaded
 	 */
-	private PRIVATE_proxy<Method extends Methods<SearchEngine>>(method: Method) {
-		return (...args: MethodParameters<typeof SearchEngine, Method>) => {
+	private PRIVATE_proxy<Method extends Methods<SearchEngine>>(
+		method: Method,
+	): InstanceType<typeof SearchEngine>[Method] {
+		// NOTE: Supports only void returning methods
+		return (...args: any[]): any => {
 			this.PRIVATE_lazyEngine((engine: any) => {
 				engine[method](...args);
 			});
