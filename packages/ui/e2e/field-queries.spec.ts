@@ -123,3 +123,41 @@ test("can dynamically update filter", async ({ page }) => {
 
 	await expect.poll(async () => await hits.allInnerTexts()).toEqual(["30"]);
 });
+
+test("can save filters to url and restore them on reload", async ({ page }) => {
+	await page.goto(staticEntry("/custom-field-queries"));
+
+	const getFetches = async (): Promise<string[]> => {
+		return await page.evaluate(async () =>
+			(window as any).fetches.map((f: any) => f.terms),
+		);
+	};
+
+	const getPrices = async (): Promise<string[]> =>
+		page.locator(".price").allInnerTexts();
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	// First search with no terms
+	expect(await getFetches()).toEqual([""]);
+
+	await page.getByLabel("Keywords").fill("boots");
+	await expect.poll(() => getFetches()).toEqual(["", "boots"]);
+
+	await page.getByLabel("Most expensive first").check();
+	await expect.poll(getPrices).toEqual(["220", "100", "30"]);
+	expect(await getFetches()).toEqual(["", "boots", "boots"]);
+	expect(page.url()).toContain("fdk.c.sort=price_desc");
+
+	await page.getByLabel("Cheapest first").check();
+	await expect.poll(getPrices).toEqual(["30", "100", "220"]);
+	expect(await getFetches()).toEqual(["", "boots", "boots", "boots"]);
+	expect(page.url()).toContain("fdk.c.sort=price_asc");
+
+	// Can restore the form state and return the same results
+	await page.reload();
+	await expect(page.getByLabel("Cheapest first")).toBeChecked();
+	await expect.poll(getPrices).toEqual(["30", "100", "220"]);
+	expect(await getFetches()).toEqual(["boots"]);
+});

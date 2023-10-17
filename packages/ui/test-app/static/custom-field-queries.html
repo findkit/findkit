@@ -1,108 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<title>Search UI Test</title>
 
-		<style>
-			header {
-			}
-		</style>
-	</head>
+<head>
+    <meta charset="utf-8" />
+    <title>Search UI Test</title>
 
-	<body>
-		<header>
-			<a href="?">clear</a>
+    <style>
+        header {}
+    </style>
+</head>
 
-			<form role="search">
-				<fieldset>
-					<legend>Search</legend>
-					<label>
-						Keywords
-						<input type="search" />
-					</label>
-				</fieldset>
-				<fieldset>
-					<legend>Limit by price</legend>
-					<label>
-						Min
-						<input type="text" name="min" />
-					</label>
-					<label>
-						Max
-						<input type="text" name="max" />
-					</label>
-				</fieldset>
+<body>
+    <header>
+        <a href="?">clear</a>
 
-				<fieldset>
-					<legend>Sort</legend>
-					<label>
-						<input type="radio" name="sort" value="relevancy" />
-						Most relevant first
-					</label>
-					<label>
-						<input type="radio" name="sort" value="price_asc" />
-						Cheapest first
-					</label>
-					<label>
-						<input type="radio" name="sort" value="price_desc" />
-						Most expensive first
-					</label>
-				</fieldset>
-				<fieldset>
-					<legend>Category</legend>
-					<label>
-						<input type="checkbox" name="category" value="Jewelry" />
-						Jewelry
-					</label>
-					<label>
-						<input type="checkbox" name="category" value="Electronics" />
-						Electronics
-					</label>
-					<label>
-						<input type="checkbox" name="category" value="Clothing" />
-						Clothing
-					</label>
-					<label>
-						<input type="checkbox" name="category" value="Furniture" />
-						Furniture
-					</label>
-				</fieldset>
-				<fieldset>
-					<legend>Misc</legend>
-					<label
-						>Language
-						<select name="lang">
-							<option value="any">Any</option>
-							<option value="en">English</option>
-							<option value="fi">Finnish</option>
-							<option value="sv">Swedish</option>
-						</select></label
-					>
-					<label>
-						<input type="checkbox" name="in_stock" value="true" />
-						Is in stock
-					</label>
-				</fieldset>
-			</form>
-		</header>
+        <form role="search">
+            <fieldset>
+                <legend>Search</legend>
+                <label>
+                    Keywords
+                    <input type="search" />
+                </label>
+            </fieldset>
+            <fieldset>
+                <legend>Limit by price</legend>
+                <label>
+                    Min
+                    <input type="text" name="min" />
+                </label>
+                <label>
+                    Max
+                    <input type="text" name="max" />
+                </label>
+            </fieldset>
 
-		<main>
-			<div class="findkit-container"></div>
-		</main>
+            <fieldset>
+                <legend>Sort</legend>
+                <label>
+                    <input type="radio" name="sort" value="relevancy" />
+                    Most relevant first
+                </label>
+                <label>
+                    <input type="radio" name="sort" value="price_asc" />
+                    Cheapest first
+                </label>
+                <label>
+                    <input type="radio" name="sort" value="price_desc" />
+                    Most expensive first
+                </label>
+            </fieldset>
+            <fieldset>
+                <legend>Category</legend>
+                <label>
+                    <input type="checkbox" name="category" value="Jewelry" />
+                    Jewelry
+                </label>
+                <label>
+                    <input type="checkbox" name="category" value="Electronics" />
+                    Electronics
+                </label>
+                <label>
+                    <input type="checkbox" name="category" value="Clothing" />
+                    Clothing
+                </label>
+                <label>
+                    <input type="checkbox" name="category" value="Furniture" />
+                    Furniture
+                </label>
+            </fieldset>
+            <fieldset>
+                <legend>Misc</legend>
+                <label>Language
+                    <select name="lang">
+                        <option value="any">Any</option>
+                        <option value="en">English</option>
+                        <option value="fi">Finnish</option>
+                        <option value="sv">Swedish</option>
+                    </select></label>
+                <label>
+                    <input type="checkbox" name="in_stock" value="true" />
+                    Is in stock
+                </label>
+            </fieldset>
+        </form>
+    </header>
 
-		<script type="module">
-			import { FindkitUI, css, html } from "/build/esm/index.js";
+    <main>
+        <div class="findkit-container"></div>
+    </main>
 
-			const ui = new FindkitUI({
-				publicToken: "pJMDjpYOE",
-				searchEndpoint:
-					"https://staging---search.findkit.com/c/pJMDjpYOE/search?p=pJMDjpYOE",
-				container: document.querySelector(".findkit-container"),
-				minTerms: 0,
-				header: false,
-				modal: false,
-				css: css`
+    <script type="module">
+        import {FindkitUI, css, html} from "/build/esm/index.js";
+
+        const ui = new FindkitUI({
+            publicToken: "pJMDjpYOE",
+            searchEndpoint:
+                "https://staging---search.findkit.com/c/pJMDjpYOE/search?p=pJMDjpYOE",
+            container: document.querySelector(".findkit-container"),
+            minTerms: 0,
+            header: false,
+            modal: false,
+            css: css`
 					table {
 						width: max-content;
 					}
@@ -112,17 +110,10 @@
 						padding: 5px;
 					}
 				`,
-				// params: {
-				//     filter: {
-				//         tags: {
-				//             $eq: "product",
-				//         },
-				//     },
-				// },
-				slots: {
-					Hit(props) {
-						// prettier-ignore
-						return html`
+            slots: {
+                Hit(props) {
+                    // prettier-ignore
+                    return html`
 			               <h2>${props.hit.title}</h2>
 			                        <table>
 			                            <tr>
@@ -148,106 +139,107 @@
 			                        </table>
 
 			                `;
-					},
-				},
-			});
+                },
+            },
+        });
 
-			ui.on("debounced-search", (e) => {
-				console.log("search", e.terms);
-			});
+        const fetches = [];
+        Object.assign(window, {ui, fetches})
+        ui.on("fetch-done", (e) => {
+            fetches.push(e);
+        });
 
-			const form = document.querySelector("form[role=search]");
+        const form = document.querySelector("form[role=search]");
 
-			function populateForm(form, data) {
-				for (const [key, values] of Object.entries(data)) {
-					const item = form.elements.namedItem(key);
-					for (const value of values.split(",")) {
-						const list =
-							item instanceof RadioNodeList ? Array.from(item) : [item];
-						for (const el of list) {
-							if (el instanceof HTMLSelectElement) {
-								for (const option of el.options) {
-									if (option.value === value) {
-										option.selected = true;
-										continue;
-									}
-								}
-							} else if (el instanceof HTMLInputElement) {
-								if (el.type === "checkbox" || el.type === "radio") {
-									el.checked = el.value === value;
-								} else {
-									el.value = value;
-								}
-							}
-						}
-					}
-				}
-			}
+        function populateForm(form, data) {
+            for (const [key, values] of Object.entries(data)) {
+                const item = form.elements.namedItem(key);
+                for (const value of values.split(",")) {
+                    const list =
+                        item instanceof RadioNodeList ? Array.from(item) : [item];
+                    for (const el of list) {
+                        if (el instanceof HTMLSelectElement) {
+                            for (const option of el.options) {
+                                if (option.value === value) {
+                                    option.selected = true;
+                                    continue;
+                                }
+                            }
+                        } else if (el instanceof HTMLInputElement) {
+                            if (el.type === "checkbox" || el.type === "radio") {
+                                el.checked = el.value === value;
+                            } else {
+                                el.value = value;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-			function readParamsFromForm() {
-				const formData = new FormData(form);
-				const min = Number(formData.get("min")) || null;
-				const max = Number(formData.get("max")) || null;
-				const sort = formData.get("sort");
-				const lang = formData.get("lang");
-				const inStock = Boolean(formData.get("in_stock"));
-				const category = formData.getAll("category").filter(Boolean);
+        function readParamsFromForm() {
+            const formData = new FormData(form);
+            const min = Number(formData.get("min")) || null;
+            const max = Number(formData.get("max")) || null;
+            const sort = formData.get("sort");
+            const lang = formData.get("lang");
+            const inStock = Boolean(formData.get("in_stock"));
+            const category = formData.getAll("category").filter(Boolean);
 
-				ui.updateParams((params) => {
-					params.filter.price = { $gt: min, $lt: max };
+            ui.updateParams((params) => {
+                params.filter.price = {$gt: min, $lt: max};
 
-					if (!sort || sort === "relevancy") {
-						delete params.sort;
-					} else if (sort === "price_asc") {
-						params.sort.price = { $order: "asc" };
-					} else if (sort === "price_desc") {
-						params.sort.price = { $order: "desc" };
-					}
+                if (!sort || sort === "relevancy") {
+                    delete params.sort;
+                } else if (sort === "price_asc") {
+                    params.sort.price = {$order: "asc"};
+                } else if (sort === "price_desc") {
+                    params.sort.price = {$order: "desc"};
+                }
 
-					if (category.length > 0) {
-						params.filter.category = { $in: category };
-					} else {
-						delete params.filter.category;
-					}
+                if (category.length > 0) {
+                    params.filter.category = {$in: category};
+                } else {
+                    delete params.filter.category;
+                }
 
-					if (!lang || lang === "any") {
-						delete params.lang;
-					} else {
-						params.lang = lang;
-					}
+                if (!lang || lang === "any") {
+                    delete params.lang;
+                } else {
+                    params.lang = lang;
+                }
 
-					if (inStock) {
-						params.filter.quantity = { $gt: 0 };
-					} else {
-						delete params.filter.quantity;
-					}
+                if (inStock) {
+                    params.filter.quantity = {$gt: 0};
+                } else {
+                    delete params.filter.quantity;
+                }
+            });
+        }
 
-					console.log("params", params);
-				});
-			}
+        ui.customRouterData({
+            init: {min: "3", test: "ding", sort: "relevancy"},
+            load: (params) => {
+                // console.log("load", params);
+                populateForm(form, params);
+                readParamsFromForm();
+            },
+            save: (params) => {
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                data.category = formData.getAll("category").join(",");
+                console.log("save", data);
+                return data;
+            },
+        });
 
-			ui.customRouterData({
-				init: { min: "3", test: "ding", sort: "relevancy" },
-				load: (params) => {
-					// console.log("load", params);
-					populateForm(form, params);
-					readParamsFromForm();
-				},
-				save: (params) => {
-					const formData = new FormData(form);
-					const data = Object.fromEntries(formData);
-					data.category = formData.getAll("category").join(",");
-					console.log("save", data);
-					return data;
-				},
-			});
+        ui.bindInput("input[type=search]");
 
-			ui.bindInput("input[type=search]");
+        form.addEventListener("input", () => {
+            console.log("input event");
+            readParamsFromForm();
+        });
+    </script>
+</body>
 
-			form.addEventListener("input", () => {
-				console.log("input event");
-				readParamsFromForm();
-			});
-		</script>
-	</body>
 </html>
