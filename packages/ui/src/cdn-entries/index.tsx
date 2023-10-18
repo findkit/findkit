@@ -660,7 +660,12 @@ export class FindkitUI<
 		return params.has(this.id + "_q");
 	}
 
-	preload = async () => this.PRIVATE_initEngine();
+	preload = async () => {
+		await this.PRIVATE_initEngine();
+		await new Promise((resolve) => {
+			this.PRIVATE_lazyEngine(resolve);
+		});
+	};
 
 	PRIVATE_getStyleSheets(): string[] {
 		const sheets = [];
