@@ -795,7 +795,7 @@ test("updated params are synchronously available when loaded", async ({
 		return ui.params;
 	});
 
-	expect(params).toEqual({ tagBoost: { ding: 1 } });
+	expect(params.tagBoost).toEqual({ ding: 1 });
 });
 
 test("all group params are optional", async ({ page }) => {

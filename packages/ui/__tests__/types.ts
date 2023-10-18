@@ -33,6 +33,16 @@ t("filter types", () => {
 	f({ $or: { key: "" } });
 });
 
+t("can update partial params with ui.params", () => {
+	const ui = new FindkitUI({ publicToken: "" });
+
+	ui.updateParams({
+		filter: {
+			price: { $eq: 1 },
+		},
+	});
+});
+
 t("can add generic params to FindkitUI", () => {
 	const ui = new FindkitUI<{
 		params: {
@@ -57,10 +67,91 @@ t("can add generic params to FindkitUI", () => {
 		params.filter.price.$eq = "bad";
 	});
 
+	// can replace with any valid SearchParams
+	ui.updateParams({
+		filter: {
+			price: { $eq: "other" },
+		},
+	});
+
+	ui.updateParams({
+		filter: {
+			price: {
+				// @ts-expect-error
+				$bad: "other",
+			},
+		},
+	});
+
 	const num: number = ui.params.filter.price.$eq;
 
 	// @ts-expect-error
 	const str: string = ui.params.filter.price.$eq;
+});
+
+t("can add generic sort params to FindkitUI", () => {
+	const ui = new FindkitUI<{
+		params: {
+			sort: [
+				{
+					price: {
+						$order: "asc" | "desc";
+					};
+				},
+			];
+		};
+	}>({
+		publicToken: "",
+		params: {
+			sort: [
+				{
+					price: {
+						$order: "asc",
+					},
+				},
+			],
+		},
+	});
+
+	ui.updateParams((params) => {
+		params.sort[0].price.$order = "asc";
+
+		// @ts-expect-error
+		params.sort[0].bad.$order = "asc";
+
+		// @ts-expect-error
+		params.sort[1].price.$order = "asc";
+	});
+});
+
+t("sort type must be valid", () => {
+	// @ts-expect-error
+	new FindkitUI<{
+		params: {
+			sort: [
+				{
+					price: {
+						$order: "bad";
+					};
+				},
+			];
+		};
+	}>({
+		publicToken: "",
+	});
+});
+
+t("has default sort object", () => {
+	const ui = new FindkitUI({ publicToken: "" });
+
+	ui.updateParams((params) => {
+		params.sort.foo;
+
+		// @ts-expect-error
+		const _bar: string = params.sort.foo;
+	});
+
+	ui.params.sort.foo;
 });
 
 t("generic params require matching initial param to FindkitUI", () => {
@@ -153,6 +244,11 @@ t("can add generic groups to FindkitUI", () => {
 	ui.updateGroups((group1, group2, extra) => {});
 
 	ui.updateGroups((group1) => {});
+
+	ui.updateGroups([{ params: { filter: { price: { $gt: 1 } } } }]);
+
+	// @ts-expect-error
+	ui.updateGroups([{ params: { filter: { price: { $bad: 1 } } } }]);
 });
 
 t("custom router data", () => {

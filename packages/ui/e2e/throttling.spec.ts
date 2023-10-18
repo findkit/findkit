@@ -94,7 +94,9 @@ test("updateParams is throttled", async ({ page }) => {
 							class="category"
 							type="text"
 							onChange=${(e: any) => {
-								ui.updateParams({ filter: { category: e.target.value } });
+								ui.updateParams((params) => {
+									params.filter.category = e.target.value;
+								});
 							}}
 						/>
 					`;
@@ -157,7 +159,9 @@ test("updateParams is invoked immediately on first call (leading invoke)", async
 	await hits.first().waitFor({ state: "visible" });
 
 	await page.evaluate(async () => {
-		ui.updateParams({ filter: { category: "change" } });
+		ui.updateParams((params) => {
+			params.filter.category = "change";
+		});
 	});
 
 	await page.waitForTimeout(500);

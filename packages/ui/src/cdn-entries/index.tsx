@@ -10,6 +10,7 @@ import type {
 	Status,
 	GroupOrder,
 	GroupDefinitionWithDefaults,
+	SearchParamsWithDefaults,
 } from "../search-engine";
 import type { RouterBackend } from "../router";
 import type {
@@ -488,6 +489,12 @@ type GroupsOrDefault<T extends FindkitUIGenerics> =
 	undefined extends T["groups"]
 		? [GroupDefinitionWithDefaults]
 		: NonNullable<T["groups"]>;
+
+type SearchParamsOrDefault<T extends FindkitUIGenerics> =
+	undefined extends T["params"]
+		? SearchParamsWithDefaults
+		: NonNullable<T["params"]>;
+
 /**
  * Generic type for defining custom ui.params  and ui.updateaParams() types
  *
@@ -569,13 +576,10 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	/**
 	 * Update search params
 	 */
-	updateParams: (
-		arg: UpdateParamsArgument<
-			T["params"] extends SearchParams ? T["params"] : SearchParams
-		>,
-	) => void = this.PRIVATE_proxy("updateParams");
+	updateParams: (arg: UpdateParamsArgument<SearchParamsOrDefault<T>>) => void =
+		this.PRIVATE_proxy("updateParams");
 
-	get params(): T["params"] {
+	get params(): SearchParamsOrDefault<T> {
 		return (this.PRIVATE_lazyEngine.get()?.getParams() ??
 			this.PRIVATE_options.params ?? {
 				tagQuery: [],
