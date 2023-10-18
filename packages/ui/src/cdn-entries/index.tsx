@@ -43,6 +43,7 @@ import type {
 	LayoutSlotProps,
 } from "../slots";
 import type { PreactFunctions } from "./preact-subset";
+import type { Filter, Operator } from "../filter-type";
 
 /**
  * @deprecated legacy alias of SearchParams
@@ -84,6 +85,8 @@ export {
 	LanguageChangeEvent,
 	BindInputEvent,
 	UnbindInputEvent,
+	Filter,
+	Operator,
 };
 
 const doc = () => document;
