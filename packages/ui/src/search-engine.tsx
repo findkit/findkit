@@ -118,8 +118,14 @@ export interface SearchParams {
 	 */
 	content?: boolean;
 
+	/**
+	 * Filter search results with complex operators
+	 */
 	filter?: Filter;
 
+	/**
+	 * Sort search results
+	 */
 	sort?: Sort | Sort[];
 }
 
@@ -281,9 +287,9 @@ export type UpdateGroupsArgument =
 /**
  * @public
  */
-export type UpdateParamsArgument =
-	| SearchParams
-	| ((params: SearchParams) => SearchParams | undefined | void);
+export type UpdateParamsArgument<T extends SearchParams> =
+	| T
+	| ((params: T) => T | undefined | void);
 
 const instanceIds = new Set<string>();
 
@@ -989,10 +995,10 @@ export class SearchEngine {
 	 * Convenience method for updating on the first group in single group
 	 * scenarios
 	 */
-	updateParams = (params: UpdateParamsArgument) => {
+	updateParams = <T extends SearchParams>(params: UpdateParamsArgument<T>) => {
 		if (typeof params === "function") {
 			this.updateGroups((group) => {
-				params(group.params ?? {});
+				params((group.params ?? {}) as T);
 			});
 		} else {
 			this.updateGroups({
