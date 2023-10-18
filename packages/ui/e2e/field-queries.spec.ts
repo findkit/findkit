@@ -124,6 +124,72 @@ test("can dynamically update filter", async ({ page }) => {
 	await expect.poll(async () => await hits.allInnerTexts()).toEqual(["30"]);
 });
 
+test("can dynamically update filter using useParams hook", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI, html, useParams } = MOD;
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			searchEndpoint:
+				"https://search.findkit.com/n/pW1D0p0Dg/search?p=pW1D0p0Dg",
+			params: {
+				sort: {
+					price: {
+						$order: "asc",
+					},
+				},
+			},
+			slots: {
+				Hit(props) {
+					return html`${props.hit.customFields.price?.value}`;
+				},
+				Header(props) {
+					const [params, setParams] = useParams<{
+						filter: {
+							price?: { $lt: string };
+						};
+					}>();
+
+					const max = params.filter?.price?.$lt ?? "";
+
+					return html`
+						${props.children}
+						<span class="max-value">${max}</span>
+						<input
+							type="text"
+							class="max"
+							value="${max}"
+							onChange=${(e: { target: { value: string } }) => {
+								setParams((params) => {
+									params.filter = { price: { $lt: e.target.value } };
+								});
+							}}
+						/>
+					`;
+				},
+			},
+		});
+		Object.assign(window, { ui });
+
+		ui.open("boots");
+	});
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	const prices = await hits.allInnerTexts();
+	expect(prices).toEqual(["30", "100", "220"]);
+
+	const maxInput = page.locator(".max");
+	await maxInput.fill("50");
+
+	// Just ensure that params hook updates as expected
+	await expect(page.locator(".max-value")).toHaveText("50");
+
+	await expect.poll(async () => await hits.allInnerTexts()).toEqual(["30"]);
+});
+
 test("can save filters to url and restore them on reload", async ({ page }) => {
 	await page.goto(staticEntry("/custom-field-queries"));
 

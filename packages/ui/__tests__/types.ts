@@ -1,7 +1,11 @@
 import { FindkitUI } from "../src/cdn-entries";
 import { Filter } from "../src/filter-type";
 
-function test_filter() {
+function t(_desc: string, _test: Function) {
+	// type only tests, not actually running this code
+}
+
+t("filter types", () => {
 	function f(_: Filter) {}
 
 	f({ ding: "value" });
@@ -27,9 +31,76 @@ function test_filter() {
 
 	// @ts-expect-error
 	f({ $or: { key: "" } });
-}
+});
 
-function _customRouterData() {
+t("can add generic params to FindkitUI", () => {
+	const ui = new FindkitUI<{
+		params: {
+			filter: {
+				price: { $eq: number };
+			};
+		};
+	}>({
+		publicToken: "",
+
+		params: {
+			filter: {
+				price: { $eq: 2 },
+			},
+		},
+	});
+
+	ui.updateParams((params) => {
+		params.filter.price.$eq = 1;
+
+		// @ts-expect-error
+		params.filter.price.$eq = "bad";
+	});
+
+	const num: number = ui.params.filter.price.$eq;
+
+	// @ts-expect-error
+	const str: string = ui.params.filter.price.$eq;
+});
+
+t("generic params require matching initial param to FindkitUI", () => {
+	const ui = new FindkitUI<{
+		params: {
+			filter: {
+				price: { $eq: number };
+			};
+		};
+	}>({
+		publicToken: "",
+		params: {
+			filter: {
+				// @ts-expect-error
+				price: { $eq: "bad" },
+			},
+		},
+	});
+});
+
+t("params is optional in the generic", () => {
+	new FindkitUI<{}>({
+		publicToken: "",
+	});
+});
+
+t("generic params is constrained in FindkitUI", () => {
+	// @ts-expect-error
+	new FindkitUI<{
+		params: {
+			filter: {
+				price: { $bad: number };
+			};
+		};
+	}>({
+		publicToken: "",
+	});
+});
+
+t("custom router data", () => {
 	const ui = new FindkitUI({ publicToken: "" });
 
 	ui.customRouterData({
@@ -85,4 +156,4 @@ function _customRouterData() {
 			};
 		},
 	});
-}
+});

@@ -43,6 +43,7 @@ import type {
 	LayoutSlotProps,
 } from "../slots";
 import type { PreactFunctions } from "./preact-subset";
+import type { Filter, Operator } from "../filter-type";
 
 /**
  * @deprecated legacy alias of SearchParams
@@ -84,6 +85,8 @@ export {
 	LanguageChangeEvent,
 	BindInputEvent,
 	UnbindInputEvent,
+	Filter,
+	Operator,
 };
 
 const doc = () => document;
@@ -230,7 +233,9 @@ export function select<InstanceFilter extends typeof Element>(
 
 const lazyImplementation: Partial<Implementation> = {};
 
-function createShellFunction<Key extends Methods<Implementation>>(name: Key) {
+function createShellFunction<Key extends Methods<Implementation>>(
+	name: Key,
+): Implementation[Key] {
 	return (...args: any[]): ReturnType<Implementation[Key]> => {
 		const fn = lazyImplementation[name] as any;
 		if (!fn) {
@@ -409,11 +414,13 @@ async function loadScriptFromGlobal<T>(
  *
  * @public
  */
-export interface FindkitUIOptions {
+export interface FindkitUIOptions<
+	SearchParamsT extends SearchParams | undefined,
+> {
 	publicToken: string;
 	instanceId?: string;
 	groups?: GroupDefinition[];
-	params?: SearchParams;
+	params?: SearchParamsT;
 	shadowDom?: boolean;
 	minTerms?: number;
 	css?: string;
@@ -476,15 +483,28 @@ type Methods<Klass> = {
 }[keyof Klass];
 
 /**
+ * Generic type for defining custom ui.params  and ui.updateaParams() types
+ *
+ * TODO: Implmement groups too
+ *
+ * @public
+ */
+interface FindkitUIGenerics {
+	params?: SearchParams;
+}
+
+/**
  * The Lazy loading Findkit UI
  *
  * @public
  */
-export class FindkitUI {
+export class FindkitUI<
+	T extends FindkitUIGenerics = Required<FindkitUIGenerics>,
+> {
 	private PRIVATE_loading = false;
 
-	private PRIVATE_options: FindkitUIOptions;
-	private PRIVATE_events: Emitter<FindkitUIEvents, FindkitUI>;
+	private PRIVATE_options: FindkitUIOptions<T["params"]>;
+	private PRIVATE_events: Emitter<FindkitUIEvents, FindkitUI<T>>;
 	private PRIVATE_resources = new Resources();
 	private PRIVATE_lazyEngine = lazyValue<SearchEngine>();
 
@@ -493,7 +513,7 @@ export class FindkitUI {
 	 */
 	container?: Element;
 
-	constructor(options: FindkitUIOptions) {
+	constructor(options: FindkitUIOptions<T["params"]>) {
 		this.PRIVATE_options = options;
 		this.PRIVATE_events = new Emitter(this);
 
@@ -545,15 +565,17 @@ export class FindkitUI {
 	/**
 	 * Update search params
 	 */
-	updateParams = this.PRIVATE_proxy("updateParams");
+	updateParams: (
+		arg: UpdateParamsArgument<
+			T["params"] extends SearchParams ? T["params"] : SearchParams
+		>,
+	) => void = this.PRIVATE_proxy("updateParams");
 
-	get params(): SearchParams {
-		return (
-			this.PRIVATE_lazyEngine.get()?.getParams() ??
+	get params(): T["params"] {
+		return (this.PRIVATE_lazyEngine.get()?.getParams() ??
 			this.PRIVATE_options.params ?? {
 				tagQuery: [],
-			}
-		);
+			}) as any;
 	}
 
 	/**
@@ -564,7 +586,7 @@ export class FindkitUI {
 	on<EventName extends keyof FindkitUIEvents>(
 		eventName: EventName,
 		handler: (
-			event: FindkitUIEvents[EventName] & { source: FindkitUI },
+			event: FindkitUIEvents[EventName] & { source: FindkitUI<T> },
 		) => void,
 	) {
 		return this.PRIVATE_events.on(eventName, handler);
@@ -578,7 +600,7 @@ export class FindkitUI {
 	once<EventName extends keyof FindkitUIEvents>(
 		eventName: EventName,
 		handler: (
-			event: FindkitUIEvents[EventName] & { source: FindkitUI },
+			event: FindkitUIEvents[EventName] & { source: FindkitUI<T> },
 		) => void,
 	) {
 		return this.PRIVATE_events.once(eventName, handler);
