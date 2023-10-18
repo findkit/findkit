@@ -100,6 +100,61 @@ t("generic params is constrained in FindkitUI", () => {
 	});
 });
 
+t("groups have params object by default", () => {
+	const ui = new FindkitUI({ publicToken: "" });
+	ui.updateGroups((...groups) => {
+		for (const group of groups) {
+			group.params.lang = "en";
+		}
+	});
+
+	ui.groups[0].params.lang?.toLowerCase();
+});
+
+t("can add generic groups to FindkitUI", () => {
+	const ui = new FindkitUI<{
+		groups: [
+			{
+				params: {
+					filter: {
+						price: { $eq: number };
+					};
+				};
+			},
+			{
+				params: {
+					filter: {
+						price: { $eq: string };
+					};
+				};
+			},
+		];
+	}>({
+		publicToken: "",
+
+		params: {
+			filter: {
+				price: { $eq: 2 },
+			},
+		},
+	});
+
+	ui.updateGroups((group1, group2) => {
+		group1.params.filter.price.$eq = 1;
+		group2.params.filter.price.$eq = "";
+
+		// @ts-expect-error
+		group1.params.filter.price.$eq = "";
+		// @ts-expect-error
+		group2.params.filter.price.$eq = 1;
+	});
+
+	// @ts-expect-error
+	ui.updateGroups((group1, group2, extra) => {});
+
+	ui.updateGroups((group1) => {});
+});
+
 t("custom router data", () => {
 	const ui = new FindkitUI({ publicToken: "" });
 

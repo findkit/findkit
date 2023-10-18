@@ -350,6 +350,7 @@ export interface FindkitUIEvents {
  */
 export function lazyValue<T>() {
 	let value: T | undefined;
+
 	const valueEmitter = new Emitter<{ value: { value: T } }, {}>("lazyValue");
 
 	const valueAccessor = (giveValue: (value: T) => void | undefined) => {

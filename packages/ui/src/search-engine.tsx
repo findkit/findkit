@@ -134,7 +134,22 @@ export interface SearchParams {
  *
  * @public
  */
-export interface GroupDefinition {
+export interface GroupDefinition<
+	SearchParamsT extends SearchParams = SearchParams,
+> {
+	id?: string;
+	title?: string;
+	previewSize?: number;
+	relevancyBoost?: number;
+	params?: SearchParamsT;
+}
+
+/**
+ * Group type for the search engine
+ *
+ * @public
+ */
+export interface GroupDefinitionWithDefaults {
 	id: string;
 	title: string;
 	previewSize?: number;
@@ -170,12 +185,12 @@ export interface State {
 	/**
 	 * Search groups used on the last completed search
 	 */
-	usedGroupDefinitions: GroupDefinition[];
+	usedGroupDefinitions: GroupDefinitionWithDefaults[];
 
 	/**
 	 * Search to be used on the next search
 	 */
-	nextGroupDefinitions: GroupDefinition[];
+	nextGroupDefinitions: GroupDefinitionWithDefaults[];
 
 	/**
 	 * URLbar query string aka window.location.search
@@ -277,12 +292,9 @@ function assertInputEvent(e: {
 /**
  * @public
  */
-export type UpdateGroupsArgument =
-	| GroupDefinition[]
-	| GroupDefinition
-	| ((
-			...groups: GroupDefinition[]
-	  ) => GroupDefinition[] | GroupDefinition | undefined | void);
+export type UpdateGroupsArgument<T extends GroupDefinition[]> =
+	| T
+	| ((...groups: T) => T | undefined | void);
 
 /**
  * @public
@@ -1004,24 +1016,28 @@ export class SearchEngine {
 			this.updateGroups({
 				...SINGLE_GROUP_NAME,
 				params,
-			});
+			} as any);
 		}
 	};
 
 	private PRIVATE_dirtyGroups = false;
 
-	updateGroups = (groupsOrFn: UpdateGroupsArgument) => {
-		let nextGroups: GroupDefinition[] = [];
+	updateGroups = <T extends GroupDefinition[]>(
+		groupsOrFn: UpdateGroupsArgument<T>,
+	) => {
+		let nextGroups: GroupDefinitionWithDefaults[] = [];
 
 		if (Array.isArray(groupsOrFn)) {
-			nextGroups = groupsOrFn;
+			nextGroups = ensureDefaults(clone(groupsOrFn));
 		} else if (typeof groupsOrFn === "function") {
 			const cloned = ensureDefaults(clone(this.state.nextGroupDefinitions));
-			const replace = groupsOrFn(...cloned);
+			const replace = groupsOrFn(...(cloned as any));
 			// The function can return a completely new set of groups which are
 			// used to replace the old ones
 			if (replace) {
-				nextGroups = Array.isArray(replace) ? replace : [replace];
+				nextGroups = ensureDefaults(
+					clone(Array.isArray(replace) ? replace : [replace]),
+				);
 			} else {
 				nextGroups = cloned;
 			}
@@ -1150,7 +1166,7 @@ export class SearchEngine {
 	}
 
 	private PRIVATE_getFindkitFetchOptions(options: {
-		groups: GroupDefinition[];
+		groups: GroupDefinitionWithDefaults[];
 		lang: string | undefined;
 		terms: string;
 		reset: boolean | undefined;
@@ -1463,7 +1479,7 @@ export class SearchEngine {
 
 	PRIVATE_getSelectedGroup(
 		source: "next" | "used",
-	): GroupDefinition | undefined {
+	): GroupDefinitionWithDefaults | undefined {
 		const groups =
 			source === "next"
 				? this.state.nextGroupDefinitions
@@ -1713,8 +1729,12 @@ function deepEqual(x: any, y: any) {
  *
  * Uses mutatation!
  */
-function ensureDefaults(groups: GroupDefinition[]) {
-	for (const group of groups) {
+function ensureDefaults(
+	groups: GroupDefinition[],
+): GroupDefinitionWithDefaults[] {
+	for (const [i, group] of Object.entries(groups)) {
+		group.id = group.id || "group-" + (Number(i) + 1);
+
 		const params = group.params ?? (group.params = {});
 
 		for (const key of ["sort", "filter", "tagBoost"] as const) {
@@ -1728,5 +1748,5 @@ function ensureDefaults(groups: GroupDefinition[]) {
 		}
 	}
 
-	return groups;
+	return groups as any;
 }
