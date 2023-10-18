@@ -797,3 +797,29 @@ test("updated params are synchronously available when loaded", async ({
 
 	expect(params).toEqual({ tagBoost: { ding: 1 } });
 });
+
+test("all group params are optional", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	const ids = await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			minTerms: 0,
+			groups: [{}, {}],
+		});
+		ui.open();
+
+		await ui.preload();
+
+		return ui.groups.map((g) => g.id);
+	});
+
+	expect(ids).toEqual(["group-1", "group-2"]);
+
+	const groups = page.locator(".findkit--group");
+	await expect(groups).toHaveCount(2);
+
+	const hits = page.locator(".findkit--hit");
+	// 5 is the default preview size per group
+	await expect(hits).toHaveCount(10);
+});
