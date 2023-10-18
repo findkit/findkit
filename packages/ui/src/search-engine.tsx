@@ -434,7 +434,7 @@ export interface SearchEngineOptions {
 	instanceId?: string;
 	publicToken: string;
 	searchEndpoint?: string;
-	throttleTime?: number;
+	fetchThrottle?: number;
 	lockScroll?: boolean;
 	header?: boolean;
 	fetchCount?: number;
@@ -519,7 +519,7 @@ export class SearchEngine {
 	readonly state: State;
 	readonly publicToken: string;
 	private PRIVATE_searchEndpoint: string | undefined;
-	private PRIVATE_throttleTime: number;
+	private PRIVATE_fetchThrottle: number;
 	private PRIVATE_fetchCount: number;
 	private PRIVATE_minTerms: number;
 	/**
@@ -633,7 +633,7 @@ export class SearchEngine {
 			searchEndpoint: this.PRIVATE_searchEndpoint,
 		}).fetch;
 
-		this.PRIVATE_throttleTime = options.throttleTime ?? 200;
+		this.PRIVATE_fetchThrottle = options.fetchThrottle ?? 200;
 		this.PRIVATE_fetchCount = options.fetchCount ?? 20;
 		this.PRIVATE_minTerms = options.minTerms ?? 2;
 	}
@@ -977,7 +977,7 @@ export class SearchEngine {
 
 		this.PRIVATE_termsThrottleTimer = setTimeout(() => {
 			this.setTerms(this.PRIVATE_throttlingTerms);
-		}, this.PRIVATE_throttleTime);
+		}, this.PRIVATE_fetchThrottle);
 	}
 
 	setTerms(terms: string) {
@@ -1056,7 +1056,7 @@ export class SearchEngine {
 				this.PRIVATE_dirtyGroups = false;
 				this.PRIVATE_handleGroupsChange();
 			}
-		}, this.PRIVATE_throttleTime);
+		}, this.PRIVATE_fetchThrottle);
 	};
 
 	private PRIVATE_handleGroupsChange = () => {
