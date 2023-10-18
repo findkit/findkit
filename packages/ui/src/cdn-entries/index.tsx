@@ -432,6 +432,7 @@ export interface FindkitUIOptions {
 	modal?: boolean;
 	groupOrder?: GroupOrder;
 	fontDivisor?: number;
+	fetchThrottle?: number;
 
 	/**
 	 * Set the UI language
