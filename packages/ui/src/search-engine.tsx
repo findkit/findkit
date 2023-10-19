@@ -57,6 +57,8 @@ export interface ResultsWithTotal {
 
 /**
  * @public
+ *
+ * New in v0.9.0
  */
 export interface Sort {
 	[field: string]: {
@@ -120,11 +122,15 @@ export interface SearchParams {
 
 	/**
 	 * Filter search results with complex operators
+	 *
+	 * New in v0.9.0
 	 */
 	filter?: Filter;
 
 	/**
 	 * Sort search results
+	 *
+	 * New in v0.9.0
 	 */
 	sort?: Sort | Sort[];
 }

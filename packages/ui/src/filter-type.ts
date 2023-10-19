@@ -1,5 +1,7 @@
 /**
  * @public
+ *
+ * New in v0.9.0
  **/
 export interface Filter {
 	[key: string]:
@@ -13,7 +15,10 @@ export interface Filter {
 }
 
 /**
+ *
  * Operator type for a filter. $eq, $gt, $gte, $lt, $lte, $all, $in, $ne etc..
+ *
+ * New in v0.9.0
  *
  * @public
  */
