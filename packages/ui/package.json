@@ -74,8 +74,8 @@
   "devDependencies": {
     "@findkit/eslint-config": "workspace:*",
     "@findkit/fetch": "workspace:*",
-    "@microsoft/api-documenter": "^7.19.7",
-    "@microsoft/api-extractor": "^7.29.5",
+    "@microsoft/api-documenter": "^7.23.9",
+    "@microsoft/api-extractor": "^7.38.0",
     "@parcel/watcher": "^2.0.5",
     "@playwright/test": "^1.39.0",
     "@size-limit/preset-small-lib": "^8.0.1",
