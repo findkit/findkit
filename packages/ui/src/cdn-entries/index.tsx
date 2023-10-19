@@ -9,6 +9,8 @@ import type {
 	FindkitURLSearchParams,
 	Status,
 	GroupOrder,
+	GroupDefinitionWithDefaults,
+	SearchParamsWithDefaults,
 } from "../search-engine";
 import type { RouterBackend } from "../router";
 import type {
@@ -43,6 +45,7 @@ import type {
 	LayoutSlotProps,
 } from "../slots";
 import type { PreactFunctions } from "./preact-subset";
+import type { Filter, Operator } from "../filter-type";
 
 /**
  * @deprecated legacy alias of SearchParams
@@ -84,6 +87,8 @@ export {
 	LanguageChangeEvent,
 	BindInputEvent,
 	UnbindInputEvent,
+	Filter,
+	Operator,
 };
 
 const doc = () => document;
@@ -230,7 +235,9 @@ export function select<InstanceFilter extends typeof Element>(
 
 const lazyImplementation: Partial<Implementation> = {};
 
-function createShellFunction<Key extends Methods<Implementation>>(name: Key) {
+function createShellFunction<Key extends Methods<Implementation>>(
+	name: Key,
+): Implementation[Key] {
 	return (...args: any[]): ReturnType<Implementation[Key]> => {
 		const fn = lazyImplementation[name] as any;
 		if (!fn) {
@@ -409,11 +416,11 @@ async function loadScriptFromGlobal<T>(
  *
  * @public
  */
-export interface FindkitUIOptions {
+export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	publicToken: string;
 	instanceId?: string;
-	groups?: GroupDefinition[];
-	params?: SearchParams;
+	groups?: T["groups"];
+	params?: T["params"];
 	shadowDom?: boolean;
 	minTerms?: number;
 	css?: string;
@@ -432,6 +439,7 @@ export interface FindkitUIOptions {
 	modal?: boolean;
 	groupOrder?: GroupOrder;
 	fontDivisor?: number;
+	fetchThrottle?: number;
 
 	/**
 	 * Set the UI language
@@ -475,15 +483,40 @@ type Methods<Klass> = {
 }[keyof Klass];
 
 /**
+ * Extract user defined groups or default to tuple of single group
+ */
+type GroupsOrDefault<T extends FindkitUIGenerics> =
+	undefined extends T["groups"]
+		? [GroupDefinitionWithDefaults]
+		: NonNullable<T["groups"]>;
+
+type SearchParamsOrDefault<T extends FindkitUIGenerics> =
+	undefined extends T["params"]
+		? SearchParamsWithDefaults
+		: NonNullable<T["params"]>;
+
+/**
+ * Generic type for defining custom ui.params  and ui.updateaParams() types
+ *
+ * TODO: Implmement groups too
+ *
+ * @public
+ */
+interface FindkitUIGenerics {
+	params?: SearchParams;
+	groups?: GroupDefinition[];
+}
+
+/**
  * The Lazy loading Findkit UI
  *
  * @public
  */
-export class FindkitUI {
+export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	private PRIVATE_loading = false;
 
-	private PRIVATE_options: FindkitUIOptions;
-	private PRIVATE_events: Emitter<FindkitUIEvents, FindkitUI>;
+	private PRIVATE_options: FindkitUIOptions<T>;
+	private PRIVATE_events: Emitter<FindkitUIEvents, FindkitUI<T>>;
 	private PRIVATE_resources = new Resources();
 	private PRIVATE_lazyEngine = lazyValue<SearchEngine>();
 
@@ -492,7 +525,7 @@ export class FindkitUI {
 	 */
 	container?: Element;
 
-	constructor(options: FindkitUIOptions) {
+	constructor(options: FindkitUIOptions<T>) {
 		this.PRIVATE_options = options;
 		this.PRIVATE_events = new Emitter(this);
 
@@ -529,28 +562,28 @@ export class FindkitUI {
 	/**
 	 * Update groups
 	 */
-	updateGroups = this.PRIVATE_proxy("updateGroups");
+	updateGroups: (arg: UpdateGroupsArgument<GroupsOrDefault<T>>) => void =
+		this.PRIVATE_proxy("updateGroups") as any;
 
-	get groups(): GroupDefinition[] {
-		return (
-			this.PRIVATE_lazyEngine.get()?.getGroupsSnapshot() ??
+	customRouterData = this.PRIVATE_proxy("customRouterData");
+
+	get groups(): GroupsOrDefault<T> {
+		return (this.PRIVATE_lazyEngine.get()?.getGroups() ??
 			this.PRIVATE_options.groups ??
-			[]
-		);
+			[]) as any;
 	}
 
 	/**
 	 * Update search params
 	 */
-	updateParams = this.PRIVATE_proxy("updateParams");
+	updateParams: (arg: UpdateParamsArgument<SearchParamsOrDefault<T>>) => void =
+		this.PRIVATE_proxy("updateParams");
 
-	get params(): SearchParams {
-		return (
-			this.PRIVATE_lazyEngine.get()?.getParamsSnapshot() ??
+	get params(): SearchParamsOrDefault<T> {
+		return (this.PRIVATE_lazyEngine.get()?.getParams() ??
 			this.PRIVATE_options.params ?? {
 				tagQuery: [],
-			}
-		);
+			}) as any;
 	}
 
 	/**
@@ -561,7 +594,7 @@ export class FindkitUI {
 	on<EventName extends keyof FindkitUIEvents>(
 		eventName: EventName,
 		handler: (
-			event: FindkitUIEvents[EventName] & { source: FindkitUI },
+			event: FindkitUIEvents[EventName] & { source: FindkitUI<T> },
 		) => void,
 	) {
 		return this.PRIVATE_events.on(eventName, handler);
@@ -575,7 +608,7 @@ export class FindkitUI {
 	once<EventName extends keyof FindkitUIEvents>(
 		eventName: EventName,
 		handler: (
-			event: FindkitUIEvents[EventName] & { source: FindkitUI },
+			event: FindkitUIEvents[EventName] & { source: FindkitUI<T> },
 		) => void,
 	) {
 		return this.PRIVATE_events.once(eventName, handler);
@@ -604,8 +637,11 @@ export class FindkitUI {
 	 * Create proxy method for SearchEngine which is called once the engine is
 	 * loaded
 	 */
-	private PRIVATE_proxy<Method extends Methods<SearchEngine>>(method: Method) {
-		return (...args: MethodParameters<typeof SearchEngine, Method>) => {
+	private PRIVATE_proxy<Method extends Methods<SearchEngine>>(
+		method: Method,
+	): InstanceType<typeof SearchEngine>[Method] {
+		// NOTE: Supports only void returning methods
+		return (...args: any[]): any => {
 			this.PRIVATE_lazyEngine((engine: any) => {
 				engine[method](...args);
 			});
@@ -632,7 +668,12 @@ export class FindkitUI {
 		return params.has(this.id + "_q");
 	}
 
-	preload = async () => this.PRIVATE_initEngine();
+	preload = async () => {
+		await this.PRIVATE_initEngine();
+		await new Promise((resolve) => {
+			this.PRIVATE_lazyEngine(resolve);
+		});
+	};
 
 	PRIVATE_getStyleSheets(): string[] {
 		const sheets = [];

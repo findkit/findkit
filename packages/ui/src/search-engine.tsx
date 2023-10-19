@@ -1,4 +1,4 @@
-import { devtools, subscribeKey } from "valtio/utils";
+import { devtools } from "valtio/utils";
 import {
 	assertNonNullable,
 	cleanUndefined,
@@ -13,7 +13,7 @@ import {
 	FindkitSearchParams,
 } from "@findkit/fetch";
 
-import { proxy, ref, snapshot } from "valtio";
+import { proxy, ref } from "valtio";
 import {
 	RouterBackend,
 	createQueryStringBackend,
@@ -23,6 +23,7 @@ import {
 import { Emitter, FindkitUIEvents, lazyValue } from "./emitter";
 import { TranslationStrings } from "./translations";
 import { listen, Resources } from "./resources";
+import { Filter } from "./filter-type";
 
 export const DEFAULT_HIGHLIGHT_LENGTH = 250;
 export const DEFAULT_PREVIEW_SIZE = 5;
@@ -52,6 +53,15 @@ export interface ResultsWithTotal {
 	hits: SearchResultHit[];
 	duration?: number;
 	total: number;
+}
+
+/**
+ * @public
+ */
+export interface Sort {
+	[field: string]: {
+		$order: "asc" | "desc";
+	};
 }
 
 /**
@@ -107,6 +117,22 @@ export interface SearchParams {
 	 * Return the hit content as well
 	 */
 	content?: boolean;
+
+	/**
+	 * Filter search results with complex operators
+	 */
+	filter?: Filter;
+
+	/**
+	 * Sort search results
+	 */
+	sort?: Sort | Sort[];
+}
+
+export interface SearchParamsWithDefaults extends SearchParams {
+	sort: Sort;
+	filter: Filter;
+	tagBoost: { [tag: string]: number };
 }
 
 /**
@@ -114,11 +140,24 @@ export interface SearchParams {
  *
  * @public
  */
-export interface GroupDefinition {
-	id: string;
-	title: string;
+export interface GroupDefinition<
+	SearchParamsT extends SearchParams = SearchParams,
+> {
+	id?: string;
+	title?: string;
 	previewSize?: number;
 	relevancyBoost?: number;
+	params?: SearchParamsT;
+}
+
+/**
+ * Group type for the search engine
+ *
+ * @public
+ */
+export interface GroupDefinitionWithDefaults extends GroupDefinition {
+	id: string;
+	title: string;
 	params: SearchParams;
 }
 
@@ -150,12 +189,12 @@ export interface State {
 	/**
 	 * Search groups used on the last completed search
 	 */
-	usedGroupDefinitions: GroupDefinition[];
+	usedGroupDefinitions: GroupDefinitionWithDefaults[];
 
 	/**
 	 * Search to be used on the next search
 	 */
-	nextGroupDefinitions: GroupDefinition[];
+	nextGroupDefinitions: GroupDefinitionWithDefaults[];
 
 	/**
 	 * URLbar query string aka window.location.search
@@ -257,19 +296,16 @@ function assertInputEvent(e: {
 /**
  * @public
  */
-export type UpdateGroupsArgument =
+export type UpdateGroupsArgument<T extends GroupDefinition[]> =
 	| GroupDefinition[]
-	| GroupDefinition
-	| ((
-			...groups: GroupDefinition[]
-	  ) => GroupDefinition[] | GroupDefinition | undefined | void);
+	| ((...groups: T) => T | undefined | void);
 
 /**
  * @public
  */
-export type UpdateParamsArgument =
+export type UpdateParamsArgument<T extends SearchParams> =
 	| SearchParams
-	| ((params: SearchParams) => SearchParams | undefined | void);
+	| ((params: T) => SearchParams | undefined | void);
 
 const instanceIds = new Set<string>();
 
@@ -292,13 +328,61 @@ const SINGLE_GROUP_NAME = Object.freeze({
 /**
  * @public
  */
+export interface CustomRouterData {
+	[key: string]: string;
+}
+
+/**
+ * @public
+ */
 export class FindkitURLSearchParams {
-	PRIVATE_params: URLSearchParams;
-	PRIVATE_instanceId: string;
+	private PRIVATE_params: URLSearchParams;
+	private PRIVATE_instanceId: string;
+	private PRIVATE_customDataPrefix: string;
 
 	constructor(instanceId: string, search: string) {
 		this.PRIVATE_instanceId = instanceId;
 		this.PRIVATE_params = new URLSearchParams(search);
+		this.PRIVATE_customDataPrefix = instanceId + ".c.";
+	}
+
+	setCustomData(data: CustomRouterData) {
+		return this.next((next) => {
+			for (const key of this.PRIVATE_params.keys()) {
+				if (key.startsWith(this.PRIVATE_customDataPrefix)) {
+					next.PRIVATE_params.delete(key);
+				}
+			}
+
+			for (const [key, value] of Object.entries(data)) {
+				next.PRIVATE_params.set(next.PRIVATE_customDataPrefix + key, value);
+			}
+		});
+	}
+
+	customDataEquals(other: FindkitURLSearchParams) {
+		return deepEqual(this.getCustomData(), other.getCustomData());
+	}
+
+	equals(other: FindkitURLSearchParams) {
+		return (
+			this.getTerms() === other.getTerms() &&
+			this.getGroupId() === other.getGroupId() &&
+			this.customDataEquals(other)
+		);
+	}
+
+	getCustomData() {
+		const customData: CustomRouterData = {};
+
+		for (const [key, value] of this.PRIVATE_params.entries()) {
+			if (key.startsWith(this.PRIVATE_customDataPrefix)) {
+				const cleaned = key.slice(this.PRIVATE_customDataPrefix.length);
+				customData[cleaned] = value;
+			}
+		}
+
+		return customData;
 	}
 
 	getGroupId() {
@@ -325,8 +409,14 @@ export class FindkitURLSearchParams {
 
 	clearAll() {
 		return this.next((next) => {
-			next.PRIVATE_params.delete(next.PRIVATE_instanceId + "_id");
-			next.PRIVATE_params.delete(next.PRIVATE_instanceId + "_q");
+			for (const key of this.PRIVATE_params.keys()) {
+				if (
+					key.startsWith(this.PRIVATE_customDataPrefix) ||
+					key.startsWith(this.PRIVATE_instanceId + "_")
+				) {
+					next.PRIVATE_params.delete(key);
+				}
+			}
 		});
 	}
 
@@ -346,10 +436,8 @@ export class FindkitURLSearchParams {
 		return this.PRIVATE_params.has(this.PRIVATE_instanceId + "_q");
 	}
 
-	getTerms() {
-		return (
-			this.PRIVATE_params.get(this.PRIVATE_instanceId + "_q") || ""
-		).trim();
+	getTerms(): string | undefined {
+		return this.PRIVATE_params.get(this.PRIVATE_instanceId + "_q")?.trim();
 	}
 
 	toString() {
@@ -368,7 +456,7 @@ export interface SearchEngineOptions {
 	instanceId?: string;
 	publicToken: string;
 	searchEndpoint?: string;
-	throttleTime?: number;
+	fetchThrottle?: number;
 	lockScroll?: boolean;
 	header?: boolean;
 	fetchCount?: number;
@@ -453,7 +541,7 @@ export class SearchEngine {
 	readonly state: State;
 	readonly publicToken: string;
 	private PRIVATE_searchEndpoint: string | undefined;
-	private PRIVATE_throttleTime: number;
+	private PRIVATE_fetchThrottle: number;
 	private PRIVATE_fetchCount: number;
 	private PRIVATE_minTerms: number;
 	/**
@@ -461,7 +549,8 @@ export class SearchEngine {
 	 * terms
 	 */
 	private PRIVATE_throttlingTerms = "";
-	private PRIVATE_throttleTimerID?: ReturnType<typeof setTimeout>;
+	private PRIVATE_termsThrottleTimer?: ReturnType<typeof setTimeout>;
+	private PRIVATE_groupsThrottleTimer?: ReturnType<typeof setTimeout>;
 
 	private PRIVATE_resources = new Resources();
 	private PRIVATE_container: Element | ShadowRoot;
@@ -553,8 +642,8 @@ export class SearchEngine {
 
 			// Ensure groups are unique so mutating one does not mutate the
 			// other
-			usedGroupDefinitions: clone(groups),
-			nextGroupDefinitions: clone(groups),
+			usedGroupDefinitions: ref(ensureDefaults(clone(groups))),
+			nextGroupDefinitions: ref(ensureDefaults(clone(groups))),
 		});
 		devtools(this.state);
 
@@ -566,7 +655,7 @@ export class SearchEngine {
 			searchEndpoint: this.PRIVATE_searchEndpoint,
 		}).fetch;
 
-		this.PRIVATE_throttleTime = options.throttleTime ?? 200;
+		this.PRIVATE_fetchThrottle = options.fetchThrottle ?? 200;
 		this.PRIVATE_fetchCount = options.fetchCount ?? 20;
 		this.PRIVATE_minTerms = options.minTerms ?? 2;
 	}
@@ -591,20 +680,13 @@ export class SearchEngine {
 		this.state.currentGroupId = initialSearchParams.getGroupId();
 
 		this.events.emit("lang", { lang: this.state.ui.lang });
-
-		this.PRIVATE_resources.create(() =>
-			subscribeKey(
-				this.state,
-				"nextGroupDefinitions",
-				this.PRIVATE_handleGroupsChange,
-			),
-		);
+		this.PRIVATE_emitCustomRouterData();
 
 		if (this.PRIVATE_monitorDocumentLangActive !== false) {
 			this.PRIVATE_monitorDocumentElementLang();
 		}
 
-		this.PRIVATE_syncInputs(initialSearchParams.getTerms());
+		this.PRIVATE_syncInputs(initialSearchParams.getTerms() ?? "");
 
 		this.PRIVATE_resources.create(() =>
 			this.router.listen(this.PRIVATE_handleAddressChange),
@@ -623,6 +705,15 @@ export class SearchEngine {
 		return this.PRIVATE_container instanceof ShadowRoot
 			? this.PRIVATE_container
 			: document;
+	}
+
+	getParams(): SearchParams {
+		const group = this.state.nextGroupDefinitions[0];
+		return group?.params ?? {};
+	}
+
+	getGroups(): GroupDefinition[] {
+		return this.state.nextGroupDefinitions;
 	}
 
 	/**
@@ -769,7 +860,7 @@ export class SearchEngine {
 	/**
 	 * Access the current params in the url bar
 	 */
-	get findkitParams() {
+	private PRIVATE_getfindkitParams() {
 		return new FindkitURLSearchParams(this.instanceId, this.state.searchParams);
 	}
 
@@ -789,19 +880,29 @@ export class SearchEngine {
 	}
 
 	private PRIVATE_handleAddressChange = () => {
-		const currentTerms = this.findkitParams.getTerms();
+		if (this.PRIVATE_ignoreNextAddressbarUpdate) {
+			this.PRIVATE_ignoreNextAddressbarUpdate = false;
+			return;
+		}
+
+		const currentTerms = this.PRIVATE_getfindkitParams().getTerms() ?? "";
 		this.state.searchParams = this.router.getSearchParamsString();
-		const nextParams = this.findkitParams;
-		if (!this.findkitParams.isActive()) {
+
+		const nextParams = this.PRIVATE_getfindkitParams();
+		if (!nextParams.isActive()) {
 			this.PRIVATE_statusTransition("closed");
 			this.PRIVATE_throttlingTerms = "";
 			this.state.currentGroupId = undefined;
 			return;
 		}
 
+		if (this.PRIVATE_started.get()) {
+			this.PRIVATE_emitCustomRouterData();
+		}
+
 		this.PRIVATE_statusTransition("waiting");
 
-		const terms = nextParams.getTerms();
+		const terms = nextParams.getTerms() ?? "";
 		const reset = terms !== currentTerms;
 
 		this.state.currentGroupId = nextParams.getGroupId();
@@ -809,18 +910,72 @@ export class SearchEngine {
 		void this.PRIVATE_fetch({ terms, reset });
 	};
 
-	private PRIVATE_clearTimeout = () => {
-		if (this.PRIVATE_throttleTimerID) {
-			clearTimeout(this.PRIVATE_throttleTimerID);
-			this.PRIVATE_throttleTimerID = undefined;
-		}
+	private PRIVATE_clearThrottle = () => {
+		clearTimeout(this.PRIVATE_termsThrottleTimer);
+		clearTimeout(this.PRIVATE_groupsThrottleTimer);
+		this.PRIVATE_termsThrottleTimer = undefined;
+		this.PRIVATE_groupsThrottleTimer = undefined;
 	};
+
+	private PRIVATE_customRouterDataHooks: {
+		init: CustomRouterData;
+		load: (data: CustomRouterData) => void;
+		save: () => CustomRouterData;
+	}[] = [];
+
+	customRouterData = <T extends CustomRouterData>(options: {
+		init: T;
+		load: (data: T) => void;
+		save: () => T;
+	}) => {
+		this.PRIVATE_customRouterDataHooks.push(options as any);
+	};
+
+	private PRIVATE_previousCustomRouterData?: FindkitURLSearchParams;
+
+	private PRIVATE_emitCustomRouterData() {
+		if (
+			this.PRIVATE_previousCustomRouterData?.customDataEquals(
+				this.PRIVATE_getfindkitParams(),
+			)
+		) {
+			return;
+		}
+
+		this.PRIVATE_previousCustomRouterData = this.PRIVATE_getfindkitParams();
+		const customRouterData =
+			this.PRIVATE_previousCustomRouterData.getCustomData();
+
+		for (const hook of this.PRIVATE_customRouterDataHooks) {
+			hook.load({
+				...hook.init,
+				...customRouterData,
+			});
+		}
+	}
+
+	private PRIVATE_ignoreNextAddressbarUpdate = false;
 
 	updateAddressBar = (
 		params: FindkitURLSearchParams,
-		options?: { push?: boolean },
+		options?: { push?: boolean; ignore?: boolean },
 	) => {
-		this.router.update(params.toString(), options);
+		const customRouterData: CustomRouterData =
+			this.PRIVATE_customRouterDataHooks.reduce((acc, { save }) => {
+				return Object.assign(acc, save());
+			}, {});
+
+		const next = params.setCustomData(customRouterData);
+
+		if (!next.equals(this.PRIVATE_getfindkitParams())) {
+			this.PRIVATE_previousCustomRouterData = next;
+			if (options?.ignore) {
+				this.PRIVATE_ignoreNextAddressbarUpdate = true;
+			}
+			this.router.update(next.toString(), {
+				push: options?.push,
+			});
+		}
 	};
 
 	private PRIVATE_handleInputChange(
@@ -838,88 +993,117 @@ export class SearchEngine {
 			return;
 		}
 
-		if (this.PRIVATE_throttleTimerID) {
+		if (this.PRIVATE_termsThrottleTimer) {
 			return;
 		}
 
-		this.PRIVATE_throttleTimerID = setTimeout(() => {
+		this.PRIVATE_termsThrottleTimer = setTimeout(() => {
 			this.setTerms(this.PRIVATE_throttlingTerms);
-		}, this.PRIVATE_throttleTime);
+		}, this.PRIVATE_fetchThrottle);
 	}
 
 	setTerms(terms: string) {
-		this.PRIVATE_clearTimeout();
-		this.updateAddressBar(this.findkitParams.setTerms(terms));
+		this.PRIVATE_clearThrottle();
+		this.updateAddressBar(this.PRIVATE_getfindkitParams().setTerms(terms));
 	}
-
-	updateGroups = (groupsOrFn: UpdateGroupsArgument) => {
-		let nextGroups: GroupDefinition[] = [];
-
-		if (Array.isArray(groupsOrFn)) {
-			nextGroups = groupsOrFn;
-		} else if (typeof groupsOrFn === "function") {
-			const replace = groupsOrFn(...this.state.nextGroupDefinitions);
-			// The function can return a completely new set of groups which are
-			// used to replace the old ones
-			if (replace) {
-				nextGroups = Array.isArray(replace) ? replace : [replace];
-			} else {
-				nextGroups = this.state.nextGroupDefinitions;
-			}
-		} else {
-			nextGroups = [groupsOrFn];
-		}
-
-		this.state.nextGroupDefinitions = nextGroups;
-	};
 
 	/**
 	 * Convenience method for updating on the first group in single group
 	 * scenarios
 	 */
-	updateParams = (params: UpdateParamsArgument) => {
+	updateParams = <T extends SearchParams>(params: UpdateParamsArgument<T>) => {
 		if (typeof params === "function") {
 			this.updateGroups((group) => {
-				params(group.params ?? {});
+				params((group.params ?? {}) as T);
 			});
 		} else {
-			this.updateGroups({
-				...SINGLE_GROUP_NAME,
-				params,
-			});
+			this.updateGroups([
+				{
+					...SINGLE_GROUP_NAME,
+					params,
+				},
+			]);
 		}
 	};
 
-	getParamsSnapshot(): SearchParams {
-		const group = this.state.nextGroupDefinitions[0];
-		// Avoid expensive deep readonly with the any
-		return snapshot(group?.params as any) ?? {};
-	}
+	private PRIVATE_dirtyGroups = false;
 
-	getGroupsSnapshot(): GroupDefinition[] {
-		const groups = this.state.nextGroupDefinitions;
-		// Avoid expensive deep readonly with the any
-		return snapshot(groups as any) ?? [];
-	}
+	updateGroups = <T extends GroupDefinition[]>(
+		groupsOrFn: UpdateGroupsArgument<T>,
+	) => {
+		let nextGroups: GroupDefinitionWithDefaults[] = [];
 
-	private PRIVATE_handleGroupsChange = () => {
-		const self = this;
+		if (Array.isArray(groupsOrFn)) {
+			nextGroups = ensureDefaults(clone(groupsOrFn));
+		} else if (typeof groupsOrFn === "function") {
+			const cloned = ensureDefaults(clone(this.state.nextGroupDefinitions));
+			const replace = groupsOrFn(...(cloned as any));
+			// The function can return a completely new set of groups which are
+			// used to replace the old ones
+			if (replace) {
+				nextGroups = ensureDefaults(
+					clone(Array.isArray(replace) ? replace : [replace]),
+				);
+			} else {
+				nextGroups = cloned;
+			}
+		} else {
+			nextGroups = [groupsOrFn];
+		}
+
+		if (deepEqual(nextGroups, this.state.usedGroupDefinitions)) {
+			this.PRIVATE_dirtyGroups = false;
+			return;
+		}
+
+		this.state.nextGroupDefinitions = ref(nextGroups);
+
 		this.events.emit("groups", {
-			get groups() {
-				return self.getGroupsSnapshot();
-			},
+			groups: this.getGroups(),
 		});
 
 		const group = this.state.nextGroupDefinitions[0];
 		assertNonNullable(group, "first group missing");
 
 		this.events.emit("params", {
-			get params() {
-				return self.getParamsSnapshot();
-			},
+			params: this.getParams(),
 		});
-		this.PRIVATE_clearTimeout();
-		const terms = this.findkitParams.getTerms();
+
+		// Use leading invoke throttle for groups update. Eg. the first update
+		// is immediate but the next ones are throttled.
+		if (this.PRIVATE_groupsThrottleTimer) {
+			this.PRIVATE_dirtyGroups = true;
+			return;
+		}
+
+		this.PRIVATE_handleGroupsChange();
+
+		this.PRIVATE_groupsThrottleTimer = setTimeout(() => {
+			this.PRIVATE_clearThrottle();
+			if (this.PRIVATE_dirtyGroups) {
+				this.PRIVATE_dirtyGroups = false;
+				this.PRIVATE_handleGroupsChange();
+			}
+		}, this.PRIVATE_fetchThrottle);
+	};
+
+	private PRIVATE_handleGroupsChange = () => {
+		this.PRIVATE_clearThrottle();
+
+		// Groups have no effect on the address bar but the custom router data
+		// might so we must update it here. We ignore the the update because it
+		// has no internal meaning, it is meaningful only for
+		// .customRouterData() users.
+		this.updateAddressBar(this.PRIVATE_getfindkitParams(), {
+			ignore: true,
+			push: false,
+		});
+
+		const terms =
+			(this.PRIVATE_throttlingTerms ||
+				this.PRIVATE_getfindkitParams().getTerms()) ??
+			"";
+
 		void this.PRIVATE_fetch({ reset: true, terms });
 	};
 
@@ -963,7 +1147,10 @@ export class SearchEngine {
 		this.state.error = undefined;
 		void this.PRIVATE_fetch({
 			reset: true,
-			terms: this.findkitParams.getTerms() || this.state.usedTerms || "",
+			terms:
+				this.PRIVATE_getfindkitParams().getTerms() ||
+				this.state.usedTerms ||
+				"",
 		});
 	}
 
@@ -985,7 +1172,7 @@ export class SearchEngine {
 	}
 
 	private PRIVATE_getFindkitFetchOptions(options: {
-		groups: GroupDefinition[];
+		groups: GroupDefinitionWithDefaults[];
 		lang: string | undefined;
 		terms: string;
 		reset: boolean | undefined;
@@ -1020,6 +1207,8 @@ export class SearchEngine {
 				}
 
 				return cleanUndefined({
+					filter: group.params.filter,
+					sort: group.params.sort,
 					tagQuery: group.params.tagQuery ?? [],
 					tagBoost: group.params.tagBoost,
 					content: group.params.content,
@@ -1296,7 +1485,7 @@ export class SearchEngine {
 
 	PRIVATE_getSelectedGroup(
 		source: "next" | "used",
-	): GroupDefinition | undefined {
+	): GroupDefinitionWithDefaults | undefined {
 		const groups =
 			source === "next"
 				? this.state.nextGroupDefinitions
@@ -1307,7 +1496,7 @@ export class SearchEngine {
 			return groups[0];
 		}
 
-		const id = this.findkitParams.getGroupId();
+		const id = this.PRIVATE_getfindkitParams().getGroupId();
 		return groups.find((group) => group.id === id);
 	}
 
@@ -1341,7 +1530,7 @@ export class SearchEngine {
 		}
 
 		this.PRIVATE_started(() => {
-			const currentTerms = this.findkitParams.getTerms();
+			const currentTerms = this.PRIVATE_getfindkitParams().getTerms();
 
 			if (currentTerms) {
 				// Enable search results linking by copying the terms to the input
@@ -1480,12 +1669,12 @@ export class SearchEngine {
 	}
 
 	open = (terms?: string) => {
-		const nextTerms =
-			terms === undefined ? this.findkitParams.getTerms() : terms;
+		const findkitParams = this.PRIVATE_getfindkitParams();
+		const nextTerms = terms === undefined ? findkitParams.getTerms() : terms;
 
 		this.PRIVATE_started(() => {
-			this.updateAddressBar(this.findkitParams.setTerms(nextTerms), {
-				push: !this.findkitParams.isActive(),
+			this.updateAddressBar(findkitParams.setTerms(nextTerms ?? ""), {
+				push: !findkitParams.isActive(),
 			});
 		});
 	};
@@ -1504,9 +1693,66 @@ export class SearchEngine {
 
 	close = () => {
 		if (this.state.status !== "closed") {
-			this.updateAddressBar(this.findkitParams.clearAll(), {
+			this.updateAddressBar(this.PRIVATE_getfindkitParams().clearAll(), {
 				push: true,
 			});
 		}
 	};
+}
+
+function deepEqual(x: any, y: any) {
+	if (Object.is(x, y)) {
+		return true;
+	} else if (
+		typeof x === "object" &&
+		x !== null &&
+		typeof y === "object" &&
+		y !== null
+	) {
+		const xKeys = Object.keys(x);
+		if (xKeys.length !== Object.keys(y).length) {
+			return false;
+		}
+
+		for (const prop of xKeys) {
+			if (y.hasOwnProperty(prop)) {
+				if (!deepEqual(x[prop], y[prop])) {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Ensure that groups have default objects/arrays so it will be easy to update
+ * them in updateGroups(fn) without having to check if they exist.
+ *
+ * Uses mutatation!
+ */
+function ensureDefaults(
+	groups: GroupDefinition[],
+): GroupDefinitionWithDefaults[] {
+	for (const [i, group] of Object.entries(groups)) {
+		group.id = group.id || "group-" + (Number(i) + 1);
+
+		const params = group.params ?? (group.params = {});
+
+		for (const key of ["sort", "filter", "tagBoost"] as const) {
+			if (!params[key]) {
+				params[key] = {};
+			}
+		}
+
+		if (!params.tagQuery) {
+			params.tagQuery = [];
+		}
+	}
+
+	return groups as any;
 }

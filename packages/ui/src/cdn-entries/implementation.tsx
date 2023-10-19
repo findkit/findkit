@@ -3,7 +3,11 @@ import { createElement, useMemo } from "react";
 import { useInput, useSearchEngine, useSearchEngineState } from "../core-hooks";
 
 import { init } from "../modal";
-import { SearchResultHit } from "../search-engine";
+import {
+	SearchParams,
+	SearchResultHit,
+	UpdateParamsArgument,
+} from "../search-engine";
 import { assertNonNullable } from "../utils";
 import { preactFunctions, PreactFunctions } from "./preact-subset";
 
@@ -11,13 +15,16 @@ import { preactFunctions, PreactFunctions } from "./preact-subset";
  * Read and update the search params
  *
  */
-function useParamsImplementation() {
+function useParamsImplementation<T extends SearchParams>(): [
+	T,
+	(arg: UpdateParamsArgument<T>) => void,
+] {
 	const state = useSearchEngineState();
 	const engine = useSearchEngine();
 	const group = state.nextGroupDefinitions[0];
 	assertNonNullable(group, "useParams(): No group defined");
 
-	return [group.params, engine.updateParams] as const;
+	return [group.params, engine.updateParams] as any;
 }
 
 /**
