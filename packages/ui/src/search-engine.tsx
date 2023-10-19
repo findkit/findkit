@@ -1426,7 +1426,7 @@ export class SearchEngine {
 		// Combine responses with the search groups and re-assign the ids for them
 		const resWithIds: State["resultGroups"] = {};
 
-		fullParams.groups?.forEach((group, index) => {
+		fullParams.groups?.forEach((_group, index) => {
 			const res = response.value.groups[index];
 			if (!res) {
 				return;
