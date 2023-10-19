@@ -480,8 +480,8 @@ export type MethodParameters<
  */
 type Methods<Klass> = {
 	[Method in keyof Klass]: Klass[Method] extends (...args: any) => any
-	? Method
-	: never;
+		? Method
+		: never;
 }[keyof Klass];
 
 /**
@@ -489,13 +489,13 @@ type Methods<Klass> = {
  */
 type GroupsOrDefault<T extends FindkitUIGenerics> =
 	undefined extends T["groups"]
-	? [GroupDefinitionWithDefaults]
-	: NonNullable<T["groups"]>;
+		? [GroupDefinitionWithDefaults]
+		: NonNullable<T["groups"]>;
 
 type SearchParamsOrDefault<T extends FindkitUIGenerics> =
 	undefined extends T["params"]
-	? SearchParamsWithDefaults
-	: NonNullable<T["params"]>;
+		? SearchParamsWithDefaults
+		: NonNullable<T["params"]>;
 
 /**
  * Generic type for defining custom ui.params  and ui.updateParams() types
@@ -582,8 +582,8 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	get params(): SearchParamsOrDefault<T> {
 		return (this.PRIVATE_lazyEngine.get()?.getParams() ??
 			this.PRIVATE_options.params ?? {
-			tagQuery: [],
-		}) as any;
+				tagQuery: [],
+			}) as any;
 	}
 
 	/**
