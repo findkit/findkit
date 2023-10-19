@@ -496,9 +496,7 @@ type SearchParamsOrDefault<T extends FindkitUIGenerics> =
 		: NonNullable<T["params"]>;
 
 /**
- * Generic type for defining custom ui.params  and ui.updateaParams() types
- *
- * TODO: Implmement groups too
+ * Generic type for defining custom ui.params  and ui.updateParams() types
  *
  * @public
  */
