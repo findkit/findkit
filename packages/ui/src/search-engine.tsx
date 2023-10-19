@@ -129,6 +129,12 @@ export interface SearchParams {
 	sort?: Sort | Sort[];
 }
 
+export interface SearchParamsWithDefaults extends SearchParams {
+	sort: Sort;
+	filter: Filter;
+	tagBoost: { [tag: string]: number };
+}
+
 /**
  * Group type for the search engine
  *
@@ -149,11 +155,9 @@ export interface GroupDefinition<
  *
  * @public
  */
-export interface GroupDefinitionWithDefaults {
+export interface GroupDefinitionWithDefaults extends GroupDefinition {
 	id: string;
 	title: string;
-	previewSize?: number;
-	relevancyBoost?: number;
 	params: SearchParams;
 }
 
@@ -293,15 +297,15 @@ function assertInputEvent(e: {
  * @public
  */
 export type UpdateGroupsArgument<T extends GroupDefinition[]> =
-	| T
+	| GroupDefinition[]
 	| ((...groups: T) => T | undefined | void);
 
 /**
  * @public
  */
 export type UpdateParamsArgument<T extends SearchParams> =
-	| T
-	| ((params: T) => T | undefined | void);
+	| SearchParams
+	| ((params: T) => SearchParams | undefined | void);
 
 const instanceIds = new Set<string>();
 
@@ -1013,10 +1017,12 @@ export class SearchEngine {
 				params((group.params ?? {}) as T);
 			});
 		} else {
-			this.updateGroups({
-				...SINGLE_GROUP_NAME,
-				params,
-			} as any);
+			this.updateGroups([
+				{
+					...SINGLE_GROUP_NAME,
+					params,
+				},
+			]);
 		}
 	};
 
