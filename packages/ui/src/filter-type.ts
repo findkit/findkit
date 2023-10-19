@@ -3,7 +3,7 @@
  *
  * New in v0.9.0
  **/
-export interface Filter {
+export type Filter = {
 	[key: string]:
 		| Operator
 		| string // implicit $eq
@@ -12,7 +12,7 @@ export interface Filter {
 		| undefined;
 	$or?: Filter[];
 	$and?: Filter[];
-}
+};
 
 /**
  *

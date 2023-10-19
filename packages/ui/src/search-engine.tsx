@@ -59,12 +59,13 @@ export interface ResultsWithTotal {
  * @public
  *
  * New in v0.9.0
+ *
  */
-export interface Sort {
+export type Sort = {
 	[field: string]: {
 		$order: "asc" | "desc";
 	};
-}
+};
 
 /**
  * @public
@@ -121,16 +122,26 @@ export interface SearchParams {
 	content?: boolean;
 
 	/**
+	 * New in v0.9.0
+	 *
 	 * Filter search results with complex operators
 	 *
-	 * New in v0.9.0
+	 * See {@link Filter}
+	 *
+	 * See https://docs.findkit.com/ui-api/ui.filter/
+	 *
 	 */
 	filter?: Filter;
 
 	/**
+	 * New in v0.9.0
+	 *
 	 * Sort search results
 	 *
-	 * New in v0.9.0
+	 * See {@link Sort}
+	 *
+	 * See https://docs.findkit.com/ui-api/ui.sort/
+	 *
 	 */
 	sort?: Sort | Sort[];
 }

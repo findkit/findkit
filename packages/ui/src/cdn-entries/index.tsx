@@ -421,7 +421,14 @@ async function loadScriptFromGlobal<T>(
 export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	publicToken: string;
 	instanceId?: string;
+	/**
+	 * See {@link GroupDefinition}
+	 */
 	groups?: T["groups"];
+
+	/**
+	 * See {@link SearchParams}
+	 */
 	params?: T["params"];
 	shadowDom?: boolean;
 	minTerms?: number;
@@ -431,6 +438,10 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	header?: boolean;
 	pageScroll?: boolean;
 	styleSheet?: string;
+
+	/**
+	 * See {@link Slots}
+	 */
 	slots?: Partial<Slots>;
 	load?: () => Promise<{ js: Implementation; css?: string }>;
 	searchEndpoint?: string;
@@ -439,6 +450,10 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	router?: "memory" | "querystring" | "hash" | RouterBackend;
 	lockScroll?: boolean;
 	modal?: boolean;
+
+	/**
+	 * See {@link GroupOrder}
+	 */
 	groupOrder?: GroupOrder;
 	fontDivisor?: number;
 	fetchThrottle?: number;
@@ -447,6 +462,10 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	 * Set the UI language
 	 */
 	lang?: string;
+
+	/**
+	 * See {@link TranslationStrings}
+	 */
 	translations?: { [lang: string]: Partial<TranslationStrings> };
 
 	/**
@@ -502,7 +521,7 @@ type SearchParamsOrDefault<T extends FindkitUIGenerics> =
  *
  * @public
  */
-interface FindkitUIGenerics {
+export interface FindkitUIGenerics {
 	params?: SearchParams;
 	groups?: GroupDefinition[];
 }
