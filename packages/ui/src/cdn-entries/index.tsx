@@ -11,6 +11,7 @@ import type {
 	GroupOrder,
 	GroupDefinitionWithDefaults,
 	SearchParamsWithDefaults,
+	Sort,
 } from "../search-engine";
 import type { RouterBackend } from "../router";
 import type {
@@ -89,6 +90,7 @@ export {
 	UnbindInputEvent,
 	Filter,
 	Operator,
+	Sort,
 };
 
 const doc = () => document;
