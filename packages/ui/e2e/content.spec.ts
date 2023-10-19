@@ -4,8 +4,7 @@ import { staticEntry } from "./helpers";
 declare const MOD: typeof import("../src/cdn-entries/index");
 
 test("can use content field", async ({ page }) => {
-	// TODO remove __findkit_version=n
-	await page.goto(staticEntry("/dummy") + "#__findkit_version=n");
+	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
 		const html = MOD.html;

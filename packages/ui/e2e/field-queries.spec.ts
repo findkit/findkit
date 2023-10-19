@@ -11,8 +11,6 @@ test("can filter and sort (1)", async ({ page }) => {
 		const { FindkitUI, html } = MOD;
 		const ui = new FindkitUI({
 			publicToken: "pW1D0p0Dg",
-			searchEndpoint:
-				"https://search.findkit.com/n/pW1D0p0Dg/search?p=pW1D0p0Dg",
 			params: {
 				filter: {
 					price: {
@@ -49,8 +47,6 @@ test("can filter and sort (2)", async ({ page }) => {
 		const { FindkitUI, html } = MOD;
 		const ui = new FindkitUI({
 			publicToken: "pW1D0p0Dg",
-			searchEndpoint:
-				"https://search.findkit.com/n/pW1D0p0Dg/search?p=pW1D0p0Dg",
 			params: {
 				filter: {
 					price: {
@@ -87,8 +83,6 @@ test("can dynamically update filter", async ({ page }) => {
 		const { FindkitUI, html } = MOD;
 		const ui = new FindkitUI({
 			publicToken: "pW1D0p0Dg",
-			searchEndpoint:
-				"https://search.findkit.com/n/pW1D0p0Dg/search?p=pW1D0p0Dg",
 			params: {
 				sort: {
 					price: {
@@ -131,8 +125,6 @@ test("can dynamically update filter using useParams hook", async ({ page }) => {
 		const { FindkitUI, html, useParams } = MOD;
 		const ui = new FindkitUI({
 			publicToken: "pW1D0p0Dg",
-			searchEndpoint:
-				"https://search.findkit.com/n/pW1D0p0Dg/search?p=pW1D0p0Dg",
 			params: {
 				sort: {
 					price: {
@@ -235,8 +227,6 @@ test("customRouterData events (1)", async ({ page }) => {
 		const { FindkitUI } = MOD;
 		const ui = new FindkitUI({
 			publicToken: "pW1D0p0Dg",
-			searchEndpoint:
-				"https://search.findkit.com/n/pW1D0p0Dg/search?p=pW1D0p0Dg",
 		});
 		const uiEvents: any[] = [];
 		Object.assign(window, { ui, uiEvents });
@@ -291,8 +281,6 @@ test("customRouterData events (2)", async ({ page }) => {
 		const { FindkitUI } = MOD;
 		const ui = new FindkitUI({
 			publicToken: "pW1D0p0Dg",
-			searchEndpoint:
-				"https://search.findkit.com/n/pW1D0p0Dg/search?p=pW1D0p0Dg",
 			slots: {
 				Hit(props) {
 					return props.hit.customFields.price?.value;
