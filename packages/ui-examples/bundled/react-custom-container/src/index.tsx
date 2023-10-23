@@ -3,12 +3,15 @@ import { createRoot } from "react-dom/client";
 import React, { useEffect, useRef, useState } from "react";
 import { FindkitUI, SearchParams } from "@findkit/ui";
 
+function getTag(params: SearchParams | undefined) {
+	return params?.tagQuery?.[0]?.[0] ?? "";
+}
+
 function App() {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const uiRef = useRef<FindkitUI>();
 	const [params, setParams] = useState<SearchParams>();
-	const currentTag = params?.tagQuery?.[0]?.[0];
 
 	const setTag = (tag: string | null) => {
 		uiRef.current?.updateParams((params) => {
@@ -36,6 +39,8 @@ function App() {
 			},
 		});
 
+		uiRef.current = ui;
+
 		setParams(ui.params);
 
 		ui.on("params", (e) => {
@@ -46,7 +51,17 @@ function App() {
 			ui.bindInput(inputRef.current);
 		}
 
-		uiRef.current = ui;
+		// Ensure the UI state is restored when user navigates back to the page
+		// https://docs.findkit.com/ui/api/custom-router-data
+		ui.customRouterData({
+			init: { tag: "" },
+			load(data) {
+				setTag(data.tag);
+			},
+			save() {
+				return { tag: getTag(ui.params) };
+			},
+		});
 
 		return () => {
 			// Ensure that all event listeners are removed when the component is
@@ -60,10 +75,10 @@ function App() {
 			<h1>Inside React Component</h1>
 
 			<div className="controls">
-				<h2>Filter by tags</h2>
+				<h2>Filter by tag</h2>
 				<div className="buttons">
 					<button
-						disabled={currentTag === "crawler"}
+						disabled={getTag(params) === "crawler"}
 						onClick={() => {
 							setTag("crawler");
 						}}
@@ -72,7 +87,7 @@ function App() {
 					</button>
 
 					<button
-						disabled={currentTag === "ui"}
+						disabled={getTag(params) === "ui"}
 						onClick={() => {
 							setTag("ui");
 						}}
@@ -81,7 +96,7 @@ function App() {
 					</button>
 
 					<button
-						disabled={currentTag === null}
+						disabled={getTag(params) === ""}
 						onClick={() => {
 							setTag(null);
 						}}
