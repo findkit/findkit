@@ -275,12 +275,7 @@ export interface State {
 	 */
 	groupOrder: GroupOrder;
 
-	error:
-		| {
-				source: "fetch" | "other";
-				message: string;
-		  }
-		| undefined;
+	error: { source: "fetch" | "other"; message: string } | undefined;
 
 	resultGroups: {
 		[groupId: string]: ResultGroup;
@@ -898,13 +893,13 @@ export class SearchEngine {
 	}
 
 	private PRIVATE_handleAddressChange = () => {
+		const currentTerms = this.PRIVATE_getfindkitParams().getTerms() ?? "";
+		this.state.searchParams = this.router.getSearchParamsString();
+
 		if (this.PRIVATE_ignoreNextAddressbarUpdate) {
 			this.PRIVATE_ignoreNextAddressbarUpdate = false;
 			return;
 		}
-
-		const currentTerms = this.PRIVATE_getfindkitParams().getTerms() ?? "";
-		this.state.searchParams = this.router.getSearchParamsString();
 
 		const nextParams = this.PRIVATE_getfindkitParams();
 		if (!nextParams.isActive()) {
@@ -1071,11 +1066,6 @@ export class SearchEngine {
 			nextGroups = [groupsOrFn];
 		}
 
-		if (deepEqual(nextGroups, this.state.usedGroupDefinitions)) {
-			this.PRIVATE_dirtyGroups = false;
-			return;
-		}
-
 		this.PRIVATE_throttleId++;
 		this.state.nextGroupDefinitions = ref(nextGroups);
 
@@ -1089,6 +1079,20 @@ export class SearchEngine {
 		this.events.emit("params", {
 			params: this.getParams(),
 		});
+
+		// Groups have no effect on the address bar but the custom router data
+		// might so we must update it here. We ignore the the update because it
+		// has no internal meaning, it is meaningful only for
+		// .customRouterData() users.
+		this.updateAddressBar(this.PRIVATE_getfindkitParams(), {
+			ignore: true,
+			push: false,
+		});
+
+		if (deepEqual(nextGroups, this.state.usedGroupDefinitions)) {
+			this.PRIVATE_dirtyGroups = false;
+			return;
+		}
 
 		// Use leading invoke throttle for groups update. Eg. the first update
 		// is immediate but the next ones are throttled.
@@ -1110,15 +1114,6 @@ export class SearchEngine {
 
 	private PRIVATE_handleGroupsChange = () => {
 		this.PRIVATE_clearThrottle();
-
-		// Groups have no effect on the address bar but the custom router data
-		// might so we must update it here. We ignore the the update because it
-		// has no internal meaning, it is meaningful only for
-		// .customRouterData() users.
-		this.updateAddressBar(this.PRIVATE_getfindkitParams(), {
-			ignore: true,
-			push: false,
-		});
 
 		const terms =
 			(this.PRIVATE_throttlingTerms ||
