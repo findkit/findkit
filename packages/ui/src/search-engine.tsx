@@ -689,10 +689,15 @@ export class SearchEngine {
 	 * "language" event without extra search reqeusts.
 	 */
 	start() {
-		const initialSearchParams = new FindkitURLSearchParams(
+		let initialSearchParams = new FindkitURLSearchParams(
 			this.instanceId,
 			this.router.getSearchParamsString(),
 		);
+
+		initialSearchParams = initialSearchParams.setCustomData({
+			...this.PRIVATE_initialCustomRouteData,
+			...initialSearchParams.getCustomData(),
+		});
 
 		this.state.currentGroupId = initialSearchParams.getGroupId();
 
@@ -937,22 +942,18 @@ export class SearchEngine {
 	private PRIVATE_previousCustomRouterData?: FindkitURLSearchParams;
 
 	private PRIVATE_emitCustomRouterData() {
-		if (
-			this.PRIVATE_previousCustomRouterData?.customDataEquals(
-				this.PRIVATE_getfindkitParams(),
-			)
-		) {
+		const next = this.PRIVATE_getfindkitParams();
+
+		if (this.PRIVATE_previousCustomRouterData?.customDataEquals(next)) {
 			return;
 		}
 
-		this.PRIVATE_previousCustomRouterData = this.PRIVATE_getfindkitParams();
-		const customRouterData =
-			this.PRIVATE_previousCustomRouterData.getCustomData();
+		this.PRIVATE_previousCustomRouterData = next;
 
 		this.events.emit("custom-router-data", {
 			data: {
 				...this.PRIVATE_initialCustomRouteData,
-				...customRouterData,
+				...next.getCustomData(),
 			},
 		});
 	}
@@ -960,9 +961,12 @@ export class SearchEngine {
 	private PRIVATE_ignoreNextAddressbarUpdate = false;
 
 	setCustomRouterData(data: CustomRouterData) {
-		this.updateAddressBar(this.PRIVATE_getfindkitParams().setCustomData(data), {
-			push: false,
-			ignore: true,
+		this.PRIVATE_started(() => {
+			const next = this.PRIVATE_getfindkitParams().setCustomData(data);
+			this.updateAddressBar(next, {
+				push: false,
+				ignore: true,
+			});
 		});
 	}
 
@@ -973,8 +977,6 @@ export class SearchEngine {
 		if (next.equals(this.PRIVATE_getfindkitParams())) {
 			return;
 		}
-
-		this.PRIVATE_previousCustomRouterData = next;
 
 		if (options?.ignore) {
 			this.PRIVATE_ignoreNextAddressbarUpdate = true;
@@ -1672,18 +1674,12 @@ export class SearchEngine {
 	}
 
 	open = (terms?: string) => {
-		const findkitParams = this.PRIVATE_getfindkitParams();
-		const nextTerms = terms === undefined ? findkitParams.getTerms() : terms;
-
 		this.PRIVATE_started(() => {
-			this.updateAddressBar(
-				findkitParams
-					.setTerms(nextTerms ?? "")
-					.setCustomData(this.PRIVATE_initialCustomRouteData),
-				{
-					push: !findkitParams.isActive(),
-				},
-			);
+			const findkitParams = this.PRIVATE_getfindkitParams();
+			const nextTerms = terms === undefined ? findkitParams.getTerms() : terms;
+			this.updateAddressBar(findkitParams.setTerms(nextTerms ?? ""), {
+				push: !findkitParams.isActive(),
+			});
 		});
 	};
 
