@@ -184,4 +184,78 @@ test("defaultCustomRouterData can be overridden with custom-router-data on load"
 			ding: "b",
 		},
 	]);
+
+	await expect.poll(async () => page.url()).not.toContain("fdk.c.ding=a");
+});
+
+test("can remove query string with undefined", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+		const ui = new FindkitUI({ publicToken: "pW1D0p0Dg" });
+		ui.open();
+		Object.assign(window, { ui });
+	});
+
+	await page.evaluate(async () => {
+		ui.setCustomRouterData({ ding: "a" });
+	});
+
+	await expect.poll(async () => page.url()).toContain("fdk.c.ding=a");
+
+	await page.evaluate(async () => {
+		ui.setCustomRouterData({ ding: undefined });
+	});
+
+	// qs is removed
+	await expect.poll(async () => page.url()).not.toContain("fdk.c.ding=a");
+});
+
+test("defaultCustomRouterData is not set automatically to url", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy?fdk.c.ding=b"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			defaultCustomRouterData: {
+				ding: "a",
+			},
+		});
+		Object.assign(window, { ui });
+
+		ui.open("boots");
+	});
+
+	const hits = page.locator(".findkit--header");
+	await hits.first().waitFor({ state: "visible" });
+
+	expect(page.url()).not.toContain("fdk.c.ding=a");
+});
+
+test("can remove query string by removing the key", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+		const ui = new FindkitUI({ publicToken: "pW1D0p0Dg" });
+		ui.open();
+		Object.assign(window, { ui });
+	});
+
+	await page.evaluate(async () => {
+		ui.setCustomRouterData({ ding: "a" });
+	});
+
+	await expect.poll(async () => page.url()).toContain("fdk.c.ding=a");
+
+	await page.evaluate(async () => {
+		ui.setCustomRouterData({});
+	});
+
+	// qs is removed
+	await expect.poll(async () => page.url()).not.toContain("fdk.c.ding=a");
 });

@@ -341,7 +341,7 @@ const SINGLE_GROUP_NAME = Object.freeze({
  * @public
  */
 export interface CustomRouterData {
-	[key: string]: string;
+	[key: string]: string | undefined;
 }
 
 /**
@@ -367,7 +367,9 @@ export class FindkitURLSearchParams {
 			}
 
 			for (const [key, value] of Object.entries(data)) {
-				next.PRIVATE_params.set(next.PRIVATE_customDataPrefix + key, value);
+				if (value !== undefined) {
+					next.PRIVATE_params.set(next.PRIVATE_customDataPrefix + key, value);
+				}
 			}
 		});
 	}
