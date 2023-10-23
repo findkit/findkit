@@ -93,9 +93,7 @@
         import {FindkitUI, css, html} from "/build/esm/index.js";
 
         const ui = new FindkitUI({
-			publicToken: "pW1D0p0Dg",
-			searchEndpoint:
-				"https://search.findkit.com/n/pW1D0p0Dg/search?p=pW1D0p0Dg",
+            publicToken: "pW1D0p0Dg",
             container: document.querySelector(".findkit-container"),
             minTerms: 0,
             header: false,
@@ -144,38 +142,33 @@
         });
 
         const fetches = [];
-        Object.assign(window, {ui, fetches})
+        Object.assign(window, {ui, fetches});
         ui.on("fetch-done", (e) => {
             fetches.push(e);
         });
 
         const form = document.querySelector("form[role=search]");
 
-        function populateForm(form, data) {
-            for (const [key, values] of Object.entries(data)) {
-                const item = form.elements.namedItem(key);
-                for (const value of values.split(",")) {
-                    const list =
-                        item instanceof RadioNodeList ? Array.from(item) : [item];
-                    for (const el of list) {
-                        if (el instanceof HTMLSelectElement) {
-                            for (const option of el.options) {
-                                if (option.value === value) {
-                                    option.selected = true;
-                                    continue;
-                                }
-                            }
-                        } else if (el instanceof HTMLInputElement) {
-                            if (el.type === "checkbox" || el.type === "radio") {
-                                el.checked = el.value === value;
-                            } else {
-                                el.value = value;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        ui.bindInput("input[type=search]");
+
+        form.addEventListener("input", () => {
+            readParamsFromForm();
+        });
+
+        ui.customRouterData({
+            init: {min: "3", test: "ding", sort: "relevancy"},
+            load: (params) => {
+                params.category = params.category?.split(",");
+                updateForm(form, params);
+                readParamsFromForm();
+            },
+            save: () => {
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                data.category = formData.getAll("category").join(",");
+                return data;
+            },
+        });
 
         function readParamsFromForm() {
             const formData = new FormData(form);
@@ -217,25 +210,36 @@
             });
         }
 
-        ui.customRouterData({
-            init: {min: "3", test: "ding", sort: "relevancy"},
-            load: (params) => {
-                populateForm(form, params);
-                readParamsFromForm();
-            },
-            save: () => {
-                const formData = new FormData(form);
-                const data = Object.fromEntries(formData);
-                data.category = formData.getAll("category").join(",");
-                return data;
-            },
-        });
-
-        ui.bindInput("input[type=search]");
-
-        form.addEventListener("input", () => {
-            readParamsFromForm();
-        });
+        /**
+         * @param {HTMLFormElement} form
+         * @param {{ [key: string]: string | string[] }} data
+         */
+        function updateForm(form, data) {
+            for (const [key, values] of Object.entries(data)) {
+                const item = form.elements.namedItem(key);
+                const arrayValues = Array.isArray(values) ? values : [values];
+                for (const value of arrayValues) {
+                    const list =
+                        item instanceof RadioNodeList ? Array.from(item) : [item];
+                    for (const el of list) {
+                        if (el instanceof HTMLSelectElement) {
+                            for (const option of el.options) {
+                                if (option.value === value) {
+                                    option.selected = true;
+                                    continue;
+                                }
+                            }
+                        } else if (el instanceof HTMLInputElement) {
+                            if (el.type === "checkbox" || el.type === "radio") {
+                                el.checked = el.value === value;
+                            } else {
+                                el.value = value;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     </script>
 </body>
 
