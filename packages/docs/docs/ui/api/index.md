@@ -247,6 +247,16 @@ Defaults to `200`
 
 <Api page="ui.findkituioptions.monitorDocumentLang" />
 
+### `defaultCustomRouterData: object` {#defaultCustomRouterData}
+
+_New in v0.9.0_
+
+Default values to to emit from the
+[`custom-router-data`](/ui/api/events#custom-router-data) event when
+[`setCustomRouterData`](#setCustomRouterData) has not been called.
+
+<Api page="ui.findkituioptions.defaultCustomRouterData" />
+
 ## Methods {#methods}
 
 Following methods are available on the `FindkitUI` instance.
@@ -276,22 +286,18 @@ invoked.
 
 <Api page="ui.findkitui.trapFocus" />
 
-### `.customRouterData(options)` {#customRouterData}
+### `.setCustomRouterData(data)` {#setCustomRouterData}
 
-Inject custom data to the FindkitUI router.
+_New in v0.9.0_
 
-Options
+Set custom data to the Findkit Router. See the related
+[`custom-router-data`](/ui/api/events#custom-router-data) event. The object
+values can only be strings. In Typescript terms the type is `{[key: string]:
+string}`. See [`defaultCustomRouterData`](#defaultCustomRouterData).
 
-- `init: T`
-- `save(data: T)`
-- `load(): T`
+Read the [Custom Router Data](/ui/api/custom-router-data) page for more information.
 
-Return and unbinding function.
-
-Read more from [Custom Router
-Data](/ui/api/custom-router-data).
-
-<Api page="ui.findkitui.customRouterData" />
+<Api page="ui.findkitui.setCustomRouterData" />
 
 ### `.bindInput(selector)` {#bindInput}
 

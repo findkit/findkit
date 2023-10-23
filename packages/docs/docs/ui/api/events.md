@@ -86,6 +86,27 @@ Emitted when
 
 <Api page="ui.languagechangeevent">Event Object Interface</Api>
 
+### `custom-router-data`
+
+_New in v0.9.0_
+
+Emits data previously set using the
+[`setCustomRouterData`](/ui/api/#setCustomRouterData) method when the Findkit
+router reads the URL. If there is no custom data in the URL
+[`defaultCustomRouterData`](/ui/api/#defaultCustomRouterData) is emitted.
+
+Read the [Custom Router Data](/ui/api/custom-router-data) page for more
+information.
+
+```ts
+ui.on("custom-router-data", (e) => {
+	// Use e.data to fill form inputs, update React/Vue/Svelte state...
+	// Update search params using .updateParams()
+});
+```
+
+<Api page="ui.CustomRouterDataEvent">Event Object Interface</Api>
+
 ### `bind-input`
 
 _New in v0.8.0_

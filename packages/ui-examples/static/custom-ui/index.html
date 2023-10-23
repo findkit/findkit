@@ -9,7 +9,7 @@
 		import {
 			FindkitUI,
 			html,
-		} from "https://cdn.findkit.com/ui/v0.8.0-dev.e0c90f1eb9/esm/index.js";
+		} from "https://cdn.findkit.com/ui/v0.8.0-dev.bca2560caa/esm/index.js";
 
 		const ui = new FindkitUI({
 			publicToken: "pW1D0p0Dg",
@@ -26,30 +26,35 @@
 					`;
 				},
 			},
+
+			defaultCustomRouterData: {min: "0", max: "100"},
 		});
 
 		const form = document.querySelector("form");
 
-		// Make a search request on any form input change
+		// Update search params on form changes
 		form.addEventListener("input", () => {
-			makeSearch();
+			updateSearch();
 		});
 
-		ui.customRouterData({
-			init: {min: "90", max: "100"},
-			save() {
-				// Turn form into a plain js object
-				return Object.fromEntries(new FormData(form));
-			},
-			load(data) {
-				updateForm(data);
-				// Make search here too since programmatic form
-				// update does not trigger "input" events
-				makeSearch();
-			},
+		// Save form state to the URL when it was used to make a search
+		ui.on("fetch", () => {
+			ui.setCustomRouterData(Object.fromEntries(new FormData(form)));
 		});
 
-		function makeSearch() {
+		// Restore form state from the URL on page load and navigations
+		ui.on("custom-router-data", (e) => {
+			// Fill form inputs
+			for (const [name, value] of Object.entries(e.data)) {
+				form.elements.namedItem(name).value = value;
+			}
+
+			// Update search from here too since programmatic form update
+			// does not trigger the "input" events
+			updateSearch();
+		});
+
+		function updateSearch() {
 			ui.updateParams((params) => {
 				const data = Object.fromEntries(new FormData(form));
 
@@ -65,13 +70,6 @@
 
 				params.filter.$and = $and;
 			});
-		}
-
-		function updateForm(data) {
-			for (const [name, value] of Object.entries(data)) {
-				form.elements.namedItem(name).value = value;
-			}
-		}
 	</script>
 </head>
 
