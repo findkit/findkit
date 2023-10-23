@@ -466,7 +466,7 @@ export class FindkitURLSearchParams {
  */
 export interface SearchEngineOptions {
 	instanceId?: string;
-	initialCustomRouterData?: CustomRouterData;
+	defaultCustomRouterData?: CustomRouterData;
 	publicToken: string;
 	searchEndpoint?: string;
 	fetchThrottle?: number;
@@ -570,12 +570,12 @@ export class SearchEngine {
 	private PRIVATE_container: Element | ShadowRoot;
 	private PRIVATE_monitorDocumentLangActive: boolean | undefined;
 
-	private PRIVATE_initialCustomRouteData: CustomRouterData;
+	private PRIVATE_defaultCustomRouteData: CustomRouterData;
 
 	events: Emitter<FindkitUIEvents, unknown>;
 
 	constructor(options: SearchEngineOptions) {
-		this.PRIVATE_initialCustomRouteData = options.initialCustomRouterData ?? {};
+		this.PRIVATE_defaultCustomRouteData = options.defaultCustomRouterData ?? {};
 		if (typeof window === "undefined") {
 			this.router = {
 				listen: () => () => {},
@@ -689,15 +689,10 @@ export class SearchEngine {
 	 * "language" event without extra search reqeusts.
 	 */
 	start() {
-		let initialSearchParams = new FindkitURLSearchParams(
+		const initialSearchParams = new FindkitURLSearchParams(
 			this.instanceId,
 			this.router.getSearchParamsString(),
 		);
-
-		initialSearchParams = initialSearchParams.setCustomData({
-			...this.PRIVATE_initialCustomRouteData,
-			...initialSearchParams.getCustomData(),
-		});
 
 		this.state.currentGroupId = initialSearchParams.getGroupId();
 
@@ -952,7 +947,7 @@ export class SearchEngine {
 
 		this.events.emit("custom-router-data", {
 			data: {
-				...this.PRIVATE_initialCustomRouteData,
+				...this.PRIVATE_defaultCustomRouteData,
 				...next.getCustomData(),
 			},
 		});
