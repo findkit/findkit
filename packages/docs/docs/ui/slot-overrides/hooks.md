@@ -40,13 +40,12 @@ const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
 	slots: {
 		Header(props) {
-            const ref = useInput();
+			const ref = useInput();
 			return html`<input type="text" ref=${ref} />`;
 		},
 	},
 });
 ```
-
 
 <Api page="ui.useinput" />
 

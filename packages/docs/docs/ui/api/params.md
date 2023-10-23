@@ -110,8 +110,8 @@ const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
 	params: {
 		tagBoost: {
-            important: 2,
-        }
+			important: 2,
+		},
 	},
 });
 ```

@@ -28,7 +28,6 @@ Example
 findkit crawl start
 ```
 
-
 ## Partial Crawl {#partial}
 
 Partial crawl only checks for sitemaps and only crawls the pages where the last
@@ -51,11 +50,9 @@ Manual crawls can be started using CLI and REST API.
 
 Example
 
-
 ```
 findkit crawl start --manual "https://www.example.com/page"
 ```
-
 
 ## Scheduling {#scheduling}
 

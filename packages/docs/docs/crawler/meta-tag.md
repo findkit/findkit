@@ -54,7 +54,6 @@ Example
 
 will pick `Page Title` as the title.
 
-
 ### `contentSelector: string` {#contentSelector}
 
 Use custom CSS selector to select the content on this page. This will be

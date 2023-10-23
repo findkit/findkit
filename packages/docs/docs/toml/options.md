@@ -1,6 +1,5 @@
 # Options
 
-
 ## Top-Level Options
 
 ### `id: string` {#id}
@@ -45,7 +44,6 @@ Allowed values
 
 List "targets" aka domains to crawl content from. See [`[[targets]]`](#target-options)
 
-
 ## `[[targets]]` {#target-options}
 
 Options for `[[targets]]` sections.
@@ -55,7 +53,6 @@ This is an array of tables. See the TOML [docs on Arrays](https://toml.io/en/v1.
 ### `host: string` {#host}
 
 Target host to crawl. Just a plain domain name without the `https://` prefix.
-
 
 ### `use_sitemap: boolean` {#use_sitemap}
 
@@ -118,7 +115,7 @@ Supports string prefixes and regexes. See [Indexing Content](/crawler/indexing) 
 
 ### `max_pages: number` {#max_pages}
 
-Max pages to crawl. 
+Max pages to crawl.
 This is a safety limit to make sure the crawler stops in the case where
 the site generates pages and links inifinitely.
 
@@ -129,7 +126,6 @@ the target webserver as the caches will very likely be bypassed but it can be us
 ensure that the crawler always sees the latest version of the pages.
 
 Defaults to `false`.
-
 
 ### `crawl_pdfs: boolean` {#crawl_pdfs}
 
@@ -198,14 +194,12 @@ Example
 origin_domains = ["mysite.example"]
 ```
 
-
 ### `private: boolean` {#private}
 
 Make search endpoint private by requiring a JWT token. Must be combined with
 `public_key`.
 
 Defaults to `false`.
-
 
 ### `public_key: boolean` {#public_key}
 
@@ -215,4 +209,3 @@ JWT tokens in the search requests.
 See our [WordPress
 plugin](https://github.com/findkit/wp-findkit#jwt-authentication) for full
 integration.
-

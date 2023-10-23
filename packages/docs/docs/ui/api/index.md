@@ -187,20 +187,19 @@ How many results to fetch in a single request.
 
 ### `lang: string` {#lang}
 
-*New in v0.5.0*
+_New in v0.5.0_
 
 Set the UI language. If not defined the language is read from the `<html lang>`
 attribute. See [`setLang`](#setLang). Not to be confused with the
 [`lang`](/ui/api/params#lang) search param filter.
 
-
-*Replaces deprecated ui.lang in v0.5.0*
+_Replaces deprecated ui.lang in v0.5.0_
 
 <Api page="ui.findkituioptions.lang" />
 
 ### `translations: object` {#translations}
 
-*New in v0.5.0*
+_New in v0.5.0_
 
 Add the UI translations. See [`addTranslation`](#addTranslation).
 
@@ -212,24 +211,24 @@ Example
 ```ts
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
-    lang: "sv",
-    // Add translations
-    translations: {
-        sv: {
-            close: "Stänga"
-            // ... https://findk.it/strings
-        }
-    }
+	lang: "sv",
+	// Add translations
+	translations: {
+		sv: {
+			close: "Stänga",
+			// ... https://findk.it/strings
+		},
+	},
 });
 ```
 
-*Replaces deprecated ui.overrides in v0.5.0*
+_Replaces deprecated ui.overrides in v0.5.0_
 
 <Api page="ui.findkituioptions.translations" />
 
 ### `monitorDocumentLang: boolean` {#monitorDocumentLang}
 
-*New in v0.5.0*
+_New in v0.5.0_
 
 Update the UI language by monitoring `<html lang>` changes. Useful on
 Single-Page Apps where the language can change without a page load.
@@ -339,7 +338,7 @@ ui.updateGroups((pages, pdf) => {
 
 ### `.setLang(lang)` {#setLang}
 
-*New in v0.5.0*
+_New in v0.5.0_
 
 Set the current UI language. See [`lang`](#lang).
 
@@ -347,7 +346,7 @@ Set the current UI language. See [`lang`](#lang).
 
 ### `.addTranslation(lang, translation)` {#addTranslation}
 
-*New in v0.5.0*
+_New in v0.5.0_
 
 Add a new UI translation. Can be used to override existing translation strings
 as well. See <Api
@@ -355,7 +354,6 @@ page="ui.translationstrings">TranslationStrings</Api> for the
 available transtion strings.
 
 See [`translations`](#translations).
-
 
 <Api page="ui.findkitui.addtranslation" />
 
