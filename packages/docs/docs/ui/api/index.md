@@ -276,6 +276,23 @@ invoked.
 
 <Api page="ui.findkitui.trapFocus" />
 
+### `.customRouterData(options)` {#customRouterData}
+
+Inject custom data to the FindkitUI router.
+
+Options
+
+- `init: T`
+- `save(data: T)`
+- `load(): T`
+
+Return and unbinding function.
+
+Read more from [Custom Router
+Data](/ui/api/custom-router-data).
+
+<Api page="ui.findkitui.customRouterData" />
+
 ### `.bindInput(selector)` {#bindInput}
 
 Bind any input to the Search UI. The selector can be CSS string or the raw
