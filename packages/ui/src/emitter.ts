@@ -1,5 +1,6 @@
 import { Status } from "./cdn-entries";
 import type {
+	CustomRouterData,
 	GroupDefinition,
 	SearchParams,
 	SearchResultHit,
@@ -244,12 +245,21 @@ export interface UnbindInputEvent {
 	input: HTMLInputElement;
 }
 
+export interface CustomRouterDataEvent<T extends FindkitUIEventsGenerics> {
+	data: undefined extends T["customRouterData"]
+		? CustomRouterData
+		: T["customRouterData"];
+}
+
+export interface FindkitUIEventsGenerics {
+	customRouterData?: CustomRouterData;
+}
 /**
  * @public
  *
  * FindkitUI event definitions
  */
-export interface FindkitUIEvents {
+export interface FindkitUIEvents<T extends FindkitUIEventsGenerics = {}> {
 	/**
 	 * Emitted when the internal UI status changes.
 	 */
@@ -260,6 +270,8 @@ export interface FindkitUIEvents {
 	 * analytics
 	 */
 	"debounced-search": DebouncedSearchEvent;
+
+	"custom-router-data": CustomRouterDataEvent<T>;
 
 	/**
 	 * Search request starts

@@ -12,6 +12,7 @@ import type {
 	GroupDefinitionWithDefaults,
 	SearchParamsWithDefaults,
 	Sort,
+	CustomRouterData,
 } from "../search-engine";
 import type { RouterBackend } from "../router";
 import type {
@@ -36,6 +37,7 @@ import {
 	BindInputEvent,
 	UnbindInputEvent,
 	lazyValue,
+	CustomRouterDataEvent,
 } from "../emitter";
 import type { TranslationStrings } from "../translations";
 import { listen, Resources } from "../resources";
@@ -88,6 +90,7 @@ export {
 	LanguageChangeEvent,
 	BindInputEvent,
 	UnbindInputEvent,
+	CustomRouterDataEvent,
 	Filter,
 	Operator,
 	Sort,
@@ -426,6 +429,8 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	 */
 	groups?: T["groups"];
 
+	initialCustomRouterData?: T["customRouterData"];
+
 	/**
 	 * See {@link SearchParams}
 	 */
@@ -524,6 +529,7 @@ type SearchParamsOrDefault<T extends FindkitUIGenerics> =
 export interface FindkitUIGenerics {
 	params?: SearchParams;
 	groups?: GroupDefinition[];
+	customRouterData?: CustomRouterData;
 }
 
 /**
@@ -535,7 +541,7 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	private PRIVATE_loading = false;
 
 	private PRIVATE_options: FindkitUIOptions<T>;
-	private PRIVATE_events: Emitter<FindkitUIEvents, FindkitUI<T>>;
+	private PRIVATE_events: Emitter<FindkitUIEvents<T>, FindkitUI<T>>;
 	private PRIVATE_resources = new Resources();
 	private PRIVATE_lazyEngine = lazyValue<SearchEngine>();
 
@@ -584,15 +590,8 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	updateGroups: (arg: UpdateGroupsArgument<GroupsOrDefault<T>>) => void =
 		this.PRIVATE_proxy("updateGroups") as any;
 
-	customRouterData: SearchEngine["customRouterData"] = (options) => {
-		const resources = this.PRIVATE_resources.child();
-
-		this.PRIVATE_lazyEngine((engine) => {
-			resources.create(() => engine.customRouterData(options));
-		});
-
-		return resources.dispose;
-	};
+	setCustomRouterData: (data: NonNullable<T["customRouterData"]>) => void =
+		this.PRIVATE_proxy("setCustomRouterData");
 
 	get groups(): GroupsOrDefault<T> {
 		return (this.PRIVATE_lazyEngine.get()?.getGroups() ??
@@ -618,10 +617,10 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	 *
 	 * @returns a function to unbind the handler
 	 */
-	on<EventName extends keyof FindkitUIEvents>(
+	on<EventName extends keyof FindkitUIEvents<T>>(
 		eventName: EventName,
 		handler: (
-			event: FindkitUIEvents[EventName] & { source: FindkitUI<T> },
+			event: FindkitUIEvents<T>[EventName] & { source: FindkitUI<T> },
 		) => void,
 	) {
 		return this.PRIVATE_events.on(eventName, handler);
@@ -632,10 +631,10 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	 *
 	 * @returns a function to unbind the handler
 	 */
-	once<EventName extends keyof FindkitUIEvents>(
+	once<EventName extends keyof FindkitUIEvents<T>>(
 		eventName: EventName,
 		handler: (
-			event: FindkitUIEvents[EventName] & { source: FindkitUI<T> },
+			event: FindkitUIEvents<T>[EventName] & { source: FindkitUI<T> },
 		) => void,
 	) {
 		return this.PRIVATE_events.once(eventName, handler);
@@ -782,7 +781,10 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 					css: allCSS,
 					styleSheets: this.PRIVATE_getStyleSheets(),
 					instanceId: this.id,
-					events: this.PRIVATE_events,
+					events: this.PRIVATE_events as any as Emitter<
+						FindkitUIEvents<{}>,
+						FindkitUI<T>
+					>,
 					searchEndpoint: this.PRIVATE_options.searchEndpoint,
 				});
 
