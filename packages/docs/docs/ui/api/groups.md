@@ -11,7 +11,6 @@ const ui = new FindkitUI({
 	groups: [
 		{
 			title: "Pages",
-			id: "pages",
 			previewSize: 3,
 			params: {
 				// Search Params
@@ -20,7 +19,6 @@ const ui = new FindkitUI({
 		},
 		{
 			title: "PDF-files",
-			id: "pdf",
 			previewSize: 3,
 			params: {
 				tagQuery: [["pdf"]],
@@ -62,11 +60,7 @@ There is also a [`useGroups()`](/ui/slot-overrides/hooks#usegroups) hook for upd
 
 ## Options
 
-Following options are available for each group.
-
-### `id: string` {#id}
-
-Unique id of the group. Required.
+<Api page="ui.groupdefinition" />
 
 ### `title: string` {#title}
 
@@ -84,6 +78,31 @@ How many search results to show when all groups are rendered.
 
 Boost (multiply) the results relevancy within the group. Meaningful only when
 [`groupOrder`](/ui/api/#groupOrder) is set to `relevancy`.
+
+### `id: string` {#id}
+
+Unique id of the group. Automatically generated if not defined. Can be used to
+pick a specific group in [`.updateGroups()`](/ui/api/#updateGroups),
+[`.groups`](/ui/api/#groups) or in the
+[`useGroups()`](/ui/slot-overrides/hooks#useGroups) hook.
+
+Example
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	groups: [
+		// ...
+		{ id: "pdf", title: "PDF-files" },
+		// ...
+	],
+});
+
+ui.updateGroups((...groups) => {
+	const pdf = groups.find((g) => g.id === "pdf");
+	pdf.params.filter.tags = "pdf";
+});
+```
 
 ## Try it!
 
