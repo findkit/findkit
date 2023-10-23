@@ -1,10 +1,5 @@
 import { FindkitUIGenerics, Status } from "./cdn-entries";
-import type {
-	CustomRouterData,
-	GroupDefinition,
-	SearchParams,
-	SearchResultHit,
-} from "./search-engine";
+import type { CustomRouterData, SearchResultHit } from "./search-engine";
 
 export interface Handler {
 	(event: any): void;
@@ -193,8 +188,8 @@ export interface RequestOpenEvent {
 /**
  * @public
  */
-export interface GroupsChangeEvent {
-	groups: GroupDefinition[];
+export interface GroupsChangeEvent<T extends FindkitUIGenerics> {
+	groups: NonNullable<T["groups"]>;
 }
 
 /**
@@ -321,7 +316,7 @@ export interface FindkitUIEvents<T extends FindkitUIGenerics = {}> {
 	/**
 	 * Emitted when groups change
 	 */
-	groups: GroupsChangeEvent;
+	groups: GroupsChangeEvent<T>;
 
 	/**
 	 * Emitted when the search params change

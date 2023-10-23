@@ -223,6 +223,13 @@ t("groups have params object by default", () => {
 	});
 
 	ui.groups[0].params.lang?.toLowerCase();
+
+	ui.on("groups", (e) => {
+		e.groups[0]?.params?.filter?.price;
+
+		// @ts-expect-error
+		e.groups[0]?.params?.filter?.price.crap;
+	});
 });
 
 t("can add generic groups to FindkitUI", () => {
@@ -261,6 +268,17 @@ t("can add generic groups to FindkitUI", () => {
 		group1.params.filter.price.$eq = "";
 		// @ts-expect-error
 		group2.params.filter.price.$eq = 1;
+	});
+
+	ui.on("groups", (e) => {
+		const num: number = e.groups[0].params.filter.price.$eq;
+		const str: string = e.groups[1].params.filter.price.$eq;
+
+		// @ts-expect-error
+		const bad1: string = e.groups[0].params.filter.price.$eq;
+
+		// @ts-expect-error
+		const bad2: number = e.groups[1].params.filter.price.$eq;
 	});
 
 	// @ts-expect-error
