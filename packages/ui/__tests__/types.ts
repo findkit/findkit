@@ -43,6 +43,19 @@ t("can update partial params with ui.params", () => {
 	});
 });
 
+t("params event without generic", () => {
+	const ui = new FindkitUI({ publicToken: "" });
+
+	ui.on("params", (e) => {
+		e.params.filter?.$or;
+
+		e.params.filter?.something;
+
+		// @ts-expect-error
+		const bad: RegExp = e.params.filter?.something;
+	});
+});
+
 t("can add generic params to FindkitUI", () => {
 	const ui = new FindkitUI<{
 		params: {
@@ -58,6 +71,16 @@ t("can add generic params to FindkitUI", () => {
 				price: { $eq: 2 },
 			},
 		},
+	});
+
+	ui.on("params", (e) => {
+		const num: number = e.params.filter.price.$eq;
+
+		// @ts-expect-error
+		const bad: string = e.params.filter.price.$eq;
+
+		// @ts-expect-error
+		e.params.filter.bad;
 	});
 
 	ui.updateParams((params) => {

@@ -1,4 +1,4 @@
-import { Status } from "./cdn-entries";
+import { FindkitUIGenerics, Status } from "./cdn-entries";
 import type {
 	CustomRouterData,
 	GroupDefinition,
@@ -200,8 +200,8 @@ export interface GroupsChangeEvent {
 /**
  * @public
  */
-export interface ParamsChangeEvent {
-	params: SearchParams;
+export interface ParamsChangeEvent<T extends FindkitUIGenerics> {
+	params: NonNullable<T["params"]>;
 }
 
 /**
@@ -245,21 +245,18 @@ export interface UnbindInputEvent {
 	input: HTMLInputElement;
 }
 
-export interface CustomRouterDataEvent<T extends FindkitUIEventsGenerics> {
+export interface CustomRouterDataEvent<T extends FindkitUIGenerics> {
 	data: undefined extends T["customRouterData"]
 		? CustomRouterData
 		: T["customRouterData"];
 }
 
-export interface FindkitUIEventsGenerics {
-	customRouterData?: CustomRouterData;
-}
 /**
  * @public
  *
  * FindkitUI event definitions
  */
-export interface FindkitUIEvents<T extends FindkitUIEventsGenerics = {}> {
+export interface FindkitUIEvents<T extends FindkitUIGenerics = {}> {
 	/**
 	 * Emitted when the internal UI status changes.
 	 */
@@ -329,7 +326,7 @@ export interface FindkitUIEvents<T extends FindkitUIEventsGenerics = {}> {
 	/**
 	 * Emitted when the search params change
 	 */
-	params: ParamsChangeEvent;
+	params: ParamsChangeEvent<T>;
 
 	"hit-click": HitClickEvent;
 
