@@ -957,14 +957,10 @@ export class SearchEngine {
 
 	private PRIVATE_ignoreNextAddressbarUpdate = false;
 
+	private PRIVATE_pendingCustomRouterData?: CustomRouterData;
+
 	setCustomRouterData(data: CustomRouterData) {
-		this.PRIVATE_started(() => {
-			const next = this.PRIVATE_getfindkitParams().setCustomData(data);
-			this.updateAddressBar(next, {
-				push: false,
-				ignore: true,
-			});
-		});
+		this.PRIVATE_pendingCustomRouterData = data;
 	}
 
 	updateAddressBar = (
@@ -1342,6 +1338,17 @@ export class SearchEngine {
 		this.PRIVATE_pendingRequestIds.set(requestId, abortController);
 
 		this.events.emit("fetch", { terms: options.terms, id: String(requestId) });
+
+		if (this.PRIVATE_pendingCustomRouterData) {
+			const next = this.PRIVATE_getfindkitParams().setCustomData(
+				this.PRIVATE_pendingCustomRouterData,
+			);
+			this.PRIVATE_pendingCustomRouterData = undefined;
+			this.updateAddressBar(next, {
+				push: false,
+				ignore: true,
+			});
+		}
 
 		// await new Promise((resolve) =>
 		// 	setTimeout(resolve, 1000 + Math.random() * 4000),
