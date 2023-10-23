@@ -584,7 +584,15 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	updateGroups: (arg: UpdateGroupsArgument<GroupsOrDefault<T>>) => void =
 		this.PRIVATE_proxy("updateGroups") as any;
 
-	customRouterData = this.PRIVATE_proxy("customRouterData");
+	customRouterData: SearchEngine["customRouterData"] = (options) => {
+		const resources = this.PRIVATE_resources.child();
+
+		this.PRIVATE_lazyEngine((engine) => {
+			resources.create(() => engine.customRouterData(options));
+		});
+
+		return resources.dispose;
+	};
 
 	get groups(): GroupsOrDefault<T> {
 		return (this.PRIVATE_lazyEngine.get()?.getGroups() ??

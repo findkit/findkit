@@ -269,3 +269,58 @@ test("can change back to previous custom router data", async ({ page }) => {
 	// Must restore the previous state
 	await expect.poll(async () => page.url()).toContain("fdk.c.price=999");
 });
+
+test("can unbind customRouterData", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			fetchThrottle: 1,
+		});
+
+		const uiEvents: string[] = [];
+
+		const unbind = ui.customRouterData({
+			init: {
+				price: "1",
+			},
+
+			load() {},
+
+			save() {
+				uiEvents.push("save");
+				return {
+					price: "",
+				};
+			},
+		});
+
+		Object.assign(window, { ui, uiEvents, unbind });
+
+		ui.open("boots");
+	});
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	const getEvents = async (): Promise<string[]> => {
+		return await page.evaluate(async () => (window as any).uiEvents);
+	};
+
+	const initial = await getEvents();
+
+	await page.evaluate(async () => {
+		(window as any).unbind();
+		ui.updateParams((params) => {
+			params.filter.price = { $lt: 999 };
+		});
+	});
+
+	expect(await getEvents()).toEqual(initial);
+
+	await page.waitForTimeout(200);
+
+	expect(await getEvents()).toEqual(initial);
+});

@@ -942,6 +942,13 @@ export class SearchEngine {
 		save: () => T;
 	}) => {
 		this.PRIVATE_customRouterDataHooks.push(options as any);
+
+		return () => {
+			const index = this.PRIVATE_customRouterDataHooks.indexOf(options as any);
+			if (index > -1) {
+				this.PRIVATE_customRouterDataHooks.splice(index, 1);
+			}
+		};
 	};
 
 	private PRIVATE_previousCustomRouterData?: FindkitURLSearchParams;
