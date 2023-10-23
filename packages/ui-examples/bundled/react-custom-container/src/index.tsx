@@ -3,17 +3,15 @@ import { createRoot } from "react-dom/client";
 import React, { useEffect, useRef, useState } from "react";
 import { FindkitUI, SearchParams } from "@findkit/ui";
 
-function getTag(params: SearchParams | undefined) {
-	return params?.tagQuery?.[0]?.[0] ?? "";
-}
-
 function App() {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const uiRef = useRef<FindkitUI>();
 	const [params, setParams] = useState<SearchParams>();
+	const currentTag = params?.tagQuery?.[0]?.[0];
 
-	const setTag = (tag: string | null) => {
+	const setTag = (tag?: string) => {
+		uiRef.current?.setCustomRouterData({ tag })
 		uiRef.current?.updateParams((params) => {
 			if (tag) {
 				params.tagQuery = [[tag]];
@@ -37,31 +35,29 @@ function App() {
 			params: {
 				tagQuery: [["crawler"]],
 			},
+			async load() {
+				return impl
+			}
 		});
 
-		uiRef.current = ui;
-
+		// Sync Search Params to the React tate
 		setParams(ui.params);
-
 		ui.on("params", (e) => {
 			setParams(e.params);
+		});
+
+		// Restore previous state from the url
+		ui.on("custom-router-data", (e) => {
+			if (e.data.tag) {
+				setTag(e.data.tag);
+			}
 		});
 
 		if (inputRef.current) {
 			ui.bindInput(inputRef.current);
 		}
 
-		// Ensure the UI state is restored when user navigates back to the page
-		// https://docs.findkit.com/ui/api/custom-router-data
-		ui.customRouterData({
-			init: { tag: "" },
-			load(data) {
-				setTag(data.tag);
-			},
-			save() {
-				return { tag: getTag(ui.params) };
-			},
-		});
+		uiRef.current = ui;
 
 		return () => {
 			// Ensure that all event listeners are removed when the component is
@@ -75,10 +71,10 @@ function App() {
 			<h1>Inside React Component</h1>
 
 			<div className="controls">
-				<h2>Filter by tag</h2>
+				<h2>Filter by tags</h2>
 				<div className="buttons">
 					<button
-						disabled={getTag(params) === "crawler"}
+						disabled={currentTag === "crawler"}
 						onClick={() => {
 							setTag("crawler");
 						}}
@@ -87,7 +83,7 @@ function App() {
 					</button>
 
 					<button
-						disabled={getTag(params) === "ui"}
+						disabled={currentTag === "ui"}
 						onClick={() => {
 							setTag("ui");
 						}}
@@ -96,7 +92,7 @@ function App() {
 					</button>
 
 					<button
-						disabled={getTag(params) === ""}
+						disabled={currentTag === null}
 						onClick={() => {
 							setTag(null);
 						}}
