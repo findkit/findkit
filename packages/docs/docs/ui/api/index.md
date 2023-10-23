@@ -296,7 +296,7 @@ Typescript terms the type is `{[key: string]: string | undefined}`.
 
 - See [`custom-router-data`](/ui/api/events#custom-router-data) event
 - See [`defaultCustomRouterData`](#defaultCustomRouterData) constructor option
-- Read the [Custom Router Data](/ui/api/custom-router-data) page for more information
+- Read the [Custom Router Data](/ui/custom-router-data) page for more information
 
 <Api page="ui.findkitui.setCustomRouterData" />
 

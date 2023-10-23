@@ -1,9 +1,9 @@
-# Filter
+# Filtering
 
-Filter is a [Search Params](/ui/api/params) option for filtering the search
-results with complex conditions in addition to search terms. The filter can be
-used for groupping or building highly dynamic search interfaces by manipulating
-the filters based on user the input.
+The `filter` [Search Params](/ui/api/params) option can be used to filter the
+search results with complex conditions. It can be used for groupping or
+building highly dynamic search interfaces by manipulating the filters based on
+the user input.
 
 Example
 
@@ -17,11 +17,6 @@ const ui = new FindkitUI({
 	},
 });
 ```
-
-:::caution
-When building custom user interfaces make sure you make the UI state linkable with
-[Custom Router Data](/ui/api/custom-router-data)
-:::
 
 It can target [`tags`](/crawler/meta-tag#tags),
 [`created`](/crawler/meta-tag#created),
@@ -38,11 +33,11 @@ The `filter` option is available in
 - [`useParams`](/ui/slot-overrides/hooks#useParams) slot override hook
 - [`useGroups`](/ui/slot-overrides/hooks#useGroups) slot override hook
 
-:::tip
-If you are familiar with MongoDB queries you should feel right at home with Findkit
-Filters as they implement subset of the MongoDB filters.
+:::caution
+When building custom user interfaces make sure you make the UI state linkable with
+[Custom Router Data](/ui/custom-router-data)
 :::
 
-Read [How Filtering Works?](/ui/api/filter/intro) for overview of how to use
-them and see [Operators](/ui/api/filter/operators) for all available filtering
+Read [How Filtering Works?](/ui/filtering/intro) for overview of how to use
+them and see [Operators](/ui/filtering/operators) for all available filtering
 tools

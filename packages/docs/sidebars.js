@@ -49,20 +49,19 @@ const sidebars = {
 					link: { type: "doc", id: "ui/api/index" },
 					items: [
 						"ui/api/params",
-						{
-							type: "category",
-							label: "Filtering",
-							link: { type: "doc", id: "ui/api/filter/index" },
-							items: ["ui/api/filter/intro", "ui/api/filter/operators"],
-						},
-
 						"ui/api/groups",
 						"ui/api/events",
-						"ui/api/custom-router-data",
 						"ui/api/utils",
 					],
 				},
 				"ui/styling",
+				{
+					type: "category",
+					label: "Filtering",
+					link: { type: "doc", id: "ui/filtering/index" },
+					items: ["ui/filtering/intro", "ui/filtering/operators"],
+				},
+				"ui/custom-router-data",
 				"ui/tech",
 				{
 					type: "category",

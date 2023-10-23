@@ -161,6 +161,7 @@ If sorting values are the same, the search results are sorted by the relevance s
 _New in v0.9.0_
 
 Filter the search results by tags, created, modified, language and custom field
-using a MongoDB style filtering query. Read more on the [Filtering](/ui/api/filter) section.
+using a MongoDB style filtering query. Read more on the
+[Filtering](/ui/filtering) page.
 
 <Api page="ui.filter" />

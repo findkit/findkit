@@ -1,5 +1,10 @@
 # How Filtering Works?
 
+:::tip
+If you are familiar with MongoDB queries you should feel right at home with Findkit
+Filters as they implement subset of the MongoDB filters.
+:::
+
 Lets start with a simple example. Limit the results with tag a `product`:
 
 ```ts
@@ -27,7 +32,7 @@ ui.updateParams({
 });
 ```
 
-To make `OR` condition you need to use the [`$or`](/ui/api/filter/operators#$or) operator:
+To make `OR` condition you need to use the [`$or`](/ui/filtering/operators#$or) operator:
 
 ```ts
 ui.updateParams({
@@ -97,4 +102,4 @@ For a page to match this filter it should have a [Findkit Meta Tag](/crawler/met
 </script>
 ```
 
-For all possible filter operators see [Operators](/ui/api/filter/operators) page.
+For all possible filter operators see [Operators](/ui/filtering/operators) page.

@@ -1,15 +1,14 @@
 # Custom Router Data
 
-When building custom user interfaces for [`filter`](/ui/api/params#filter),
-[`sort`](/ui/api/params#sort) or any other [search params](/ui/api/params) you
-update dynamically via [`updateParams`](/ui/api/#updateParams) or
-[`updateGroups`](/ui/api/#updateGroups) it is paramount that the UI is state is
-saved to the URL: When user clicks on a search result and decides to come back
-the UI state and search params should restore to what they were.
+When building custom user interfaces for `filter`, `sort` or any other [search
+params](/ui/api/params) you update dynamically via `updateParams` or
+`updateGroups` it is paramount that the UI is state is saved to the URL: When
+user clicks on a search result and decides to come back the UI state and search
+params should be restored to what they were.
 
 Implementing this manually is tedious and hard to get right which is why
 FindkitUI provides [`.setCustomRouterData()`](/ui/api/#setCustomRouterData)
-method which allows developers to inject custom data to the URL and a
+method which allows developers to add custom data to the URL and a
 [`custom-router-data`](/ui/api/events#custom-router-data) event which can be
 used to read the previously set data.
 
@@ -80,14 +79,16 @@ function updateSearch() {
 The [`updateParams()`](/ui/api/#updateParams) method always makes a new search
 when the params change form the previously made search.
 
-:::tip
-This pattern can be used to synchonize much more complex states too. See
-[this](todo) example which uses radio buttons, checkboxes and options or
-[this](todo) React.js state example.
-:::
-
-## Live Demos
+## Demo
 
 To put it all together see this example:
 
 <Codesandbox example="static/custom-ui" />
+
+This pattern can be used to synchonize much more complex states too. See
+[this](todo) example which uses radio buttons, checkboxes and options or
+[this](todo) React.js state example.
+
+## Complex Form {#complex}
+
+## React.js state {#react}

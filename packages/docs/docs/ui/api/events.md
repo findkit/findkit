@@ -100,7 +100,7 @@ and
 [`replaceState`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState)
 calls.
 
-Read the [Custom Router Data](/ui/api/custom-router-data) page for more
+Read the [Custom Router Data](/ui/custom-router-data) page for more
 information.
 
 ```ts
