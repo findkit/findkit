@@ -43,6 +43,19 @@ t("can update partial params with ui.params", () => {
 	});
 });
 
+t("params event without generic", () => {
+	const ui = new FindkitUI({ publicToken: "" });
+
+	ui.on("params", (e) => {
+		e.params.filter?.$or;
+
+		e.params.filter?.something;
+
+		// @ts-expect-error
+		const bad: RegExp = e.params.filter?.something;
+	});
+});
+
 t("can add generic params to FindkitUI", () => {
 	const ui = new FindkitUI<{
 		params: {
@@ -58,6 +71,16 @@ t("can add generic params to FindkitUI", () => {
 				price: { $eq: 2 },
 			},
 		},
+	});
+
+	ui.on("params", (e) => {
+		const num: number = e.params.filter.price.$eq;
+
+		// @ts-expect-error
+		const bad: string = e.params.filter.price.$eq;
+
+		// @ts-expect-error
+		e.params.filter.bad;
 	});
 
 	ui.updateParams((params) => {
@@ -200,6 +223,13 @@ t("groups have params object by default", () => {
 	});
 
 	ui.groups[0].params.lang?.toLowerCase();
+
+	ui.on("groups", (e) => {
+		e.groups[0]?.params?.filter?.price;
+
+		// @ts-expect-error
+		e.groups[0]?.params?.filter?.price.crap;
+	});
 });
 
 t("can add generic groups to FindkitUI", () => {
@@ -238,6 +268,17 @@ t("can add generic groups to FindkitUI", () => {
 		group1.params.filter.price.$eq = "";
 		// @ts-expect-error
 		group2.params.filter.price.$eq = 1;
+	});
+
+	ui.on("groups", (e) => {
+		const num: number = e.groups[0].params.filter.price.$eq;
+		const str: string = e.groups[1].params.filter.price.$eq;
+
+		// @ts-expect-error
+		const bad1: string = e.groups[0].params.filter.price.$eq;
+
+		// @ts-expect-error
+		const bad2: number = e.groups[1].params.filter.price.$eq;
 	});
 
 	// @ts-expect-error
