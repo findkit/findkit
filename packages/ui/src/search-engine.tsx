@@ -689,15 +689,10 @@ export class SearchEngine {
 	 * "language" event without extra search reqeusts.
 	 */
 	start() {
-		let initialSearchParams = new FindkitURLSearchParams(
+		const initialSearchParams = new FindkitURLSearchParams(
 			this.instanceId,
 			this.router.getSearchParamsString(),
 		);
-
-		initialSearchParams = initialSearchParams.setCustomData({
-			...this.PRIVATE_defaultCustomRouteData,
-			...initialSearchParams.getCustomData(),
-		});
 
 		this.state.currentGroupId = initialSearchParams.getGroupId();
 
