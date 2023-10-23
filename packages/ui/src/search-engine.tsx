@@ -128,7 +128,7 @@ export interface SearchParams {
 	 *
 	 * See {@link Filter}
 	 *
-	 * See https://docs.findkit.com/ui-api/ui.filter/
+	 * https://docs.findkit.com/ui/api/params#filter
 	 *
 	 */
 	filter?: Filter;
@@ -140,7 +140,7 @@ export interface SearchParams {
 	 *
 	 * See {@link Sort}
 	 *
-	 * See https://docs.findkit.com/ui-api/ui.sort/
+	 * https://docs.findkit.com/ui/api/params#sort
 	 *
 	 */
 	sort?: Sort | Sort[];
