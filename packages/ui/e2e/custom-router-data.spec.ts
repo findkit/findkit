@@ -119,3 +119,69 @@ test("can change back to previous custom router data", async ({ page }) => {
 		"fetch",
 	]);
 });
+
+test("defaultCustomRouterData is emitted with custom-router-data on load", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			defaultCustomRouterData: {
+				ding: "a",
+			},
+		});
+		const uiEvents: any[] = [];
+		Object.assign(window, { ui, uiEvents });
+
+		ui.on("custom-router-data", (e) => {
+			uiEvents.push(e.data);
+		});
+
+		ui.open();
+	});
+
+	const hits = page.locator(".findkit--header");
+	await hits.first().waitFor({ state: "visible" });
+
+	expect(await page.evaluate(async () => (window as any).uiEvents)).toEqual([
+		{
+			ding: "a",
+		},
+	]);
+});
+
+test("defaultCustomRouterData can be overridden with custom-router-data on load", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy?fdk.c.ding=b"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			defaultCustomRouterData: {
+				ding: "a",
+			},
+		});
+		const uiEvents: any[] = [];
+		Object.assign(window, { ui, uiEvents });
+
+		ui.on("custom-router-data", (e) => {
+			uiEvents.push(e.data);
+		});
+
+		ui.open();
+	});
+
+	const hits = page.locator(".findkit--header");
+	await hits.first().waitFor({ state: "visible" });
+
+	expect(await page.evaluate(async () => (window as any).uiEvents)).toEqual([
+		{
+			ding: "b",
+		},
+	]);
+});

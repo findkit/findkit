@@ -346,3 +346,22 @@ t("custom router data with generic constraint", () => {
 		e.data.bad;
 	});
 });
+
+t("only strings are allowed to custom router data", () => {
+	// @ts-expect-error
+	new FindkitUI<{
+		customRouterData: {
+			bad: number;
+		};
+	}>({
+		publicToken: "",
+	});
+
+	new FindkitUI({
+		publicToken: "",
+		defaultCustomRouterData: {
+			// @ts-expect-error
+			bad: 1,
+		},
+	});
+});
