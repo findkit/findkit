@@ -308,34 +308,50 @@ The modal cannot be opened any more after it is disposed.
 
 <Api page="ui.findkitui.dispose" />
 
-### `.updateParams(fn)` {#updateParams}
+### `.updateParams(fnOrParams)` {#updateParams}
 
-Update the search params. It calls the given function immediately giving the
-internal params object as the first parameter. The object can mutated or a new
-one can be returned. A new search will be issued immediately.
+Update the [search params](/ui/api/params). It calls the given function
+immediately giving the search params object as the first parameter. The object
+can mutated or a new one can be returned. A new search request is sent when the
+updated params differ from the previously used params.
+
+Calls are throttled with leading invoke, meaning that the first call is made
+immediately and subsequent call every 200ms or what is defined in
+[`fetchThrottle`](#fetchThrottle).
 
 Example
 
 ```ts
 ui.updateParams((params) => {
-	params.tagQuery = [["domain/another.example"]];
+	params.filter.category = "kitchen";
 });
 ```
+
+It is also possible to replace the params completely by giving the params object directly
+
+```ts
+ui.updateParams({ filter: { category: "kitchen" } });
+```
+
+There is also [`useParams()`](/ui/slot-overrides/hooks#useParams) hook for slot overrides.
 
 <Api page="ui.findkitui.updateparams" />
 
 ### `.updateGroups(fn)` {#updateGroups}
 
-Update the groups. The callback function works like in
-[`updateParams`](#updateParams) but the previously defined groups are spread to
-the function params.
+Group version of [`updateParams`](#updateParams) which operates on
+[groups](/ui/api/groups) instead of single Search Params object.
+The groups are spread to the function arguments.
 
 Example
 
 ```ts
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
-	groups: [{ tagQuery: [["html"]] }, { tagQuery: [["pdf"]] }],
+	groups: [
+		{ params: { filter: { tags: "html" } } },
+		{ params: { filter: { tags: "pdf" } } },
+	],
 });
 
 ui.updateGroups((pages, pdf) => {
@@ -343,6 +359,8 @@ ui.updateGroups((pages, pdf) => {
 	pdf.previewSize = 5;
 });
 ```
+
+There is also [`useGroups()`](/ui/slot-overrides/hooks#useGroups) hook for slot overrides.
 
 <Api page="ui.findkitui.updategroups" />
 

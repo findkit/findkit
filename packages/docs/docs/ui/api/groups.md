@@ -32,8 +32,15 @@ When a search is made with this configuration it will display results from each
 group as searches are made. The result amount per group is determined by the
 `previewSize` key.
 
+The groups can be dynamically updated using the
+[`ui.updateGroups()`](/ui/api/#updateGroups) method and the
+[`useGroups()`](/ui/slot-overrides/hooks#useParams) hook to update from [Slot
+Overrides](/ui/slot-overrides).
+
 :::caution
-The `groups` option cannot be mixed with the `params` option. Eg. this does not work:
+The `groups` option cannot be mixed with the top-level `params` option because
+each group contains its own `params` as seen in the above example Eg. this does
+not work:
 
 ```ts
 const ui = new FindkitUI({
@@ -41,22 +48,10 @@ const ui = new FindkitUI({
 	params: {}  // ❌ Broken!!
 	groups: [], // ❌ Broken!!
 });
+
 ```
 
 :::
-
-## Dynamic Update
-
-The groups can be also updated on the fly with `ui.updateGroups(fn)` method:
-
-```ts
-ui.updateGroups((pages, pdf) => {
-	pages.previewSize = 5;
-	pdf.previewSize = 5;
-});
-```
-
-There is also a [`useGroups()`](/ui/slot-overrides/hooks#usegroups) hook for updating the groups from [Slot Overrides](/ui/slot-overrides/).
 
 ## Options
 

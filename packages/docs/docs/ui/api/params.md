@@ -13,28 +13,14 @@ const ui = new FindkitUI({
 });
 ```
 
+The params can be dynamically updated using the
+[`ui.updateParams()`](/ui/api/#updateParams) method and the
+[`useParams()`](/ui/slot-overrides/hooks#useParams) hook
+to update from [Slot Overrides](/ui/slot-overrides).
+
+## Options
+
 <Api page="ui.searchparams" />
-
-## Dynamic Update
-
-The params can be also dynamically updated using the `ui.updateParams(fn)`
-method which can be used the mutate the underlying params object:
-
-```ts
-ui.updateParams((params) => {
-	params.tagQuery = [["domain/another.example"]];
-});
-```
-
-The updates are immediately picked up and new a search request will be made on
-change.
-
-There is also a [`useParams()`](/ui/slot-overrides/hooks#useParams) hook for
-updating the params from [Slot Overrides](/ui/slot-overrides).
-
-## Params
-
-Following keys are available:
 
 ### `createdDecay: number` {#createdDecay}
 
