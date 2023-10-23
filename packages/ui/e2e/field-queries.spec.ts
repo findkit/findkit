@@ -217,5 +217,6 @@ test("can save filters to url and restore them on reload", async ({ page }) => {
 	await page.reload();
 	await expect(page.getByLabel("Cheapest first")).toBeChecked();
 	await expect.poll(getPrices).toEqual(["30", "100", "220"]);
+	await page.waitForTimeout(500);
 	expect(await getFetches()).toEqual(["boots"]);
 });

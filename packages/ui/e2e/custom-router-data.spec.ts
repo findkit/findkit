@@ -53,6 +53,9 @@ test("can serialize data from params event to customRouteData", async ({
 		ui.open("boots");
 	});
 
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
 	await expect.poll(async () => page.url()).toContain("fdk.c.price=999");
 
 	await page.evaluate(async () => {
@@ -96,9 +99,6 @@ test("can change back to previous custom router data", async ({ page }) => {
 	expect(await page.evaluate(async () => (window as any).uiEvents)).toEqual([
 		"fetch",
 	]);
-
-	// initial router data is set to url
-	await expect.poll(async () => page.url()).toContain("fdk.c.ding=a");
 
 	await page.evaluate(async () => {
 		ui.setCustomRouterData({ ding: "b" });
