@@ -252,59 +252,56 @@ t("can add generic groups to FindkitUI", () => {
 });
 
 t("custom router data", () => {
-	const ui = new FindkitUI({ publicToken: "" });
+	const ui = new FindkitUI({
+		publicToken: "",
+	});
 
-	ui.customRouterData({
-		init: {
-			myData: "",
-		},
-		load(data) {
-			// @ts-expect-error
-			data.bad;
+	// @ts-expect-error
+	ui.on("bad", () => {});
 
-			// @ts-expect-error
-			const num: number = data.myData;
+	ui.on("custom-router-data", (e) => {
+		const str: string | undefined = e.data.ding;
 
-			const str: string = data.myData;
-		},
+		// @ts-expect-error
+		const num: number = e.data.ding;
+	});
 
-		save() {
-			return {
-				myData: "",
-			};
+	ui.setCustomRouterData({ something: "" });
+
+	// @ts-expect-error
+	ui.setCustomRouterData({ bad: 1 });
+});
+
+t("custom router data with generic constraint", () => {
+	const ui = new FindkitUI<{
+		customRouterData: {
+			ding: string;
+		};
+	}>({
+		publicToken: "",
+		initialCustomRouterData: {
+			ding: "",
 		},
 	});
 
-	ui.customRouterData({
-		init: {
-			myData: "",
-		},
-
-		load() {},
-
-		// Must match orignal init
-		// @ts-expect-error
-		save() {
-			return {
-				myData: -1,
-			};
-		},
+	ui.setCustomRouterData({
+		ding: "",
 	});
 
-	// Only string keys are allowed
-	ui.customRouterData({
-		init: {
-			// @ts-expect-error
-			myData: -1,
-		},
+	ui.setCustomRouterData({
+		// @ts-expect-error
+		dong: "bad",
+	});
 
-		load() {},
+	ui.on("custom-router-data", (e) => {
+		e.data.ding;
+
+		const str: string = e.data.ding;
 
 		// @ts-expect-error
-		save() {
-			return {
-				myData: -1,
-			};
-		},
+		const num: number = e.data.ding;
+
+		// @ts-expect-error
+		e.data.bad;
 	});
 });

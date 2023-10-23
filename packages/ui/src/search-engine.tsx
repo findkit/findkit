@@ -466,6 +466,7 @@ export class FindkitURLSearchParams {
  */
 export interface SearchEngineOptions {
 	instanceId?: string;
+	initialCustomRouterData?: CustomRouterData;
 	publicToken: string;
 	searchEndpoint?: string;
 	fetchThrottle?: number;
@@ -569,9 +570,12 @@ export class SearchEngine {
 	private PRIVATE_container: Element | ShadowRoot;
 	private PRIVATE_monitorDocumentLangActive: boolean | undefined;
 
+	private PRIVATE_initialCustomRouteData: CustomRouterData;
+
 	events: Emitter<FindkitUIEvents, unknown>;
 
 	constructor(options: SearchEngineOptions) {
+		this.PRIVATE_initialCustomRouteData = options.initialCustomRouterData ?? {};
 		if (typeof window === "undefined") {
 			this.router = {
 				listen: () => () => {},
@@ -930,27 +934,6 @@ export class SearchEngine {
 		this.PRIVATE_groupsThrottleTimer = undefined;
 	};
 
-	private PRIVATE_customRouterDataHooks: {
-		init: CustomRouterData;
-		load: (data: CustomRouterData) => void;
-		save: () => CustomRouterData;
-	}[] = [];
-
-	customRouterData = <T extends CustomRouterData>(options: {
-		init: T;
-		load: (data: T) => void;
-		save: () => T;
-	}) => {
-		this.PRIVATE_customRouterDataHooks.push(options as any);
-
-		return () => {
-			const index = this.PRIVATE_customRouterDataHooks.indexOf(options as any);
-			if (index > -1) {
-				this.PRIVATE_customRouterDataHooks.splice(index, 1);
-			}
-		};
-	};
-
 	private PRIVATE_previousCustomRouterData?: FindkitURLSearchParams;
 
 	private PRIVATE_emitCustomRouterData() {
@@ -966,36 +949,40 @@ export class SearchEngine {
 		const customRouterData =
 			this.PRIVATE_previousCustomRouterData.getCustomData();
 
-		for (const hook of this.PRIVATE_customRouterDataHooks) {
-			hook.load({
-				...hook.init,
+		this.events.emit("custom-router-data", {
+			data: {
+				...this.PRIVATE_initialCustomRouteData,
 				...customRouterData,
-			});
-		}
+			},
+		});
 	}
 
 	private PRIVATE_ignoreNextAddressbarUpdate = false;
 
+	setCustomRouterData(data: CustomRouterData) {
+		this.updateAddressBar(this.PRIVATE_getfindkitParams().setCustomData(data), {
+			push: false,
+			ignore: true,
+		});
+	}
+
 	updateAddressBar = (
-		params: FindkitURLSearchParams,
+		next: FindkitURLSearchParams,
 		options?: { push?: boolean; ignore?: boolean },
 	) => {
-		const customRouterData: CustomRouterData =
-			this.PRIVATE_customRouterDataHooks.reduce((acc, { save }) => {
-				return Object.assign(acc, save());
-			}, {});
-
-		const next = params.setCustomData(customRouterData);
-
-		if (!next.equals(this.PRIVATE_getfindkitParams())) {
-			this.PRIVATE_previousCustomRouterData = next;
-			if (options?.ignore) {
-				this.PRIVATE_ignoreNextAddressbarUpdate = true;
-			}
-			this.router.update(next.toString(), {
-				push: options?.push,
-			});
+		if (next.equals(this.PRIVATE_getfindkitParams())) {
+			return;
 		}
+
+		this.PRIVATE_previousCustomRouterData = next;
+
+		if (options?.ignore) {
+			this.PRIVATE_ignoreNextAddressbarUpdate = true;
+		}
+
+		this.router.update(next.toString(), {
+			push: options?.push,
+		});
 	};
 
 	private PRIVATE_handleInputChange(
@@ -1085,15 +1072,6 @@ export class SearchEngine {
 
 		this.events.emit("params", {
 			params: this.getParams(),
-		});
-
-		// Groups have no effect on the address bar but the custom router data
-		// might so we must update it here. We ignore the the update because it
-		// has no internal meaning, it is meaningful only for
-		// .customRouterData() users.
-		this.updateAddressBar(this.PRIVATE_getfindkitParams(), {
-			ignore: true,
-			push: false,
 		});
 
 		if (deepEqual(nextGroups, this.state.usedGroupDefinitions)) {
@@ -1698,9 +1676,14 @@ export class SearchEngine {
 		const nextTerms = terms === undefined ? findkitParams.getTerms() : terms;
 
 		this.PRIVATE_started(() => {
-			this.updateAddressBar(findkitParams.setTerms(nextTerms ?? ""), {
-				push: !findkitParams.isActive(),
-			});
+			this.updateAddressBar(
+				findkitParams
+					.setTerms(nextTerms ?? "")
+					.setCustomData(this.PRIVATE_initialCustomRouteData),
+				{
+					push: !findkitParams.isActive(),
+				},
+			);
 		});
 	};
 

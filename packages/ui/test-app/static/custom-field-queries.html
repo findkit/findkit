@@ -98,6 +98,11 @@
             minTerms: 0,
             header: false,
             modal: false,
+            initialCustomRouterData: {
+                min: "3",
+                test: "ding",
+                sort: "relevancy",
+            },
             css: css`
 					table {
 						width: max-content;
@@ -155,23 +160,22 @@
             readParamsFromForm();
         });
 
-        ui.customRouterData({
-            init: {min: "3", test: "ding", sort: "relevancy"},
-            load: (params) => {
-                params.category = params.category?.split(",");
-                updateForm(form, params);
-                readParamsFromForm();
-            },
-            save: () => {
-                const formData = new FormData(form);
-                const data = Object.fromEntries(formData);
-                data.category = formData.getAll("category").join(",");
-                return data;
-            },
+        ui.on("custom-router-data", (e) => {
+            updateForm(form, {
+                ...e.data,
+                category: e.data.category?.split(","),
+            });
+            readParamsFromForm();
         });
 
         function readParamsFromForm() {
             const formData = new FormData(form);
+
+            ui.setCustomRouterData({
+                ...Object.fromEntries(formData),
+                category: formData.getAll("category").join(","),
+            });
+
             const min = Number(formData.get("min")) || null;
             const max = Number(formData.get("max")) || null;
             const sort = formData.get("sort");
