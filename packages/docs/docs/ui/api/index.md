@@ -237,6 +237,16 @@ Defaults to `true`
 
 <Api page="ui.findkituioptions.monitorDocumentLang" />
 
+### `fetchThrottle: boolean` {#fetchThrottle}
+
+_New in v0.9.0_
+
+How often to make search requests at most in milliseconds.
+
+Defaults to `200`
+
+<Api page="ui.findkituioptions.monitorDocumentLang" />
+
 ## Methods {#methods}
 
 Following methods are available on the `FindkitUI` instance.
