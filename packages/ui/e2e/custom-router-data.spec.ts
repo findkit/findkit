@@ -302,3 +302,73 @@ test("can use setCustomRouterData in fetch event", async ({ page }) => {
 
 	expect(page.url()).toContain("fdk.c.ding=a");
 });
+
+test("emits custom-router-data on history object replaceState", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+		const ui = new FindkitUI({ publicToken: "pW1D0p0Dg" });
+		const uiEvents: any[] = [];
+
+		ui.on("custom-router-data", (e) => {
+			uiEvents.push(e.data);
+		});
+
+		Object.assign(window, { ui, uiEvents });
+
+		ui.open("boots");
+	});
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	await page.evaluate(async () => {
+		history.replaceState({}, "", "?fdk.c.ding=dong&fdk_q=boots");
+	});
+
+	const events = await page.evaluate(async () => (window as any).uiEvents);
+
+	expect(events).toEqual([{}, { ding: "dong" }]);
+});
+
+test("emits custom-router-data on history object pushState and back navigation", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+		const ui = new FindkitUI({ publicToken: "pW1D0p0Dg" });
+		const uiEvents: any[] = [];
+
+		ui.on("custom-router-data", (e) => {
+			uiEvents.push(e.data);
+		});
+
+		Object.assign(window, { ui, uiEvents });
+
+		ui.open("boots");
+	});
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	await page.evaluate(async () => {
+		history.pushState({}, "", "?fdk.c.ding=dong&fdk_q=boots");
+		history.pushState({}, "", "?fdk.c.ding=dang&fdk_q=boots");
+	});
+
+	await page.goBack();
+
+	const events = await page.evaluate(async () => (window as any).uiEvents);
+
+	expect(events).toEqual([
+		{},
+		{ ding: "dong" },
+		{ ding: "dang" },
+		{ ding: "dong" },
+	]);
+});
