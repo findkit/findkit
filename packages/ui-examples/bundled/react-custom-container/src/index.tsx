@@ -11,7 +11,7 @@ function App() {
 	const currentTag = params?.tagQuery?.[0]?.[0];
 
 	const setTag = (tag?: string) => {
-		uiRef.current?.setCustomRouterData({ tag })
+		uiRef.current?.setCustomRouterData({ tag: tag ?? "" });
 		uiRef.current?.updateParams((params) => {
 			if (tag) {
 				params.tagQuery = [[tag]];

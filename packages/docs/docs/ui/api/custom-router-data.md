@@ -30,45 +30,32 @@ const ui = new FindkitUI({
 
 const form = document.querySelector("form");
 
-// Update search params on form changes
+// On form changes
 form.addEventListener("input", () => {
+	// Save form state to the URL
+	ui.setCustomRouterData(Object.fromEntries(new FormData(form)));
+
+	// And make a search
 	updateSearch();
 });
 
-// Save form state to the URL when it was used to make a search
-ui.on("fetch", () => {
-	ui.setCustomRouterData(Object.fromEntries(new FormData(form)));
-});
-
-// Restore form state from the URL on page load and navigations
+// Restore form state from the URL on page load
 ui.on("custom-router-data", (e) => {
-	// Fill form inputs
+	// Restore form input values
 	for (const [name, value] of Object.entries(e.data)) {
 		form.elements.namedItem(name).value = value;
 	}
 
-	// Update search from here too since programmatic form update
+	// Update search too since programmatic form update
 	// does not trigger the "input" events
 	updateSearch();
 });
 ```
 
-Now every time when FindkitUI makes search request a `fetch` event is emitted
-which is used to set the custom router data. This creates a query string like
-`?fdk.c.min=0&fdk.c.max=100`.
+Now the form state is synchronized to the URL and it is restored when user
+navigates back to the search interface from another page.
 
-When user navigates back to the search interface from the search result page or
-just opens a link with the query string, the `custom-routerl-data` event is
-emitted with the data previously set using the `setCustomRouterData()` method
-which is used to restore the previous search.
-
-:::note
-We could set the custom router data in the form `input` event as well but the
-`fetch` event is preferred as it is automatically throttled by FindkitUI. This
-avoids excessive URL updating.
-:::
-
-The `updateSearch()` method looks like this
+The `updateSearch()` function looks like this:
 
 ```ts
 function updateSearch() {
@@ -92,6 +79,12 @@ function updateSearch() {
 
 The [`updateParams()`](/ui/api/#updateParams) method always makes a new search
 when the params change form the previously made search.
+
+:::tip
+This pattern can be used to synchonize much more complex states too. See
+[this](todo) example which uses radio buttons, checkboxes and options or
+[this](todo) React.js state example.
+:::
 
 ## Live Demos
 

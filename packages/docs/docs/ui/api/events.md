@@ -93,7 +93,12 @@ _New in v0.9.0_
 Emits data previously set using the
 [`setCustomRouterData`](/ui/api/#setCustomRouterData) method when the Findkit
 router reads the URL. If there is no custom data in the URL
-[`defaultCustomRouterData`](/ui/api/#defaultCustomRouterData) is emitted.
+[`defaultCustomRouterData`](/ui/api/#defaultCustomRouterData) is emitted. The
+URL is read on page load and `history`
+[`pushState`](https://developer.mozilla.org/en-US/docs/Web/API/History/pushState)
+and
+[`replaceState`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState)
+calls.
 
 Read the [Custom Router Data](/ui/api/custom-router-data) page for more
 information.

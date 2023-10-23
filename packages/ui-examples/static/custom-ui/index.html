@@ -32,24 +32,23 @@
 
 		const form = document.querySelector("form");
 
-		// Update search params on form changes
+		// On form changes
 		form.addEventListener("input", () => {
+			// Save form state to the URL
+			ui.setCustomRouterData(Object.fromEntries(new FormData(form)));
+
+			// And make a search
 			updateSearch();
 		});
 
-		// Save form state to the URL when it was used to make a search
-		ui.on("fetch", () => {
-			ui.setCustomRouterData(Object.fromEntries(new FormData(form)));
-		});
-
-		// Restore form state from the URL on page load and navigations
+		// Restore form state from the URL on page load
 		ui.on("custom-router-data", (e) => {
-			// Fill form inputs
+			// Restore form input values
 			for (const [name, value] of Object.entries(e.data)) {
 				form.elements.namedItem(name).value = value;
 			}
 
-			// Update search from here too since programmatic form update
+			// Update search too since programmatic form update
 			// does not trigger the "input" events
 			updateSearch();
 		});
@@ -70,6 +69,7 @@
 
 				params.filter.$and = $and;
 			});
+		}
 	</script>
 </head>
 

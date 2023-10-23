@@ -290,19 +290,20 @@ invoked.
 
 _New in v0.9.0_
 
-Set custom data to the Findkit Router. See the related
-[`custom-router-data`](/ui/api/events#custom-router-data) event. The object
-values can only be strings. In Typescript terms the type is `{[key: string]:
-string}`. See [`defaultCustomRouterData`](#defaultCustomRouterData).
+Set custom data to the Findkit Router. The value is flushed to the url only
+when a search request is made. The object values can only be strings. In
+Typescript terms the type is `{[key: string]: string | undefined}`.
 
-Read the [Custom Router Data](/ui/api/custom-router-data) page for more information.
+- See [`custom-router-data`](/ui/api/events#custom-router-data) event
+- See [`defaultCustomRouterData`](#defaultCustomRouterData) constructor option
+- Read the [Custom Router Data](/ui/api/custom-router-data) page for more information
 
 <Api page="ui.findkitui.setCustomRouterData" />
 
 ### `.bindInput(selector)` {#bindInput}
 
 Bind any input to the Search UI. The selector can be CSS string or the raw
-`HTMLInputElement`. A unbind funtion is returned.
+`HTMLInputElement`. An unbind funtion is returned.
 
 - Input value is throttled to UI search terms
 - Focus is included in the focus trap
@@ -310,7 +311,7 @@ Bind any input to the Search UI. The selector can be CSS string or the raw
 
 <Api page="ui.findkitui.bindInput" />
 
-### `.preload()` {#preload}
+### `.preload(): Promise` {#preload}
 
 Preload the implementation code and css. This is automatically called on
 `mouseover` for elements passed to `.openFrom()` and on `focus` for inputs
