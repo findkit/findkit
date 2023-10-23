@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Static Template</title>
+	<script type="module">
+		import {
+			FindkitUI,
+			html,
+		} from "https://cdn.findkit.com/ui/v0.8.0-dev.e0c90f1eb9/esm/index.js";
+
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			modal: false,
+			container: "#container",
+			minTerms: 0,
+			params: {sort: {price: {$order: "asc"}}},
+			slots: {
+				Hit(props) {
+					// prettier-ignore
+					return html`
+						${props.hit.customFields.price?.value} EUR
+						${props.children}
+					`;
+				},
+			},
+		});
+
+		const form = document.querySelector("form");
+
+		// Make a search request on any form input change
+		form.addEventListener("input", () => {
+			makeSearch();
+		});
+
+		ui.customRouterData({
+			init: {min: "90", max: "100"},
+			save() {
+				// Turn form into a plain js object
+				return Object.fromEntries(new FormData(form));
+			},
+			load(data) {
+				updateForm(data);
+				// Make search here too since programmatic form
+				// update does not trigger "input" events
+				makeSearch();
+			},
+		});
+
+		function makeSearch() {
+			ui.updateParams((params) => {
+				const data = Object.fromEntries(new FormData(form));
+
+				const $and = [];
+
+				if (data.min) {
+					$and.push({price: {$gte: data.min}});
+				}
+
+				if (data.max) {
+					$and.push({price: {$lte: data.max}});
+				}
+
+				params.filter.$and = $and;
+			});
+		}
+
+		function updateForm(data) {
+			for (const [name, value] of Object.entries(data)) {
+				form.elements.namedItem(name).value = value;
+			}
+		}
+	</script>
+</head>
+
+<body>
+	<form>
+		<label>Min <input type="number" name="min" step="10" /></label>
+		<label>Max <input type="number" name="max" step="10" /></label>
+		<a href="?">Reset</a>
+	</form>
+
+	<div id="container"></div>
+</body>
+
+</html>
