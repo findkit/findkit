@@ -24,7 +24,7 @@ test("can serialize data from params event to customRouteData", async ({
 			};
 		}>({
 			publicToken: "pW1D0p0Dg",
-			initialCustomRouterData: {
+			defaultCustomRouterData: {
 				price: "999",
 			},
 			params: {
@@ -79,7 +79,7 @@ test("can change back to previous custom router data", async ({ page }) => {
 		const { FindkitUI } = MOD;
 		const ui = new FindkitUI({
 			publicToken: "pW1D0p0Dg",
-			initialCustomRouterData: {
+			defaultCustomRouterData: {
 				ding: "a",
 			},
 		});

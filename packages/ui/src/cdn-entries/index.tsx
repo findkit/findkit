@@ -429,7 +429,7 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	 */
 	groups?: T["groups"];
 
-	initialCustomRouterData?: T["customRouterData"];
+	defaultCustomRouterData?: T["customRouterData"];
 
 	/**
 	 * See {@link SearchParams}

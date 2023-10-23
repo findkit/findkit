@@ -320,7 +320,7 @@ t("custom router data with generic constraint", () => {
 		};
 	}>({
 		publicToken: "",
-		initialCustomRouterData: {
+		defaultCustomRouterData: {
 			ding: "",
 		},
 	});
