@@ -187,20 +187,19 @@ How many results to fetch in a single request.
 
 ### `lang: string` {#lang}
 
-*New in v0.5.0*
+_New in v0.5.0_
 
 Set the UI language. If not defined the language is read from the `<html lang>`
 attribute. See [`setLang`](#setLang). Not to be confused with the
 [`lang`](/ui/api/params#lang) search param filter.
 
-
-*Replaces deprecated ui.lang in v0.5.0*
+_Replaces deprecated ui.lang in v0.5.0_
 
 <Api page="ui.findkituioptions.lang" />
 
 ### `translations: object` {#translations}
 
-*New in v0.5.0*
+_New in v0.5.0_
 
 Add the UI translations. See [`addTranslation`](#addTranslation).
 
@@ -212,24 +211,24 @@ Example
 ```ts
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
-    lang: "sv",
-    // Add translations
-    translations: {
-        sv: {
-            close: "Stänga"
-            // ... https://findk.it/strings
-        }
-    }
+	lang: "sv",
+	// Add translations
+	translations: {
+		sv: {
+			close: "Stänga",
+			// ... https://findk.it/strings
+		},
+	},
 });
 ```
 
-*Replaces deprecated ui.overrides in v0.5.0*
+_Replaces deprecated ui.overrides in v0.5.0_
 
 <Api page="ui.findkituioptions.translations" />
 
 ### `monitorDocumentLang: boolean` {#monitorDocumentLang}
 
-*New in v0.5.0*
+_New in v0.5.0_
 
 Update the UI language by monitoring `<html lang>` changes. Useful on
 Single-Page Apps where the language can change without a page load.
@@ -237,6 +236,26 @@ Single-Page Apps where the language can change without a page load.
 Defaults to `true`
 
 <Api page="ui.findkituioptions.monitorDocumentLang" />
+
+### `fetchThrottle: boolean` {#fetchThrottle}
+
+_New in v0.9.0_
+
+Minimum time between search requests in milliseconds.
+
+Defaults to `200`
+
+<Api page="ui.findkituioptions.monitorDocumentLang" />
+
+### `defaultCustomRouterData: object` {#defaultCustomRouterData}
+
+_New in v0.9.0_
+
+Default values to to emit from the
+[`custom-router-data`](/ui/api/events#custom-router-data) event when
+[`setCustomRouterData`](#setCustomRouterData) has not been called.
+
+<Api page="ui.findkituioptions.defaultCustomRouterData" />
 
 ## Methods {#methods}
 
@@ -267,10 +286,24 @@ invoked.
 
 <Api page="ui.findkitui.trapFocus" />
 
+### `.setCustomRouterData(data)` {#setCustomRouterData}
+
+_New in v0.9.0_
+
+Set custom data to the Findkit Router. The value is flushed to the url only
+when a search request is made. The object values can only be strings. In
+Typescript terms the type is `{[key: string]: string | undefined}`.
+
+- See [`custom-router-data`](/ui/api/events#custom-router-data) event
+- See [`defaultCustomRouterData`](#defaultCustomRouterData) constructor option
+- Read the [Custom Router Data](/ui/custom-router-data) page for more information
+
+<Api page="ui.findkitui.setCustomRouterData" />
+
 ### `.bindInput(selector)` {#bindInput}
 
 Bind any input to the Search UI. The selector can be CSS string or the raw
-`HTMLInputElement`. A unbind funtion is returned.
+`HTMLInputElement`. An unbind funtion is returned.
 
 - Input value is throttled to UI search terms
 - Focus is included in the focus trap
@@ -278,7 +311,7 @@ Bind any input to the Search UI. The selector can be CSS string or the raw
 
 <Api page="ui.findkitui.bindInput" />
 
-### `.preload()` {#preload}
+### `.preload(): Promise` {#preload}
 
 Preload the implementation code and css. This is automatically called on
 `mouseover` for elements passed to `.openFrom()` and on `focus` for inputs
@@ -299,34 +332,50 @@ The modal cannot be opened any more after it is disposed.
 
 <Api page="ui.findkitui.dispose" />
 
-### `.updateParams(fn)` {#updateParams}
+### `.updateParams(fnOrParams)` {#updateParams}
 
-Update the search params. It calls the given function immediately giving the
-internal params object as the first parameter. The object can mutated or a new
-one can be returned. A new search will be issued immediately.
+Update the [search params](/ui/api/params). It calls the given function
+immediately giving the search params object as the first parameter. The object
+can mutated or a new one can be returned. A new search request is sent when the
+updated params differ from the previously used params.
+
+Calls are throttled with leading invoke, meaning that the first call is made
+immediately and subsequent calls every 200ms or what is defined in
+[`fetchThrottle`](#fetchThrottle).
 
 Example
 
 ```ts
 ui.updateParams((params) => {
-	params.tagQuery = [["domain/another.example"]];
+	params.filter.category = "kitchen";
 });
 ```
+
+It is also possible to replace the params completely by giving the params object directly
+
+```ts
+ui.updateParams({ filter: { category: "kitchen" } });
+```
+
+There is also [`useParams()`](/ui/slot-overrides/hooks#useParams) hook for slot overrides.
 
 <Api page="ui.findkitui.updateparams" />
 
 ### `.updateGroups(fn)` {#updateGroups}
 
-Update the groups. The callback function works like in
-[`updateParams`](#updateParams) but the previously defined groups are spread to
-the function params.
+Group version of [`updateParams`](#updateParams) which operates on
+[groups](/ui/api/groups) instead of single Search Params object.
+The groups are spread to the function arguments.
 
 Example
 
 ```ts
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
-	groups: [{ tagQuery: [["html"]] }, { tagQuery: [["pdf"]] }],
+	groups: [
+		{ params: { filter: { tags: "html" } } },
+		{ params: { filter: { tags: "pdf" } } },
+	],
 });
 
 ui.updateGroups((pages, pdf) => {
@@ -335,11 +384,13 @@ ui.updateGroups((pages, pdf) => {
 });
 ```
 
+There is also [`useGroups()`](/ui/slot-overrides/hooks#useGroups) hook for slot overrides.
+
 <Api page="ui.findkitui.updategroups" />
 
 ### `.setLang(lang)` {#setLang}
 
-*New in v0.5.0*
+_New in v0.5.0_
 
 Set the current UI language. See [`lang`](#lang).
 
@@ -347,7 +398,7 @@ Set the current UI language. See [`lang`](#lang).
 
 ### `.addTranslation(lang, translation)` {#addTranslation}
 
-*New in v0.5.0*
+_New in v0.5.0_
 
 Add a new UI translation. Can be used to override existing translation strings
 as well. See <Api
@@ -355,7 +406,6 @@ page="ui.translationstrings">TranslationStrings</Api> for the
 available transtion strings.
 
 See [`translations`](#translations).
-
 
 <Api page="ui.findkitui.addtranslation" />
 

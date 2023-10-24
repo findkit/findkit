@@ -4,7 +4,6 @@ slug: /
 
 # Findkit
 
-
 Findkit is a toolkit for building search user interfaces for websites which
 consists of three main components:
 

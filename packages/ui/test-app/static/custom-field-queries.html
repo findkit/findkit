@@ -149,12 +149,6 @@
 
         ui.on("fetch", (e) => {
             fetches.push(e);
-
-            const formData = new FormData(form);
-            ui.setCustomRouterData({
-                ...Object.fromEntries(formData),
-                category: formData.getAll("category").join(","),
-            });
         });
 
         const form = document.querySelector("form[role=search]");
@@ -175,7 +169,10 @@
 
         function readParamsFromForm() {
             const formData = new FormData(form);
-
+            ui.setCustomRouterData({
+                ...Object.fromEntries(formData),
+                category: formData.getAll("category").join(","),
+            });
 
             const min = Number(formData.get("min")) || null;
             const max = Number(formData.get("max")) || null;

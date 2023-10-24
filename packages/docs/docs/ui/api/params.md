@@ -13,28 +13,14 @@ const ui = new FindkitUI({
 });
 ```
 
+The params can be dynamically updated using the
+[`ui.updateParams()`](/ui/api/#updateParams) method and the
+[`useParams()`](/ui/slot-overrides/hooks#useParams) hook
+to update from [Slot Overrides](/ui/slot-overrides).
+
+## Options
+
 <Api page="ui.searchparams" />
-
-## Dynamic Update
-
-The params can be also dynamically updated using the `ui.updateParams(fn)`
-method which can be used the mutate the underlying params object:
-
-```ts
-ui.updateParams((params) => {
-	params.tagQuery = [["domain/another.example"]];
-});
-```
-
-The updates are immediately picked up and new a search request will be made on
-change.
-
-There is also a [`useParams()`](/ui/slot-overrides/hooks#useParams) hook for
-updating the params from [Slot Overrides](/ui/slot-overrides).
-
-## Params
-
-Following keys are available:
 
 ### `createdDecay: number` {#createdDecay}
 
@@ -69,7 +55,8 @@ language.
 
 ### `tagQuery: string[][]` {#tagQuery}
 
-Filter results using tags
+Filter results using tags. For more flexible filtering based on your custom
+fields see [`filter`](#filter).
 
 Logical AND and OR operators are supported.
 
@@ -110,8 +97,8 @@ const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
 	params: {
 		tagBoost: {
-            important: 2,
-        }
+			important: 2,
+		},
 	},
 });
 ```
@@ -119,3 +106,62 @@ const ui = new FindkitUI({
 This will increase the search score of pages with `important` tag by x2. It is
 also possible to down boost by using boost numbers less than one. Ex. 0.5 to
 drop the score to half.
+
+### `sort: Sort` {#sort}
+
+_New in v0.9.0_
+
+Use alternative sorting. By default search results are sorted by the relevancy
+score but it can be forced to be sorted by created or modified dates or by any
+custom field.
+
+Example
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	params: {
+		sort: {
+			created: {
+				$order: "asc",
+			},
+		},
+	},
+});
+```
+
+Multi-level sorting is also possible
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	params: {
+		sort: [
+			{
+				price: {
+					$order: "asc",
+				},
+			},
+			{
+				created: {
+					$order: "asc",
+				},
+			},
+		],
+	},
+});
+```
+
+If sorting values are the same, the search results are sorted by the relevance score.
+
+<Api page="ui.searchparams.sort" />
+
+### `filter: Filter` {#filter}
+
+_New in v0.9.0_
+
+Filter the search results by tags, created, modified, language and custom field
+using a MongoDB style filtering query. Read more on the
+[Filtering](/ui/filtering) page.
+
+<Api page="ui.filter" />

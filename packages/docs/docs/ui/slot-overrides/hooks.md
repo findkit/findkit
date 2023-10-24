@@ -1,23 +1,68 @@
 # Hooks and Utils
 
-Following utils can be imported from `"@findkit/ui"` for slot component usage.
+Following utils can be imported from `@findkit/ui` for slot component usage.
 
 Functions starting with the `use` keyword are
 [Preact](https://preactjs.com/guide/v10/hooks/) hooks.
 
 ### `useParams()` {#useParams}
 
-Hook for updating the [search params](/ui/api/params).
+Slot override hook version of [`updateParams`](/ui/api/#updateParams).
 
-TODO: example
+Example
+
+```ts
+import { FindkitUI, html, useInput } from "@findkit/ui";
+
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	slots: {
+		Header(props) {
+			const [params, setParams] = useParams();
+			const checked = params.filter.tags === "crawler";
+
+			return html`
+				${props.children}
+				<label>
+					<input
+						type="checkbox"
+						checked=${checked}
+						onChange=${() => {
+							setParams((params) => {
+								if (checked) {
+									params.filter.tags = "crawler";
+								} else {
+									delete params.filter.tags;
+								}
+							});
+						}}
+					/>
+					Limit results with tag "crawler"
+				</label>
+			`;
+		},
+	},
+});
+```
 
 <Api page="ui.useparams" />
 
 ### `useGroups()` {#useGroups}
 
-Hook for updating the [groups](/ui/api/groups).
+Slot override Hook version of [`updateGroups`](/ui/api/#updateGroups).
 
-TODO: example
+Example
+
+```ts
+const [groups, setGroups] = useGroups();
+
+const onClick = () => {
+	setGroups((group1, groups2 /* ...groups */) => {
+		group1.title = "new title";
+		group2.params.filter.tags = "crawler";
+	});
+};
+```
 
 <Api page="ui.usegroups" />
 
@@ -40,13 +85,12 @@ const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
 	slots: {
 		Header(props) {
-            const ref = useInput();
+			const ref = useInput();
 			return html`<input type="text" ref=${ref} />`;
 		},
 	},
 });
 ```
-
 
 <Api page="ui.useinput" />
 

@@ -13,18 +13,17 @@ Example
 
 ```html
 <main>
-    <div data-fdk-content>
-        I will be indexed.
-        <div>As will I.</div>
-    </div>
+	<div data-fdk-content>
+		I will be indexed.
+		<div>As will I.</div>
+	</div>
 
-    <p>
-    I won't be indexed because containing element or any of its parents does
-    not have the data-fdk-content attribute
-    </p>
+	<p>
+		I won't be indexed because containing element or any of its parents does not
+		have the data-fdk-content attribute
+	</p>
 </main>
 ```
-
 
 ## `data-fdk-content-no-highlight` {#data-fdk-content-no-highlight}
 
@@ -98,4 +97,4 @@ Example
 <div data-fdk-superwords>superman spiderman</div>
 ```
 
-Would equal to a meta tag with `superwords: ["superman", "spiderman"]` 
+Would equal to a meta tag with `superwords: ["superman", "spiderman"]`

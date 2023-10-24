@@ -42,6 +42,37 @@ test("search input is throttled", async ({ page }) => {
 	expect(fetchCount).toBeLessThan(5);
 });
 
+test("page load search is not throttled", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			fetchThrottle: 31_000,
+		});
+
+		await ui.preload();
+
+		const started = Date.now();
+
+		ui.on("fetch", () => {
+			(window as any).fetchTime = Date.now() - started;
+		});
+
+		ui.open("boots");
+	});
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	const fetchTime = await page.evaluate(async () => {
+		return (window as any).fetchTime;
+	});
+
+	expect(fetchTime).toBeLessThan(50);
+});
+
 test("search input is throttled for trailing invoke", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
 

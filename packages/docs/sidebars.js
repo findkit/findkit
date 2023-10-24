@@ -55,6 +55,13 @@ const sidebars = {
 					],
 				},
 				"ui/styling",
+				{
+					type: "category",
+					label: "Filtering",
+					link: { type: "doc", id: "ui/filtering/index" },
+					items: ["ui/filtering/intro", "ui/filtering/operators"],
+				},
+				"ui/custom-router-data",
 				"ui/tech",
 				{
 					type: "category",

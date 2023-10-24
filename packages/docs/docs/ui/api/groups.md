@@ -11,7 +11,6 @@ const ui = new FindkitUI({
 	groups: [
 		{
 			title: "Pages",
-			id: "pages",
 			previewSize: 3,
 			params: {
 				// Search Params
@@ -20,7 +19,6 @@ const ui = new FindkitUI({
 		},
 		{
 			title: "PDF-files",
-			id: "pdf",
 			previewSize: 3,
 			params: {
 				tagQuery: [["pdf"]],
@@ -34,8 +32,15 @@ When a search is made with this configuration it will display results from each
 group as searches are made. The result amount per group is determined by the
 `previewSize` key.
 
+The groups can be dynamically updated using the
+[`ui.updateGroups()`](/ui/api/#updateGroups) method and the
+[`useGroups()`](/ui/slot-overrides/hooks#useParams) hook to update from [Slot
+Overrides](/ui/slot-overrides).
+
 :::caution
-The `groups` option cannot be mixed with the `params` option. Eg. this does not work:
+The `groups` option cannot be mixed with the top-level `params` option because
+each group contains its own `params` as seen in the above example Eg. this does
+not work:
 
 ```ts
 const ui = new FindkitUI({
@@ -43,30 +48,14 @@ const ui = new FindkitUI({
 	params: {}  // ❌ Broken!!
 	groups: [], // ❌ Broken!!
 });
+
 ```
 
 :::
 
-## Dynamic Update
-
-The groups can be also updated on the fly with `ui.updateGroups(fn)` method:
-
-```ts
-ui.updateGroups((pages, pdf) => {
-	pages.previewSize = 5;
-	pdf.previewSize = 5;
-});
-```
-
-There is also a [`useGroups()`](/ui/slot-overrides/hooks#usegroups) hook for updating the groups from [Slot Overrides](/ui/slot-overrides/).
-
 ## Options
 
-Following options are available for each group.
-
-### `id: string` {#id}
-
-Unique id of the group. Required.
+<Api page="ui.groupdefinition" />
 
 ### `title: string` {#title}
 
@@ -84,6 +73,31 @@ How many search results to show when all groups are rendered.
 
 Boost (multiply) the results relevancy within the group. Meaningful only when
 [`groupOrder`](/ui/api/#groupOrder) is set to `relevancy`.
+
+### `id: string` {#id}
+
+Unique id of the group. Automatically generated if not defined. Can be used to
+pick a specific group in [`.updateGroups()`](/ui/api/#updateGroups),
+[`.groups`](/ui/api/#groups) or in the
+[`useGroups()`](/ui/slot-overrides/hooks#useGroups) hook.
+
+Example
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	groups: [
+		// ...
+		{ id: "pdf", title: "PDF-files" },
+		// ...
+	],
+});
+
+ui.updateGroups((...groups) => {
+	const pdf = groups.find((g) => g.id === "pdf");
+	pdf.params.filter.tags = "pdf";
+});
+```
 
 ## Try it!
 

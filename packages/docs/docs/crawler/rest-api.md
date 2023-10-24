@@ -4,7 +4,7 @@ The REST API can be used to start crawls.
 
 ## API Keys
 
-Go to your project in the Findkit Hub and generate the API KEY in ***Settings*** -> ***API Keys***.
+Go to your project in the Findkit Hub and generate the API KEY in **_Settings_** -> **_API Keys_**.
 
 ## Usage
 
@@ -55,7 +55,6 @@ Authorization: Bearer {{API_KEY}}
     "urls": ["https://www.example.com/page"]
 }
 ```
-
 
 ## OpenApi
 

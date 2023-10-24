@@ -10,7 +10,8 @@ function App() {
 	const [params, setParams] = useState<SearchParams>();
 	const currentTag = params?.tagQuery?.[0]?.[0];
 
-	const setTag = (tag: string | null) => {
+	const setTag = (tag?: string) => {
+		uiRef.current?.setCustomRouterData({ tag: tag ?? "" });
 		uiRef.current?.updateParams((params) => {
 			if (tag) {
 				params.tagQuery = [[tag]];
@@ -34,12 +35,22 @@ function App() {
 			params: {
 				tagQuery: [["crawler"]],
 			},
+			async load() {
+				return impl
+			}
 		});
 
+		// Sync Search Params to the React tate
 		setParams(ui.params);
-
 		ui.on("params", (e) => {
 			setParams(e.params);
+		});
+
+		// Restore previous state from the url
+		ui.on("custom-router-data", (e) => {
+			if (e.data.tag) {
+				setTag(e.data.tag);
+			}
 		});
 
 		if (inputRef.current) {

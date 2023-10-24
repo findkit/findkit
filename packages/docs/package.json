@@ -29,7 +29,8 @@
 	"devDependencies": {
 		"@docusaurus/module-type-aliases": "2.1.0",
 		"@types/node": "^16.0.0",
-		"netlify-cli": "^11.5.1"
+		"netlify-cli": "^11.5.1",
+		"prettier": "^3.0.3"
 	},
 	"browserslist": {
 		"production": [

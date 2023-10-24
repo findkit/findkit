@@ -1,7 +1,6 @@
- # Example
+# Example
 
- Full example of a [`findkit.toml`](/toml) file.
-
+Full example of a [`findkit.toml`](/toml) file.
 
 ```toml
 id = "pd32hfasd"

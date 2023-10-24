@@ -128,7 +128,7 @@ export interface SearchParams {
 	 *
 	 * See {@link Filter}
 	 *
-	 * See https://docs.findkit.com/ui-api/ui.filter/
+	 * https://docs.findkit.com/ui/api/params#filter
 	 *
 	 */
 	filter?: Filter;
@@ -140,7 +140,7 @@ export interface SearchParams {
 	 *
 	 * See {@link Sort}
 	 *
-	 * See https://docs.findkit.com/ui-api/ui.sort/
+	 * https://docs.findkit.com/ui/api/params#sort
 	 *
 	 */
 	sort?: Sort | Sort[];
@@ -341,7 +341,7 @@ const SINGLE_GROUP_NAME = Object.freeze({
  * @public
  */
 export interface CustomRouterData {
-	[key: string]: string;
+	[key: string]: string | undefined;
 }
 
 /**
@@ -367,7 +367,9 @@ export class FindkitURLSearchParams {
 			}
 
 			for (const [key, value] of Object.entries(data)) {
-				next.PRIVATE_params.set(next.PRIVATE_customDataPrefix + key, value);
+				if (value !== undefined) {
+					next.PRIVATE_params.set(next.PRIVATE_customDataPrefix + key, value);
+				}
 			}
 		});
 	}
@@ -955,14 +957,10 @@ export class SearchEngine {
 
 	private PRIVATE_ignoreNextAddressbarUpdate = false;
 
+	private PRIVATE_pendingCustomRouterData?: CustomRouterData;
+
 	setCustomRouterData(data: CustomRouterData) {
-		this.PRIVATE_started(() => {
-			const next = this.PRIVATE_getfindkitParams().setCustomData(data);
-			this.updateAddressBar(next, {
-				push: false,
-				ignore: true,
-			});
-		});
+		this.PRIVATE_pendingCustomRouterData = data;
 	}
 
 	updateAddressBar = (
@@ -1340,6 +1338,17 @@ export class SearchEngine {
 		this.PRIVATE_pendingRequestIds.set(requestId, abortController);
 
 		this.events.emit("fetch", { terms: options.terms, id: String(requestId) });
+
+		if (this.PRIVATE_pendingCustomRouterData) {
+			const next = this.PRIVATE_getfindkitParams().setCustomData(
+				this.PRIVATE_pendingCustomRouterData,
+			);
+			this.PRIVATE_pendingCustomRouterData = undefined;
+			this.updateAddressBar(next, {
+				push: false,
+				ignore: true,
+			});
+		}
 
 		// await new Promise((resolve) =>
 		// 	setTimeout(resolve, 1000 + Math.random() * 4000),
