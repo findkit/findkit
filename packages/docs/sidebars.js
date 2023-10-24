@@ -24,6 +24,7 @@ const sidebars = {
 				"crawler/getting-started",
 				"crawler/running-crawls",
 				"crawler/indexing",
+				"crawler/testing-crawls",
 				"crawler/data-attributes",
 				"crawler/pdf",
 				"crawler/tagging",
