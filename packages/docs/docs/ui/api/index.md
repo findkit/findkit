@@ -241,7 +241,7 @@ Defaults to `true`
 
 _New in v0.9.0_
 
-How often to make search requests at most in milliseconds.
+Minimum time between search requests in milliseconds.
 
 Defaults to `200`
 
@@ -340,7 +340,7 @@ can mutated or a new one can be returned. A new search request is sent when the
 updated params differ from the previously used params.
 
 Calls are throttled with leading invoke, meaning that the first call is made
-immediately and subsequent call every 200ms or what is defined in
+immediately and subsequent calls every 200ms or what is defined in
 [`fetchThrottle`](#fetchThrottle).
 
 Example

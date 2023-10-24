@@ -85,7 +85,7 @@ To put it all together see this example:
 
 <Codesandbox example="static/custom-ui" />
 
-This pattern can be used to synchonize much more complex states too. See
+This pattern can be used to synchronize much more complex states too. See
 [this](todo) example which uses radio buttons, checkboxes and options or
 [this](todo) React.js state example.
 

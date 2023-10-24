@@ -62,7 +62,7 @@ ui.updateParams({
 });
 ```
 
-If this filter were written in Javascript, it would look like this:
+If this filter was written in Javascript, it would look like this:
 
 ```js
 if (
