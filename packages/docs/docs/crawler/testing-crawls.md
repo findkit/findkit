@@ -66,7 +66,7 @@ When developing the [Findkit Meta Tag](/crawler/meta-tag) you can run the crawl
 using `--local` override and target your local development site.
 
 ```
-findkit test crawl --local "http://localhost:3000/crawler/running-crawls/" "https://docs.findkit.com/crawler/running-crawls/"
+findkit test crawl --local "http://localhost:3000" "https://docs.findkit.com/crawler/running-crawls/"
 ```
 
 This first runs a local HTTP GET request from the CLI process to the URL
