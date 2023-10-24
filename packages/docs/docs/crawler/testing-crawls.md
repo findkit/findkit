@@ -60,34 +60,40 @@ $ findkit crawl test "https://docs.findkit.com/crawler/running-crawls"
 [ERROR] 14:
 ```
 
-## Testing localhost
+## Testing local dev and staging sites
 
 When developing the [Findkit Meta Tag](/crawler/meta-tag) you can run the crawl
-using `--local` override and target your local development site.
+against localhost with `--local-connection` and `--rewrite`
 
 ```
-findkit test crawl --local "http://localhost:3000" "https://docs.findkit.com/crawler/running-crawls/"
+findkit crawl test --local-connection --rewrite "http://localhost:3000" "https://docs.findkit.com/crawler/running-crawls/"
 ```
 
-This first runs a local HTTP GET request from the CLI process to the URL
-provided in `--local` and sends the received HTML string with the test
-crawl URL to the Findkit crawler. Then the crawler will just directly parses
-the given HTML without making itself making HTTP requests.
+This picks up the `docs.findkit.com` target from the toml config and rewrites the URL to
 
-This can be used crawl any site accessible from you local machine for example
+```
+http://localhost:3000/crawler/running-crawls/
+```
+
+and makes the HTTP request to it directly from the CLI process. The HTML string
+is then passed to the Findkit crawler to be parsed. The crawler will see an
+artificial response to `http://localhost:3000/crawler/running-crawls/` with
+the locally fetched HTML. It does not make any outgoing network requests.
+
+This can be used crawl any site accessible from you local machine. For example
 staging sites that are behind firewalls etc.
 
 ## Testing local files
 
-The `--local` flag can also point to a local file
+It is also possible to crawl local files with `--file`
 
 ```
-findkit test crawl --local page.html "https://docs.findkit.com/crawler/running-crawls/"
+findkit crawl test --file page.html "https://docs.findkit.com/crawler/running-crawls/"
 ```
 
 This can be useful if you need to quickly try out how to fix production site.
 
-For example use curl download the page
+For example use curl to download a page
 
 ```
 curl "https://docs.findkit.com/crawler/running-crawls/" > page.html
@@ -102,5 +108,14 @@ vim page.html
 and see if it worked
 
 ```
-findkit test crawl --local page.html "https://docs.findkit.com/crawler/running-crawls/"
+findkit crawl test --file page.html "https://docs.findkit.com/crawler/running-crawls/"
 ```
+
+The `--rewrite` can be also combined with `--file` if the local file has
+references to host other than `docs.findkit.com`.
+
+```
+findkit crawl test --file page.html --rewrite "http://localhost:3000" "https://docs.findkit.com/crawler/running-crawls/"
+```
+
+T
