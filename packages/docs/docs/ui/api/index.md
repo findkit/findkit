@@ -291,8 +291,12 @@ invoked.
 _New in v0.9.0_
 
 Set custom data to the Findkit Router. The value is flushed to the url only
-when a search request is made. The object values can only be strings. In
-Typescript terms the type is `{[key: string]: string | undefined}`.
+when a search request is made. Eg. usually should be called right before
+[`updateParams`](#updateParams) or [`updateGroups`](#updateGroups) or in the
+[`fetch`](#/ui/api/events#fetch) event.
+
+The object values can only be strings. In Typescript terms the `data` type is
+`{[key: string]: string }`.
 
 - See [`custom-router-data`](/ui/api/events#custom-router-data) event
 - See [`defaultCustomRouterData`](#defaultCustomRouterData) constructor option
