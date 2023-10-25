@@ -1,102 +1,107 @@
 <!doctype html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Static Template</title>
+		<link
+			rel="stylesheet"
+			href="https://unpkg.com/missing.css/dist/missing.min.css"
+		/>
+		<script type="module">
+			import {
+				FindkitUI,
+				html,
+			} from "https://cdn.findkit.com/ui/v0.9.0/esm/index.js";
 
-<head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Static Template</title>
-	<script type="module">
-		import {
-			FindkitUI,
-			html,
-		} from "https://cdn.findkit.com/ui/v0.9.0/esm/index.js";
-
-		const ui = new FindkitUI({
-			publicToken: "pW1D0p0Dg",
-			modal: false,
-			container: "#container",
-			minTerms: 0,
-			params: {lang: "en", sort: {price: {$order: "asc"}}},
-			css: `
-				.findkit--hit {
-					padding: 4px;
-				}
-
-				.findkit--hit h2 {
-					margin: 0;
-					font-size: 14pt;
-				}
-				
-
-			`,
-			slots: {
-				Hit(props) {
-					return html`
-							<h2>
+			const ui = new FindkitUI({
+				publicToken: "pW1D0p0Dg",
+				modal: false,
+				container: "#container",
+				shadowDom: false,
+				header: false,
+				minTerms: 0,
+				params: { lang: "en", sort: { price: { $order: "asc" } } },
+				slots: {
+					Hit(props) {
+						return html`
+							<h3>
 								${props.hit.title}
 								<em>${" - " + props.hit.customFields.price?.value} EUR</em>
-							</h2>
-							<p dangerouslySetInnerHTML=${{__html: props.hit.highlight}}></p>
+							</h3>
+							<div dangerouslySetInnerHTML=${{ __html: props.hit.highlight }}></div>
 						`;
+					},
 				},
-			},
 
-			defaultCustomRouterData: {min: "0", max: "500"},
-		});
-
-		const form = document.querySelector("form");
-
-		// On form changes
-		form.addEventListener("input", () => {
-			// Save form state to the URL
-			ui.setCustomRouterData(Object.fromEntries(new FormData(form)));
-
-			// And make a search
-			updateSearch();
-		});
-
-		// Restore form state from the URL on page load
-		ui.on("custom-router-data", (e) => {
-			// Restore form input values
-			for (const [name, value] of Object.entries(e.data)) {
-				form.elements.namedItem(name).value = value;
-			}
-
-			// Update search too since programmatic form update
-			// does not trigger the "input" events
-			updateSearch();
-		});
-
-		function updateSearch() {
-			ui.updateParams((params) => {
-				const data = Object.fromEntries(new FormData(form));
-
-				const $and = [];
-
-				if (data.min) {
-					$and.push({price: {$gte: data.min}});
-				}
-
-				if (data.max) {
-					$and.push({price: {$lte: data.max}});
-				}
-
-				params.filter.$and = $and;
+				defaultCustomRouterData: { min: "0", max: "500" },
 			});
-		}
-	</script>
-</head>
 
-<body>
-	<form>
-		<p>
-			<label>Min <input type="number" name="min" step="10" /></label>
-			<label>Max <input type="number" name="max" step="10" /></label>
-			<a href="?">Reset</a>
-		</p>
-	</form>
+			ui.bindInput(".search")
 
-	<div id="container"></div>
-</body>
+			const form = document.querySelector("form");
 
+			// On form changes
+			form.addEventListener("input", () => {
+				// Save form state to the URL
+				ui.setCustomRouterData(Object.fromEntries(new FormData(form)));
+
+				// And make a search
+				updateSearch();
+			});
+
+			// Restore form state from the URL on page load
+			ui.on("custom-router-data", (e) => {
+				// Restore form input values
+				for (const [name, value] of Object.entries(e.data)) {
+					form.elements.namedItem(name).value = value;
+				}
+
+				// Update search too since programmatic form update
+				// does not trigger the "input" events
+				updateSearch();
+			});
+
+			function updateSearch() {
+				ui.updateParams((params) => {
+					const data = Object.fromEntries(new FormData(form));
+
+					const $and = [];
+
+					if (data.min) {
+						$and.push({ price: { $gte: data.min } });
+					}
+
+					if (data.max) {
+						$and.push({ price: { $lte: data.max } });
+					}
+
+					params.filter.$and = $and;
+				});
+			}
+		</script>
+	</head>
+
+	<body>
+		<header>
+			<h1>Simple E-Commerce Search with Findkit</h1>
+			<p>See the <a href="/static/shop/">full example</a> as well.</p>
+		</header>
+		<main>
+			<form>
+				<fieldset>
+					<legend>Search</legend>
+					<label>Keywords <input type="text" class="search" /></label>
+				</fieldset>
+				<fieldset>
+					<legend>Filter</legend>
+					<label>Min <input type="number" name="min" step="10" /></label>
+					<label>Max <input type="number" name="max" step="10" /></label>
+					<a href="?">Reset</a>
+				</fieldset>
+
+				<div id="container"></div>
+			</form>
+		</main>
+	</body>
 </html>

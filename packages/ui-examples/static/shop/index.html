@@ -1,249 +1,268 @@
 <!doctype html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Static Template</title>
+		<link
+			rel="stylesheet"
+			href="https://unpkg.com/missing.css/dist/missing.min.css"
+		/>
+	</head>
 
-<head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Static Template</title>
-</head>
+	<body>
+		<header>
+			<h1>E-Commerce Search with Findkit</h1>
+		</header>
+		<main>
+			<form role="search">
+				<fieldset>
+					<legend>Search</legend>
+					<label>
+						Keywords
+						<input type="search" />
+					</label>
+				</fieldset>
+				<fieldset>
+					<legend>Limit by price</legend>
+					<label>
+						Min
+						<input type="number" name="min" step="10" />
+					</label>
+					<label>
+						Max
+						<input type="number" name="max" step="10" />
+					</label>
+				</fieldset>
 
-<body>
-	<header>
-		<form role="search">
-			<fieldset>
-				<legend>Search</legend>
-				<label>
-					Keywords
-					<input type="search" />
-				</label>
-				<div>
-					<a href="?">Reset filters to defaults</a>
+				<div class="f-row">
+					<fieldset class="table rows">
+						<legend>Sort</legend>
+
+						<label>
+							<input type="radio" name="sort" value="relevancy" />
+							Most relevant first
+						</label>
+						<label>
+							<input type="radio" name="sort" value="price_asc" />
+							Cheapest first
+						</label>
+						<label>
+							<input type="radio" name="sort" value="price_desc" />
+							Most expensive first
+						</label>
+					</fieldset>
+
+					<fieldset class="table rows">
+						<legend>Category</legend>
+						<label>
+							<input type="checkbox" name="category" value="Jewelry" />
+							Jewelry
+						</label>
+						<label>
+							<input type="checkbox" name="category" value="Electronics" />
+							Electronics
+						</label>
+						<label>
+							<input type="checkbox" name="category" value="Clothing" />
+							Clothing
+						</label>
+						<label>
+							<input type="checkbox" name="category" value="Furniture" />
+							Furniture
+						</label>
+					</fieldset>
 				</div>
-			</fieldset>
-			<fieldset>
-				<legend>Limit by price</legend>
-				<label>
-					Min
-					<input type="number" name="min" step="10" />
-				</label>
-				<label>
-					Max
-					<input type="number" name="max" step="10" />
-				</label>
-			</fieldset>
 
-			<fieldset>
-				<legend>Sort</legend>
-				<label>
-					<input type="radio" name="sort" value="relevancy" />
-					Most relevant first
-				</label>
-				<label>
-					<input type="radio" name="sort" value="price_asc" />
-					Cheapest first
-				</label>
-				<label>
-					<input type="radio" name="sort" value="price_desc" />
-					Most expensive first
-				</label>
-			</fieldset>
-			<fieldset>
-				<legend>Category</legend>
-				<label>
-					<input type="checkbox" name="category" value="Jewelry" />
-					Jewelry
-				</label>
-				<label>
-					<input type="checkbox" name="category" value="Electronics" />
-					Electronics
-				</label>
-				<label>
-					<input type="checkbox" name="category" value="Clothing" />
-					Clothing
-				</label>
-				<label>
-					<input type="checkbox" name="category" value="Furniture" />
-					Furniture
-				</label>
-			</fieldset>
-			<fieldset>
-				<legend>Misc</legend>
-				<label>Language
-					<select name="lang">
-						<option value="any">Any</option>
-						<option value="en">English</option>
-						<option value="fi">Finnish</option>
-						<option value="sv">Swedish</option>
-					</select></label>
-				<label>
-					<input type="checkbox" name="in_stock" value="true" />
-					Is in stock
-				</label>
-			</fieldset>
-		</form>
-	</header>
+				<fieldset class="f-row">
+					<legend>Misc</legend>
+					<label
+						>Language
+						<select name="lang">
+							<option value="any">Any</option>
+							<option value="en">English</option>
+							<option value="fi">Finnish</option>
+							<option value="sv">Swedish</option>
+						</select></label
+					>
+					<label>
+						<input type="checkbox" name="in_stock" value="true" />
+						Is in stock
+					</label>
+					<div>
+						<a href="?">Reset filters to defaults</a>
+					</div>
+				</fieldset>
 
-	<main>
-		<div class="findkit-container"></div>
-	</main>
-	<script type="module">
-		import {
-			FindkitUI,
-			html,
-			css,
-		} from "https://cdn.findkit.com/ui/v0.9.0/esm/index.js";
+				<section class="findkit-container"></section>
+			</form>
+		</main>
+		<script type="module">
+			import {
+				FindkitUI,
+				html,
+				css,
+			} from "https://cdn.findkit.com/ui/v0.9.0/esm/index.js";
 
-		const ui = new FindkitUI({
-			publicToken: "pW1D0p0Dg",
-			container: document.querySelector(".findkit-container"),
-			minTerms: 0,
-			header: false,
-			modal: false,
-			defaultCustomRouterData: {
-				min: "10",
-				max: "500",
-				lang: "en",
-			},
-			css: css`
+			const ui = new FindkitUI({
+				publicToken: "pW1D0p0Dg",
+				container: document.querySelector(".findkit-container"),
+				minTerms: 0,
+				header: false,
+				modal: false,
+				shadowDom: false,
+				defaultCustomRouterData: {
+					min: "10",
+					max: "500",
+					lang: "en",
+				},
+				css: css`
+					.findkit--container {
+						--findkit--brand-color: var(--accent);
+					}
 					table {
 						width: max-content;
 					}
+
 					th,
 					td {
-						border: 1px solid gray;
+						border: 1px solid var(--graphical-fg);
 						padding: 5px;
 					}
 				`,
-			slots: {
-				Hit(props) {
-					return html`
-							<h2>${props.hit.title}</h2>
-							<table>
-								<tr>
-									<td>Price</td>
-									<td class="price">${props.hit.customFields.price?.value}</td>
-								</tr>
-								<tr>
-									<td>Stock</td>
-									<td class="stock">
-										${props.hit.customFields.quantity?.value}
-									</td>
-								</tr>
-								<tr>
-									<td>Category</td>
-									<td class="category">
-										${props.hit.customFields.category?.value}
-									</td>
-								</tr>
-								<tr>
-									<td>Weight</td>
-									<td class="weight">
-										${props.hit.customFields.weight?.value}
-									</td>
-								</tr>
-								<tr>
-									<td>Language</td>
-									<td class="language">${props.hit.language}</td>
-								</tr>
-							</table>
+				slots: {
+					Hit(props) {
+						return html`
+							<div class="box" >
+								<h2>${props.hit.title}</h2>
+								<table style=${{ background: "var(--bg)" }}>
+									<tr>
+										<th>Price</th>
+										<td class="price">
+											${props.hit.customFields.price?.value}
+										</td>
+									</tr>
+									<tr>
+										<th>Stock</th>
+										<td class="stock">
+											${props.hit.customFields.quantity?.value}
+										</td>
+									</tr>
+									<tr>
+										<th>Category</th>
+										<td class="category">
+											${props.hit.customFields.category?.value}
+										</td>
+									</tr>
+									<tr>
+										<th>Weight</th>
+										<td class="weight">
+											${props.hit.customFields.weight?.value}
+										</td>
+									</tr>
+									<tr>
+										<th>Language</th>
+										<td class="language">${props.hit.language}</td>
+									</tr>
+								</table>
+							</div>
 						`;
+					},
 				},
-			},
-		});
-
-		const form = document.querySelector("form[role=search]");
-
-		ui.bindInput("input[type=search]");
-
-		form.addEventListener("input", () => {
-			readParamsFromForm();
-		});
-
-		ui.on("custom-router-data", (e) => {
-			updateForm(form, {
-				...e.data,
-				sort: e.data.sort || "relevancy",
-				category: e.data.category?.split(","),
-			});
-			readParamsFromForm();
-		});
-
-		function readParamsFromForm() {
-			const formData = new FormData(form);
-			ui.setCustomRouterData({
-				...Object.fromEntries(formData),
-				category: formData.getAll("category").join(","),
 			});
 
-			const min = Number(formData.get("min")) || null;
-			const max = Number(formData.get("max")) || null;
-			const sort = formData.get("sort");
-			const lang = formData.get("lang");
-			const inStock = Boolean(formData.get("in_stock"));
-			const category = formData.getAll("category").filter(Boolean);
+			const form = document.querySelector("form[role=search]");
 
-			ui.updateParams((params) => {
-				params.filter.price = {$gt: min, $lt: max};
+			ui.bindInput("input[type=search]");
 
-				if (!sort || sort === "relevancy") {
-					delete params.sort;
-				} else if (sort === "price_asc") {
-					params.sort.price = {$order: "asc"};
-				} else if (sort === "price_desc") {
-					params.sort.price = {$order: "desc"};
-				}
-
-				if (category.length > 0) {
-					params.filter.category = {$in: category};
-				} else {
-					delete params.filter.category;
-				}
-
-				if (!lang || lang === "any") {
-					delete params.lang;
-				} else {
-					params.lang = lang;
-				}
-
-				if (inStock) {
-					params.filter.quantity = {$gt: 0};
-				} else {
-					delete params.filter.quantity;
-				}
+			form.addEventListener("input", () => {
+				readParamsFromForm();
 			});
-		}
 
-		/**
-		 * @param {HTMLFormElement} form
-		 * @param {{ [key: string]: string | string[] }} data
-		 */
-		function updateForm(form, data) {
-			for (const [key, values] of Object.entries(data)) {
-				const item = form.elements.namedItem(key);
-				const arrayValues = Array.isArray(values) ? values : [values];
-				for (const value of arrayValues) {
-					const list =
-						item instanceof RadioNodeList ? Array.from(item) : [item];
-					for (const el of list) {
-						if (el instanceof HTMLSelectElement) {
-							for (const option of el.options) {
-								if (option.value === value) {
-									option.selected = true;
-									continue;
+			ui.on("custom-router-data", (e) => {
+				updateForm(form, {
+					...e.data,
+					sort: e.data.sort || "relevancy",
+					category: e.data.category?.split(","),
+				});
+				readParamsFromForm();
+			});
+
+			function readParamsFromForm() {
+				const formData = new FormData(form);
+				ui.setCustomRouterData({
+					...Object.fromEntries(formData),
+					category: formData.getAll("category").join(","),
+				});
+
+				const min = Number(formData.get("min")) || null;
+				const max = Number(formData.get("max")) || null;
+				const sort = formData.get("sort");
+				const lang = formData.get("lang");
+				const inStock = Boolean(formData.get("in_stock"));
+				const category = formData.getAll("category").filter(Boolean);
+
+				ui.updateParams((params) => {
+					params.filter.price = { $gt: min, $lt: max };
+
+					if (!sort || sort === "relevancy") {
+						delete params.sort;
+					} else if (sort === "price_asc") {
+						params.sort.price = { $order: "asc" };
+					} else if (sort === "price_desc") {
+						params.sort.price = { $order: "desc" };
+					}
+
+					if (category.length > 0) {
+						params.filter.category = { $in: category };
+					} else {
+						delete params.filter.category;
+					}
+
+					if (!lang || lang === "any") {
+						delete params.lang;
+					} else {
+						params.lang = lang;
+					}
+
+					if (inStock) {
+						params.filter.quantity = { $gt: 0 };
+					} else {
+						delete params.filter.quantity;
+					}
+				});
+			}
+
+			/**
+			 * @param {HTMLFormElement} form
+			 * @param {{ [key: string]: string | string[] }} data
+			 */
+			function updateForm(form, data) {
+				for (const [key, values] of Object.entries(data)) {
+					const item = form.elements.namedItem(key);
+					const arrayValues = Array.isArray(values) ? values : [values];
+					for (const value of arrayValues) {
+						const list =
+							item instanceof RadioNodeList ? Array.from(item) : [item];
+						for (const el of list) {
+							if (el instanceof HTMLSelectElement) {
+								for (const option of el.options) {
+									if (option.value === value) {
+										option.selected = true;
+										continue;
+									}
 								}
-							}
-						} else if (el instanceof HTMLInputElement) {
-							if (el.type === "checkbox" || el.type === "radio") {
-								el.checked = el.value === value;
-							} else {
-								el.value = value;
+							} else if (el instanceof HTMLInputElement) {
+								if (el.type === "checkbox" || el.type === "radio") {
+									el.checked = el.value === value;
+								} else {
+									el.value = value;
+								}
 							}
 						}
 					}
 				}
 			}
-		}
-	</script>
-</body>
-
+		</script>
+	</body>
 </html>
