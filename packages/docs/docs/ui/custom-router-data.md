@@ -85,10 +85,16 @@ To put it all together see this example:
 
 <Codesandbox example="static/custom-ui" />
 
-This pattern can be used to synchronize much more complex states too. See
-[this](todo) example which uses radio buttons, checkboxes and options or
-[this](todo) React.js state example.
-
 ## Complex Form {#complex}
 
+This pattern can be used to synchronize much more complex states too. Checkout this
+example using checkboxes, dropdown and radio buttons.
+
+<Codesandbox example="static/shop" />
+
 ## React.js state {#react}
+
+The URL state can be also synchronized the frontend framework state containers.
+See this React.js example:
+
+<Codesandbox example="bundled/react-custom-container" />
