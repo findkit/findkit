@@ -41,3 +41,10 @@ we will be using the npm import but it can be replaced with the CDN import.
 ## Try it!
 
 <Codesandbox example="static/simple" />
+
+## Typescript and npm {#typescript}
+
+Here's a version that uses npm, Typescript and modal-free setup in
+a custom container:
+
+<Codesandbox example="bundled/typescript" />
