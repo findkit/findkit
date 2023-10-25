@@ -81,7 +81,8 @@ when the params change form the previously made search.
 
 ## Demo
 
-To put it all together see this example:
+To put it all together see the following example. Open it to a new tab to see
+the URL.
 
 <Codesandbox example="static/custom-ui" />
 
