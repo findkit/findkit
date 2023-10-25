@@ -1,10 +1,10 @@
 # Custom Router Data
 
-When building custom user interfaces for `filter`, `sort` or any other [search
-params](/ui/api/params) you update dynamically via `updateParams` or
-`updateGroups` it is paramount that the UI is state is saved to the URL: When
-user clicks on a search result and decides to come back the UI state and search
-params should be restored to what they were.
+When building custom user interfaces for [`filter`](/ui/filtering/),
+[`sort`](/ui/api/params#sort) or any other Search Params] you update
+dynamically via `updateParams` or `updateGroups` it is paramount that the UI is
+state is saved to the URL: When user clicks on a search result and decides to
+come back the UI state and search params should be restored to what they were.
 
 Implementing this manually is tedious and hard to get right which is why
 FindkitUI provides [`.setCustomRouterData()`](/ui/api/#setCustomRouterData)
