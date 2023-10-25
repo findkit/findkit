@@ -44,7 +44,6 @@ we will be using the npm import but it can be replaced with the CDN import.
 
 ## Typescript and npm {#typescript}
 
-Here's a version that uses npm, Typescript and modal-free setup in
-a custom container:
+Here's a version which uses npm, Typescript and modal free config:
 
 <Codesandbox example="bundled/typescript" />
