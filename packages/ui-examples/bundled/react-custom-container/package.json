@@ -1,15 +1,15 @@
 {
-	"name": "example",
-	"private": true,
-	"scripts": {
-		"start": "parcel src/index.html",
-		"build": "parcel build src/index.html"
-	},
-	"dependencies": {
-		"@types/react": "^18.0.21",
-		"@types/react-dom": "^18.0.6",
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0",
-		"@findkit/ui": "0.7.0"
-	}
+  "name": "example",
+  "private": true,
+  "scripts": {
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html"
+  },
+  "dependencies": {
+    "@types/react": "^18.0.21",
+    "@types/react-dom": "^18.0.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@findkit/ui": "0.8.0-dev.7beb189539"
+  }
 }

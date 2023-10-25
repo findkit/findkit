@@ -5,7 +5,7 @@ CDN in a module script tag and bind to a button you want to open it from:
 
 ```html
 <script type="module">
-	import { FindkitUI } from "https://cdn.findkit.com/ui/v0.7.0/esm/index.js";
+	import { FindkitUI } from "https://cdn.findkit.com/ui/v0.8.0-dev.7beb189539/esm/index.js";
 	const ui = new FindkitUI({ publicToken: "<TOKEN>" });
 	ui.openFrom("button.open-search");
 </script>
