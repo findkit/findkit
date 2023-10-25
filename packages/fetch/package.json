@@ -14,7 +14,8 @@
 		"prerelease": "valu-npm-prerelease",
 		"tsc": "tsc",
 		"watch": "tsc -w --noEmit false --project tsconfig.build.json",
-		"build": "tsc --noEmit false --project tsconfig.build.json"
+		"build": "tsc --noEmit false --project tsconfig.build.json",
+		"prettier-write": "prettier --write src __tests__"
 	},
 	"author": "Valu Digital Oy",
 	"license": "MIT",

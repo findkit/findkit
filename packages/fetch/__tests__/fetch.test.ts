@@ -45,7 +45,7 @@ describe("fetch", () => {
 					duration: 123,
 				};
 				return res(ctx.json(resData));
-			})
+			}),
 		);
 
 		const res = await findkitFetch({
@@ -73,8 +73,8 @@ describe("fetch", () => {
 						duration: 123,
 					};
 					return res(ctx.json(resData));
-				}
-			)
+				},
+			),
 		);
 
 		const res = await findkitFetch({
@@ -84,7 +84,7 @@ describe("fetch", () => {
 
 		expect(res).toEqual({ duration: 123, groups: [] });
 		expect(spy).toHaveBeenCalledWith(
-			"https://search.findkit.com/c/thetoken/search?p=thetoken"
+			"https://search.findkit.com/c/thetoken/search?p=thetoken",
 		);
 	});
 
@@ -103,7 +103,7 @@ describe("fetch", () => {
 					duration: 123,
 				};
 				return res(ctx.json(resData));
-			})
+			}),
 		);
 		const res = await findkitFetch({
 			terms: "test",
@@ -125,7 +125,7 @@ describe("fetch", () => {
 						duration: 123,
 					};
 					return res(ctx.json(resData));
-				})
+				}),
 			);
 
 			const { fetch: findkitFetch } = createFindkitFetcher({
@@ -157,7 +157,7 @@ describe("fetch", () => {
 						duration: 123,
 					};
 					return res(ctx.json(resData));
-				})
+				}),
 			);
 
 			const fetcher = createFindkitFetcher({
@@ -198,7 +198,7 @@ describe("fetch", () => {
 						duration: 123,
 					};
 					return res(ctx.json(resData));
-				})
+				}),
 			);
 
 			const spy = vi.fn();

@@ -82,27 +82,26 @@ article a:not([href^="/"]):not([href^="#"]):after {
 }
 
 *:hover > .hash-link {
-    opacity: 0.5 !important;
+	opacity: 0.5 !important;
 }
 
 *:target > .hash-link {
 	opacity: 1 !important;
 }
 
-
 .hash-link::before {
-    display: inline-block;	
+	display: inline-block;
 }
 
 @keyframes highlight-target {
-	0%  {
+	0% {
 		transform: scale(1);
 	}
-	50%  {
+	50% {
 		transform: scale(2);
 	}
 	100% {
-	    transform: scale(1);
+		transform: scale(1);
 	}
 }
 

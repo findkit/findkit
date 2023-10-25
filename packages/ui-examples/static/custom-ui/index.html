@@ -1,86 +1,84 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Static Template</title>
+		<script type="module">
+			import {
+				FindkitUI,
+				html,
+			} from "https://cdn.findkit.com/ui/v0.8.0-dev.3e5567881c/esm/index.js";
 
-<head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Static Template</title>
-	<script type="module">
-		import {
-			FindkitUI,
-			html,
-		} from "https://cdn.findkit.com/ui/v0.8.0-dev.3e5567881c/esm/index.js";
-
-		const ui = new FindkitUI({
-			publicToken: "pW1D0p0Dg",
-			modal: false,
-			container: "#container",
-			minTerms: 0,
-			params: {sort: {price: {$order: "asc"}}},
-			slots: {
-				Hit(props) {
-					// prettier-ignore
-					return html`
+			const ui = new FindkitUI({
+				publicToken: "pW1D0p0Dg",
+				modal: false,
+				container: "#container",
+				minTerms: 0,
+				params: { sort: { price: { $order: "asc" } } },
+				slots: {
+					Hit(props) {
+						// prettier-ignore
+						return html`
 						${props.hit.customFields.price?.value} EUR
 						${props.children}
 					`;
+					},
 				},
-			},
 
-			defaultCustomRouterData: {min: "0", max: "100"},
-		});
-
-		const form = document.querySelector("form");
-
-		// On form changes
-		form.addEventListener("input", () => {
-			// Save form state to the URL
-			ui.setCustomRouterData(Object.fromEntries(new FormData(form)));
-
-			// And make a search
-			updateSearch();
-		});
-
-		// Restore form state from the URL on page load
-		ui.on("custom-router-data", (e) => {
-			// Restore form input values
-			for (const [name, value] of Object.entries(e.data)) {
-				form.elements.namedItem(name).value = value;
-			}
-
-			// Update search too since programmatic form update
-			// does not trigger the "input" events
-			updateSearch();
-		});
-
-		function updateSearch() {
-			ui.updateParams((params) => {
-				const data = Object.fromEntries(new FormData(form));
-
-				const $and = [];
-
-				if (data.min) {
-					$and.push({price: {$gte: data.min}});
-				}
-
-				if (data.max) {
-					$and.push({price: {$lte: data.max}});
-				}
-
-				params.filter.$and = $and;
+				defaultCustomRouterData: { min: "0", max: "100" },
 			});
-		}
-	</script>
-</head>
 
-<body>
-	<form>
-		<label>Min <input type="number" name="min" step="10" /></label>
-		<label>Max <input type="number" name="max" step="10" /></label>
-		<a href="?">Reset</a>
-	</form>
+			const form = document.querySelector("form");
 
-	<div id="container"></div>
-</body>
+			// On form changes
+			form.addEventListener("input", () => {
+				// Save form state to the URL
+				ui.setCustomRouterData(Object.fromEntries(new FormData(form)));
 
+				// And make a search
+				updateSearch();
+			});
+
+			// Restore form state from the URL on page load
+			ui.on("custom-router-data", (e) => {
+				// Restore form input values
+				for (const [name, value] of Object.entries(e.data)) {
+					form.elements.namedItem(name).value = value;
+				}
+
+				// Update search too since programmatic form update
+				// does not trigger the "input" events
+				updateSearch();
+			});
+
+			function updateSearch() {
+				ui.updateParams((params) => {
+					const data = Object.fromEntries(new FormData(form));
+
+					const $and = [];
+
+					if (data.min) {
+						$and.push({ price: { $gte: data.min } });
+					}
+
+					if (data.max) {
+						$and.push({ price: { $lte: data.max } });
+					}
+
+					params.filter.$and = $and;
+				});
+			}
+		</script>
+	</head>
+
+	<body>
+		<form>
+			<label>Min <input type="number" name="min" step="10" /></label>
+			<label>Max <input type="number" name="max" step="10" /></label>
+			<a href="?">Reset</a>
+		</form>
+
+		<div id="container"></div>
+	</body>
 </html>

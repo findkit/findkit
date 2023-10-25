@@ -52,6 +52,7 @@
 		"publish-build": "(cd ../../ && ./node_modules/.bin/turbo run build --filter @findkit/ui) && size-limit && jake upload",
 		"build-ui-api-docs": "jake build-ui-api-docs",
 		"serve-ui-api-docs": "cd api-docs-html && python3 -m http.server",
+		"prettier-write": "prettier --write src __tests__ e2e e2e-visual *.js *.ts",
 		"dev": "run-p 'dev:*'"
 	},
 	"author": "Valu Digital Oy",
