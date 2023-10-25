@@ -1,3 +1,17 @@
+## v0.9.0
+
+2023-10-25
+
+- Add [field filtering support](https://docs.findkit.com/ui/filtering/) for `created`, `modified`, `language`, `tags` and any custom fields
+- Add [sort search param](https://docs.findkit.com/ui/api/params#sort)
+- Add support for [custom router data](https://docs.findkit.com/ui/custom-router-data)
+- Add [fetchThrottle option](https://docs.findkit.com/ui/api/#fetchThrottle)
+- Implement ts generics for .params and .updateParams [a76132a](https://github.com/findkit/findkit/commit/a76132a) - Esa-Matti Suuronen
+- Use leading throttle for [`updateParams`](https://docs.findkit.com/ui/api/#updateParams) and `updateGroups`
+- Tons of bug fixes
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.8.0...ui/v0.9.0
+
 ## v0.8.0
 
 2023-10-17
