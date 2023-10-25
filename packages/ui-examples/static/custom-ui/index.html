@@ -17,17 +17,31 @@
 			container: "#container",
 			minTerms: 0,
 			params: {lang: "en", sort: {price: {$order: "asc"}}},
+			css: `
+				.findkit--hit {
+					padding: 4px;
+				}
+
+				.findkit--hit h2 {
+					margin: 0;
+					font-size: 14pt;
+				}
+				
+
+			`,
 			slots: {
 				Hit(props) {
-					// prettier-ignore
 					return html`
-							${props.hit.customFields.price?.value} EUR
-							${props.children}
-					    `;
+							<h2>
+								${props.hit.title}
+								<em>${" - " + props.hit.customFields.price?.value} EUR</em>
+							</h2>
+							<p dangerouslySetInnerHTML=${{__html: props.hit.highlight}}></p>
+						`;
 				},
 			},
 
-			defaultCustomRouterData: {min: "0", max: "100"},
+			defaultCustomRouterData: {min: "0", max: "500"},
 		});
 
 		const form = document.querySelector("form");
