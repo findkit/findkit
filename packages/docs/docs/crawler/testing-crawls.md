@@ -63,34 +63,32 @@ $ findkit crawl test "https://docs.findkit.com/crawler/running-crawls"
 ## Testing local dev and staging sites
 
 When developing the [Findkit Meta Tag](/crawler/meta-tag) you can run the crawl
-against localhost with `--local-connection` and `--rewrite`
+against localhost with `--local-http` and `--target`
 
 ```
-findkit crawl test --local-connection --rewrite "http://localhost:3000" "https://docs.findkit.com/crawler/running-crawls/"
+findkit crawl test --local-http --target docs.findkit.com "http://localhost:3000/crawler/running-crawls/"
 ```
 
-This picks up the `docs.findkit.com` target from the toml config and rewrites the URL to
+This uses the `docs.findkit.com` target from the toml config and makes the HTTP request to
 
 ```
 http://localhost:3000/crawler/running-crawls/
 ```
 
-and makes the HTTP request to it directly from the CLI process. The HTML string
-is then passed to the Findkit crawler to be parsed. The crawler will see an
-artificial response to `http://localhost:3000/crawler/running-crawls/` with
-the locally fetched HTML. It does itself not make any outgoing network requests.
+directly from the CLI process.
+
+The HTML string is then passed to the Findkit crawler to be parsed. It will see
+an artificial response to `http://localhost:3000/crawler/running-crawls/` with
+the locally fetched HTML. It does itself not make any outgoing network
+requests.
+
+:::tip
+If your toml file has only one target the `--target` option can omitted when
+using `--local-http`
+:::
 
 This can be used crawl any site accessible from you local machine. For example
 staging sites that are behind firewalls etc.
-
-Alternatively you can your target `host` in the toml to `localhost:3000` and
-just crawl that with `--local-connection`:
-
-```
-findkit crawl test --local-connection "http://localhost:3000/crawler/running-crawls/"
-```
-
-Just remember to revert this change before next `findkit deploy`.
 
 ## Testing local files
 
@@ -119,12 +117,3 @@ and see if it worked
 ```
 findkit crawl test --file page.html "https://docs.findkit.com/crawler/running-crawls/"
 ```
-
-The `--rewrite` can be also combined with `--file` if the local file has
-references to host other than `docs.findkit.com`.
-
-```
-findkit crawl test --file page.html --rewrite "http://localhost:3000" "https://docs.findkit.com/crawler/running-crawls/"
-```
-
-T
