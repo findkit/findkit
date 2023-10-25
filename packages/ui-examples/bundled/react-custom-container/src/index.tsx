@@ -35,9 +35,6 @@ function App() {
 			params: {
 				tagQuery: [["crawler"]],
 			},
-			async load() {
-				return impl;
-			},
 		});
 
 		// Sync Search Params to the React tate
