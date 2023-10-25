@@ -279,7 +279,6 @@ export class FocusTrap {
 			return;
 		}
 
-
 		// Avoid infinite recursion
 		if (attempts > this.PRIVATE_containers.length) {
 			console.warn("Failed to find focusable containers");

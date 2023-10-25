@@ -46,7 +46,7 @@ export interface FindkitErrorResponse {
 }
 
 async function safeErrorJson(
-	response: Response
+	response: Response,
 ): Promise<FindkitErrorResponse> {
 	const text = await response.text().catch(() => {
 		return "Failed to read response body";
@@ -173,7 +173,7 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 		if (token) {
 			if (typeof token.jwt !== "string") {
 				throw new Error(
-					"[findkit] Expected GetJwtToken response to contain a 'jwt' property"
+					"[findkit] Expected GetJwtToken response to contain a 'jwt' property",
 				);
 			}
 			endpoint.searchParams.set("p", `jwt:${token.jwt}`);
@@ -190,7 +190,7 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 			}
 
 			throw new Error(
-				"[findkit] Permission denied3: " + (error.message || error.error)
+				"[findkit] Permission denied3: " + (error.message || error.error),
 			);
 		}
 
@@ -199,7 +199,7 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 			throw new Error(
 				`[findkit] Bad response ${res.status} from search: ${
 					error.message || error.error
-				}`
+				}`,
 			);
 		}
 
@@ -212,14 +212,14 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 			console.log(
 				`[findkit] Response total ${total}ms, backend ${backendDuration}ms, network ${
 					total - backendDuration
-				}ms`
+				}ms`,
 			);
 
 			options.groups?.forEach((group, index) => {
 				const duration = responses.groups[index]?.duration ?? 0;
 				console.log(
 					`[findkit] Group response ${duration}ms for group "${index}"`,
-					group
+					group,
 				);
 			});
 		}
@@ -243,7 +243,7 @@ function inferSearchEndpoint(options?: FindkitFetchInit) {
 		const msg = "[findkit] Unable to determine search endpoint";
 		console.error(
 			`${msg}. The options object must contain either a 'publicToken' or a 'searchEndpoint' property`,
-			options
+			options,
 		);
 		throw new Error(`${msg}. See logs for details`);
 	}
