@@ -5,3 +5,5 @@ const ui = new FindkitUI({
 	modal: false,
 	container: "#container",
 });
+
+ui.open("crawler");
