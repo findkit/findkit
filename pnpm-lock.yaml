@@ -26,7 +26,7 @@ importers:
       '@docusaurus/core': 2.1.0
       '@docusaurus/module-type-aliases': 2.1.0
       '@docusaurus/preset-classic': 2.1.0
-      '@findkit/ui': '*'
+      '@findkit/ui': ^0.9.0
       '@mdx-js/react': ^1.6.22
       '@types/node': ^16.0.0
       '@valu/react-intersection-observer': ^1.0.0
@@ -40,7 +40,7 @@ importers:
     dependencies:
       '@docusaurus/core': 2.1.0_rw34wyrummvuuuhgiylphbvpae
       '@docusaurus/preset-classic': 2.1.0_rw34wyrummvuuuhgiylphbvpae
-      '@findkit/ui': 0.8.0-dev.7beb189539
+      '@findkit/ui': link:../ui
       '@mdx-js/react': 1.6.22_react@17.0.2
       '@valu/react-intersection-observer': 1.0.0_react@17.0.2
       clsx: 1.2.1
@@ -173,7 +173,7 @@ importers:
 
   packages/ui-examples:
     specifiers:
-      '@findkit/ui': '*'
+      '@findkit/ui': ^0.9.0
       '@types/react': ^18.0.21
       '@types/react-dom': ^18.0.6
       npm-run-all: ^4.1.5
@@ -184,7 +184,7 @@ importers:
       serve: ^14.0.1
       vite: ^3.1.3
     dependencies:
-      '@findkit/ui': 0.8.0-dev.7beb189539
+      '@findkit/ui': link:../ui
       '@types/react': 18.0.21
       '@types/react-dom': 18.0.6
       process: 0.11.10
@@ -2663,10 +2663,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
-
-  /@findkit/ui/0.8.0-dev.7beb189539:
-    resolution: {integrity: sha512-DA/tNlrikFD62Gaunr+RdB2xAbz657UwLeYU5xKKXPtHNrQshUeBjRfo3RkfjhECmVu158gqq2Bpm76rMdtsJg==}
-    dev: false
 
   /@hapi/hoek/9.3.0:
     resolution: {integrity: sha512-/c6rf4UJlmHlC9b5BaNvzAcFv7HZ2QHaV0D4/HNlBdvFnvQq8RI4kYdhyPCl7Xj+oWvTWQ8ujhqS53LIgAe6KQ==}
