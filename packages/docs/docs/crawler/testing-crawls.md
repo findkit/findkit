@@ -78,10 +78,19 @@ http://localhost:3000/crawler/running-crawls/
 and makes the HTTP request to it directly from the CLI process. The HTML string
 is then passed to the Findkit crawler to be parsed. The crawler will see an
 artificial response to `http://localhost:3000/crawler/running-crawls/` with
-the locally fetched HTML. It does not make any outgoing network requests.
+the locally fetched HTML. It does itself not make any outgoing network requests.
 
 This can be used crawl any site accessible from you local machine. For example
 staging sites that are behind firewalls etc.
+
+Alternatively you can your target `host` in the toml to `localhost:3000` and
+just crawl that with `--local-connection`:
+
+```
+findkit crawl test --local-connection "http://localhost:3000/crawler/running-crawls/"
+```
+
+Just remember to revert this change before next `findkit deploy`.
 
 ## Testing local files
 
