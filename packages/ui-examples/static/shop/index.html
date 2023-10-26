@@ -12,7 +12,9 @@
 
 	<body>
 		<header>
-			<h1>E-Commerce Search with <a href="https://www.findkit.com/">Findkit</a></h1>
+			<h1>
+				E-Commerce Search with <a href="https://www.findkit.com/">Findkit</a>
+			</h1>
 		</header>
 		<main>
 			<form role="search">
@@ -74,11 +76,12 @@
 					</fieldset>
 				</div>
 
-				<fieldset class="f-row justify-content:space-around align-items:center flex-wrap:wrap">
+				<fieldset
+					class="f-row justify-content:space-around align-items:center flex-wrap:wrap"
+				>
 					<legend>Misc</legend>
 
-					<label
-						class="f-row align-items:center"
+					<label class="f-row align-items:center"
 						>Language
 						<select name="lang">
 							<option value="any">Any</option>
@@ -135,8 +138,9 @@
 				slots: {
 					Hit(props) {
 						return html`
-							<div class="box" >
+							<div class="box">
 								<h2>${props.hit.title}</h2>
+								<div class="f-row">
 								<table style=${{ background: "var(--bg)" }}>
 									<tr>
 										<th>Price</th>
@@ -167,6 +171,12 @@
 										<td class="language">${props.hit.language}</td>
 									</tr>
 								</table>
+
+								<p
+									class="highlight"
+									dangerouslySetInnerHTML=${{ __html: props.hit.highlight }}
+								></p>
+								</div>
 							</div>
 						`;
 					},
