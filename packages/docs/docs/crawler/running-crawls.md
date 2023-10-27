@@ -45,7 +45,7 @@ findkit crawl start --partial
 
 ## Manual Crawl {#manual}
 
-Manual crawl will crawl only the urls you spesify when starting the crawl.
+Manual crawl will crawl only the urls you specify when starting the crawl.
 Manual crawls can be started using CLI and REST API.
 
 Example
