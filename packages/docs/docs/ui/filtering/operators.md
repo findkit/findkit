@@ -72,6 +72,8 @@ Desugars to [`$or`](#$or)
 
 If used with `tags` it matches if at least one document tag matches with provided values.
 
+
+
 ### `$all` {#$all}
 
 Works only with `tags`. Matches when all tags are found in the document.
@@ -91,6 +93,21 @@ Desugars to [`$and`](#$and)
 	$and: [{ tags: { $eq: "kitchen" } }, { tags: { $eq: "furniture" } }];
 }
 ```
+
+### `$not` {#$not}
+
+Negates the condition.
+
+Example: Match pages that do not have tag "foo"
+
+```ts
+{
+	$not: {
+		tags: "foo"
+	}
+}
+```
+
 
 ### `$or` {#$or}
 
