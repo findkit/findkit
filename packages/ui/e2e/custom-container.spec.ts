@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { getHitHosts, oneEvent, staticEntry } from "./helpers";
 
+declare const MOD: typeof import("../src/cdn-entries/index");
+
 test("can render the search view to a custom container", async ({ page }) => {
 	await page.goto(staticEntry("/custom-container"));
 	const hits = page.locator(".findkit--hit");
@@ -57,4 +59,49 @@ test("can use hooks", async ({ page }) => {
 	expect(Number(total)).toBeGreaterThan(10);
 	expect(Number(resultLength)).toBeGreaterThan(10);
 	expect(Number(total)).toBeGreaterThan(Number(resultLength));
+});
+
+test("modal is automatically disabled when using custom container", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const div = document.createElement("div");
+		document.body.appendChild(div);
+		const ui = new MOD.FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			container: div,
+		});
+		ui.open();
+	});
+
+	const plainContainer = page.locator(".findkit--plain");
+	await expect(plainContainer).toBeVisible();
+
+	const modal = page.locator(".findkit--modal");
+	await expect(modal).not.toBeVisible();
+});
+
+test("can force modal to customer container by setting modal:true", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const div = document.createElement("div");
+		document.body.appendChild(div);
+		const ui = new MOD.FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			container: div,
+			modal: true,
+		});
+		ui.open();
+	});
+
+	const modal = page.locator(".findkit--modal");
+	await expect(modal).toBeVisible();
+
+	const plainContainer = page.locator(".findkit--plain");
+	await expect(plainContainer).not.toBeVisible();
 });

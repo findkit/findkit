@@ -500,6 +500,11 @@ export function init(_options: {
 	};
 }) {
 	const options = { ..._options };
+	const hasCustomContainer = Boolean(options.container);
+
+	if (hasCustomContainer && typeof options.modal !== "boolean") {
+		options.modal = false;
+	}
 
 	if (options.ui) {
 		deprecationNotice(
@@ -532,8 +537,6 @@ export function init(_options: {
 			}
 		`;
 	}
-
-	const hasCustomContainer = Boolean(options.container);
 
 	let container =
 		options.shadowDom !== false
