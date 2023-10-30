@@ -8,10 +8,10 @@ This pattern can be used together with the modal patterns. For example a modal
 pattern can be used for the global site search and raw embeding for the more
 specific use cases.
 
-It can be implemented by passing a custom container to the
-[`container`](/ui/api/#container) option. This just renders the UI into the
-container without any [modal behaviour](/ui/api/#modal) such as focus trapping
-or container scrolling.
+It can be implement by setting [`modal: false`](/ui/api/#modal) and passing in a
+custom container to the [`container`](/ui/api/#container) option. This just
+renders the UI into the container without any modal behaviour such as focus
+trapping or container scrolling.
 
 ```ts
 const ui = new FindkitUI({
@@ -19,12 +19,11 @@ const ui = new FindkitUI({
 	// highlight-start
 	container: ".findkit-container",
 	// highlight-end
+	instanceId: "my",
 	minTerms: 0,
 	infiniteScroll: false,
 	header: false,
 });
-
-ui.preload();
 ```
 
 ## Considerations
@@ -36,8 +35,6 @@ ui.preload();
   [`infiniteScroll: false`](/ui/api/#infiniteScroll) to allow users to reach the
   footer.
 - Add fetching indicator
-- If the search interface is immediately shown on the page you'll want to call
-  [`preload`](/ui/api/#preload) to disable [lazy loading](/ui/tech#lazy-loading)
 
 ## Demo
 

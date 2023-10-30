@@ -36,9 +36,6 @@ function App() {
 			},
 		});
 
-		// https://docs.findkit.com/ui/api/#preload
-		void ui.preload();
-
 		// Sync Search Params to the React tate
 		setParams(ui.params);
 		ui.on("params", (e) => {
