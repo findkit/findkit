@@ -136,12 +136,14 @@ Send search requests to this custom endpoint.
 
 <Api page="ui.findkituioptions.searchEndpoint" />
 
-### `container: selector` {#container}
+### `container: selectorOrElement` {#container}
 
 Render the modal to a custom container. If not defined Findkit UI will create
 one dynamically and appends it to `<body>`.
 
 Can be defined as a CSS selector or as an `Element` object.
+
+Automatically sets [`modal: false`](#modal) if not explicitly defined.
 
 <Api page="ui.findkituioptions.container" />
 
