@@ -6,7 +6,7 @@ correctly on your site without actually updating the production index.
 For this we provide the `findkit crawl test` subcommand. Example
 
 ```
-findkit test crawl "https://docs.findkit.com/crawler/running-crawls/"
+findkit crawl test "https://docs.findkit.com/crawler/running-crawls/"
 ```
 
 This will read current the `findkit.toml` file from the current working
