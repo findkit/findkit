@@ -1,3 +1,16 @@
+## v0.10.0
+
+2023-10-30
+
+- Automatically set `modal: false` when using custom container [6c1b731](https://github.com/findkit/findkit/commit/6c1b731) - Esa-Matti Suuronen
+  - BREAKING: If using the [Content Overlay pattern](https://docs.findkit.com/ui/patterns/embedding/content-overlay)
+  - Must add explicit `modal: true`
+- Fix input clearing when loading page with predefined search terms [7c10602](https://github.com/findkit/findkit/commit/7c10602) - Esa-Matti Suuronen
+- Do not push to history when using a container element [f4d4824](https://github.com/findkit/findkit/commit/f4d4824) - Esa-Matti Suuronen
+  - Fixes back button when using custom container
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.9.0...ui/v0.10.0
+
 ## v0.9.0
 
 2023-10-25
