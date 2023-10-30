@@ -565,7 +565,7 @@ export class SearchEngine {
 	 * Search terms from the input that are throttle to be used as the search
 	 * terms
 	 */
-	private PRIVATE_throttlingTerms = "";
+	private PRIVATE_throttlingTerms: string | null = null;
 	private PRIVATE_termsThrottleTimer?: ReturnType<typeof setTimeout>;
 	private PRIVATE_groupsThrottleTimer?: ReturnType<typeof setTimeout>;
 
@@ -1006,7 +1006,7 @@ export class SearchEngine {
 		}
 
 		this.PRIVATE_termsThrottleTimer = setTimeout(() => {
-			this.setTerms(this.PRIVATE_throttlingTerms);
+			this.setTerms(this.PRIVATE_throttlingTerms ?? "");
 		}, this.PRIVATE_fetchThrottle);
 	}
 
