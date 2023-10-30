@@ -108,6 +108,9 @@
 				header: false,
 			});
 
+			// https://docs.findkit.com/ui/api/#preload
+			void ui.preload();
+
 			ui.bindInput("input.search");
 
 			document.querySelector("form").addEventListener("change", (e) => {

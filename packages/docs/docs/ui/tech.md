@@ -5,6 +5,8 @@ library. This makes it very easy to use the library because users do not have
 known anything about Preact since it is just an implementation detail (unless
 using Slot Override Components).
 
+## Lazy Loading {#lazy-loading}
+
 Although Preact footprint is very small it can cause web performance budget
 concerns but Findkit UI solves this by lazy loading the implementation just in
 time when the user starts to interact with UI. This is true for the CDN import

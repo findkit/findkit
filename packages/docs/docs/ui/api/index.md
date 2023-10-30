@@ -320,8 +320,16 @@ Bind any input to the Search UI. The selector can be CSS string or the raw
 ### `.preload(): Promise` {#preload}
 
 Preload the implementation code and css. This is automatically called on
-`mouseover` for elements passed to `.openFrom()` and on `focus` for inputs
-passed to `.bindInput()`.
+`mouseover` for elements passed to [`.openFrom()`](#openFrom) and on `focus`
+for inputs passed to [`.bindInput()`](#bindInput).
+
+When doing [raw embedding](/ui/patterns/embedding/raw) on a page where the
+search interface is shown always you'll want to call this immediately after
+creating the FindkitUI instance to disable [lazy
+loading](/ui/tech#lazy-loading). Lazy loading is only useful on pages where the
+search is not main function and user might not interact with it at all.
+Alternatively it is possible to [disable lazy
+loading](/ui/advanced/disable-cdn) completely when using bundlers.
 
 <Api page="ui.findkitui.preload" />
 
