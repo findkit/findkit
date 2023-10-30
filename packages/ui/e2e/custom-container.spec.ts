@@ -6,7 +6,7 @@ test("can render the search view to a custom container", async ({ page }) => {
 	const hits = page.locator(".findkit--hit");
 
 	const input = page.locator('[aria-label="Search input"]');
-	await input.type("valu");
+	await input.fill("valu");
 
 	await hits.first().waitFor({ state: "visible" });
 });
@@ -18,7 +18,7 @@ test("can use custom input (.bindInput()) and 'params' events", async ({
 	const hits = page.locator(".findkit--hit");
 
 	const input = page.locator("#custom-search-input");
-	await input.type("valu");
+	await input.fill("valu");
 
 	await hits.first().waitFor({ state: "visible" });
 
@@ -46,7 +46,7 @@ test("can use hooks", async ({ page }) => {
 	const hits = page.locator(".findkit--hit");
 
 	const input = page.locator('[aria-label="Search input"]');
-	await input.type("valu");
+	await input.fill("valu");
 
 	await hits.first().waitFor({ state: "visible" });
 
