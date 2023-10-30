@@ -481,6 +481,7 @@ export interface SearchEngineOptions {
 	params?: SearchParams;
 	infiniteScroll?: boolean;
 	container: Element | ShadowRoot;
+	alwaysReplaceRoute?: boolean;
 	router?: "memory" | "querystring" | "hash" | RouterBackend;
 
 	/**
@@ -550,7 +551,7 @@ export class SearchEngine {
 	PRIVATE_requestId = 0;
 	PRIVATE_pendingRequestIds: Map<number, AbortController> = new Map();
 
-	readonly router: RouterBackend;
+	private readonly PRIVATE_router: RouterBackend;
 	private PRIVATE_fetcher: FindkitFetch;
 	readonly instanceId: string;
 	readonly state: State;
@@ -574,23 +575,25 @@ export class SearchEngine {
 
 	private PRIVATE_defaultCustomRouteData: CustomRouterData;
 
+	private PRIVATE_alwaysReplaceRoute: boolean;
+
 	events: Emitter<FindkitUIEvents, unknown>;
 
 	constructor(options: SearchEngineOptions) {
 		this.PRIVATE_defaultCustomRouteData = options.defaultCustomRouterData ?? {};
 		if (typeof window === "undefined") {
-			this.router = {
+			this.PRIVATE_router = {
 				listen: () => () => {},
 				getSearchParamsString: () => "",
 				update: () => {},
 				formatHref: () => "",
 			};
 		} else if (options.router === "memory") {
-			this.router = createMemoryBackend();
+			this.PRIVATE_router = createMemoryBackend();
 		} else if (options.router === "hash") {
-			this.router = createURLHashBackend();
+			this.PRIVATE_router = createURLHashBackend();
 		} else {
-			this.router = createQueryStringBackend();
+			this.PRIVATE_router = createQueryStringBackend();
 		}
 
 		this.instanceId = options.instanceId ?? "fdk";
@@ -598,6 +601,7 @@ export class SearchEngine {
 		this.events = options.events;
 		this.PRIVATE_container = options.container;
 		this.PRIVATE_monitorDocumentLangActive = options.monitorDocumentLang;
+		this.PRIVATE_alwaysReplaceRoute = options.alwaysReplaceRoute ?? false;
 
 		if (instanceIds.has(this.instanceId)) {
 			throw new Error(
@@ -639,7 +643,7 @@ export class SearchEngine {
 		this.state = proxy<State>({
 			usedTerms: undefined,
 			currentGroupId: undefined,
-			searchParams: this.router.getSearchParamsString(),
+			searchParams: this.PRIVATE_router.getSearchParamsString(),
 			lang: undefined,
 			lockScroll: options.lockScroll ?? true,
 			status: "closed",
@@ -693,7 +697,7 @@ export class SearchEngine {
 	start() {
 		const initialSearchParams = new FindkitURLSearchParams(
 			this.instanceId,
-			this.router.getSearchParamsString(),
+			this.PRIVATE_router.getSearchParamsString(),
 		);
 
 		this.state.currentGroupId = initialSearchParams.getGroupId();
@@ -708,7 +712,7 @@ export class SearchEngine {
 		this.PRIVATE_syncInputs(initialSearchParams.getTerms() ?? "");
 
 		this.PRIVATE_resources.create(() =>
-			this.router.listen(this.PRIVATE_handleAddressChange),
+			this.PRIVATE_router.listen(this.PRIVATE_handleAddressChange),
 		);
 
 		this.PRIVATE_handleAddressChange();
@@ -884,7 +888,7 @@ export class SearchEngine {
 	}
 
 	formatHref(params: FindkitURLSearchParams) {
-		return this.router.formatHref(params.toString());
+		return this.PRIVATE_router.formatHref(params.toString());
 	}
 
 	private PRIVATE_debouncedSearchTimer?: ReturnType<typeof setTimeout>;
@@ -900,7 +904,7 @@ export class SearchEngine {
 
 	private PRIVATE_handleAddressChange = () => {
 		const currentTerms = this.PRIVATE_getfindkitParams().getTerms() ?? "";
-		this.state.searchParams = this.router.getSearchParamsString();
+		this.state.searchParams = this.PRIVATE_router.getSearchParamsString();
 
 		if (this.PRIVATE_ignoreNextAddressbarUpdate) {
 			this.PRIVATE_ignoreNextAddressbarUpdate = false;
@@ -975,8 +979,8 @@ export class SearchEngine {
 			this.PRIVATE_ignoreNextAddressbarUpdate = true;
 		}
 
-		this.router.update(next.toString(), {
-			push: options?.push,
+		this.PRIVATE_router.update(next.toString(), {
+			push: this.PRIVATE_alwaysReplaceRoute ? false : options?.push,
 		});
 	};
 
