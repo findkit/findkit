@@ -557,7 +557,11 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 		this.PRIVATE_options = options;
 		this.PRIVATE_events = new Emitter(this);
 
-		if (this.PRIVATE_isAlreadyOpened() || options.modal === false) {
+		if (
+			this.PRIVATE_isAlreadyOpened() ||
+			options.modal === false ||
+			(typeof options.modal !== "boolean" && options.container)
+		) {
 			void this.open();
 		}
 
