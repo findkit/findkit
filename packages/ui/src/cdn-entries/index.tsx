@@ -240,6 +240,9 @@ export function select<InstanceFilter extends typeof Element>(
 
 const lazyImplementation: Partial<Implementation> = {};
 
+/**
+ * Like the PRIVATE_createShellMethod but for standalone functions
+ */
 function createShellFunction<Key extends Methods<Implementation>>(
 	name: Key,
 ): Implementation[Key] {
@@ -564,17 +567,17 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	/**
 	 * Close the modal
 	 */
-	close = this.PRIVATE_proxy("close");
+	close = this.PRIVATE_createShellMethod("close");
 
 	/**
 	 * @deprecated use addTranslation and setLanguage instead
 	 */
-	setUIStrings = this.PRIVATE_proxy("setUIStrings");
+	setUIStrings = this.PRIVATE_createShellMethod("setUIStrings");
 
 	/**
 	 * Set the current UI language
 	 */
-	setLang = this.PRIVATE_proxy("setLang");
+	setLang = this.PRIVATE_createShellMethod("setLang");
 
 	/**
 	 * Set the UI translations transt for a given language
@@ -582,16 +585,16 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	 * @params lang - language code
 	 * @params translations - translations object
 	 */
-	addTranslation = this.PRIVATE_proxy("addTranslation");
+	addTranslation = this.PRIVATE_createShellMethod("addTranslation");
 
 	/**
 	 * Update groups
 	 */
 	updateGroups: (arg: UpdateGroupsArgument<GroupsOrDefault<T>>) => void =
-		this.PRIVATE_proxy("updateGroups") as any;
+		this.PRIVATE_createShellMethod("updateGroups") as any;
 
 	setCustomRouterData: (data: NonNullable<T["customRouterData"]>) => void =
-		this.PRIVATE_proxy("setCustomRouterData");
+		this.PRIVATE_createShellMethod("setCustomRouterData");
 
 	get groups(): GroupsOrDefault<T> {
 		return (this.PRIVATE_lazyEngine.get()?.getGroups() ??
@@ -603,7 +606,7 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	 * Update search params
 	 */
 	updateParams: (arg: UpdateParamsArgument<SearchParamsOrDefault<T>>) => void =
-		this.PRIVATE_proxy("updateParams");
+		this.PRIVATE_createShellMethod("updateParams");
 
 	get params(): SearchParamsOrDefault<T> {
 		return (this.PRIVATE_lazyEngine.get()?.getParams() ??
@@ -660,10 +663,12 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	}
 
 	/**
-	 * Create proxy method for SearchEngine which is called once the engine is
-	 * loaded
+	 * Create a "shell" method for SearchEngine methods. Using this it possible
+	 * call SearcnEngine methods before the engine is loaded without throwing
+	 * errors. The actual method is called when the engine is loads. If the
+	 * engine is already loaded the method is called synchronously.
 	 */
-	private PRIVATE_proxy<Method extends Methods<SearchEngine>>(
+	private PRIVATE_createShellMethod<Method extends Methods<SearchEngine>>(
 		method: Method,
 	): InstanceType<typeof SearchEngine>[Method] {
 		// NOTE: Supports only void returning methods
