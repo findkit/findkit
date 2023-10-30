@@ -1,7 +1,144 @@
 import { expect, test } from "@playwright/test";
-import { staticEntry } from "./helpers";
+import { spinnerLocator, staticEntry } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
+
+test("can use memory routing", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "po8GK3G0r",
+			router: "memory",
+			params: {
+				tagQuery: [],
+			},
+		});
+
+		ui.open("valu");
+	});
+
+	const hits = page.locator(".findkit--hit a");
+	const input = page.locator('[aria-label="Search input"]');
+
+	await hits.first().waitFor({ state: "visible" });
+	await expect(page).not.toHaveURL(/fdk_q/);
+
+	const firstResults = await hits.first().textContent();
+
+	await input.fill("wordpress");
+
+	await expect(hits.first()).not.toHaveText(firstResults!);
+	await expect(page).not.toHaveURL(/fdk_q/);
+});
+
+test("can open modal from link", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "po8GK3G0r",
+			params: {
+				tagQuery: [],
+			},
+		});
+
+		document.querySelector("button")?.remove();
+
+		const a = document.createElement("a");
+		a.href = "bad";
+		a.className = "link-open";
+		a.innerText = "Link";
+		document.body.appendChild(a);
+
+		ui.openFrom(".link-open");
+
+		Object.assign(window, { ui });
+	});
+
+	const link = page.locator("text=Link");
+	await link.click();
+
+	const input = page.locator('[aria-label="Search input"]');
+	await input.fill("valu");
+	await expect(page.locator(".findkit--hit").first()).toBeVisible();
+
+	await expect(page).not.toHaveURL(/bad/);
+});
+
+test("can cmd links", async ({ page, context }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "po8GK3G0r",
+			params: {
+				tagQuery: [],
+			},
+		});
+
+		document.querySelector("button")?.remove();
+
+		const a = document.createElement("a");
+		a.href = "new-page";
+		a.className = "link-open";
+		a.innerText = "Link";
+		document.body.appendChild(a);
+
+		ui.openFrom(".link-open");
+
+		Object.assign(window, { ui });
+	});
+
+	const link = page.locator("text=Link");
+
+	if (process.platform === "darwin") {
+		await link.click({ modifiers: ["Meta"] });
+	} else {
+		await link.click({ modifiers: ["Control"] });
+	}
+
+	await expect.poll(() => context.pages()).toHaveLength(2);
+});
+
+test("updates from history.pushState()", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	const hits = page.locator(".findkit--hit a");
+	const loading = spinnerLocator(page);
+	const input = page.locator('[aria-label="Search input"]');
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "po8GK3G0r",
+			params: {
+				tagQuery: [],
+			},
+		});
+
+		ui.open("valu");
+	});
+
+	await hits.first().waitFor({ state: "visible" });
+	const result1 = await hits
+		.first()
+		.evaluate((e: HTMLElement) => e.getAttribute("href"));
+
+	await page.keyboard.press("Tab");
+
+	await page.evaluate(async () => {
+		history.pushState(undefined, "", "?fdk_q=wordpress");
+	});
+	await loading.waitFor({ state: "hidden" });
+
+	const result2 = await hits
+		.first()
+		.evaluate((e: any) => e.getAttribute("href"));
+
+	await expect(input).toHaveValue("wordpress");
+
+	expect(result1).not.toBe(result2);
+});
 
 test("modal updates url", async ({ page }) => {
 	await page.route("/start", (route) => {
