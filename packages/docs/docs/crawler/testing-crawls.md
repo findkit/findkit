@@ -62,8 +62,7 @@ $ findkit crawl test "https://docs.findkit.com/crawler/running-crawls"
 
 ## Testing local dev and staging sites
 
-When developing the [Findkit Meta Tag](/crawler/meta-tag) you can run the crawl
-against localhost with `--local-http` and `--target`
+You can run the crawl against localhost with `--local-http` and `--target`.
 
 ```
 findkit crawl test --local-http --target docs.findkit.com "http://localhost:3000/crawler/running-crawls/"
