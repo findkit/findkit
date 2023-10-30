@@ -18,7 +18,6 @@ const ui = new FindkitUI({
 	publicToken: "p68GxRvaA",
 	// highlight-start
 	container: ".findkit-container",
-	modal: false,
 	// highlight-end
 	instanceId: "my",
 	minTerms: 0,

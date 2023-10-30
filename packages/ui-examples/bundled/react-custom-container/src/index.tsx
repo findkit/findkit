@@ -31,7 +31,6 @@ function App() {
 			container: containerRef.current,
 			minTerms: 0,
 			header: false,
-			modal: false,
 			params: {
 				tagQuery: [["crawler"]],
 			},
