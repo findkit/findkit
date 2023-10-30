@@ -34,8 +34,8 @@ const ui = new FindkitUI({
 	container: ".findkit-overlay-container",
 	// Force modal in to the custom container as it defaults to
 	// false with explicit container
-	// highlight-end
 	modal: true,
+	// highlight-end
 	css: `
 		.findkit--modal-container {
 			position: sticky;
