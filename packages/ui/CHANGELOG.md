@@ -1,3 +1,12 @@
+## v0.10.1
+
+2023-10-30
+
+- Fix implementation loading with a custom container [124bdb0](https://github.com/findkit/findkit/commit/124bdb0) - Esa-Matti Suuronen
+  - Regression fix from v0.10.0
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.10.0...ui/v0.10.1
+
 ## v0.10.0
 
 2023-10-30
