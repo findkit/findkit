@@ -481,6 +481,7 @@ export interface SearchEngineOptions {
 	params?: SearchParams;
 	infiniteScroll?: boolean;
 	container: Element | ShadowRoot;
+	alwaysReplaceRoute?: boolean;
 	router?: "memory" | "querystring" | "hash" | RouterBackend;
 
 	/**
@@ -574,6 +575,8 @@ export class SearchEngine {
 
 	private PRIVATE_defaultCustomRouteData: CustomRouterData;
 
+	private PRIVATE_alwaysReplaceRoute: boolean;
+
 	events: Emitter<FindkitUIEvents, unknown>;
 
 	constructor(options: SearchEngineOptions) {
@@ -598,6 +601,7 @@ export class SearchEngine {
 		this.events = options.events;
 		this.PRIVATE_container = options.container;
 		this.PRIVATE_monitorDocumentLangActive = options.monitorDocumentLang;
+		this.PRIVATE_alwaysReplaceRoute = options.alwaysReplaceRoute ?? false;
 
 		if (instanceIds.has(this.instanceId)) {
 			throw new Error(
@@ -976,7 +980,7 @@ export class SearchEngine {
 		}
 
 		this.router.update(next.toString(), {
-			push: options?.push,
+			push: this.PRIVATE_alwaysReplaceRoute ? false : options?.push,
 		});
 	};
 

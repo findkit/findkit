@@ -113,7 +113,7 @@ test("plain: sets view classes", async ({ page }) => {
 	await expect(plainContainer).not.toHaveClass(/findkit--view-groups/);
 	await expect(plainContainer).toHaveClass(/findkit--view-single/);
 
-	await page.goBack();
+	await page.locator("text=Back").first().click();
 
 	await expect(plainContainer).toHaveClass(/findkit--view-groups/);
 	await expect(plainContainer).not.toHaveClass(/findkit--view-single/);

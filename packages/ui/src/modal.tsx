@@ -553,7 +553,11 @@ export function init(_options: {
 
 	const host = container instanceof ShadowRoot ? container.host : container;
 
-	const engine = new SearchEngine({ ...options, container: container });
+	const engine = new SearchEngine({
+		...options,
+		container: container,
+		alwaysReplaceRoute: hasCustomContainer,
+	});
 
 	options.events.on("dispose", () => {
 		if (container) {
