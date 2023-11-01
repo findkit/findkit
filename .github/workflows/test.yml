@@ -106,6 +106,13 @@ jobs:
           pnpm run build-test-app
           pnpm run playwright-test --shard=${{ matrix.shard }}/${{ strategy.job-total }}
 
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report-${{ matrix.shard }}
+          path: packages/ui/playwright-report/
+          retention-days: 2
+
   playwright-visual:
     timeout-minutes: 20
     runs-on: ubuntu-latest
