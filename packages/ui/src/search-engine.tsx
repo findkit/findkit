@@ -3,6 +3,7 @@ import {
 	assertNonNullable,
 	cleanUndefined,
 	deprecationNotice,
+	getScrollContainer,
 	scrollIntoViewIfNeeded,
 } from "./utils";
 import {
@@ -24,6 +25,7 @@ import { Emitter, FindkitUIEvents, lazyValue } from "./emitter";
 import { TranslationStrings } from "./translations";
 import { listen, Resources } from "./resources";
 import { Filter } from "./filter-type";
+import { VERSION } from "./cdn-entries";
 
 export const DEFAULT_HIGHLIGHT_LENGTH = 250;
 export const DEFAULT_PREVIEW_SIZE = 5;
@@ -482,7 +484,7 @@ export interface SearchEngineOptions {
 	infiniteScroll?: boolean;
 	container: Element | ShadowRoot;
 	alwaysReplaceRoute?: boolean;
-	router?: "memory" | "querystring" | "hash" | RouterBackend;
+	router?: "memory" | "querystring" | "hash" | RouterBackend<{}>;
 
 	/**
 	 * Monitor <html lang> changes
@@ -520,6 +522,14 @@ export interface SortGroup {
 }
 
 /**
+ * State for history.state
+ */
+interface FindkitHistoryState {
+	findkitRestoreId?: string;
+	findkitScrollTop?: number;
+}
+
+/**
  * @public
  *
  * A class for the internal logic and state of the search ui
@@ -551,7 +561,7 @@ export class SearchEngine {
 	PRIVATE_requestId = 0;
 	PRIVATE_pendingRequestIds: Map<number, AbortController> = new Map();
 
-	private readonly PRIVATE_router: RouterBackend;
+	private readonly PRIVATE_router: RouterBackend<FindkitHistoryState>;
 	private PRIVATE_fetcher: FindkitFetch;
 	readonly instanceId: string;
 	readonly state: State;
@@ -587,6 +597,7 @@ export class SearchEngine {
 				getSearchParamsString: () => "",
 				update: () => {},
 				formatHref: () => "",
+				getState: () => ({}),
 			};
 		} else if (options.router === "memory") {
 			this.PRIVATE_router = createMemoryBackend();
@@ -670,6 +681,10 @@ export class SearchEngine {
 		});
 		devtools(this.state);
 
+		this.PRIVATE_resources.create(() =>
+			this.PRIVATE_router.listen(this.PRIVATE_handleAddressChange),
+		);
+
 		this.publicToken = options.publicToken;
 		this.PRIVATE_searchEndpoint = options.searchEndpoint;
 
@@ -695,6 +710,20 @@ export class SearchEngine {
 	 * "language" event without extra search reqeusts.
 	 */
 	start() {
+		this.PRIVATE_resources.create(() =>
+			listen(this.PRIVATE_container, "focusin", (e) => {
+				if (e.target instanceof HTMLElement && e.target.closest("a")) {
+					this.PRIVATE_setHistoryState({
+						findkitScrollTop: this.PRIVATE_getScrollPosition(),
+					});
+				}
+			}),
+		);
+
+		this.events.on("hit-click", () => {
+			this.PRIVATE_saveState();
+		});
+
 		const initialSearchParams = new FindkitURLSearchParams(
 			this.instanceId,
 			this.PRIVATE_router.getSearchParamsString(),
@@ -711,13 +740,13 @@ export class SearchEngine {
 
 		this.PRIVATE_syncInputs(initialSearchParams.getTerms() ?? "");
 
-		this.PRIVATE_resources.create(() =>
-			this.PRIVATE_router.listen(this.PRIVATE_handleAddressChange),
-		);
-
-		this.PRIVATE_handleAddressChange();
-
 		this.PRIVATE_started.provide(true);
+
+		// User might have called ui.open() etc. which causes address bar
+		// update during the start so we don't need to here
+		if (!this.PRIVATE_addressBarInitialized) {
+			this.PRIVATE_handleAddressChange();
+		}
 	}
 
 	get container() {
@@ -902,8 +931,16 @@ export class SearchEngine {
 		}, 2000);
 	}
 
+	private PRIVATE_addressBarInitialized = false;
+
+	/**
+	 * Restored inside the Modal and Plain components
+	 */
+	scrollPositionRestore?: number;
+
 	private PRIVATE_handleAddressChange = () => {
-		const currentTerms = this.PRIVATE_getfindkitParams().getTerms() ?? "";
+		const currentParams = this.PRIVATE_getfindkitParams();
+		const currentTerms = currentParams.getTerms() ?? "";
 		this.state.searchParams = this.PRIVATE_router.getSearchParamsString();
 
 		if (this.PRIVATE_ignoreNextAddressbarUpdate) {
@@ -911,10 +948,25 @@ export class SearchEngine {
 			return;
 		}
 
+		if (!this.PRIVATE_started.get()) {
+			return;
+		}
+
+		this.PRIVATE_addressBarInitialized = true;
+
+		const state = this.PRIVATE_router.getState();
+		this.scrollPositionRestore = state?.findkitScrollTop;
+
 		const nextParams = this.PRIVATE_getfindkitParams();
+
+		// Clear throttling only when we are really moving from open to closed.
+		// When opening we might set the throttling terms before we open.
+		if (!nextParams.isActive() && currentParams.isActive()) {
+			this.PRIVATE_throttlingTerms = "";
+		}
+
 		if (!nextParams.isActive()) {
 			this.PRIVATE_statusTransition("closed");
-			this.PRIVATE_throttlingTerms = "";
 			this.state.currentGroupId = undefined;
 			return;
 		}
@@ -929,6 +981,12 @@ export class SearchEngine {
 		const reset = terms !== currentTerms;
 
 		this.state.currentGroupId = nextParams.getGroupId();
+
+		const restored = this.PRIVATE_restoreState();
+		if (restored) {
+			// Restored previously made fetch. No need to do actual fetch
+			return;
+		}
 
 		void this.PRIVATE_fetch({ terms, reset });
 	};
@@ -967,9 +1025,88 @@ export class SearchEngine {
 		this.PRIVATE_pendingCustomRouterData = data;
 	}
 
+	private PRIVATE_getScrollPosition() {
+		const el =
+			this.PRIVATE_container.querySelector(".findkit--modal") ??
+			getScrollContainer(this.PRIVATE_container);
+
+		return el.scrollTop;
+	}
+
+	private PRIVATE_setHistoryState(state: FindkitHistoryState) {
+		this.PRIVATE_ignoreNextAddressbarUpdate = true;
+		this.PRIVATE_router.update(this.PRIVATE_getfindkitParams().toString(), {
+			push: false,
+			state: {
+				...this.PRIVATE_router.getState(),
+				...state,
+			},
+		});
+	}
+
+	private PRIVATE_getSessionKey(id: string) {
+		return `findkit-state-${VERSION}-${id}`;
+	}
+
+	private PRIVATE_saveState() {
+		const hasSomeHits = Object.values(this.state.resultGroups).some(
+			(group) => group.hits.length > 0,
+		);
+
+		if (!hasSomeHits) {
+			return;
+		}
+
+		const randomId = Math.random().toString(36).substring(7);
+		this.PRIVATE_setHistoryState({ findkitRestoreId: randomId });
+
+		sessionStorage.setItem(
+			this.PRIVATE_getSessionKey(randomId),
+			JSON.stringify({ resultGroups: this.state.resultGroups }),
+		);
+	}
+
+	private PRIVATE_restoreState(): boolean {
+		const id = this.PRIVATE_router.getState()?.findkitRestoreId;
+		if (!id) {
+			return false;
+		}
+
+		this.PRIVATE_setHistoryState({ findkitRestoreId: undefined });
+
+		const json = sessionStorage.getItem(this.PRIVATE_getSessionKey(id));
+		if (!json) {
+			return false;
+		}
+
+		sessionStorage.removeItem(this.PRIVATE_getSessionKey(id));
+
+		let savedState: {
+			resultGroups: State["resultGroups"];
+		};
+
+		try {
+			savedState = JSON.parse(json);
+		} catch {
+			return false;
+		}
+
+		if (!savedState) {
+			return false;
+		}
+
+		this.state.resultGroups = savedState.resultGroups;
+		this.state.status = "waiting";
+		this.state.usedGroupDefinitions = this.state.nextGroupDefinitions;
+		return true;
+	}
+
 	updateAddressBar = (
 		next: FindkitURLSearchParams,
-		options?: { push?: boolean; ignore?: boolean },
+		options?: {
+			push?: boolean;
+			ignore?: boolean;
+		},
 	) => {
 		if (next.equals(this.PRIVATE_getfindkitParams())) {
 			return;
@@ -981,6 +1118,7 @@ export class SearchEngine {
 
 		this.PRIVATE_router.update(next.toString(), {
 			push: this.PRIVATE_alwaysReplaceRoute ? false : options?.push,
+			state: this.PRIVATE_router.getState(),
 		});
 	};
 

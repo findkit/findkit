@@ -6,28 +6,34 @@ import {
 /**
  * @public
  */
-export interface RouterBackend {
+export interface RouterBackend<State extends {}> {
 	listen(cb: () => void): () => void;
 	getSearchParamsString(): string;
 	formatHref(qs: string): string;
-	update: (params: string, options?: { push?: boolean }) => void;
+	update: (params: string, options?: { push?: boolean; state?: State }) => void;
+	getState(): Partial<State> | undefined;
 }
 
 /**
  * Save router state to the URL query string using the History API
  */
-export function createQueryStringBackend(): RouterBackend {
+export function createQueryStringBackend<
+	State extends {},
+>(): RouterBackend<State> {
 	initNormalizedHistoryEvent();
 
 	return {
 		getSearchParamsString: () => location.search,
 		update: (params, options) => {
 			const next = "?" + params;
-			if (location.search === next) {
+
+			const replacingState = options?.push === false && options.state;
+
+			if (location.search === next && !replacingState) {
 				return;
 			}
 
-			const args = [undefined, "", next + location.hash] as const;
+			const args = [options?.state, "", next + location.hash] as const;
 
 			if (options?.push) {
 				history.pushState(...args);
@@ -44,13 +50,16 @@ export function createQueryStringBackend(): RouterBackend {
 		formatHref: (qs) => {
 			return "?" + qs;
 		},
+		getState: () => {
+			return history.state as Partial<State> | undefined;
+		},
 	};
 }
 
 /**
  * Keep the router state in memory
  */
-export function createMemoryBackend(): RouterBackend {
+export function createMemoryBackend<State extends {}>(): RouterBackend<State> {
 	let current = "";
 	const listeners = new Set<() => any>();
 
@@ -80,13 +89,16 @@ export function createMemoryBackend(): RouterBackend {
 		formatHref: () => {
 			return "#memory";
 		},
+		getState: () => {
+			return {};
+		},
 	};
 }
 
 /**
  * Save router state to the URL hash using the History API
  */
-export function createURLHashBackend(): RouterBackend {
+export function createURLHashBackend<State extends {}>(): RouterBackend<State> {
 	initNormalizedHistoryEvent();
 
 	const get = () => {
@@ -97,11 +109,13 @@ export function createURLHashBackend(): RouterBackend {
 	return {
 		getSearchParamsString: get,
 		update: (next, options) => {
-			if (get() === next) {
+			const replacingState = options?.push === false && options.state;
+
+			if (get() === next && !replacingState) {
 				return;
 			}
 
-			const args = [undefined, "", "#" + next] as const;
+			const args = [options?.state, "", "#" + next] as const;
 
 			if (options?.push) {
 				history.pushState(...args);
@@ -118,6 +132,9 @@ export function createURLHashBackend(): RouterBackend {
 
 		formatHref: (qs) => {
 			return "#" + qs;
+		},
+		getState: () => {
+			return history.state as Partial<State> | undefined;
 		},
 	};
 }

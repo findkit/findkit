@@ -474,7 +474,7 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	searchEndpoint?: string;
 	container?: Element | string;
 	monitorDocumentLang?: boolean;
-	router?: "memory" | "querystring" | "hash" | RouterBackend;
+	router?: "memory" | "querystring" | "hash" | RouterBackend<{}>;
 	lockScroll?: boolean;
 	modal?: boolean;
 

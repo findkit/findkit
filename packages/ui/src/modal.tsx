@@ -1,5 +1,11 @@
 import { FocusTrap } from "./focus-trap";
-import React, { StrictMode, useRef, useEffect, useState } from "react";
+import React, {
+	StrictMode,
+	useRef,
+	useEffect,
+	useState,
+	useLayoutEffect,
+} from "react";
 import ReactDOM from "react-dom";
 import {
 	Results,
@@ -24,7 +30,7 @@ import {
 	SearchEngineOptions,
 	GroupOrder,
 } from "./search-engine";
-import { cn, deprecationNotice, View } from "./utils";
+import { cn, deprecationNotice, getScrollContainer, View } from "./utils";
 import type { Emitter, FindkitUIEvents } from "./emitter";
 import { TranslationStrings } from "./translations";
 import { Slot, Slots } from "./slots";
@@ -295,6 +301,8 @@ function Modal() {
 
 	useScrollLock(!unmount && state.lockScroll);
 
+	useScrollRestore(containerRef);
+
 	// Use delayed to keep the open body class until the animation is done
 	useEffect(() => {
 		const classList = document.body.classList;
@@ -381,11 +389,34 @@ function Modal() {
 	);
 }
 
+function useScrollRestore(containerRef: React.RefObject<Element | null>) {
+	const engine = useSearchEngine();
+	useLayoutEffect(() => {
+		let el = containerRef.current;
+
+		if (el && engine.scrollPositionRestore !== undefined) {
+			if (!el.classList.contains("findkit--modal")) {
+				// On non-modal to scroll can be at any scrolling div or
+				// the page itself
+				el = getScrollContainer(el);
+			}
+
+			el.scrollTop = engine.scrollPositionRestore;
+			engine.scrollPositionRestore = undefined;
+		}
+	});
+	// Yup, no effect deps here. We just need to wait when the container div
+	// appears and then scroll it
+}
+
 export function Plain() {
 	const engine = useSearchEngine();
 	const state = useSearchEngineState();
 	const containerKbAttrs = useContainerKeyboardAttributes();
 	const view = useView();
+	const containerRef = useRef<HTMLDivElement | null>(null);
+
+	useScrollRestore(containerRef);
 
 	const header = state.header ? (
 		<Slot
@@ -408,6 +439,7 @@ export function Plain() {
 	return (
 		<View
 			{...containerKbAttrs}
+			ref={containerRef}
 			cn={{
 				container: true,
 				plain: true,
