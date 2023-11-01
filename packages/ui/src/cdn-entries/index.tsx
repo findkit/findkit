@@ -691,9 +691,20 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	 * errors. The actual method is called when the engine is loads. If the
 	 * engine is already loaded the method is called synchronously.
 	 */
-	private PRIVATE_createShellMethod<Method extends Methods<SearchEngine>>(
-		method: Method,
-	): InstanceType<typeof SearchEngine>[Method] {
+	private PRIVATE_createShellMethod<
+		Method extends
+			| "setLang"
+			| "close"
+			| "dispose"
+			| "setUIStrings"
+			| "updateGroups"
+			| "setCustomRouterData"
+			| "updateParams"
+			| "addTranslation"
+			| "trapFocus"
+			| "bindInput",
+		// Methods<SearchEngine>,
+	>(method: Method): InstanceType<typeof SearchEngine>[Method] {
 		// NOTE: Supports only void returning methods
 		return (...args: any[]): any => {
 			this.PRIVATE_lazyEngine((engine: any) => {
