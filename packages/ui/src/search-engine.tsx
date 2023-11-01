@@ -849,7 +849,7 @@ export class SearchEngine {
 	 * SPA frameworks update the <html lang> when doing client side routing with
 	 * the History API. Listen to those changes
 	 */
-	PRIVATE_monitorDocumentElementLang() {
+	private PRIVATE_monitorDocumentElementLang() {
 		if (typeof window === "undefined") {
 			return;
 		}
@@ -1496,7 +1496,7 @@ export class SearchEngine {
 		this.PRIVATE_syncInputs(options.terms);
 	};
 
-	PRIVATE_getSelectedGroup(
+	private PRIVATE_getSelectedGroup(
 		source: "next" | "used",
 	): GroupDefinitionWithDefaults | undefined {
 		const groups =
