@@ -145,3 +145,43 @@ test("custom container with hash router: can restore the scroll position when us
 	await testContainer(page);
 	expect(page.url()).toContain("#fdk_q=a");
 });
+
+test("restore scroll when going back from single group view with the browser back button", async ({
+	page,
+}) => {
+	await page.setViewportSize({
+		width: 375,
+		height: 667,
+	});
+
+	const hits = page.locator(".findkit--hit");
+	const showMore = page.locator("text=Show more search results").first();
+
+	await page.goto(
+		staticEntry("/two-groups-v2?fdk_q=&minTerms=0&noShadowDom=1"),
+	);
+
+	await hits.first().waitFor({ state: "visible" });
+
+	await showMore.scrollIntoViewIfNeeded();
+
+	const initialScrollTop = await page.evaluate(
+		() => document.querySelector(".findkit--modal")?.scrollTop,
+	);
+
+	expect(initialScrollTop).toBeGreaterThan(50);
+
+	await showMore.click();
+
+	await expect.poll(() => page.url()).toContain("fdk_id=");
+
+	await page.goBack();
+
+	await page.waitForTimeout(200);
+
+	const restoredScrollTop = await page.evaluate(
+		() => document.querySelector(".findkit--modal")?.scrollTop,
+	);
+
+	expect(restoredScrollTop).toBe(initialScrollTop);
+});
