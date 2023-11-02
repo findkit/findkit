@@ -275,7 +275,7 @@ test("external link in slot override saves scroll position", async ({
 test("external link in page header saves scroll position", async ({ page }) => {
 	async function initUI() {
 		await page.evaluate(async () => {
-			const { FindkitUI, html } = MOD;
+			const { FindkitUI } = MOD;
 			const header = document.createElement("header");
 			header.innerHTML = `<a href="https://other.invalid">External Link</a>`;
 			document.body.prepend(header);
@@ -336,4 +336,70 @@ test("modal: can restore the scroll position when using forward button", async (
 	await page.goForward();
 
 	await expect(theHit).toBeInViewport();
+});
+
+test("modal: can restore the scroll position after reload", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/single-group-v2"));
+	await page.locator("text=open").click();
+	await page.locator("input").fill("a");
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	const theHit = hits.filter({ hasText: "Leather Boots" }).first();
+
+	let i = 100;
+
+	while (i--) {
+		await page.mouse.wheel(0, 800);
+		await page.waitForTimeout(250);
+		if (await theHit.isVisible()) {
+			break;
+		}
+	}
+
+	await theHit.scrollIntoViewIfNeeded();
+
+	await page.reload();
+
+	await expect(theHit).toBeInViewport();
+
+	// No fetches should have been made after the reload
+	expect(await page.evaluate(() => (window as any).uiEvents)).toEqual([]);
+});
+
+test("container: can restore the scroll position after reload", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/slowly-loading"));
+
+	await page.locator("text=open").first().click();
+	await page.locator("input").fill("a");
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	const theHit = hits.filter({ hasText: "Leather Boots" }).first();
+
+	let i = 50;
+
+	while (i--) {
+		await page.mouse.wheel(0, 800);
+		await page.waitForTimeout(250);
+		if (await theHit.isVisible()) {
+			break;
+		}
+	}
+
+	await theHit.scrollIntoViewIfNeeded();
+
+	await page.reload();
+
+	await page.waitForLoadState("domcontentloaded");
+
+	await expect(theHit).toBeInViewport();
+
+	expect(await page.evaluate(() => (window as any).uiEvents)).toEqual([]);
 });

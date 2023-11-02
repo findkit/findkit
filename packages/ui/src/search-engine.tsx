@@ -26,7 +26,6 @@ import { TranslationStrings } from "./translations";
 import { listen, Resources } from "./resources";
 import { Filter } from "./filter-type";
 import { VERSION } from "./cdn-entries";
-import { assertNotNil } from "@valu/assert";
 
 export const DEFAULT_HIGHLIGHT_LENGTH = 250;
 export const DEFAULT_PREVIEW_SIZE = 5;
@@ -771,6 +770,13 @@ export class SearchEngine {
 			}),
 		);
 
+		this.PRIVATE_resources.create(() =>
+			listen(window, "beforeunload" as any, () => {
+				this.PRIVATE_saveScroll({ now: true });
+				return this.PRIVATE_saveResults();
+			}),
+		);
+
 		const saveResults = (e: MouseEvent) => {
 			const el = getLinkElement(e.target);
 
@@ -803,6 +809,7 @@ export class SearchEngine {
 				// Use capturing phase to ensure we get the event before scroll
 				// changes
 				capture: true,
+				passive: true,
 			}),
 		);
 
@@ -812,6 +819,7 @@ export class SearchEngine {
 			this.PRIVATE_resources.create(() =>
 				listen(this.PRIVATE_container, "click", saveResults, {
 					capture: true,
+					passive: true,
 				}),
 			);
 		}
