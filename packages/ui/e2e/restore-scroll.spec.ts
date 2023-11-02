@@ -300,3 +300,40 @@ test("external link in page header saves scroll position", async ({ page }) => {
 	await page.mouse.move(200, 200);
 	await testExternalLink(page, initUI);
 });
+
+test("modal: can restore the scroll position when using forward button", async ({
+	page,
+}) => {
+	await routeMocks(page);
+	await page.goto(staticEntry("/single-group-v2"));
+	await page.locator("text=open").click();
+	await page.locator("input").fill("a");
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	const theHit = hits.filter({ hasText: "Leather Boots" }).first();
+
+	let i = 100;
+
+	while (i--) {
+		await page.mouse.wheel(0, 800);
+		await page.waitForTimeout(250);
+		if (await theHit.isVisible()) {
+			break;
+		}
+	}
+
+	await theHit.scrollIntoViewIfNeeded();
+
+	// Ensure throttle timeout fired
+	await page.waitForTimeout(500);
+
+	await page.goBack();
+
+	await page.waitForTimeout(500);
+
+	await page.goForward();
+
+	await expect(theHit).toBeInViewport();
+});

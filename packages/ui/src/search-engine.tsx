@@ -717,6 +717,43 @@ export class SearchEngine {
 
 	private PRIVATE_started = lazyValue<true>();
 
+	private PRIVATE_scrollThrottle?: ReturnType<typeof setTimeout>;
+
+	private PRIVATE_previousRestoreId?: string;
+
+	private PRIVATE_saveScroll = (options?: { now?: boolean }) => {
+		const save = () => {
+			clearTimeout(this.PRIVATE_scrollThrottle);
+			this.PRIVATE_scrollThrottle = undefined;
+
+			if (!this.PRIVATE_getfindkitParams().isActive()) {
+				return;
+			}
+
+			const restoreId =
+				this.PRIVATE_router.getState()?.findkitRestoreId ||
+				Math.random().toString(36).substring(7);
+
+			this.PRIVATE_previousRestoreId = restoreId;
+
+			this.PRIVATE_setHistoryState({
+				findkitRestoreId: restoreId,
+				findkitScrollTop: this.PRIVATE_getScrollContainer().scrollTop,
+			});
+		};
+
+		if (options?.now) {
+			save();
+			return;
+		}
+
+		if (this.PRIVATE_scrollThrottle) {
+			return;
+		}
+
+		this.PRIVATE_scrollThrottle = setTimeout(save, 200);
+	};
+
 	/**
 	 * "Start the search engine" eg. start listening to input, url etc.
 	 * changes.
@@ -727,7 +764,14 @@ export class SearchEngine {
 	 * "language" event without extra search reqeusts.
 	 */
 	start() {
-		const saveScrollAndResults = (e: MouseEvent) => {
+		this.PRIVATE_resources.create(() =>
+			listen(this.elementHost, "scroll", () => this.PRIVATE_saveScroll(), {
+				passive: true,
+				capture: true,
+			}),
+		);
+
+		const saveResults = (e: MouseEvent) => {
 			const el = getLinkElement(e.target);
 
 			if (!el) {
@@ -736,7 +780,7 @@ export class SearchEngine {
 
 			// Save scroll on internal navigations too because we want to restore the to scroll
 			// position also when navigating between group and single views
-			this.PRIVATE_saveScrollPosition();
+			this.PRIVATE_saveScroll({ now: true });
 
 			// Ignore internal links because they do not cause navigation away
 			if (this.PRIVATE_container.contains(el) && el.dataset.internal) {
@@ -755,7 +799,7 @@ export class SearchEngine {
 		// go once fully supported in all browsers
 		// https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API
 		this.PRIVATE_resources.create(() =>
-			listen(document.documentElement, "click", saveScrollAndResults, {
+			listen(document.documentElement, "click", saveResults, {
 				// Use capturing phase to ensure we get the event before scroll
 				// changes
 				capture: true,
@@ -766,7 +810,7 @@ export class SearchEngine {
 		// documentElement listener so we need to listen to them separately
 		if (this.PRIVATE_container instanceof ShadowRoot) {
 			this.PRIVATE_resources.create(() =>
-				listen(this.PRIVATE_container, "click", saveScrollAndResults, {
+				listen(this.PRIVATE_container, "click", saveResults, {
 					capture: true,
 				}),
 			);
@@ -1073,14 +1117,11 @@ export class SearchEngine {
 		this.PRIVATE_pendingCustomRouterData = data;
 	}
 
-	private PRIVATE_saveScrollPosition() {
-		const el =
+	private PRIVATE_getScrollContainer() {
+		return (
 			this.PRIVATE_container.querySelector(".findkit--modal") ??
-			getScrollContainer(this.PRIVATE_container);
-
-		this.PRIVATE_setHistoryState({
-			findkitScrollTop: el.scrollTop,
-		});
+			getScrollContainer(this.PRIVATE_container)
+		);
 	}
 
 	private PRIVATE_setHistoryState(state: FindkitHistoryState) {
@@ -1107,11 +1148,14 @@ export class SearchEngine {
 			return;
 		}
 
-		const randomId = Math.random().toString(36).substring(7);
-		this.PRIVATE_setHistoryState({ findkitRestoreId: randomId });
+		const restoreId = this.PRIVATE_previousRestoreId;
+
+		if (!restoreId) {
+			return;
+		}
 
 		sessionStorage.setItem(
-			this.PRIVATE_getSessionKey(randomId),
+			this.PRIVATE_getSessionKey(restoreId),
 			JSON.stringify({ resultGroups: this.state.resultGroups }),
 		);
 	}
@@ -1121,8 +1165,6 @@ export class SearchEngine {
 		if (!id) {
 			return false;
 		}
-
-		this.PRIVATE_setHistoryState({ findkitRestoreId: undefined });
 
 		const json = sessionStorage.getItem(this.PRIVATE_getSessionKey(id));
 		if (!json) {
@@ -1468,6 +1510,7 @@ export class SearchEngine {
 			}
 
 			if (prev !== "closed" && current === "closed") {
+				this.PRIVATE_saveResults();
 				this.events.emit("close", { container });
 			}
 		}
