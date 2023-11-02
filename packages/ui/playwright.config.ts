@@ -60,6 +60,12 @@ const config: PlaywrightTestConfig = {
 		trace: "on-first-retry",
 
 		video: "on-first-retry",
+
+		launchOptions: {
+			slowMo: process.env.SLOWMO
+				? Number(process.env.SLOWMO) * 1000
+				: undefined,
+		},
 	},
 
 	/* Configure projects for major browsers */
