@@ -26,9 +26,26 @@ import { TranslationStrings } from "./translations";
 import { listen, Resources } from "./resources";
 import { Filter } from "./filter-type";
 import { VERSION } from "./cdn-entries";
+import { assertNotNil } from "@valu/assert";
 
 export const DEFAULT_HIGHLIGHT_LENGTH = 250;
 export const DEFAULT_PREVIEW_SIZE = 5;
+
+/**
+ * Get the parent link element. Used to detect what link was clicked when
+ * the click targets a child element of the link.
+ */
+function getLinkElement(el: any): HTMLAnchorElement | null {
+	if (el instanceof HTMLAnchorElement) {
+		return el;
+	}
+
+	if (el instanceof Element) {
+		return el.closest("a");
+	}
+
+	return null;
+}
 
 /**
  * Like the findkit result but real dates instead of the string dates
@@ -710,19 +727,50 @@ export class SearchEngine {
 	 * "language" event without extra search reqeusts.
 	 */
 	start() {
+		const saveScrollAndResults = (e: MouseEvent) => {
+			const el = getLinkElement(e.target);
+
+			if (!el) {
+				return;
+			}
+
+			// Save scroll on internal navigations too because we want to restore the to scroll
+			// position also when navigating between group and single views
+			this.PRIVATE_saveScrollPosition();
+
+			// Ignore internal links because they do not cause navigation away
+			if (this.PRIVATE_container.contains(el) && el.dataset.internal) {
+				return;
+			}
+
+			// We need to save the results only when the user navigates away
+			// from FindkitUI so we can restore the results and scroll postion
+			this.PRIVATE_saveResults();
+		};
+
+		// Any link click in anywere in the document means potentially
+		// navigating away. Save the scroll position on click.
+		//
+		// NOTE: In future the Navigation API is probably the way to
+		// go once fully supported in all browsers
+		// https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API
 		this.PRIVATE_resources.create(() =>
-			listen(this.PRIVATE_container, "focusin", (e) => {
-				if (e.target instanceof HTMLElement && e.target.closest("a")) {
-					this.PRIVATE_setHistoryState({
-						findkitScrollTop: this.PRIVATE_getScrollPosition(),
-					});
-				}
+			listen(document.documentElement, "click", saveScrollAndResults, {
+				// Use capturing phase to ensure we get the event before scroll
+				// changes
+				capture: true,
 			}),
 		);
 
-		this.events.on("hit-click", () => {
-			this.PRIVATE_saveState();
-		});
+		// When using shadow dom the <a> elements are not visible to the
+		// documentElement listener so we need to listen to them separately
+		if (this.PRIVATE_container instanceof ShadowRoot) {
+			this.PRIVATE_resources.create(() =>
+				listen(this.PRIVATE_container, "click", saveScrollAndResults, {
+					capture: true,
+				}),
+			);
+		}
 
 		const initialSearchParams = new FindkitURLSearchParams(
 			this.instanceId,
@@ -982,7 +1030,7 @@ export class SearchEngine {
 
 		this.state.currentGroupId = nextParams.getGroupId();
 
-		const restored = this.PRIVATE_restoreState();
+		const restored = this.PRIVATE_restoreResults();
 		if (restored) {
 			// Restored previously made fetch. No need to do actual fetch
 			return;
@@ -1025,12 +1073,14 @@ export class SearchEngine {
 		this.PRIVATE_pendingCustomRouterData = data;
 	}
 
-	private PRIVATE_getScrollPosition() {
+	private PRIVATE_saveScrollPosition() {
 		const el =
 			this.PRIVATE_container.querySelector(".findkit--modal") ??
 			getScrollContainer(this.PRIVATE_container);
 
-		return el.scrollTop;
+		this.PRIVATE_setHistoryState({
+			findkitScrollTop: el.scrollTop,
+		});
 	}
 
 	private PRIVATE_setHistoryState(state: FindkitHistoryState) {
@@ -1048,7 +1098,7 @@ export class SearchEngine {
 		return `findkit-state-${VERSION}-${id}`;
 	}
 
-	private PRIVATE_saveState() {
+	private PRIVATE_saveResults() {
 		const hasSomeHits = Object.values(this.state.resultGroups).some(
 			(group) => group.hits.length > 0,
 		);
@@ -1066,7 +1116,7 @@ export class SearchEngine {
 		);
 	}
 
-	private PRIVATE_restoreState(): boolean {
+	private PRIVATE_restoreResults(): boolean {
 		const id = this.PRIVATE_router.getState()?.findkitRestoreId;
 		if (!id) {
 			return false;

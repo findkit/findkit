@@ -1,6 +1,9 @@
 import { Page, expect, test } from "@playwright/test";
 import { staticEntry } from "./helpers";
 
+declare const MOD: typeof import("../src/cdn-entries/index");
+declare const ui: InstanceType<typeof MOD.FindkitUI>;
+
 async function routeMocks(page: Page) {
 	await page.route(
 		(url) => url.hostname === "shop.findkit.invalid",
@@ -9,6 +12,17 @@ async function routeMocks(page: Page) {
 				status: 200,
 				contentType: "text/html",
 				body: "<html><body><h1>Shop</h1></body></html>",
+			});
+		},
+	);
+
+	await page.route(
+		(url) => url.hostname === "other.invalid",
+		(route) => {
+			void route.fulfill({
+				status: 200,
+				contentType: "text/html",
+				body: "<html><body><h1>Other</h1></body></html>",
 			});
 		},
 	);
@@ -184,4 +198,105 @@ test("restore scroll when going back from single group view with the browser bac
 	);
 
 	expect(restoredScrollTop).toBe(initialScrollTop);
+});
+
+async function testExternalLink(page: Page, initUI: () => Promise<void>) {
+	await page.goto(staticEntry("/dummy"));
+
+	await initUI();
+
+	await page.evaluate(async () => {
+		ui.open();
+	});
+
+	await page.locator("input").fill("a");
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	const theHit = hits.filter({ hasText: "Leather Boots" }).first();
+
+	let i = 100;
+
+	while (i--) {
+		await page.mouse.wheel(0, 800);
+		await page.waitForTimeout(250);
+		if (await theHit.isVisible()) {
+			break;
+		}
+	}
+
+	await theHit.scrollIntoViewIfNeeded();
+
+	await page.locator("text=External Link").click();
+	await page.waitForLoadState("domcontentloaded");
+
+	await page.goBack();
+
+	await page.waitForLoadState("domcontentloaded");
+
+	await initUI();
+
+	await expect(theHit).toBeInViewport();
+}
+
+test("external link in slot override saves scroll position", async ({
+	page,
+}) => {
+	async function initUI() {
+		await page.evaluate(async () => {
+			const { FindkitUI, html } = MOD;
+
+			const ui = new FindkitUI({
+				publicToken: "pW1D0p0Dg",
+				minTerms: 0,
+				slots: {
+					Hit(props) {
+						if (props.hit.title !== "Leather Boots") {
+							return props.children;
+						}
+
+						return html`
+							<a href="https://other.invalid">External Link</a>
+							${props.children}
+						`;
+					},
+				},
+			});
+
+			Object.assign(window, { ui });
+		});
+	}
+
+	await routeMocks(page);
+	await testExternalLink(page, initUI);
+});
+
+test("external link in page header saves scroll position", async ({ page }) => {
+	async function initUI() {
+		await page.evaluate(async () => {
+			const { FindkitUI, html } = MOD;
+			const header = document.createElement("header");
+			header.innerHTML = `<a href="https://other.invalid">External Link</a>`;
+			document.body.prepend(header);
+
+			const ui = new FindkitUI({
+				publicToken: "pW1D0p0Dg",
+				minTerms: 0,
+				css: `
+					.findkit--modal-container {
+						top: 100px;
+					}
+				`,
+			});
+
+			ui.trapFocus(header);
+
+			Object.assign(window, { ui });
+		});
+	}
+
+	await routeMocks(page);
+	await page.mouse.move(200, 200);
+	await testExternalLink(page, initUI);
 });
