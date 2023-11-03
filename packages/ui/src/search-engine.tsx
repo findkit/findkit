@@ -3,6 +3,7 @@ import {
 	assertNonNullable,
 	cleanUndefined,
 	deprecationNotice,
+	getScrollContainer,
 	scrollIntoViewIfNeeded,
 } from "./utils";
 import {
@@ -24,9 +25,26 @@ import { Emitter, FindkitUIEvents, lazyValue } from "./emitter";
 import { TranslationStrings } from "./translations";
 import { listen, Resources } from "./resources";
 import { Filter } from "./filter-type";
+import { VERSION } from "./cdn-entries";
 
 export const DEFAULT_HIGHLIGHT_LENGTH = 250;
 export const DEFAULT_PREVIEW_SIZE = 5;
+
+/**
+ * Get the parent link element. Used to detect what link was clicked when
+ * the click targets a child element of the link.
+ */
+function getLinkElement(el: any): HTMLAnchorElement | null {
+	if (el instanceof HTMLAnchorElement) {
+		return el;
+	}
+
+	if (el instanceof Element) {
+		return el.closest("a");
+	}
+
+	return null;
+}
 
 /**
  * Like the findkit result but real dates instead of the string dates
@@ -481,8 +499,9 @@ export interface SearchEngineOptions {
 	params?: SearchParams;
 	infiniteScroll?: boolean;
 	container: Element | ShadowRoot;
-	alwaysReplaceRoute?: boolean;
-	router?: "memory" | "querystring" | "hash" | RouterBackend;
+	forceHistoryReplace?: boolean;
+	manageScroll?: boolean;
+	router?: "memory" | "querystring" | "hash" | RouterBackend<{}>;
 
 	/**
 	 * Monitor <html lang> changes
@@ -520,6 +539,14 @@ export interface SortGroup {
 }
 
 /**
+ * State for history.state
+ */
+interface FindkitHistoryState {
+	findkitRestoreId?: string;
+	findkitScrollTop?: number;
+}
+
+/**
  * @public
  *
  * A class for the internal logic and state of the search ui
@@ -551,7 +578,7 @@ export class SearchEngine {
 	PRIVATE_requestId = 0;
 	PRIVATE_pendingRequestIds: Map<number, AbortController> = new Map();
 
-	private readonly PRIVATE_router: RouterBackend;
+	private readonly PRIVATE_router: RouterBackend<FindkitHistoryState>;
 	private PRIVATE_fetcher: FindkitFetch;
 	readonly instanceId: string;
 	readonly state: State;
@@ -572,21 +599,24 @@ export class SearchEngine {
 	private PRIVATE_resources = new Resources();
 	private PRIVATE_container: Element | ShadowRoot;
 	private PRIVATE_monitorDocumentLangActive: boolean | undefined;
+	private PRIVATE_manageScroll: boolean | undefined;
 
 	private PRIVATE_defaultCustomRouteData: CustomRouterData;
 
-	private PRIVATE_alwaysReplaceRoute: boolean;
+	private PRIVATE_forceHistoryReplace: boolean;
 
 	events: Emitter<FindkitUIEvents, unknown>;
 
 	constructor(options: SearchEngineOptions) {
 		this.PRIVATE_defaultCustomRouteData = options.defaultCustomRouterData ?? {};
+		this.PRIVATE_manageScroll = options.manageScroll;
 		if (typeof window === "undefined") {
 			this.PRIVATE_router = {
 				listen: () => () => {},
 				getSearchParamsString: () => "",
 				update: () => {},
 				formatHref: () => "",
+				getState: () => ({}),
 			};
 		} else if (options.router === "memory") {
 			this.PRIVATE_router = createMemoryBackend();
@@ -601,7 +631,7 @@ export class SearchEngine {
 		this.events = options.events;
 		this.PRIVATE_container = options.container;
 		this.PRIVATE_monitorDocumentLangActive = options.monitorDocumentLang;
-		this.PRIVATE_alwaysReplaceRoute = options.alwaysReplaceRoute ?? false;
+		this.PRIVATE_forceHistoryReplace = options.forceHistoryReplace ?? false;
 
 		if (instanceIds.has(this.instanceId)) {
 			throw new Error(
@@ -670,6 +700,10 @@ export class SearchEngine {
 		});
 		devtools(this.state);
 
+		this.PRIVATE_resources.create(() =>
+			this.PRIVATE_router.listen(this.PRIVATE_handleAddressChange),
+		);
+
 		this.publicToken = options.publicToken;
 		this.PRIVATE_searchEndpoint = options.searchEndpoint;
 
@@ -685,6 +719,57 @@ export class SearchEngine {
 
 	private PRIVATE_started = lazyValue<true>();
 
+	private PRIVATE_scrollThrottle?: ReturnType<typeof setTimeout>;
+
+	private PRIVATE_previousRestoreId?: string;
+
+	/**
+	 * Save scroll position to the current history state.
+	 * Throttled unless `options.now` is true. Too many updates can
+	 * make the browser unresponsive.
+	 */
+	private PRIVATE_saveScroll = (options?: { now?: boolean }) => {
+		const save = () => {
+			clearTimeout(this.PRIVATE_scrollThrottle);
+			this.PRIVATE_scrollThrottle = undefined;
+
+			if (!this.PRIVATE_getfindkitParams().isActive()) {
+				return;
+			}
+
+			// Generate restore id too for saving and restoring the search
+			// results. We can do it here because it is needed only when
+			// the user has scrolled.
+			const restoreId =
+				this.PRIVATE_router.getState()?.findkitRestoreId ||
+				Math.random().toString(36).substring(7);
+
+			// We must store the the previous restore id because on some cases,
+			// like when pressing the back button on FinkditUI Modal, the
+			// history has been already changed but we still need to save the
+			// results to session storage with correct restore id. With this
+			// property it is possible to save is even after the history
+			// change.
+			this.PRIVATE_previousRestoreId = restoreId;
+
+			this.PRIVATE_setHistoryState({
+				findkitRestoreId: restoreId,
+				findkitScrollTop: this.PRIVATE_getScrollContainer().scrollTop,
+			});
+		};
+
+		if (options?.now) {
+			save();
+			return;
+		}
+
+		if (this.PRIVATE_scrollThrottle) {
+			return;
+		}
+
+		this.PRIVATE_scrollThrottle = setTimeout(save, 200);
+	};
+
 	/**
 	 * "Start the search engine" eg. start listening to input, url etc.
 	 * changes.
@@ -695,6 +780,68 @@ export class SearchEngine {
 	 * "language" event without extra search reqeusts.
 	 */
 	start() {
+		this.PRIVATE_resources.create(() =>
+			listen(this.elementHost, "scroll", () => this.PRIVATE_saveScroll(), {
+				passive: true,
+				capture: true,
+			}),
+		);
+
+		// Handle page reload and navigation away from FindkitUI on MPAs
+		this.PRIVATE_resources.create(() =>
+			listen(window, "beforeunload" as any, () => {
+				this.PRIVATE_saveScroll({ now: true });
+				return this.PRIVATE_saveResults();
+			}),
+		);
+
+		const handleLinkClick = (e: MouseEvent) => {
+			const el = getLinkElement(e.target);
+
+			// Not clicked on a link or element inside a link
+			if (!el) {
+				return;
+			}
+
+			// Save scroll on internal navigations too because we want to
+			// restore the to scroll position also when navigating between
+			// group and single views
+			this.PRIVATE_saveScroll({ now: true });
+
+			// Ignore internal links when saving the results because they do
+			// not cause navigation away from FindkitUI
+			if (this.PRIVATE_container.contains(el) && el.dataset.internal) {
+				return;
+			}
+
+			// We need to save the results only when the user navigates away
+			// from FindkitUI so we can restore the results and scroll postion
+			this.PRIVATE_saveResults();
+		};
+
+		// Any link click in anywere in the document means potentially
+		// navigating away. On MPAs the beforeunload event is fired but on SPAs
+		// it does not so we must save the results on any link click
+		this.PRIVATE_resources.create(() =>
+			listen(document.documentElement, "click", handleLinkClick, {
+				// Use capturing phase to ensure we get the event before scroll
+				// changes
+				capture: true,
+				passive: true,
+			}),
+		);
+
+		// When using shadow dom the <a> elements are not visible to the
+		// documentElement listener so we need to listen to them separately
+		if (this.PRIVATE_container instanceof ShadowRoot) {
+			this.PRIVATE_resources.create(() =>
+				listen(this.PRIVATE_container, "click", handleLinkClick, {
+					capture: true,
+					passive: true,
+				}),
+			);
+		}
+
 		const initialSearchParams = new FindkitURLSearchParams(
 			this.instanceId,
 			this.PRIVATE_router.getSearchParamsString(),
@@ -711,13 +858,13 @@ export class SearchEngine {
 
 		this.PRIVATE_syncInputs(initialSearchParams.getTerms() ?? "");
 
-		this.PRIVATE_resources.create(() =>
-			this.PRIVATE_router.listen(this.PRIVATE_handleAddressChange),
-		);
-
-		this.PRIVATE_handleAddressChange();
-
 		this.PRIVATE_started.provide(true);
+
+		// User might have called ui.open() etc. which causes address bar
+		// update during the start so we don't need to here
+		if (!this.PRIVATE_addressBarInitialized) {
+			this.PRIVATE_handleAddressChange();
+		}
 	}
 
 	get container() {
@@ -849,7 +996,7 @@ export class SearchEngine {
 	 * SPA frameworks update the <html lang> when doing client side routing with
 	 * the History API. Listen to those changes
 	 */
-	PRIVATE_monitorDocumentElementLang() {
+	private PRIVATE_monitorDocumentElementLang() {
 		if (typeof window === "undefined") {
 			return;
 		}
@@ -880,11 +1027,30 @@ export class SearchEngine {
 		return document.documentElement.lang;
 	}
 
+	private PRIVATE_findkitParamsCache?: {
+		str: string;
+		value: FindkitURLSearchParams;
+	};
+
 	/**
 	 * Access the current params in the url bar
 	 */
 	private PRIVATE_getfindkitParams() {
-		return new FindkitURLSearchParams(this.instanceId, this.state.searchParams);
+		if (this.PRIVATE_findkitParamsCache?.str === this.state.searchParams) {
+			return this.PRIVATE_findkitParamsCache.value;
+		}
+
+		const value = new FindkitURLSearchParams(
+			this.instanceId,
+			this.state.searchParams,
+		);
+
+		this.PRIVATE_findkitParamsCache = {
+			str: this.state.searchParams,
+			value,
+		};
+
+		return value;
 	}
 
 	formatHref(params: FindkitURLSearchParams) {
@@ -902,8 +1068,16 @@ export class SearchEngine {
 		}, 2000);
 	}
 
+	private PRIVATE_addressBarInitialized = false;
+
+	/**
+	 * Restored inside the Modal and Plain components
+	 */
+	scrollPositionRestore?: number;
+
 	private PRIVATE_handleAddressChange = () => {
-		const currentTerms = this.PRIVATE_getfindkitParams().getTerms() ?? "";
+		const currentParams = this.PRIVATE_getfindkitParams();
+		const currentTerms = currentParams.getTerms() ?? "";
 		this.state.searchParams = this.PRIVATE_router.getSearchParamsString();
 
 		if (this.PRIVATE_ignoreNextAddressbarUpdate) {
@@ -911,10 +1085,27 @@ export class SearchEngine {
 			return;
 		}
 
+		if (!this.PRIVATE_started.get()) {
+			return;
+		}
+
+		this.PRIVATE_addressBarInitialized = true;
+
+		if (this.PRIVATE_manageScroll !== false) {
+			const state = this.PRIVATE_router.getState();
+			this.scrollPositionRestore = state?.findkitScrollTop;
+		}
+
 		const nextParams = this.PRIVATE_getfindkitParams();
+
+		// Clear throttling only when we are really moving from open to closed.
+		// When opening we might set the throttling terms before we open.
+		if (!nextParams.isActive() && currentParams.isActive()) {
+			this.PRIVATE_throttlingTerms = "";
+		}
+
 		if (!nextParams.isActive()) {
 			this.PRIVATE_statusTransition("closed");
-			this.PRIVATE_throttlingTerms = "";
 			this.state.currentGroupId = undefined;
 			return;
 		}
@@ -930,13 +1121,22 @@ export class SearchEngine {
 
 		this.state.currentGroupId = nextParams.getGroupId();
 
+		const restored = this.PRIVATE_restoreResults();
+		if (restored) {
+			// Restored previously made fetch. No need to do actual fetch
+			return;
+		}
+
 		void this.PRIVATE_fetch({ terms, reset });
 	};
 
-	private PRIVATE_clearThrottle = () => {
+	private PRIVATE_clearTermsThrottle = () => {
 		clearTimeout(this.PRIVATE_termsThrottleTimer);
-		clearTimeout(this.PRIVATE_groupsThrottleTimer);
 		this.PRIVATE_termsThrottleTimer = undefined;
+	};
+
+	private PRIVATE_clearGroupsThrottle = () => {
+		clearTimeout(this.PRIVATE_groupsThrottleTimer);
 		this.PRIVATE_groupsThrottleTimer = undefined;
 	};
 
@@ -967,9 +1167,89 @@ export class SearchEngine {
 		this.PRIVATE_pendingCustomRouterData = data;
 	}
 
+	private PRIVATE_getScrollContainer() {
+		return (
+			this.PRIVATE_container.querySelector(".findkit--modal") ??
+			getScrollContainer(this.PRIVATE_container)
+		);
+	}
+
+	private PRIVATE_setHistoryState(state: FindkitHistoryState) {
+		this.PRIVATE_ignoreNextAddressbarUpdate = true;
+		this.PRIVATE_router.update(this.PRIVATE_getfindkitParams().toString(), {
+			push: false,
+			state: {
+				...this.PRIVATE_router.getState(),
+				...state,
+			},
+		});
+	}
+
+	private PRIVATE_getSessionKey(id: string) {
+		return `findkit-state-${VERSION}-${id}`;
+	}
+
+	private PRIVATE_saveResults() {
+		const hasSomeHits = Object.values(this.state.resultGroups).some(
+			(group) => group.hits.length > 0,
+		);
+
+		if (!hasSomeHits) {
+			return;
+		}
+
+		const restoreId = this.PRIVATE_previousRestoreId;
+
+		if (!restoreId) {
+			return;
+		}
+
+		sessionStorage.setItem(
+			this.PRIVATE_getSessionKey(restoreId),
+			JSON.stringify({ resultGroups: this.state.resultGroups }),
+		);
+	}
+
+	private PRIVATE_restoreResults(): boolean {
+		const id = this.PRIVATE_router.getState()?.findkitRestoreId;
+		if (!id) {
+			return false;
+		}
+
+		const json = sessionStorage.getItem(this.PRIVATE_getSessionKey(id));
+		if (!json) {
+			return false;
+		}
+
+		sessionStorage.removeItem(this.PRIVATE_getSessionKey(id));
+
+		let savedState: {
+			resultGroups: State["resultGroups"];
+		};
+
+		try {
+			savedState = JSON.parse(json);
+		} catch {
+			return false;
+		}
+
+		if (!savedState) {
+			return false;
+		}
+
+		this.state.resultGroups = savedState.resultGroups;
+		this.state.status = "ready";
+		this.state.usedGroupDefinitions = this.state.nextGroupDefinitions;
+		this.state.usedTerms = this.PRIVATE_getfindkitParams().getTerms();
+		return true;
+	}
+
 	updateAddressBar = (
 		next: FindkitURLSearchParams,
-		options?: { push?: boolean; ignore?: boolean },
+		options?: {
+			push?: boolean;
+			ignore?: boolean;
+		},
 	) => {
 		if (next.equals(this.PRIVATE_getfindkitParams())) {
 			return;
@@ -979,8 +1259,11 @@ export class SearchEngine {
 			this.PRIVATE_ignoreNextAddressbarUpdate = true;
 		}
 
+		const push = this.PRIVATE_forceHistoryReplace ? false : options?.push;
+
 		this.PRIVATE_router.update(next.toString(), {
-			push: this.PRIVATE_alwaysReplaceRoute ? false : options?.push,
+			push,
+			state: push ? {} : this.PRIVATE_router.getState(),
 		});
 	};
 
@@ -1011,7 +1294,7 @@ export class SearchEngine {
 	}
 
 	setTerms(terms: string) {
-		this.PRIVATE_clearThrottle();
+		this.PRIVATE_clearTermsThrottle();
 		this.updateAddressBar(this.PRIVATE_getfindkitParams().setTerms(terms));
 	}
 
@@ -1078,26 +1361,28 @@ export class SearchEngine {
 			return;
 		}
 
+		this.PRIVATE_dirtyGroups = true;
+
 		// Use leading invoke throttle for groups update. Eg. the first update
 		// is immediate but the next ones are throttled.
 		if (this.PRIVATE_groupsThrottleTimer) {
-			this.PRIVATE_dirtyGroups = true;
 			return;
 		}
 
+		// The immediate update
 		this.PRIVATE_handleGroupsChange();
 
 		this.PRIVATE_groupsThrottleTimer = setTimeout(() => {
-			this.PRIVATE_clearThrottle();
+			this.PRIVATE_clearGroupsThrottle();
 			if (this.PRIVATE_dirtyGroups) {
-				this.PRIVATE_dirtyGroups = false;
 				this.PRIVATE_handleGroupsChange();
 			}
 		}, this.PRIVATE_fetchThrottle);
 	};
 
 	private PRIVATE_handleGroupsChange = () => {
-		this.PRIVATE_clearThrottle();
+		this.PRIVATE_clearGroupsThrottle();
+		this.PRIVATE_dirtyGroups = false;
 
 		const terms =
 			(this.PRIVATE_throttlingTerms ||
@@ -1280,6 +1565,7 @@ export class SearchEngine {
 			}
 
 			if (prev !== "closed" && current === "closed") {
+				this.PRIVATE_saveResults();
 				this.events.emit("close", { container });
 			}
 		}
@@ -1496,7 +1782,7 @@ export class SearchEngine {
 		this.PRIVATE_syncInputs(options.terms);
 	};
 
-	PRIVATE_getSelectedGroup(
+	private PRIVATE_getSelectedGroup(
 		source: "next" | "used",
 	): GroupDefinitionWithDefaults | undefined {
 		const groups =

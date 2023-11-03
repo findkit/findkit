@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Search UI Test</title>
+
+    <script type="module">
+        import {FindkitUI} from "/build/esm/index.js";
+        const uiEvents = [];
+
+        // Load the UI clearly after the page load to test cases where the
+        // native browser scroll restoration does not work.
+        setTimeout(() => {
+            const ui = new FindkitUI({
+                publicToken: "pW1D0p0Dg",
+                router:
+                    new URLSearchParams(location.search).get("router") || "querystring",
+                container: "#container",
+                minTerms: 1,
+            });
+
+            ui.on("fetch", () => {
+                uiEvents.push("fetch");
+            });
+
+            Object.assign(window, {ui, uiEvents});
+        }, 100);
+    </script>
+</head>
+
+<body>
+    <div id="container"></div>
+</body>
+
+</html>

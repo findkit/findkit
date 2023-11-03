@@ -7,7 +7,7 @@ import { devices } from "@playwright/test";
  */
 // require('dotenv').config();
 
-const projects: PlaywrightTestConfig["projects"] = [
+let projects: PlaywrightTestConfig["projects"] = [
 	{
 		name: "chromium",
 		use: {
@@ -23,6 +23,17 @@ if (process.env.CI || process.env.ALL_PLAYWRIGHT_BROWSERS) {
 			...devices["Desktop Firefox"],
 		},
 	});
+}
+
+if (process.env.FIREFOX) {
+	projects = [
+		{
+			name: "firefox",
+			use: {
+				...devices["Desktop Firefox"],
+			},
+		},
+	];
 }
 
 /**
@@ -58,6 +69,14 @@ const config: PlaywrightTestConfig = {
 
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: "on-first-retry",
+
+		video: "on-first-retry",
+
+		launchOptions: {
+			slowMo: process.env.SLOWMO
+				? Number(process.env.SLOWMO) * 1000
+				: undefined,
+		},
 	},
 
 	/* Configure projects for major browsers */
