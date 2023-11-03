@@ -29,10 +29,6 @@ async function routeMocks(page: Page) {
 }
 
 async function testModal(page: Page) {
-	await page.evaluate(async () => {
-		history.replaceState({ my: "test" }, "", location.href);
-	});
-
 	await page.locator("text=open").first().click();
 	await page.locator("input").fill("a");
 
@@ -64,13 +60,6 @@ async function testModal(page: Page) {
 	expect(await page.evaluate(() => (window as any).uiEvents)).toEqual([]);
 
 	await expect(theHit).toBeInViewport();
-
-	// Other history is not affected
-	expect(
-		await page.evaluate(async () => {
-			return history.state;
-		}),
-	).toMatchObject({ my: "test" });
 }
 
 async function testContainer(page: Page) {

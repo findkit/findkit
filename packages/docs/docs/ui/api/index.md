@@ -101,6 +101,21 @@ results.
 
 <Api page="ui.findkituioptions.infiniteScroll" />
 
+### `forceHistoryReplace: boolean` {#forceHistoryReplace}
+
+Set to true to force `history.replaceState` usage instead of
+`history.pushState` with `querystring` and `hash` routers. Normally FindkitUI
+uses History push when opening the modal so it can be closed using the browser
+back button.
+
+This is set to `true` when the [`container`](#container) option is used.
+
+When using frontend frameworks such as Next.js that control the routing too
+this can be used to fix navigation conflicts with the FindkitUI router with the
+caveat of disabling the back button modal close.
+
+<Api page="ui.findkituioptions.forceHistoryReplace" />
+
 ### `instanceId: string` {#instanceId}
 
 When using multiple `FindkitUI` instances you must provide a custom

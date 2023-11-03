@@ -499,7 +499,7 @@ export interface SearchEngineOptions {
 	params?: SearchParams;
 	infiniteScroll?: boolean;
 	container: Element | ShadowRoot;
-	alwaysReplaceRoute?: boolean;
+	forceHistoryReplace?: boolean;
 	router?: "memory" | "querystring" | "hash" | RouterBackend<{}>;
 
 	/**
@@ -601,7 +601,7 @@ export class SearchEngine {
 
 	private PRIVATE_defaultCustomRouteData: CustomRouterData;
 
-	private PRIVATE_alwaysReplaceRoute: boolean;
+	private PRIVATE_forceHistoryReplace: boolean;
 
 	events: Emitter<FindkitUIEvents, unknown>;
 
@@ -628,7 +628,7 @@ export class SearchEngine {
 		this.events = options.events;
 		this.PRIVATE_container = options.container;
 		this.PRIVATE_monitorDocumentLangActive = options.monitorDocumentLang;
-		this.PRIVATE_alwaysReplaceRoute = options.alwaysReplaceRoute ?? false;
+		this.PRIVATE_forceHistoryReplace = options.forceHistoryReplace ?? false;
 
 		if (instanceIds.has(this.instanceId)) {
 			throw new Error(
@@ -1253,9 +1253,11 @@ export class SearchEngine {
 			this.PRIVATE_ignoreNextAddressbarUpdate = true;
 		}
 
+		const push = this.PRIVATE_forceHistoryReplace ? false : options?.push;
+
 		this.PRIVATE_router.update(next.toString(), {
-			push: this.PRIVATE_alwaysReplaceRoute ? false : options?.push,
-			state: this.PRIVATE_router.getState(),
+			push,
+			state: push ? {} : this.PRIVATE_router.getState(),
 		});
 	};
 

@@ -515,6 +515,7 @@ export function init(_options: {
 	events: Emitter<FindkitUIEvents, unknown>;
 	searchEndpoint?: string;
 	params?: SearchParams;
+	forceHistoryReplace?: boolean;
 	groups?: GroupDefinition[];
 	pageScroll?: boolean;
 	modal?: boolean;
@@ -536,6 +537,10 @@ export function init(_options: {
 
 	if (hasCustomContainer && typeof options.modal !== "boolean") {
 		options.modal = false;
+	}
+
+	if (hasCustomContainer && typeof options.forceHistoryReplace !== "boolean") {
+		options.forceHistoryReplace = true;
 	}
 
 	if (options.ui) {
@@ -591,7 +596,6 @@ export function init(_options: {
 	const engine = new SearchEngine({
 		...options,
 		container: container,
-		alwaysReplaceRoute: hasCustomContainer,
 	});
 
 	options.events.on("dispose", () => {
