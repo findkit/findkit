@@ -1125,10 +1125,13 @@ export class SearchEngine {
 		void this.PRIVATE_fetch({ terms, reset });
 	};
 
-	private PRIVATE_clearThrottle = () => {
+	private PRIVATE_clearTermsThrottle = () => {
 		clearTimeout(this.PRIVATE_termsThrottleTimer);
-		clearTimeout(this.PRIVATE_groupsThrottleTimer);
 		this.PRIVATE_termsThrottleTimer = undefined;
+	};
+
+	private PRIVATE_clearGroupsThrottle = () => {
+		clearTimeout(this.PRIVATE_groupsThrottleTimer);
 		this.PRIVATE_groupsThrottleTimer = undefined;
 	};
 
@@ -1283,7 +1286,7 @@ export class SearchEngine {
 	}
 
 	setTerms(terms: string) {
-		this.PRIVATE_clearThrottle();
+		this.PRIVATE_clearTermsThrottle();
 		this.updateAddressBar(this.PRIVATE_getfindkitParams().setTerms(terms));
 	}
 
@@ -1350,26 +1353,28 @@ export class SearchEngine {
 			return;
 		}
 
+		this.PRIVATE_dirtyGroups = true;
+
 		// Use leading invoke throttle for groups update. Eg. the first update
 		// is immediate but the next ones are throttled.
 		if (this.PRIVATE_groupsThrottleTimer) {
-			this.PRIVATE_dirtyGroups = true;
 			return;
 		}
 
+		// The immediate update
 		this.PRIVATE_handleGroupsChange();
 
 		this.PRIVATE_groupsThrottleTimer = setTimeout(() => {
-			this.PRIVATE_clearThrottle();
+			this.PRIVATE_clearGroupsThrottle();
 			if (this.PRIVATE_dirtyGroups) {
-				this.PRIVATE_dirtyGroups = false;
 				this.PRIVATE_handleGroupsChange();
 			}
 		}, this.PRIVATE_fetchThrottle);
 	};
 
 	private PRIVATE_handleGroupsChange = () => {
-		this.PRIVATE_clearThrottle();
+		this.PRIVATE_clearGroupsThrottle();
+		this.PRIVATE_dirtyGroups = false;
 
 		const terms =
 			(this.PRIVATE_throttlingTerms ||
