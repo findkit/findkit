@@ -101,7 +101,8 @@ test("can cmd links", async ({ page, context }) => {
 	await expect.poll(() => context.pages()).toHaveLength(2);
 });
 
-test("updates from history.pushState()", async ({ page }) => {
+test("updates from history.pushState()", async ({ page, browserName }) => {
+	const tab = browserName === "webkit" ? "Alt+Tab" : "Tab";
 	await page.goto(staticEntry("/dummy"));
 
 	const hits = page.locator(".findkit--hit a");
@@ -124,7 +125,7 @@ test("updates from history.pushState()", async ({ page }) => {
 		.first()
 		.evaluate((e: HTMLElement) => e.getAttribute("href"));
 
-	await page.keyboard.press("Tab");
+	await page.keyboard.press(tab);
 
 	await page.evaluate(async () => {
 		history.pushState(undefined, "", "?fdk_q=wordpress");

@@ -1,7 +1,8 @@
 import { test, expect, Page } from "@playwright/test";
 import { staticEntry } from "./helpers";
 
-async function testNavigationAndFocus(page: Page) {
+async function testNavigationAndFocus(page: Page, browserName: string) {
+	const tab = browserName === "webkit" ? "Alt+Tab" : "Tab";
 	const input = page.locator("#external-input");
 	const hits = page.locator(".findkit-overlay-container .findkit--hit a");
 	const randomLink = page.locator("text=Random");
@@ -11,17 +12,17 @@ async function testNavigationAndFocus(page: Page) {
 
 	await expect(hits.first()).toBeVisible();
 
-	await page.keyboard.press("Tab");
+	await page.keyboard.press(tab);
 	// Focus goes to manually trapped close button
 	await expect(closeButton).toBeFocused();
 
 	// Jumps over other header links directly to the first hit
-	await page.keyboard.press("Tab");
+	await page.keyboard.press(tab);
 	await expect(hits.first()).toBeFocused();
 
 	// Can go back to the close button with shift+tab
 	await page.keyboard.down("Shift");
-	await page.keyboard.press("Tab");
+	await page.keyboard.press(tab);
 	await page.keyboard.up("Shift");
 	await expect(closeButton).toBeFocused();
 
@@ -33,21 +34,25 @@ async function testNavigationAndFocus(page: Page) {
 	await expect(input).toBeFocused();
 
 	// Can focus other header links when the modal is closed
-	await page.keyboard.press("Tab");
-	await page.keyboard.press("Tab");
+	await page.keyboard.press(tab);
+	await page.keyboard.press(tab);
 	await expect(randomLink).toBeFocused();
 }
 
-test("can use overlay modal with proper focus management", async ({ page }) => {
+test("can use overlay modal with proper focus management", async ({
+	page,
+	browserName,
+}) => {
 	await page.goto(staticEntry("/overlay-modal"));
-	await testNavigationAndFocus(page);
+	await testNavigationAndFocus(page, browserName);
 });
 
 test("can use overlay modal with proper focus management without shadow dom", async ({
 	page,
+	browserName,
 }) => {
 	await page.goto(staticEntry("/overlay-modal?no-shadow"));
-	await testNavigationAndFocus(page);
+	await testNavigationAndFocus(page, browserName);
 });
 
 test("keyboard navigation scrolls", async ({ page }) => {

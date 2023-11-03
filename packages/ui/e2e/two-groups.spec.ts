@@ -279,7 +279,10 @@ test("can show 'All results shown' and 'No results' on group view", async ({
 ["no-shadow", "with-shadow"].forEach((qs) => {
 	test(`move focus the next item when navigating into a group (${qs})`, async ({
 		page,
+		browserName,
 	}) => {
+		const tab = browserName === "webkit" ? "Alt+Tab" : "Tab";
+
 		const getFocusedHitUrl = async () => {
 			return await page.evaluate(() => {
 				let activeElement = document.activeElement;
@@ -303,17 +306,17 @@ test("can show 'All results shown' and 'No results' on group view", async ({
 
 		await hitLinks.first().waitFor({ state: "visible" });
 
-		await page.keyboard.press("Tab");
-		await page.keyboard.press("Tab");
-		await page.keyboard.press("Tab");
-		await page.keyboard.press("Tab");
-		await page.keyboard.press("Tab");
+		await page.keyboard.press(tab);
+		await page.keyboard.press(tab);
+		await page.keyboard.press(tab);
+		await page.keyboard.press(tab);
+		await page.keyboard.press(tab);
 
 		const lastPreviewUrl = await getFocusedHitUrl();
 		expect(lastPreviewUrl).toBeTruthy();
 
 		// Move to "Show more search results"
-		await page.keyboard.press("Tab");
+		await page.keyboard.press(tab);
 		await page.keyboard.press("Enter");
 
 		await expect(hitLinks.nth(5)).toBeFocused();

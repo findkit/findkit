@@ -63,6 +63,38 @@ jobs:
           path: packages/ui/playwright-report/
           retention-days: 2
 
+  playwright-test-macos:
+    timeout-minutes: 20
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        shard: [1, 2]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/setup-action
+
+      - name: Install Playwright Browsers
+        run: cd packages/ui && ./node_modules/.bin/playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: |
+          set -eu
+
+          cd packages/ui
+
+          # Sanity check
+          ./node_modules/.bin/findkit search -t po8GK3G0r valu
+
+          pnpm run build-test-app
+          pnpm run playwright-test --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report-macos-${{ matrix.shard }}
+          path: packages/ui/playwright-report/
+          retention-days: 2
+
   playwright-visual:
     timeout-minutes: 20
     runs-on: ubuntu-latest
