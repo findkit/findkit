@@ -116,6 +116,16 @@ caveat of disabling the back button modal close.
 
 <Api page="ui.findkituioptions.forceHistoryReplace" />
 
+### `manageScroll: boolean` {#manageScroll}
+
+Manage scroll position by restoring it when user navigates back to the
+FindkitUI view. Generally no need to disable this but if you have other
+conflicting libraries or frameworks it might be helpful to disable it.
+
+Defaults to `true`
+
+<Api page="ui.findkituioptions.manageScroll" />
+
 ### `instanceId: string` {#instanceId}
 
 When using multiple `FindkitUI` instances you must provide a custom

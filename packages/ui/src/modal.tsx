@@ -527,6 +527,7 @@ export function init(_options: {
 	router?: SearchEngineOptions["router"];
 	groupOrder?: GroupOrder;
 	fontDivisor?: number;
+	manageScroll?: boolean;
 	ui?: {
 		lang?: string;
 		overrides?: Partial<TranslationStrings>;
