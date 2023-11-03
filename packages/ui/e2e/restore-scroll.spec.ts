@@ -401,3 +401,62 @@ test("container: can restore the scroll position after reload", async ({
 		await page.evaluate(() => (window as any).uiEvents.length),
 	).toBeGreaterThan(0);
 });
+
+test("can disable scroll restoration with `manageScroll: false`", async ({
+	page,
+	browserName,
+}) => {
+	await page.goto(staticEntry("/dummy"));
+
+	async function initUI() {
+		await page.evaluate(async () => {
+			const { FindkitUI } = MOD;
+
+			const ui = new FindkitUI({
+				publicToken: "pW1D0p0Dg",
+				minTerms: 1,
+				manageScroll: false,
+			});
+
+			const uiEvents: any[] = [];
+
+			ui.on("fetch", () => {
+				uiEvents.push("fetch");
+			});
+
+			Object.assign(window, { ui, uiEvents });
+		});
+	}
+
+	await initUI();
+
+	await page.evaluate(async () => {
+		ui.open();
+	});
+
+	await page.locator("input").fill("a");
+
+	const theHit = await scrollToHit(page, "Running Shoes");
+
+	await page.reload();
+
+	await initUI();
+
+	// wait for animations etc.
+	await page.waitForTimeout(500);
+
+	await expect(page.locator(".findkit--hit").first()).toBeInViewport();
+
+	// XXX beforeunload event does not fire in Firefox on playwright. Works
+	// when manually using firefox
+	if (browserName === "firefox") {
+		return;
+	}
+
+	// Loaded by not scrolled to
+	await expect(theHit).not.toBeInViewport();
+	await expect(theHit).toBeVisible();
+
+	// No fetches should have been made after the reload
+	expect(await page.evaluate(() => (window as any).uiEvents)).toEqual([]);
+});

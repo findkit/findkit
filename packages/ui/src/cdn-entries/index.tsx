@@ -478,6 +478,7 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	lockScroll?: boolean;
 	modal?: boolean;
 	forceHistoryReplace?: boolean;
+	manageScroll?: boolean;
 
 	/**
 	 * See {@link GroupOrder}

@@ -500,6 +500,7 @@ export interface SearchEngineOptions {
 	infiniteScroll?: boolean;
 	container: Element | ShadowRoot;
 	forceHistoryReplace?: boolean;
+	manageScroll?: boolean;
 	router?: "memory" | "querystring" | "hash" | RouterBackend<{}>;
 
 	/**
@@ -598,6 +599,7 @@ export class SearchEngine {
 	private PRIVATE_resources = new Resources();
 	private PRIVATE_container: Element | ShadowRoot;
 	private PRIVATE_monitorDocumentLangActive: boolean | undefined;
+	private PRIVATE_manageScroll: boolean | undefined;
 
 	private PRIVATE_defaultCustomRouteData: CustomRouterData;
 
@@ -607,6 +609,7 @@ export class SearchEngine {
 
 	constructor(options: SearchEngineOptions) {
 		this.PRIVATE_defaultCustomRouteData = options.defaultCustomRouterData ?? {};
+		this.PRIVATE_manageScroll = options.manageScroll;
 		if (typeof window === "undefined") {
 			this.PRIVATE_router = {
 				listen: () => () => {},
@@ -1088,8 +1091,10 @@ export class SearchEngine {
 
 		this.PRIVATE_addressBarInitialized = true;
 
-		const state = this.PRIVATE_router.getState();
-		this.scrollPositionRestore = state?.findkitScrollTop;
+		if (this.PRIVATE_manageScroll !== false) {
+			const state = this.PRIVATE_router.getState();
+			this.scrollPositionRestore = state?.findkitScrollTop;
+		}
 
 		const nextParams = this.PRIVATE_getfindkitParams();
 
