@@ -784,7 +784,7 @@ export class SearchEngine {
 			}),
 		);
 
-		// Handle page reload and navigation away from FindkitUI on SPAs
+		// Handle page reload and navigation away from FindkitUI on MPAs
 		this.PRIVATE_resources.create(() =>
 			listen(window, "beforeunload" as any, () => {
 				this.PRIVATE_saveScroll({ now: true });
@@ -792,7 +792,7 @@ export class SearchEngine {
 			}),
 		);
 
-		const saveResults = (e: MouseEvent) => {
+		const handleLinkClick = (e: MouseEvent) => {
 			const el = getLinkElement(e.target);
 
 			// Not clicked on a link or element inside a link
@@ -805,8 +805,8 @@ export class SearchEngine {
 			// group and single views
 			this.PRIVATE_saveScroll({ now: true });
 
-			// Ignore internal links because they do not cause navigation away
-			// from FindkitUI
+			// Ignore internal links when saving the results because they do
+			// not cause navigation away from FindkitUI
 			if (this.PRIVATE_container.contains(el) && el.dataset.internal) {
 				return;
 			}
@@ -820,7 +820,7 @@ export class SearchEngine {
 		// navigating away. On MPAs the beforeunload event is fired but on SPAs
 		// it does not so we must save the results on any link click
 		this.PRIVATE_resources.create(() =>
-			listen(document.documentElement, "click", saveResults, {
+			listen(document.documentElement, "click", handleLinkClick, {
 				// Use capturing phase to ensure we get the event before scroll
 				// changes
 				capture: true,
@@ -832,7 +832,7 @@ export class SearchEngine {
 		// documentElement listener so we need to listen to them separately
 		if (this.PRIVATE_container instanceof ShadowRoot) {
 			this.PRIVATE_resources.create(() =>
-				listen(this.PRIVATE_container, "click", saveResults, {
+				listen(this.PRIVATE_container, "click", handleLinkClick, {
 					capture: true,
 					passive: true,
 				}),
