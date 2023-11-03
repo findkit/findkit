@@ -28,6 +28,33 @@ async function routeMocks(page: Page) {
 	);
 }
 
+async function scrollToHit(page: Page, text: string) {
+	return await test.step(`finds hit "${text}" by scrolling`, async () => {
+		const hits = page.locator(".findkit--hit");
+		await hits.first().waitFor({ state: "visible" });
+
+		// Ensure mouse is over the first hit so the scroll wheel works
+		await hits.first().hover();
+
+		const theHit = hits.filter({ hasText: text }).first();
+
+		let i = 20;
+
+		while (i--) {
+			await page.mouse.wheel(0, 800);
+			await page.waitForTimeout(200);
+			if (await theHit.isVisible()) {
+				break;
+			}
+		}
+
+		expect(await theHit.isVisible()).toBe(true);
+
+		await theHit.scrollIntoViewIfNeeded();
+		return theHit;
+	});
+}
+
 async function testModal(page: Page) {
 	await page.locator("text=open").first().click();
 	await page.locator("input").fill("a");
@@ -35,19 +62,7 @@ async function testModal(page: Page) {
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
-	const theHit = hits.filter({ hasText: "Running Shoes" }).first();
-
-	let i = 50;
-
-	while (i--) {
-		await page.mouse.wheel(0, 800);
-		await page.waitForTimeout(250);
-		if (await theHit.isVisible()) {
-			break;
-		}
-	}
-
-	await theHit.scrollIntoViewIfNeeded();
+	const theHit = await scrollToHit(page, "Running Shoes");
 
 	await theHit.locator("a").first().click();
 
@@ -69,19 +84,7 @@ async function testContainer(page: Page) {
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
-	const theHit = hits.filter({ hasText: "Running Shoes" }).first();
-
-	let i = 50;
-
-	while (i--) {
-		await page.mouse.wheel(0, 800);
-		await page.waitForTimeout(250);
-		if (await theHit.isVisible()) {
-			break;
-		}
-	}
-
-	await theHit.scrollIntoViewIfNeeded();
+	const theHit = await scrollToHit(page, "Running Shoes");
 
 	await theHit.locator("a").first().click();
 
@@ -203,19 +206,7 @@ async function testExternalLink(page: Page, initUI: () => Promise<void>) {
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
-	const theHit = hits.filter({ hasText: "Running Shoes" }).first();
-
-	let i = 100;
-
-	while (i--) {
-		await page.mouse.wheel(0, 800);
-		await page.waitForTimeout(250);
-		if (await theHit.isVisible()) {
-			break;
-		}
-	}
-
-	await theHit.scrollIntoViewIfNeeded();
+	const theHit = await scrollToHit(page, "Running Shoes");
 
 	await page.locator("text=External Link").click();
 	await page.waitForLoadState("domcontentloaded");
@@ -286,7 +277,6 @@ test("external link in page header saves scroll position", async ({ page }) => {
 	}
 
 	await routeMocks(page);
-	await page.mouse.move(200, 200);
 	await testExternalLink(page, initUI);
 });
 
@@ -301,19 +291,7 @@ test("modal: can restore the scroll position when using forward button", async (
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
-	const theHit = hits.filter({ hasText: "Running Shoes" }).first();
-
-	let i = 100;
-
-	while (i--) {
-		await page.mouse.wheel(0, 800);
-		await page.waitForTimeout(250);
-		if (await theHit.isVisible()) {
-			break;
-		}
-	}
-
-	await theHit.scrollIntoViewIfNeeded();
+	const theHit = await scrollToHit(page, "Running Shoes");
 
 	// Ensure throttle timeout fired
 	await page.waitForTimeout(500);
@@ -334,22 +312,7 @@ test("modal: can restore the scroll position after reload", async ({
 	await page.locator("text=open").click();
 	await page.locator("input").fill("a");
 
-	const hits = page.locator(".findkit--hit");
-	await hits.first().waitFor({ state: "visible" });
-
-	const theHit = hits.filter({ hasText: "Running Shoes" }).first();
-
-	let i = 100;
-
-	while (i--) {
-		await page.mouse.wheel(0, 800);
-		await page.waitForTimeout(250);
-		if (await theHit.isVisible()) {
-			break;
-		}
-	}
-
-	await theHit.scrollIntoViewIfNeeded();
+	const theHit = await scrollToHit(page, "Running Shoes");
 
 	await page.reload();
 
@@ -367,22 +330,7 @@ test("container: can restore the scroll position after reload", async ({
 	await page.locator("text=open").first().click();
 	await page.locator("input").fill("a");
 
-	const hits = page.locator(".findkit--hit");
-	await hits.first().waitFor({ state: "visible" });
-
-	const theHit = hits.filter({ hasText: "Running Shoes" }).first();
-
-	let i = 50;
-
-	while (i--) {
-		await page.mouse.wheel(0, 800);
-		await page.waitForTimeout(250);
-		if (await theHit.isVisible()) {
-			break;
-		}
-	}
-
-	await theHit.scrollIntoViewIfNeeded();
+	const theHit = await scrollToHit(page, "Running Shoes");
 
 	await page.reload();
 
