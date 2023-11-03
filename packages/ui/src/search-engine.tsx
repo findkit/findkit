@@ -1024,11 +1024,30 @@ export class SearchEngine {
 		return document.documentElement.lang;
 	}
 
+	private PRIVATE_findkitParamsCache?: {
+		str: string;
+		value: FindkitURLSearchParams;
+	};
+
 	/**
 	 * Access the current params in the url bar
 	 */
 	private PRIVATE_getfindkitParams() {
-		return new FindkitURLSearchParams(this.instanceId, this.state.searchParams);
+		if (this.PRIVATE_findkitParamsCache?.str === this.state.searchParams) {
+			return this.PRIVATE_findkitParamsCache.value;
+		}
+
+		const value = new FindkitURLSearchParams(
+			this.instanceId,
+			this.state.searchParams,
+		);
+
+		this.PRIVATE_findkitParamsCache = {
+			str: this.state.searchParams,
+			value,
+		};
+
+		return value;
 	}
 
 	formatHref(params: FindkitURLSearchParams) {
