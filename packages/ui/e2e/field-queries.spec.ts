@@ -182,7 +182,10 @@ test("can dynamically update filter using useParams hook", async ({ page }) => {
 	await expect.poll(async () => await hits.allInnerTexts()).toEqual(["30"]);
 });
 
-test("can save filters to url and restore them on reload", async ({ page }) => {
+test("can save filters to url and restore them on reload", async ({
+	page,
+	browserName,
+}) => {
 	await page.goto(staticEntry("/custom-field-queries"));
 
 	const getFetches = async (): Promise<string[]> => {
@@ -217,7 +220,15 @@ test("can save filters to url and restore them on reload", async ({ page }) => {
 	await page.reload();
 	await expect(page.getByLabel("Cheapest first")).toBeChecked();
 	await expect.poll(getPrices).toEqual(["30", "100", "220"]);
+
+	// XXX beforeunload event does not fire in Firefox on playwright. Works
+	// when manually using firefox
+	if (browserName === "firefox") {
+		return;
+	}
+
 	await page.waitForTimeout(500);
+
 	// No new fetches since saved state was restored
 	expect(await getFetches()).toEqual([]);
 });
