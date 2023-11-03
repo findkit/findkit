@@ -103,6 +103,8 @@ results.
 
 ### `forceHistoryReplace: boolean` {#forceHistoryReplace}
 
+_New in v0.12.0_
+
 Set to true to force `history.replaceState` usage instead of
 `history.pushState` with `querystring` and `hash` routers. Normally FindkitUI
 uses History push when opening the modal so it can be closed using the browser
@@ -117,6 +119,8 @@ caveat of disabling the back button modal close.
 <Api page="ui.findkituioptions.forceHistoryReplace" />
 
 ### `manageScroll: boolean` {#manageScroll}
+
+_New in v0.12.0_
 
 Manage scroll position by restoring it when user navigates back to the
 FindkitUI view. Generally no need to disable this but if you have other
