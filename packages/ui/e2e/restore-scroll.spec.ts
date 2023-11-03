@@ -75,6 +75,12 @@ async function testModal(page: Page) {
 	expect(await page.evaluate(() => (window as any).uiEvents)).toEqual([]);
 
 	await expect(theHit).toBeInViewport();
+
+	await scrollToHit(page, "Leather Boots");
+
+	expect(
+		await page.evaluate(() => (window as any).uiEvents.length),
+	).toBeGreaterThan(0);
 }
 
 async function testContainer(page: Page) {
@@ -97,6 +103,12 @@ async function testContainer(page: Page) {
 	await expect(theHit).toBeInViewport();
 
 	expect(await page.evaluate(() => (window as any).uiEvents)).toEqual([]);
+
+	await scrollToHit(page, "Leather Boots");
+
+	expect(
+		await page.evaluate(() => (window as any).uiEvents.length),
+	).toBeGreaterThan(0);
 }
 
 test("modal: can restore the scroll position when using back button", async ({
@@ -218,6 +230,12 @@ async function testExternalLink(page: Page, initUI: () => Promise<void>) {
 	await initUI();
 
 	await expect(theHit).toBeInViewport();
+
+	await scrollToHit(page, "Leather Boots");
+
+	expect(
+		await page.evaluate(() => (window as any).uiEvents.length),
+	).toBeGreaterThan(0);
 }
 
 test("external link in slot override saves scroll position", async ({
@@ -244,7 +262,13 @@ test("external link in slot override saves scroll position", async ({
 				},
 			});
 
-			Object.assign(window, { ui });
+			const uiEvents: any[] = [];
+
+			ui.on("fetch", () => {
+				uiEvents.push("fetch");
+			});
+
+			Object.assign(window, { ui, uiEvents });
 		});
 	}
 
@@ -269,10 +293,15 @@ test("external link in page header saves scroll position", async ({ page }) => {
 					}
 				`,
 			});
+			const uiEvents: any[] = [];
+
+			ui.on("fetch", () => {
+				uiEvents.push("fetch");
+			});
 
 			ui.trapFocus(header);
 
-			Object.assign(window, { ui });
+			Object.assign(window, { ui, uiEvents });
 		});
 	}
 
@@ -303,6 +332,12 @@ test("modal: can restore the scroll position when using forward button", async (
 	await page.goForward();
 
 	await expect(theHit).toBeInViewport();
+
+	await scrollToHit(page, "Leather Boots");
+
+	expect(
+		await page.evaluate(() => (window as any).uiEvents.length),
+	).toBeGreaterThan(0);
 });
 
 test("modal: can restore the scroll position after reload", async ({
@@ -320,6 +355,13 @@ test("modal: can restore the scroll position after reload", async ({
 
 	// No fetches should have been made after the reload
 	expect(await page.evaluate(() => (window as any).uiEvents)).toEqual([]);
+
+	// Can scroll after restoring
+	await scrollToHit(page, "Leather Boots");
+
+	expect(
+		await page.evaluate(() => (window as any).uiEvents.length),
+	).toBeGreaterThan(0);
 });
 
 test("container: can restore the scroll position after reload", async ({
@@ -339,4 +381,10 @@ test("container: can restore the scroll position after reload", async ({
 	await expect(theHit).toBeInViewport();
 
 	expect(await page.evaluate(() => (window as any).uiEvents)).toEqual([]);
+
+	await scrollToHit(page, "Leather Boots");
+
+	expect(
+		await page.evaluate(() => (window as any).uiEvents.length),
+	).toBeGreaterThan(0);
 });

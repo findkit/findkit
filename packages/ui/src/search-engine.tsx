@@ -1233,8 +1233,9 @@ export class SearchEngine {
 		}
 
 		this.state.resultGroups = savedState.resultGroups;
-		this.state.status = "waiting";
+		this.state.status = "ready";
 		this.state.usedGroupDefinitions = this.state.nextGroupDefinitions;
+		this.state.usedTerms = this.PRIVATE_getfindkitParams().getTerms();
 		return true;
 	}
 
