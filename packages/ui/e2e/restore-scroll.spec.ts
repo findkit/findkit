@@ -35,7 +35,7 @@ async function testModal(page: Page) {
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
-	const theHit = hits.filter({ hasText: "Leather Boots" }).first();
+	const theHit = hits.filter({ hasText: "Running Shoes" }).first();
 
 	let i = 50;
 
@@ -69,7 +69,7 @@ async function testContainer(page: Page) {
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
-	const theHit = hits.filter({ hasText: "Leather Boots" }).first();
+	const theHit = hits.filter({ hasText: "Running Shoes" }).first();
 
 	let i = 50;
 
@@ -203,7 +203,7 @@ async function testExternalLink(page: Page, initUI: () => Promise<void>) {
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
-	const theHit = hits.filter({ hasText: "Leather Boots" }).first();
+	const theHit = hits.filter({ hasText: "Running Shoes" }).first();
 
 	let i = 100;
 
@@ -241,7 +241,7 @@ test("external link in slot override saves scroll position", async ({
 				minTerms: 0,
 				slots: {
 					Hit(props) {
-						if (props.hit.title !== "Leather Boots") {
+						if (props.hit.title !== "Running Shoes") {
 							return props.children;
 						}
 
@@ -301,7 +301,7 @@ test("modal: can restore the scroll position when using forward button", async (
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
-	const theHit = hits.filter({ hasText: "Leather Boots" }).first();
+	const theHit = hits.filter({ hasText: "Running Shoes" }).first();
 
 	let i = 100;
 
@@ -337,7 +337,7 @@ test("modal: can restore the scroll position after reload", async ({
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
-	const theHit = hits.filter({ hasText: "Leather Boots" }).first();
+	const theHit = hits.filter({ hasText: "Running Shoes" }).first();
 
 	let i = 100;
 
@@ -370,7 +370,7 @@ test("container: can restore the scroll position after reload", async ({
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
-	const theHit = hits.filter({ hasText: "Leather Boots" }).first();
+	const theHit = hits.filter({ hasText: "Running Shoes" }).first();
 
 	let i = 50;
 
