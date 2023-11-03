@@ -720,6 +720,11 @@ export class SearchEngine {
 
 	private PRIVATE_previousRestoreId?: string;
 
+	/**
+	 * Save scroll position to the current history state.
+	 * Throttled unless `options.now` is true. Too many updates can
+	 * make the browser unresponsive.
+	 */
 	private PRIVATE_saveScroll = (options?: { now?: boolean }) => {
 		const save = () => {
 			clearTimeout(this.PRIVATE_scrollThrottle);
@@ -729,10 +734,19 @@ export class SearchEngine {
 				return;
 			}
 
+			// Generate restore id too for saving and restoring the search
+			// results. We can do it here because it is needed only when
+			// the user has scrolled.
 			const restoreId =
 				this.PRIVATE_router.getState()?.findkitRestoreId ||
 				Math.random().toString(36).substring(7);
 
+			// We must store the the previous restore id because on some cases,
+			// like when pressing the back button on FinkditUI Modal, the
+			// history has been already changed but we still need to save the
+			// results to session storage with correct restore id. With this
+			// property it is possible to save is even after the history
+			// change.
 			this.PRIVATE_previousRestoreId = restoreId;
 
 			this.PRIVATE_setHistoryState({
@@ -770,6 +784,7 @@ export class SearchEngine {
 			}),
 		);
 
+		// Handle page reload and navigation away from FindkitUI on SPAs
 		this.PRIVATE_resources.create(() =>
 			listen(window, "beforeunload" as any, () => {
 				this.PRIVATE_saveScroll({ now: true });
@@ -780,15 +795,18 @@ export class SearchEngine {
 		const saveResults = (e: MouseEvent) => {
 			const el = getLinkElement(e.target);
 
+			// Not clicked on a link or element inside a link
 			if (!el) {
 				return;
 			}
 
-			// Save scroll on internal navigations too because we want to restore the to scroll
-			// position also when navigating between group and single views
+			// Save scroll on internal navigations too because we want to
+			// restore the to scroll position also when navigating between
+			// group and single views
 			this.PRIVATE_saveScroll({ now: true });
 
 			// Ignore internal links because they do not cause navigation away
+			// from FindkitUI
 			if (this.PRIVATE_container.contains(el) && el.dataset.internal) {
 				return;
 			}
@@ -799,11 +817,8 @@ export class SearchEngine {
 		};
 
 		// Any link click in anywere in the document means potentially
-		// navigating away. Save the scroll position on click.
-		//
-		// NOTE: In future the Navigation API is probably the way to
-		// go once fully supported in all browsers
-		// https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API
+		// navigating away. On MPAs the beforeunload event is fired but on SPAs
+		// it does not so we must save the results on any link click
 		this.PRIVATE_resources.create(() =>
 			listen(document.documentElement, "click", saveResults, {
 				// Use capturing phase to ensure we get the event before scroll
