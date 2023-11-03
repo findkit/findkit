@@ -36,6 +36,25 @@ if (process.env.FIREFOX) {
 	];
 }
 
+if (process.env.SAFARI) {
+	projects = [
+		{
+			name: "webkit",
+			use: { ...devices["Desktop Safari"] },
+		},
+	];
+}
+
+// Run only the safari tests in macOS CI runner
+if (process.env.CI && process.platform === "darwin") {
+	projects = [
+		{
+			name: "webkit",
+			use: { ...devices["Desktop Safari"] },
+		},
+	];
+}
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */

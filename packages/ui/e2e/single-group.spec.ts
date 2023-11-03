@@ -60,7 +60,13 @@ test("the input is cleared when the modal is closed", async ({ page }) => {
 
 test("search input is focused on open and restored back to opening element when closing", async ({
 	page,
+	browserName,
 }) => {
+	// XXX Should probaly work on safari too?
+	if (browserName === "webkit") {
+		return;
+	}
+
 	await page.goto(staticEntry("/single-group"));
 
 	const button = page.locator("button", { hasText: "open" });
@@ -268,7 +274,8 @@ test("can update groups on the fly with update function", async ({ page }) => {
 	expect(await getHitHosts(page)).toEqual(["statement.fi"]);
 });
 
-test("can infinite scroll", async ({ page }) => {
+test("can infinite scroll", async ({ page, browserName }) => {
+	const tab = browserName === "webkit" ? "Alt+Tab" : "Tab";
 	await page.goto(staticEntry("/single-group"));
 
 	await page.evaluate(async () => {
@@ -298,7 +305,7 @@ test("can infinite scroll", async ({ page }) => {
 
 	// Move focus away from the input to ensure that the End key scrolls and
 	// does not move the text cursor. Required on Linux.
-	await page.keyboard.press("Tab");
+	await page.keyboard.press(tab);
 
 	await page.keyboard.press("End");
 
