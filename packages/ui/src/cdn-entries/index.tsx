@@ -477,6 +477,7 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	router?: "memory" | "querystring" | "hash" | RouterBackend<{}>;
 	lockScroll?: boolean;
 	modal?: boolean;
+	forceHistoryReplace?: boolean;
 
 	/**
 	 * See {@link GroupOrder}
