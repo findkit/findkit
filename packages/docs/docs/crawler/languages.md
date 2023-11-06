@@ -36,3 +36,8 @@ contact us as we are in process of adding more languages.
 - Russian (`ru`)
 - Spanish (`es`)
 - Swedish (`se`)
+
+:::tip
+Non-supported
+languages can be indexed as well just without the stemming support.
+:::
