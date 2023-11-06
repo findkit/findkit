@@ -1,3 +1,15 @@
+## v0.12.0
+
+2023-11-06
+
+- Restore scroll positions when navigating inside FindkitUI in multi group mode
+- Restore scroll position when coming back to the UI when Back/forward cache is not active
+- Add [manageScroll option](https://docs.findkit.com/ui/api/#manageScroll)
+- Add [forceHistoryReplace option](https://docs.findkit.com/ui/api/#forceHistoryReplace)
+- Fully preload css to avoid flash of unstyled content [b893067](https://github.com/findkit/findkit/commit/b893067) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.10.1...ui/v0.12.0
+
 ## v0.10.1
 
 2023-10-30
