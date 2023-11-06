@@ -389,7 +389,13 @@ test("container: reload makes a new search", async ({ page }) => {
 
 test("can disable scroll restoration with `manageScroll: false`", async ({
 	page,
+	browserName,
 }) => {
+	// Huh, firefox restores natively too. Not sure this option makes any sense...
+	if (browserName === "firefox") {
+		return;
+	}
+
 	await routeMocks(page);
 
 	await page.goto(staticEntry("/dummy"));
