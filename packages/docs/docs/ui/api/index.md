@@ -101,6 +101,35 @@ results.
 
 <Api page="ui.findkituioptions.infiniteScroll" />
 
+### `forceHistoryReplace: boolean` {#forceHistoryReplace}
+
+_New in v0.12.0_
+
+Set to true to force `history.replaceState` usage instead of
+`history.pushState` with `querystring` and `hash` routers. Normally FindkitUI
+uses History push when opening the modal so it can be closed using the browser
+back button.
+
+This is set to `true` when the [`container`](#container) option is used.
+
+When using frontend frameworks such as Next.js that control the routing too
+this can be used to fix navigation conflicts with the FindkitUI router with the
+caveat of disabling the back button modal close.
+
+<Api page="ui.findkituioptions.forceHistoryReplace" />
+
+### `manageScroll: boolean` {#manageScroll}
+
+_New in v0.12.0_
+
+Manage scroll position by restoring it when user navigates back to the
+FindkitUI view. Generally no need to disable this but if you have other
+conflicting libraries or frameworks it might be helpful to disable it.
+
+Defaults to `true`
+
+<Api page="ui.findkituioptions.manageScroll" />
+
 ### `instanceId: string` {#instanceId}
 
 When using multiple `FindkitUI` instances you must provide a custom
@@ -136,12 +165,14 @@ Send search requests to this custom endpoint.
 
 <Api page="ui.findkituioptions.searchEndpoint" />
 
-### `container: selector` {#container}
+### `container: selectorOrElement` {#container}
 
 Render the modal to a custom container. If not defined Findkit UI will create
 one dynamically and appends it to `<body>`.
 
 Can be defined as a CSS selector or as an `Element` object.
+
+Automatically sets [`modal: false`](#modal) if not explicitly defined.
 
 <Api page="ui.findkituioptions.container" />
 

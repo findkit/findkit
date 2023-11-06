@@ -58,7 +58,6 @@ function App() {
 			publicToken: "<TOKEN>",
 			container: containerRef.current,
 			header: false,
-			modal: false,
 		});
 
 		if (inputRef.current) {

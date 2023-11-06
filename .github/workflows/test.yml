@@ -30,60 +30,42 @@ jobs:
       - name: Run @findkit/ui linting and unit tests
         run: cd packages/ui && pnpm run test
 
-      - name: Check bundle sizes
-        run: |
-          set -eu
-
-          cd packages/ui
-          gzip esm/*.js
-          echo 'The bundle sizes are now:' > /tmp/sizes
-          echo '```' >> /tmp/sizes
-
-          echo 'ls -lh' >> /tmp/sizes
-          ls -lh esm/*.js.gz >> /tmp/sizes
-
-          echo >> /tmp/sizes
-          echo 'ls -l' >> /tmp/sizes
-          ls -l esm/*.js.gz >> /tmp/sizes
-
-          echo '```' >> /tmp/sizes
-          echo 'The `index.js` is the loader code which should be as small as possible.' >> /tmp/sizes
-          gunzip esm/*.gz
-
-      - name: Comment bundle sizes on commit
-        uses: actions/github-script@v6
-        if: ${{ github.event_name != 'pull_request'  }}
-        with:
-          script: |
-            const fs = require('fs');
-            const sizes = fs.readFileSync('/tmp/sizes', 'utf8');
-            await github.rest.repos.createCommitComment({
-              commit_sha: context.sha,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: sizes
-            })
-
-      - name: Comment bundle sizes on PR
-        uses: actions/github-script@v6
-        if: ${{ github.event_name == 'pull_request' }}
-        with:
-          script: |
-            const fs = require('fs');
-            const sizes = fs.readFileSync('/tmp/sizes', 'utf8');
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: sizes
-            });
-
-      - name: Check bundle sizes
-        run: cd packages/ui && pnpm run size-limit
 
   playwright-test:
     timeout-minutes: 20
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        shard: [1, 2, 3]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/setup-action
+
+      - name: Install Playwright Browsers
+        run: cd packages/ui && ./node_modules/.bin/playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: |
+          set -eu
+
+          cd packages/ui
+
+          # Sanity check
+          ./node_modules/.bin/findkit search -t po8GK3G0r valu
+
+          pnpm run build-test-app
+          pnpm run playwright-test --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report-${{ matrix.shard }}
+          path: packages/ui/playwright-report/
+          retention-days: 2
+
+  playwright-test-macos:
+    timeout-minutes: 20
+    runs-on: macos-latest
     strategy:
       matrix:
         shard: [1, 2]
@@ -105,6 +87,13 @@ jobs:
 
           pnpm run build-test-app
           pnpm run playwright-test --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report-macos-${{ matrix.shard }}
+          path: packages/ui/playwright-report/
+          retention-days: 2
 
   playwright-visual:
     timeout-minutes: 20

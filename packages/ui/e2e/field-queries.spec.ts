@@ -25,7 +25,7 @@ test("can filter and sort (1)", async ({ page }) => {
 			},
 			slots: {
 				Hit(props) {
-					return html`${props.hit.customFields.price?.value}`;
+					return html`${props.hit.title} ${props.hit.customFields.price?.value}`;
 				},
 			},
 		});
@@ -37,7 +37,7 @@ test("can filter and sort (1)", async ({ page }) => {
 	await hits.first().waitFor({ state: "visible" });
 
 	const prices = await hits.allInnerTexts();
-	expect(prices).toEqual(["100", "30"]);
+	expect(prices).toEqual(["Suede Boots 100", "Rubber Boots 30"]);
 });
 
 test("can filter and sort (2)", async ({ page }) => {
@@ -217,6 +217,6 @@ test("can save filters to url and restore them on reload", async ({ page }) => {
 	await page.reload();
 	await expect(page.getByLabel("Cheapest first")).toBeChecked();
 	await expect.poll(getPrices).toEqual(["30", "100", "220"]);
-	await page.waitForTimeout(500);
+
 	expect(await getFetches()).toEqual(["boots"]);
 });

@@ -1,5 +1,4 @@
-## Unique id of the project
-id = "docs-findkit-com"
+id = "p68GxRvaA"
 
 ## Human readable name and description of the project
 name = "docs.findkit.com"
@@ -23,10 +22,6 @@ cleanup_selector = ".theme-code-block"
 # Docusaurus adds "| Findkit" to the title so want to grab the text before that
 title_selector_regex = '([^\|]+)'
 
-## Not public yet, so ignore robots rules
-respect_robots_meta = false
-respect_robots_txt = false
-
 deny_patterns = ["/ui-api/", "/ui-examples/"]
 
 [[targets.tags]]
@@ -36,3 +31,10 @@ on_match = "$1"
 [[targets.tags]]
 pathname_regex = '^\/[^\/]+$'
 on_match = "root"
+
+
+[[targets]]
+host = "www.findkit.com"
+
+use_sitemap = true
+walk_links = false

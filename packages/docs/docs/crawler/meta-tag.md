@@ -105,14 +105,7 @@ customizations.
 
 ### `language: string` {#language}
 
-Two letter language code. If longer code is given it will be sliced to first to
-two letters. Eg. `en_US` => `en`.
-
-This is used to index the text with a language specific analyzers.
-
-If not defined the language is picked up from the `<html lang>` attribute. If
-no explicit language is found at all, a natural language detection algorithm is
-executed on the text.
+Set the page's language. See [Languages](/crawler/languages).
 
 ### `customFields: object` {#customFields}
 

@@ -3,7 +3,8 @@ import { staticEntry } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 
-test("can use external input with modal", async ({ page }) => {
+test("can use external input with modal", async ({ page, browserName }) => {
+	const tab = browserName === "webkit" ? "Alt+Tab" : "Tab";
 	await page.goto(staticEntry("/external-input"));
 
 	await page.evaluate(async () => {});
@@ -16,7 +17,7 @@ test("can use external input with modal", async ({ page }) => {
 	await expect(hits.first()).toBeVisible();
 	await expect(input).toBeFocused();
 
-	await page.keyboard.press("Tab");
+	await page.keyboard.press(tab);
 	// Jumps over the random button to the first hit
 	await expect(hits.first()).toBeFocused();
 
@@ -25,7 +26,7 @@ test("can use external input with modal", async ({ page }) => {
 	await expect(input).toBeFocused();
 	await expect(hits.first()).not.toBeVisible();
 
-	await page.keyboard.press("Tab");
+	await page.keyboard.press(tab);
 	// Random button is can be focused when the modal is closed
 	await expect(randomButton).toBeFocused();
 
@@ -35,7 +36,8 @@ test("can use external input with modal", async ({ page }) => {
 	await expect(hits.first()).toBeVisible();
 });
 
-test("can lazily bind input", async ({ page }) => {
+test("can lazily bind input", async ({ page, browserName }) => {
+	const tab = browserName === "webkit" ? "Alt+Tab" : "Tab";
 	await page.goto(staticEntry("/external-input-dummy"));
 
 	await page.evaluate(async () => {
@@ -70,7 +72,7 @@ test("can lazily bind input", async ({ page }) => {
 	await expect(hits.first()).toBeVisible();
 	await expect(input).toBeFocused();
 
-	await page.keyboard.press("Tab");
+	await page.keyboard.press(tab);
 	// Jumps over the random button to the first hit
 	await expect(hits.first()).toBeFocused();
 });

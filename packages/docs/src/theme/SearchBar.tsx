@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { FindkitUI, css, VERSION } from "@findkit/ui";
+import { FindkitUI, css } from "@findkit/ui";
 
 const ui = new FindkitUI({
 	publicToken: "p68GxRvaA",
@@ -8,6 +8,11 @@ const ui = new FindkitUI({
 			visibility: visible;
 		}
 	`,
+	params: {
+		filter: {
+			tags: "domain/docs.findkit.com",
+		},
+	},
 });
 
 export default function SearchBarWrapper() {

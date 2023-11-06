@@ -321,7 +321,7 @@ test("group header and footer margins", async ({ page }) => {
 		.first()
 		.waitFor({ state: "visible" });
 
-	await expect(page).toHaveScreenshot({
+	await expect.soft(page).toHaveScreenshot({
 		mask: [hits, input],
 	});
 
@@ -331,12 +331,16 @@ test("group header and footer margins", async ({ page }) => {
 	await page.mouse.wheel(0, 500);
 
 	// show more link
-	await expect(page).toHaveScreenshot({
+	await expect.soft(page).toHaveScreenshot({
 		mask: [hits, input],
 	});
 
 	await page.locator("text=Show more search results").first().click();
-	await page.locator("text=Back").first().waitFor({ state: "visible" });
+
+	const backLink = page.locator("text=Back").first();
+
+	await backLink.waitFor({ state: "visible" });
+	await backLink.scrollIntoViewIfNeeded();
 
 	// Show back link
 	await expect(page).toHaveScreenshot({

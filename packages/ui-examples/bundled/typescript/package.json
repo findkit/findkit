@@ -1,0 +1,8 @@
+{
+  "name": "example",
+  "private": true,
+  "dependencies": {
+    "typescript": "~5.2.2",
+    "@findkit/ui": "0.12.0"
+  }
+}

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Search UI Test</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+		<script type="module" id="test">
+			import { FindkitUI } from "/build/esm/index.js";
+            const qs = Object.fromEntries(new URLSearchParams(location.search));
+
+			const ui = new FindkitUI({
+				publicToken: "pW1D0p0Dg",
+				shadowDom: !qs.noShadowDom,
+                minTerms: "minTerms" in qs ? Number(qs.minTerms) : 3,
+                container: qs.container ? "#container" : undefined,
+				infiniteScroll: !qs.noInfiniteScroll,
+				groups: [
+					{
+						title: "In stock",
+						params: {
+							filter: {
+								quantity: { $gt: 0 },
+							},
+						},
+					},
+					{
+						title: "Not in stock",
+						params: {
+							filter: {
+								quantity: { $eq: 0 },
+							},
+						},
+					},
+				],
+			});
+
+			const fetches = [];
+			Object.assign(window, { ui, fetches });
+
+			ui.on("fetch", (e) => {
+				fetches.push(e);
+			});
+
+			ui.openFrom("button");
+		</script>
+	</head>
+
+	<body>
+        <div id="container">
+		<button id="open-button" type="button">open</button>
+        </div>
+
+	</body>
+</html>

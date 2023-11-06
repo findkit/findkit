@@ -30,8 +30,12 @@ body element when the UI is open. See the demo below for full details.
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
 	header: false,
-	// highlight-next-line
+	// highlight-start
 	container: ".findkit-overlay-container",
+	// Force modal in to the custom container as it defaults to
+	// false with explicit container
+	modal: true,
+	// highlight-end
 	css: `
 		.findkit--modal-container {
 			position: sticky;

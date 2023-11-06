@@ -75,6 +75,7 @@ function SingleGroupLink(props: {
 			cn={["single-group-link", "group-header-footer-spacing"]}
 			{...kbAttrs}
 			data-kb-action
+			data-internal
 			aria-label={t("aria-show-all", { group: props.groupTitle })}
 			href={engine.formatHref(nextParams)}
 			onClick={(e) => {
@@ -109,6 +110,7 @@ function AllResultsLink(props: { children: ReactNode }) {
 			as="a"
 			{...kbAttrs}
 			data-kb-action
+			data-internal
 			cn={["back-link", "group-header-footer-spacing"]}
 			href={engine.formatHref(nextParams)}
 			onClick={(e) => {

@@ -5,7 +5,7 @@ CDN in a module script tag and bind to a button you want to open it from:
 
 ```html
 <script type="module">
-	import { FindkitUI } from "https://cdn.findkit.com/ui/v0.9.0/esm/index.js";
+	import { FindkitUI } from "https://cdn.findkit.com/ui/v0.12.0/esm/index.js";
 	const ui = new FindkitUI({ publicToken: "<TOKEN>" });
 	ui.openFrom("button.open-search");
 </script>
@@ -41,3 +41,9 @@ we will be using the npm import but it can be replaced with the CDN import.
 ## Try it!
 
 <Codesandbox example="static/simple" />
+
+## Typescript and npm {#typescript}
+
+Here's a version which uses npm, Typescript and modal free config:
+
+<Codesandbox example="bundled/typescript" />

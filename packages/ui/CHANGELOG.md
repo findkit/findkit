@@ -1,3 +1,37 @@
+## v0.12.0
+
+2023-11-06
+
+- Restore scroll positions when navigating inside FindkitUI in multi group mode
+- Restore scroll position when coming back to the UI when Back/forward cache is not active
+- Add [manageScroll option](https://docs.findkit.com/ui/api/#manageScroll)
+- Add [forceHistoryReplace option](https://docs.findkit.com/ui/api/#forceHistoryReplace)
+- Fully preload css to avoid flash of unstyled content [b893067](https://github.com/findkit/findkit/commit/b893067) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.10.1...ui/v0.12.0
+
+## v0.10.1
+
+2023-10-30
+
+- Fix implementation loading with a custom container [124bdb0](https://github.com/findkit/findkit/commit/124bdb0) - Esa-Matti Suuronen
+  - Regression fix from v0.10.0
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.10.0...ui/v0.10.1
+
+## v0.10.0
+
+2023-10-30
+
+- Automatically set `modal: false` when using custom container [6c1b731](https://github.com/findkit/findkit/commit/6c1b731) - Esa-Matti Suuronen
+  - BREAKING: If using the [Content Overlay pattern](https://docs.findkit.com/ui/patterns/embedding/content-overlay)
+  - Must add explicit `modal: true`
+- Fix input clearing when loading page with predefined search terms [7c10602](https://github.com/findkit/findkit/commit/7c10602) - Esa-Matti Suuronen
+- Do not push to history when using a container element [f4d4824](https://github.com/findkit/findkit/commit/f4d4824) - Esa-Matti Suuronen
+  - Fixes back button when using custom container
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.9.0...ui/v0.10.0
+
 ## v0.9.0
 
 2023-10-25

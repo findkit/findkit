@@ -103,11 +103,14 @@
 			import {
 				FindkitUI,
 				html,
-			} from "https://cdn.findkit.com/ui/v0.9.0/esm/index.js";
+			} from "https://cdn.findkit.com/ui/v0.12.0/esm/index.js";
 
 			const ui = new FindkitUI({
 				publicToken: "p68GxRvaA",
 				container: ".findkit-overlay-container",
+				// Force modal in to the custom container as it defaults to
+				// false with explicit container
+				modal: true,
 				// We use the site header so no need for the build-in one
 				header: false,
 				lockScroll: false,

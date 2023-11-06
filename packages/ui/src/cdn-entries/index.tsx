@@ -240,6 +240,9 @@ export function select<InstanceFilter extends typeof Element>(
 
 const lazyImplementation: Partial<Implementation> = {};
 
+/**
+ * Like the PRIVATE_createShellMethod but for standalone functions
+ */
 function createShellFunction<Key extends Methods<Implementation>>(
 	name: Key,
 ): Implementation[Key] {
@@ -356,16 +359,35 @@ export const useInput = createShellFunction("useInput");
  */
 export const useLang = createShellFunction("useLang");
 
-function preloadStylesheet(href: string) {
+async function preloadStylesheet(href: string) {
 	const link = doc().createElement("link");
 	link.rel = "preload";
 	link.as = "style";
 	link.href = href;
-	listen(link, "load", () => {
-		link.remove();
+
+	const promise = new Promise<any>((resolve) => {
+		// Fallback in case the load event is not fired on some random broken
+		// browser
+		setTimeout(resolve, 2000);
+
+		listen(link, "load", resolve, { once: true });
+		listen(
+			link,
+			"error",
+			() => {
+				console.error(`[findkit] Failed to load stylesheet ${href}`);
+				// do not error the promise because it can  work without user css too
+				resolve({});
+			},
+			{ once: true },
+		);
 	});
 
 	doc().head?.appendChild(link);
+
+	await promise;
+
+	link.remove();
 }
 
 const cache = new Map<string, Promise<any>>();
@@ -452,9 +474,11 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	searchEndpoint?: string;
 	container?: Element | string;
 	monitorDocumentLang?: boolean;
-	router?: "memory" | "querystring" | "hash" | RouterBackend;
+	router?: "memory" | "querystring" | "hash" | RouterBackend<{}>;
 	lockScroll?: boolean;
 	modal?: boolean;
+	forceHistoryReplace?: boolean;
+	manageScroll?: boolean;
 
 	/**
 	 * See {@link GroupOrder}
@@ -554,7 +578,11 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 		this.PRIVATE_options = options;
 		this.PRIVATE_events = new Emitter(this);
 
-		if (this.PRIVATE_isAlreadyOpened() || options.modal === false) {
+		if (
+			this.PRIVATE_isAlreadyOpened() ||
+			options.modal === false ||
+			(typeof options.modal !== "boolean" && options.container)
+		) {
 			void this.open();
 		}
 
@@ -564,17 +592,17 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	/**
 	 * Close the modal
 	 */
-	close = this.PRIVATE_proxy("close");
+	close = this.PRIVATE_createShellMethod("close");
 
 	/**
 	 * @deprecated use addTranslation and setLanguage instead
 	 */
-	setUIStrings = this.PRIVATE_proxy("setUIStrings");
+	setUIStrings = this.PRIVATE_createShellMethod("setUIStrings");
 
 	/**
 	 * Set the current UI language
 	 */
-	setLang = this.PRIVATE_proxy("setLang");
+	setLang = this.PRIVATE_createShellMethod("setLang");
 
 	/**
 	 * Set the UI translations transt for a given language
@@ -582,16 +610,16 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	 * @params lang - language code
 	 * @params translations - translations object
 	 */
-	addTranslation = this.PRIVATE_proxy("addTranslation");
+	addTranslation = this.PRIVATE_createShellMethod("addTranslation");
 
 	/**
 	 * Update groups
 	 */
 	updateGroups: (arg: UpdateGroupsArgument<GroupsOrDefault<T>>) => void =
-		this.PRIVATE_proxy("updateGroups") as any;
+		this.PRIVATE_createShellMethod("updateGroups") as any;
 
 	setCustomRouterData: (data: NonNullable<T["customRouterData"]>) => void =
-		this.PRIVATE_proxy("setCustomRouterData");
+		this.PRIVATE_createShellMethod("setCustomRouterData");
 
 	get groups(): GroupsOrDefault<T> {
 		return (this.PRIVATE_lazyEngine.get()?.getGroups() ??
@@ -603,7 +631,7 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	 * Update search params
 	 */
 	updateParams: (arg: UpdateParamsArgument<SearchParamsOrDefault<T>>) => void =
-		this.PRIVATE_proxy("updateParams");
+		this.PRIVATE_createShellMethod("updateParams");
 
 	get params(): SearchParamsOrDefault<T> {
 		return (this.PRIVATE_lazyEngine.get()?.getParams() ??
@@ -660,12 +688,25 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	}
 
 	/**
-	 * Create proxy method for SearchEngine which is called once the engine is
-	 * loaded
+	 * Create a "shell" method for SearchEngine methods. Using this it possible
+	 * call SearcnEngine methods before the engine is loaded without throwing
+	 * errors. The actual method is called when the engine is loads. If the
+	 * engine is already loaded the method is called synchronously.
 	 */
-	private PRIVATE_proxy<Method extends Methods<SearchEngine>>(
-		method: Method,
-	): InstanceType<typeof SearchEngine>[Method] {
+	private PRIVATE_createShellMethod<
+		Method extends
+			| "setLang"
+			| "close"
+			| "dispose"
+			| "setUIStrings"
+			| "updateGroups"
+			| "setCustomRouterData"
+			| "updateParams"
+			| "addTranslation"
+			| "trapFocus"
+			| "bindInput",
+		// Methods<SearchEngine>,
+	>(method: Method): InstanceType<typeof SearchEngine>[Method] {
 		// NOTE: Supports only void returning methods
 		return (...args: any[]): any => {
 			this.PRIVATE_lazyEngine((engine: any) => {
@@ -704,6 +745,8 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	PRIVATE_getStyleSheets(): string[] {
 		const sheets = [];
 
+		// If there is a load option we asume it returns the css too. So we can
+		// skip loading the cdn css.
 		if (!this.PRIVATE_options.load) {
 			sheets.push(cdnFile("styles.css"));
 		}
@@ -730,18 +773,29 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 		js: Implementation;
 		css?: string;
 	}> {
-		for (const href of this.PRIVATE_getStyleSheets()) {
-			preloadStylesheet(href);
-		}
+		// Start preloading the css in the background
+		const cssPreloadPromise = Promise.all(
+			this.PRIVATE_getStyleSheets().map(preloadStylesheet),
+		);
+
+		let implPromise: Promise<{
+			js: Implementation;
+			css?: string;
+		}>;
 
 		if (this.PRIVATE_options.load) {
-			return await this.PRIVATE_options.load();
+			implPromise = this.PRIVATE_options.load();
+		} else {
+			implPromise = loadScriptFromGlobal<Implementation>(
+				"FINDKIT_LOADED_" + FINDKIT_VERSION,
+				cdnFile("implementation.js"),
+			).then((js) => ({ js }));
 		}
 
-		return await loadScriptFromGlobal<Implementation>(
-			"FINDKIT_LOADED_" + FINDKIT_VERSION,
-			cdnFile("implementation.js"),
-		).then((js) => ({ js }));
+		// Wait for the css to load fully to avoid flashes of unstyled content
+		await cssPreloadPromise;
+
+		return await implPromise;
 	}
 
 	private async PRIVATE_initEngine() {

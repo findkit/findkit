@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useIntersectionObserver } from "@valu/react-intersection-observer";
-// Import the original mapper
+
+// @ts-ignore
 import MDXComponents from "@theme-original/MDXComponents";
 
 /**

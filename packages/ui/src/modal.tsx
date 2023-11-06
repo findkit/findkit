@@ -1,5 +1,11 @@
 import { FocusTrap } from "./focus-trap";
-import React, { StrictMode, useRef, useEffect, useState } from "react";
+import React, {
+	StrictMode,
+	useRef,
+	useEffect,
+	useState,
+	useLayoutEffect,
+} from "react";
 import ReactDOM from "react-dom";
 import {
 	Results,
@@ -24,7 +30,7 @@ import {
 	SearchEngineOptions,
 	GroupOrder,
 } from "./search-engine";
-import { cn, deprecationNotice, View } from "./utils";
+import { cn, deprecationNotice, getScrollContainer, View } from "./utils";
 import type { Emitter, FindkitUIEvents } from "./emitter";
 import { TranslationStrings } from "./translations";
 import { Slot, Slots } from "./slots";
@@ -295,6 +301,8 @@ function Modal() {
 
 	useScrollLock(!unmount && state.lockScroll);
 
+	useScrollRestore(containerRef);
+
 	// Use delayed to keep the open body class until the animation is done
 	useEffect(() => {
 		const classList = document.body.classList;
@@ -381,11 +389,40 @@ function Modal() {
 	);
 }
 
+function useScrollRestore(containerRef: React.RefObject<Element | null>) {
+	const engine = useSearchEngine();
+	useLayoutEffect(() => {
+		let el = containerRef.current;
+
+		if (el && engine.scrollPositionRestore !== undefined) {
+			if (!el.classList.contains("findkit--modal")) {
+				// On non-modal to scroll can be at any scrolling div or
+				// the page itself
+				el = getScrollContainer(el);
+			}
+
+			el.scrollTop = engine.scrollPositionRestore;
+
+			// Clear the restoring value only when we manage to scroll to it.
+			// The content might be still loading so we need to wait for it to
+			// load fully
+			if (el.scrollTop === engine.scrollPositionRestore) {
+				engine.scrollPositionRestore = undefined;
+			}
+		}
+	});
+	// Yup, no effect deps here. We just need to wait when the container div
+	// appears and then scroll it
+}
+
 export function Plain() {
 	const engine = useSearchEngine();
 	const state = useSearchEngineState();
 	const containerKbAttrs = useContainerKeyboardAttributes();
 	const view = useView();
+	const containerRef = useRef<HTMLDivElement | null>(null);
+
+	useScrollRestore(containerRef);
 
 	const header = state.header ? (
 		<Slot
@@ -408,6 +445,7 @@ export function Plain() {
 	return (
 		<View
 			{...containerKbAttrs}
+			ref={containerRef}
 			cn={{
 				container: true,
 				plain: true,
@@ -483,6 +521,7 @@ export function init(_options: {
 	events: Emitter<FindkitUIEvents, unknown>;
 	searchEndpoint?: string;
 	params?: SearchParams;
+	forceHistoryReplace?: boolean;
 	groups?: GroupDefinition[];
 	pageScroll?: boolean;
 	modal?: boolean;
@@ -494,12 +533,22 @@ export function init(_options: {
 	router?: SearchEngineOptions["router"];
 	groupOrder?: GroupOrder;
 	fontDivisor?: number;
+	manageScroll?: boolean;
 	ui?: {
 		lang?: string;
 		overrides?: Partial<TranslationStrings>;
 	};
 }) {
 	const options = { ..._options };
+	const hasCustomContainer = Boolean(options.container);
+
+	if (hasCustomContainer && typeof options.modal !== "boolean") {
+		options.modal = false;
+	}
+
+	if (hasCustomContainer && typeof options.forceHistoryReplace !== "boolean") {
+		options.forceHistoryReplace = true;
+	}
 
 	if (options.ui) {
 		deprecationNotice(
@@ -533,8 +582,6 @@ export function init(_options: {
 		`;
 	}
 
-	const hasCustomContainer = Boolean(options.container);
-
 	let container =
 		options.shadowDom !== false
 			? options.container?.attachShadow({ mode: "open" })
@@ -553,7 +600,10 @@ export function init(_options: {
 
 	const host = container instanceof ShadowRoot ? container.host : container;
 
-	const engine = new SearchEngine({ ...options, container: container });
+	const engine = new SearchEngine({
+		...options,
+		container: container,
+	});
 
 	options.events.on("dispose", () => {
 		if (container) {

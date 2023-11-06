@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Search UI Test</title>
+
+    <link rel="stylesheet" href="/shared.css" />
+
+    <script type="module">
+        import {FindkitUI} from "/build/esm/index.js";
+
+        const ui = new FindkitUI({
+            publicToken: "pW1D0p0Dg",
+            router: new URLSearchParams(location.search).get("router") || "querystring",
+            minTerms: 1,
+        });
+
+        const uiEvents = [];
+
+        ui.on("fetch", () => {
+            uiEvents.push("fetch");
+        });
+
+        Object.assign(window, {ui, uiEvents});
+
+        ui.openFrom("button");
+    </script>
+</head>
+
+<body>
+        <a href="?#">Reset</a>
+    <button id="open-button" type="button">open</button>
+</body>
+
+</html>

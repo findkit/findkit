@@ -34,7 +34,7 @@ export const { scopeClassNames, scopeView } =
 export const View = scopeView("findkit");
 export const cn = scopeClassNames("findkit");
 
-function hasScrollBar(node: HTMLElement) {
+function hasScrollBar(node: Element) {
 	if (node.scrollHeight === node.clientHeight) {
 		return false;
 	}
@@ -45,7 +45,19 @@ function hasScrollBar(node: HTMLElement) {
 	});
 }
 
-export function getScrollContainer(node: HTMLElement): HTMLElement | null {
+/**
+ * Traverse to the closest scrollable element. Go through shadow doms.
+ */
+export function getScrollContainer(node: Element | ShadowRoot | null): Element {
+	// At the top most root. The full page scrolls
+	if (!node) {
+		return document.documentElement;
+	}
+
+	if (node instanceof ShadowRoot) {
+		return getScrollContainer(node.host);
+	}
+
 	if (hasScrollBar(node)) {
 		if (node === document.body) {
 			// This is weird edge case. The <body> seems to be the scrollable
@@ -56,15 +68,13 @@ export function getScrollContainer(node: HTMLElement): HTMLElement | null {
 		return node;
 	}
 
+	// On shadow root or document root
 	if (!node.parentElement) {
-		// Check for shadow dom break out of it if it is "open"
+		// Check for shadow root break out of it if it is "open"
 		const root = node.getRootNode();
-		if (root instanceof ShadowRoot && root.host instanceof HTMLElement) {
+		if (root instanceof ShadowRoot) {
 			return getScrollContainer(root.host);
 		}
-
-		// Got to root
-		return document.documentElement;
 	}
 
 	return getScrollContainer(node.parentElement);
