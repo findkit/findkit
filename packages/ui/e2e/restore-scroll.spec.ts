@@ -204,6 +204,45 @@ test("restore scroll when going back from single group view with the browser bac
 	expect(restoredScrollTop).toBe(initialScrollTop);
 });
 
+test("can restore multi group search with forward button", async ({ page }) => {
+	const showMore = page.locator("text=Show more search results").first();
+
+	await page.goto(staticEntry("/two-groups-v2?minTerms=0"));
+
+	await page.locator("button").first().click();
+
+	await page.locator(".findkit--header").waitFor({ state: "visible" });
+
+	await showMore.scrollIntoViewIfNeeded();
+	await showMore.click();
+
+	const theHit = await scrollToHit(page, "Running Shoes");
+
+	// The timeouts are required for the animations to play and throttled
+	// scroll events to fire
+
+	await page.waitForTimeout(500);
+
+	await page.goBack();
+
+	await page.waitForTimeout(500);
+
+	await page.goBack();
+
+	await page.waitForTimeout(500);
+
+	await page.goForward();
+
+	await page.waitForTimeout(500);
+
+	await page.goForward();
+
+	await page.waitForTimeout(500);
+
+	await expect(theHit).toBeVisible();
+	await expect(theHit).toBeInViewport();
+});
+
 async function testExternalLink(page: Page, initUI: () => Promise<void>) {
 	await page.goto(staticEntry("/dummy"));
 
