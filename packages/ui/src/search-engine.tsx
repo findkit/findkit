@@ -787,14 +787,6 @@ export class SearchEngine {
 			}),
 		);
 
-		// Handle page reload and navigation away from FindkitUI on MPAs
-		this.PRIVATE_resources.create(() =>
-			listen(window, "beforeunload" as any, () => {
-				this.PRIVATE_saveScroll({ now: true });
-				return this.PRIVATE_saveResults();
-			}),
-		);
-
 		const handleLinkClick = (e: MouseEvent) => {
 			const el = getLinkElement(e.target);
 

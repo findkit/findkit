@@ -340,46 +340,30 @@ test("modal: can restore the scroll position when using forward button", async (
 	).toBeGreaterThan(0);
 });
 
-test("modal: can restore the scroll position after reload", async ({
-	page,
-	browserName,
-}) => {
-	// XXX beforeunload event does not fire in Firefox on playwright. Works
-	// when manually using firefox
-	if (browserName === "firefox") {
-		return;
-	}
-
+test("modal: reload makes a new search", async ({ page }) => {
 	await page.goto(staticEntry("/single-group-v2"));
 	await page.locator("text=open").click();
 	await page.locator("input").fill("a");
 
 	const theHit = await scrollToHit(page, "Running Shoes");
 
+	// wait for throttled save
+	await page.waitForTimeout(500);
+
 	await page.reload();
 
-	await expect(theHit).toBeInViewport();
+	await page.waitForLoadState("domcontentloaded");
 
-	// No fetches should have been made after the reload
-	expect(await page.evaluate(() => (window as any).uiEvents)).toEqual([]);
+	const hit = page.locator(".findkit--hit").first();
 
-	// Can scroll after restoring
-	await scrollToHit(page, "Leather Boots");
+	await hit.waitFor({ state: "visible" });
 
-	expect(
-		await page.evaluate(() => (window as any).uiEvents.length),
-	).toBeGreaterThan(0);
+	await expect(theHit).toBeHidden();
+
+	expect(await page.evaluate(() => (window as any).uiEvents.length)).toBe(1);
 });
 
-test("container: can restore the scroll position after reload", async ({
-	page,
-	browserName,
-}) => {
-	// XXX beforeunload event does not fire in Firefox on playwright. Works
-	// when manually using firefox
-	if (browserName === "firefox") {
-		return;
-	}
+test("container: reload makes a new search", async ({ page }) => {
 	await page.goto(staticEntry("/slowly-loading"));
 
 	await page.locator("text=open").first().click();
@@ -387,25 +371,27 @@ test("container: can restore the scroll position after reload", async ({
 
 	const theHit = await scrollToHit(page, "Running Shoes");
 
+	// wait for throttled save
+	await page.waitForTimeout(500);
+
 	await page.reload();
 
 	await page.waitForLoadState("domcontentloaded");
 
-	await expect(theHit).toBeInViewport();
+	const hit = page.locator(".findkit--hit").first();
 
-	expect(await page.evaluate(() => (window as any).uiEvents)).toEqual([]);
+	await hit.waitFor({ state: "visible" });
 
-	await scrollToHit(page, "Leather Boots");
+	await expect(theHit).toBeHidden();
 
-	expect(
-		await page.evaluate(() => (window as any).uiEvents.length),
-	).toBeGreaterThan(0);
+	expect(await page.evaluate(() => (window as any).uiEvents.length)).toBe(1);
 });
 
 test("can disable scroll restoration with `manageScroll: false`", async ({
 	page,
-	browserName,
 }) => {
+	await routeMocks(page);
+
 	await page.goto(staticEntry("/dummy"));
 
 	async function initUI() {
@@ -438,7 +424,13 @@ test("can disable scroll restoration with `manageScroll: false`", async ({
 
 	const theHit = await scrollToHit(page, "Running Shoes");
 
-	await page.reload();
+	await theHit.locator("a").first().click();
+
+	await page.waitForLoadState("domcontentloaded");
+
+	await page.goBack();
+
+	await page.waitForLoadState("domcontentloaded");
 
 	await initUI();
 
@@ -447,13 +439,7 @@ test("can disable scroll restoration with `manageScroll: false`", async ({
 
 	await expect(page.locator(".findkit--hit").first()).toBeInViewport();
 
-	// XXX beforeunload event does not fire in Firefox on playwright. Works
-	// when manually using firefox
-	if (browserName === "firefox") {
-		return;
-	}
-
-	// Loaded by not scrolled to
+	// Loaded but not scrolled to
 	await expect(theHit).not.toBeInViewport();
 	await expect(theHit).toBeVisible();
 
