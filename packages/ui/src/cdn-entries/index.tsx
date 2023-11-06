@@ -916,6 +916,23 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 				resources.create(() =>
 					listen(el, "click", this.PRIVATE_handleOpenClick),
 				);
+
+				// Div element with role=button does not emit click events
+				// so we must manually listen to the enter key down event
+				resources.create(() =>
+					listen(el, "keydown", (e) => {
+						if (
+							e.target instanceof HTMLElement &&
+							e.key === "Enter" &&
+							// Explicitly marked as a button
+							e.target.role === "button"
+						) {
+							e.preventDefault();
+							this.open();
+						}
+					}),
+				);
+
 				resources.create(() =>
 					listen(el, "mouseover", this.preload, {
 						once: true,
