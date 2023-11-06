@@ -38,7 +38,9 @@ test("other navigation history state is preseverd when using forceHistoryReplace
 		}),
 	).toMatchObject({
 		my: "test",
-		findkitScrollTop: 200,
-		findkitRestoreId: expect.any(String),
+		fdk: {
+			scrollTop: 200,
+			restoreId: expect.any(String),
+		},
 	});
 });

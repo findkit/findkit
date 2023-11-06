@@ -541,9 +541,13 @@ export interface SortGroup {
 /**
  * State for history.state
  */
-interface FindkitHistoryState {
-	findkitRestoreId?: string;
-	findkitScrollTop?: number;
+interface ScopedHistoryState {
+	restoreId?: string;
+	scrollTop?: number;
+}
+
+interface GlobalHistoryState {
+	[instanceId: string]: ScopedHistoryState | undefined;
 }
 
 /**
@@ -578,7 +582,7 @@ export class SearchEngine {
 	PRIVATE_requestId = 0;
 	PRIVATE_pendingRequestIds: Map<number, AbortController> = new Map();
 
-	private readonly PRIVATE_router: RouterBackend<FindkitHistoryState>;
+	private readonly PRIVATE_router: RouterBackend<GlobalHistoryState>;
 	private PRIVATE_fetcher: FindkitFetch;
 	readonly instanceId: string;
 	readonly state: State;
@@ -741,7 +745,7 @@ export class SearchEngine {
 			// results. We can do it here because it is needed only when
 			// the user has scrolled.
 			const restoreId =
-				this.PRIVATE_router.getState()?.findkitRestoreId ||
+				this.PRIVATE_getHistoryState()?.restoreId ||
 				Math.random().toString(36).substring(7);
 
 			// We must store the the previous restore id because on some cases,
@@ -753,8 +757,8 @@ export class SearchEngine {
 			this.PRIVATE_previousRestoreId = restoreId;
 
 			this.PRIVATE_setHistoryState({
-				findkitRestoreId: restoreId,
-				findkitScrollTop: this.PRIVATE_getScrollContainer().scrollTop,
+				restoreId: restoreId,
+				scrollTop: this.PRIVATE_getScrollContainer().scrollTop,
 			});
 		};
 
@@ -1084,8 +1088,8 @@ export class SearchEngine {
 		this.PRIVATE_addressBarInitialized = true;
 
 		if (this.PRIVATE_manageScroll !== false) {
-			const state = this.PRIVATE_router.getState();
-			this.scrollPositionRestore = state?.findkitScrollTop;
+			const state = this.PRIVATE_getHistoryState();
+			this.scrollPositionRestore = state?.scrollTop;
 		}
 
 		const nextParams = this.PRIVATE_getfindkitParams();
@@ -1166,33 +1170,42 @@ export class SearchEngine {
 		);
 	}
 
-	private PRIVATE_setHistoryState(state: FindkitHistoryState) {
+	private PRIVATE_setHistoryState(state: ScopedHistoryState) {
 		this.PRIVATE_ignoreNextAddressbarUpdate = true;
 		this.PRIVATE_router.update(this.PRIVATE_getfindkitParams().toString(), {
 			push: false,
 			state: {
 				...this.PRIVATE_router.getState(),
-				...state,
+				[this.instanceId]: {
+					...this.PRIVATE_getHistoryState(),
+					...state,
+				},
 			},
 		});
 	}
 
+	private PRIVATE_getHistoryState() {
+		return this.PRIVATE_router.getState()?.[this.instanceId];
+	}
+
 	private PRIVATE_getSessionKey(id: string) {
-		return `findkit-state-${VERSION}-${id}`;
+		return `findkit-state-${VERSION}-${this.instanceId}-${id}`;
 	}
 
 	private PRIVATE_saveResults() {
+		const restoreId = this.PRIVATE_previousRestoreId;
+
+		// Not scrolled, no need to save results because we save results to be
+		// able to restore scroll position with full content height
+		if (!restoreId) {
+			return;
+		}
+
 		const hasSomeHits = Object.values(this.state.resultGroups).some(
 			(group) => group.hits.length > 0,
 		);
 
 		if (!hasSomeHits) {
-			return;
-		}
-
-		const restoreId = this.PRIVATE_previousRestoreId;
-
-		if (!restoreId) {
 			return;
 		}
 
@@ -1203,7 +1216,7 @@ export class SearchEngine {
 	}
 
 	private PRIVATE_restoreResults(): boolean {
-		const id = this.PRIVATE_router.getState()?.findkitRestoreId;
+		const id = this.PRIVATE_getHistoryState()?.restoreId;
 		if (!id) {
 			return false;
 		}
