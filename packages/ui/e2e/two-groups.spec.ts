@@ -149,7 +149,7 @@ test("escape closes the modal", async ({ page }) => {
 test("fetch counts", async ({ page }) => {
 	const hits = page.locator(".findkit--hit");
 
-	await page.goto(staticEntry("/two-groups"));
+	await page.goto(staticEntry("/two-groups-v2?minTerms=1&noInfiniteScroll=1"));
 
 	await page.evaluate(async () => {
 		const anyWindow = window as any;
@@ -173,7 +173,7 @@ test("fetch counts", async ({ page }) => {
 	await page.waitForLoadState("networkidle");
 	expect(await getCount()).toBe(0);
 
-	await page.locator("input:visible").type("wordpress");
+	await page.locator("input:visible").fill("a");
 
 	await hits.first().waitFor({ state: "visible" });
 
