@@ -402,7 +402,13 @@ function useScrollRestore(containerRef: React.RefObject<Element | null>) {
 			}
 
 			el.scrollTop = engine.scrollPositionRestore;
-			engine.scrollPositionRestore = undefined;
+
+			// Clear the restoring value only when we manage to scroll to it.
+			// The content might be still loading so we need to wait for it to
+			// load fully
+			if (el.scrollTop === engine.scrollPositionRestore) {
+				engine.scrollPositionRestore = undefined;
+			}
 		}
 	});
 	// Yup, no effect deps here. We just need to wait when the container div
