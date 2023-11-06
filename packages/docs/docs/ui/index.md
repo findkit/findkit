@@ -12,6 +12,7 @@ Feature highlights:
 - "Search as you type" experience
 - Search result groupping
 - Accessible
+- Scroll management
 - Navigable with arrow keys
 - Customizable
 - Automatic lazy loading
