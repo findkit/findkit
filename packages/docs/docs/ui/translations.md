@@ -27,6 +27,10 @@ The language will always fallback to the less spefic translations. For example
 language is provided Findkit UI will fallback to english. Also if a partial
 translation is added it will fallback to english for non-translated strings.
 
+:::note
+If you are looking for indexing language support see [Languages](/crawler/languages) page.
+:::
+
 ## Single-page Apps
 
 When building a multilingual Single-Page App (SPA), for example with Gatsby,
