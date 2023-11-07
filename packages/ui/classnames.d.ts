@@ -43,6 +43,7 @@ type ClassNames =
   | "findkit--search-input-icon-container"
   | "findkit--search-input-icon-container-hide"
   | "findkit--search-input-wrap"
+  | "findkit--shadow-host"
   | "findkit--single-group-link"
   | "findkit--spinner"
   | "findkit--spinning"
