@@ -1,3 +1,12 @@
+## v0.12.1
+
+2023-11-07
+
+- Fix enter key in .openFrom for role=button element [c50d304](https://github.com/findkit/findkit/commit/c50d304) - Esa-Matti Suuronen
+- Close the modal on backdrop click [55da4c8](https://github.com/findkit/findkit/commit/55da4c8) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.12.0...ui/v0.12.1
+
 ## v0.12.0
 
 2023-11-06
