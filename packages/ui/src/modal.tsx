@@ -364,7 +364,7 @@ function Modal() {
 			onClick={(e) => {
 				if (
 					e.target instanceof HTMLElement &&
-					e.target.classList.contains("findkit--backdrop")
+					e.target.classList.contains(cn("backdrop"))
 				) {
 					engine.close();
 				}
@@ -403,7 +403,7 @@ function useScrollRestore(containerRef: React.RefObject<Element | null>) {
 		let el = containerRef.current;
 
 		if (el && engine.scrollPositionRestore !== undefined) {
-			if (!el.classList.contains("findkit--modal")) {
+			if (!el.classList.contains(cn("modal"))) {
 				// On non-modal to scroll can be at any scrolling div or
 				// the page itself
 				el = getScrollContainer(el);
@@ -580,7 +580,7 @@ export function init(_options: {
 	if (options.pageScroll) {
 		options.lockScroll = false;
 		css = `
-			.findkit--modal-container {
+			.${cn("modal-container")} {
 				inset: initial;
 				position: absolute;
 				top: 0;
@@ -601,7 +601,7 @@ export function init(_options: {
 		document.body.appendChild(container);
 
 		if (options.shadowDom !== false) {
-			container.classList.add("findkit--shadow-host");
+			container.classList.add(cn("shadow-host"));
 			container = container.attachShadow({ mode: "open" });
 		}
 	}
