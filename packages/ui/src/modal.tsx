@@ -361,6 +361,14 @@ function Modal() {
 				"modal-container": true,
 				"backdrop-visible": visible,
 			}}
+			onClick={(e) => {
+				if (
+					e.target instanceof HTMLElement &&
+					e.target.classList.contains("findkit--backdrop")
+				) {
+					engine.close();
+				}
+			}}
 		>
 			<ScreenReaderModalMessages />
 			<View
