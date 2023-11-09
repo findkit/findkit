@@ -16,6 +16,7 @@
 		"/instanceid": "https://docs.findkit.com/ui/api/#instanceId",
 		"/pricing": "https://www.findkit.com/#pricing",
 		"/concurrency": "https://docs.findkit.com/toml/options/#concurrency",
+		"/update-form": "https://github.com/findkit/update-form",
 		"/wpautoload": "https://github.com/findkit/wp-findkit/wiki/Troubleshooting#autoload-classes-not-found",
 		"/schedules": "https://docs.findkit.com/toml/options#schedule_full_crawl"
 	}
