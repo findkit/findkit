@@ -554,6 +554,60 @@ export interface FindkitUIGenerics {
 	customRouterData?: CustomRouterData;
 }
 
+function emitLoadingEvents(emitter: Emitter<FindkitUIEvents<any>, unknown>) {
+	let timer: ReturnType<typeof setTimeout> | undefined;
+	let eventCount = 0;
+	let fired = false;
+
+	function emitLoading() {
+		eventCount++;
+
+		// already going to fire
+		if (timer) {
+			return;
+		}
+
+		timer = setTimeout(() => {
+			timer = undefined;
+			if (!fired) {
+				fired = true;
+				emitter.emit("loading", {});
+			}
+		}, 200);
+	}
+
+	function emitDone() {
+		// Use small timeout on done event too to skip it if another loading
+		// event is fired soon after the last one
+		setTimeout(() => {
+			eventCount--;
+
+			// Fire done only after all concurrent loading events are done
+			if (eventCount > 0) {
+				return;
+			}
+
+			// Do not fire loading event if the done event was fired before
+			clearTimeout(timer);
+			timer = undefined;
+
+			if (fired) {
+				fired = false;
+				emitter.emit("loading-done", {});
+			}
+		}, 10);
+	}
+
+	emitter.on("fetch", emitLoading);
+	emitter.on("fetch-done", emitDone);
+	emitter.once("request-open", (e) => {
+		if (!e.preloaded) {
+			emitLoading();
+			emitter.once("loaded", emitDone);
+		}
+	});
+}
+
 /**
  * The Lazy loading Findkit UI
  *
@@ -575,6 +629,7 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	constructor(options: FindkitUIOptions<T>) {
 		this.PRIVATE_options = options;
 		this.PRIVATE_events = new Emitter(this);
+		emitLoadingEvents(this.PRIVATE_events);
 
 		if (
 			this.PRIVATE_isAlreadyOpened() ||
