@@ -390,22 +390,21 @@ async function preloadStylesheet(href: string) {
 	link.remove();
 }
 
-const cache = new Map<string, Promise<any>>();
-
 async function loadScriptFromGlobal<T>(
 	globalCallbackName: string,
 	src: string,
 ): Promise<T> {
-	const cacheKey = `${globalCallbackName}:${src}`;
-	const cached = cache.get(cacheKey);
-	if (cached) {
-		return cached;
+	const anyWindow = window as any;
+	const promiseKey = `${globalCallbackName}_promise`;
+
+	if (anyWindow[promiseKey]) {
+		return anyWindow[promiseKey];
 	}
 
-	const script = doc().createElement("script");
-	script.type = "module";
-
 	const promise = new Promise<T>((resolve, reject) => {
+		const script = doc().createElement("script");
+		script.type = "module";
+
 		const timer = setTimeout(() => {
 			reject(
 				new Error(
@@ -428,14 +427,13 @@ async function loadScriptFromGlobal<T>(
 				resolve(js);
 			},
 		});
+
+		script.src = src;
+		doc().head?.appendChild(script);
 	});
 
-	cache.set(cacheKey, promise);
-
-	script.src = src;
-	doc().head?.appendChild(script);
-
-	return await promise;
+	anyWindow[promiseKey] = promise;
+	return promise;
 }
 
 /**
