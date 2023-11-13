@@ -31,6 +31,7 @@ test("emit only one loading/loading-done event when implementation and search is
 		const { FindkitUI } = MOD;
 		const ui = new FindkitUI({
 			publicToken: "pW1D0p0Dg",
+			loadingThrottle: 200,
 		});
 
 		const uiEvents: string[] = [];
@@ -91,6 +92,7 @@ test("no loading event when the code and search loads fast", async ({
 		const { FindkitUI } = MOD;
 		const ui = new FindkitUI({
 			publicToken: "pW1D0p0Dg",
+			loadingThrottle: 200,
 		});
 
 		const uiEvents: string[] = [];
@@ -206,6 +208,7 @@ test("loading event can fire twice", async ({ page }) => {
 		const { FindkitUI } = MOD;
 		const ui = new FindkitUI({
 			publicToken: "pW1D0p0Dg",
+			loadingThrottle: 200,
 		});
 
 		const uiEvents: string[] = [];

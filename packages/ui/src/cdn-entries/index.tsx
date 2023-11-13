@@ -515,6 +515,11 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 		 */
 		overrides?: Partial<TranslationStrings>;
 	};
+
+	/**
+	 * Timeout for the `loading` event
+	 */
+	loadingThrottle?: number;
 }
 
 /**
@@ -617,7 +622,7 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 						engine.state.loading = fired;
 					});
 				}
-			}, 200);
+			}, this.PRIVATE_options.loadingThrottle ?? 1000);
 		};
 
 		const emitDone = () => {
