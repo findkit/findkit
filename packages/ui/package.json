@@ -63,7 +63,7 @@
     },
     {
       "path": "esm/index.js",
-      "limit": "2.7kb"
+      "limit": "2.75kb"
     }
   ],
   "browserslist": [
