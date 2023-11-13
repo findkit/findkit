@@ -41,6 +41,14 @@ t("can update partial params with ui.params", () => {
 			price: { $eq: 1 },
 		},
 	});
+
+	ui.on("fetch", (e) => {
+		e.transientUpdateParams({
+			filter: {
+				price: { $eq: 1 },
+			},
+		});
+	});
 });
 
 t("params event without generic", () => {
@@ -106,6 +114,31 @@ t("can add generic params to FindkitUI", () => {
 		},
 	});
 
+	ui.on("fetch", (e) => {
+		e.transientUpdateParams((params) => {
+			params.filter.price.$eq = 1;
+
+			// @ts-expect-error
+			params.filter.price.$eq = "bad";
+		});
+
+		// can replace with any valid SearchParams
+		e.transientUpdateParams({
+			filter: {
+				price: { $eq: "other" },
+			},
+		});
+
+		e.transientUpdateParams({
+			filter: {
+				price: {
+					// @ts-expect-error
+					$bad: "other",
+				},
+			},
+		});
+	});
+
 	const num: number = ui.params.filter.price.$eq;
 
 	// @ts-expect-error
@@ -145,6 +178,18 @@ t("can add generic sort params to FindkitUI", () => {
 		// @ts-expect-error
 		params.sort[1].price.$order = "asc";
 	});
+
+	ui.on("fetch", (e) => {
+		e.transientUpdateParams((params) => {
+			params.sort[0].price.$order = "asc";
+
+			// @ts-expect-error
+			params.sort[0].bad.$order = "asc";
+
+			// @ts-expect-error
+			params.sort[1].price.$order = "asc";
+		});
+	});
 });
 
 t("sort type must be valid", () => {
@@ -172,6 +217,15 @@ t("has default sort object", () => {
 
 		// @ts-expect-error
 		const _bar: string = params.sort.foo;
+	});
+
+	ui.on("fetch", (e) => {
+		e.transientUpdateParams((params) => {
+			params.sort.foo;
+
+			// @ts-expect-error
+			const _bar: string = params.sort.foo;
+		});
 	});
 
 	ui.params.sort.foo;
@@ -222,6 +276,14 @@ t("groups have params object by default", () => {
 		}
 	});
 
+	ui.on("fetch", (e) => {
+		e.transientUpdateGroups((...groups) => {
+			for (const group of groups) {
+				group.params.lang = "en";
+			}
+		});
+	});
+
 	ui.groups[0].params.lang?.toLowerCase();
 
 	ui.on("groups", (e) => {
@@ -270,6 +332,18 @@ t("can add generic groups to FindkitUI", () => {
 		group2.params.filter.price.$eq = 1;
 	});
 
+	ui.on("fetch", (e) => {
+		e.transientUpdateGroups((group1, group2) => {
+			group1.params.filter.price.$eq = 1;
+			group2.params.filter.price.$eq = "";
+
+			// @ts-expect-error
+			group1.params.filter.price.$eq = "";
+			// @ts-expect-error
+			group2.params.filter.price.$eq = 1;
+		});
+	});
+
 	ui.on("groups", (e) => {
 		const num: number = e.groups[0].params.filter.price.$eq;
 		const str: string = e.groups[1].params.filter.price.$eq;
@@ -290,6 +364,18 @@ t("can add generic groups to FindkitUI", () => {
 
 	// @ts-expect-error
 	ui.updateGroups([{ params: { filter: { price: { $bad: 1 } } } }]);
+
+	ui.on("fetch", (e) => {
+		// @ts-expect-error
+		ui.updateGroups((group1, group2, extra) => {});
+
+		ui.updateGroups((group1) => {});
+
+		ui.updateGroups([{ params: { filter: { price: { $gt: 1 } } } }]);
+
+		// @ts-expect-error
+		ui.updateGroups([{ params: { filter: { price: { $bad: 1 } } } }]);
+	});
 });
 
 t("custom router data", () => {

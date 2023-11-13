@@ -25,7 +25,7 @@ import { Emitter, FindkitUIEvents, lazyValue } from "./emitter";
 import { TranslationStrings } from "./translations";
 import { listen, Resources } from "./resources";
 import { Filter } from "./filter-type";
-import { VERSION } from "./cdn-entries";
+import { FetchEvent, FindkitUIGenerics, VERSION } from "./cdn-entries";
 
 export const DEFAULT_HIGHLIGHT_LENGTH = 250;
 export const DEFAULT_PREVIEW_SIZE = 5;
@@ -324,6 +324,19 @@ function assertInputEvent(e: {
 		throw new Error("Not HTMLInputElement");
 	}
 }
+
+/**
+ * Extract user defined groups or default to tuple of single group
+ */
+export type GroupsOrDefault<T extends FindkitUIGenerics> =
+	undefined extends T["groups"]
+		? [GroupDefinitionWithDefaults]
+		: NonNullable<T["groups"]>;
+
+export type SearchParamsOrDefault<T extends FindkitUIGenerics> =
+	undefined extends T["params"]
+		? SearchParamsWithDefaults
+		: NonNullable<T["params"]>;
 
 /**
  * @public
@@ -1350,7 +1363,6 @@ export class SearchEngine {
 			nextGroups = [groupsOrFn];
 		}
 
-		this.PRIVATE_throttleId++;
 		this.state.nextGroupDefinitions = ref(nextGroups);
 
 		this.events.emit("groups", {
@@ -1363,6 +1375,12 @@ export class SearchEngine {
 		this.events.emit("params", {
 			params: this.getParams(),
 		});
+
+		if (this.PRIVATE_fetchEventRunning) {
+			return;
+		}
+
+		this.PRIVATE_throttleId++;
 
 		if (deepEqual(nextGroups, this.state.usedGroupDefinitions)) {
 			this.PRIVATE_dirtyGroups = false;
@@ -1579,6 +1597,8 @@ export class SearchEngine {
 		}
 	}
 
+	private PRIVATE_fetchEventRunning = false;
+
 	private PRIVATE_fetch = async (options: {
 		terms: string;
 		reset: boolean;
@@ -1587,8 +1607,7 @@ export class SearchEngine {
 			return;
 		}
 
-		const groups = this.state.nextGroupDefinitions;
-		const noGroups = groups.length === 0;
+		const noGroups = this.state.nextGroupDefinitions.length === 0;
 		const tooFewTerms = options.terms.length < this.PRIVATE_minTerms;
 
 		if (tooFewTerms || noGroups) {
@@ -1618,14 +1637,6 @@ export class SearchEngine {
 			}
 		}
 
-		const fullParams = this.PRIVATE_getFindkitFetchOptions({
-			groups,
-			terms: options.terms,
-			appendGroupId: appendGroup?.id,
-			lang: this.state.lang,
-			reset: options.reset,
-		});
-
 		this.PRIVATE_statusTransition("fetching");
 
 		this.PRIVATE_requestId += 1;
@@ -1635,7 +1646,43 @@ export class SearchEngine {
 		const abortController = new AbortController();
 		this.PRIVATE_pendingRequestIds.set(requestId, abortController);
 
-		this.events.emit("fetch", { terms: options.terms, id: String(requestId) });
+		/**
+		 * Group definitions before the fetch event which might modify them
+		 */
+		const originalGroups = this.state.nextGroupDefinitions;
+		let transientUpdate = false;
+
+		const fetchEvent: FetchEvent<FindkitUIGenerics> = {
+			terms: options.terms,
+			id: String(requestId),
+			transientUpdateParams: (params) => {
+				transientUpdate = true;
+				this.updateParams(params);
+			},
+			transientUpdateGroups: (...groups) => {
+				transientUpdate = true;
+				this.updateGroups(...groups);
+			},
+		};
+
+		this.PRIVATE_fetchEventRunning = true;
+		this.events.emit("fetch", fetchEvent);
+		this.PRIVATE_fetchEventRunning = false;
+
+		let groups = this.state.nextGroupDefinitions;
+
+		const fullParams = this.PRIVATE_getFindkitFetchOptions({
+			groups,
+			terms: fetchEvent.terms,
+			appendGroupId: appendGroup?.id,
+			lang: this.state.lang,
+			reset: options.reset,
+		});
+
+		if (transientUpdate) {
+			groups = originalGroups;
+			this.state.nextGroupDefinitions = originalGroups;
+		}
 
 		if (this.PRIVATE_pendingCustomRouterData) {
 			const next = this.PRIVATE_getfindkitParams().setCustomData(

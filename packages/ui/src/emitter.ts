@@ -1,5 +1,12 @@
 import { FindkitUIGenerics, Status } from "./cdn-entries";
-import type { CustomRouterData, SearchResultHit } from "./search-engine";
+import type {
+	CustomRouterData,
+	GroupsOrDefault,
+	SearchParamsOrDefault,
+	SearchResultHit,
+	UpdateGroupsArgument,
+	UpdateParamsArgument,
+} from "./search-engine";
 
 export interface Handler {
 	(event: any): void;
@@ -82,18 +89,18 @@ export class Emitter<Events extends {}, Source> {
 		eventName: EventName,
 		event: Events[EventName],
 	) {
-		const payload = { ...event, ui: this.PRIVATE_source };
+		Object.assign(event as any, { source: this.PRIVATE_source });
 		const set = this.PRIVATE_handlers.get(eventName);
 
 		if (typeof document !== "undefined") {
-			const event = new Event("findkit-ui-event");
-			Object.assign(event, { payload });
-			document.dispatchEvent(event);
+			const browserEvent = new Event("findkit-ui-event");
+			Object.assign(browserEvent, { payload: event });
+			document.dispatchEvent(browserEvent);
 		}
 
 		if (set) {
 			for (const handler of set) {
-				handler(payload);
+				handler(event);
 			}
 		}
 	}
@@ -120,7 +127,7 @@ export interface DebouncedSearchEvent {
 /**
  * @public
  */
-export interface FetchEvent {
+export interface FetchEvent<T extends FindkitUIGenerics> {
 	/**
 	 * The search terms used for the request
 	 */
@@ -130,6 +137,24 @@ export interface FetchEvent {
 	 * Request id
 	 */
 	id: string;
+
+	/**
+	 * Make transient update to the search params which is only used for next request
+	 *
+	 * Added in 0.13.0
+	 */
+	transientUpdateParams: (
+		arg: UpdateParamsArgument<SearchParamsOrDefault<T>>,
+	) => void;
+
+	/**
+	 * Make transient update to the groups which is only used for next request
+	 *
+	 * Added in 0.13.0
+	 */
+	transientUpdateGroups: (
+		arg: UpdateGroupsArgument<GroupsOrDefault<T>>,
+	) => void;
 }
 
 /**
@@ -281,7 +306,7 @@ export interface FindkitUIEvents<T extends FindkitUIGenerics = {}> {
 	/**
 	 * Search request starts
 	 */
-	fetch: FetchEvent;
+	fetch: FetchEvent<T>;
 
 	/**
 	 * When a search request finishes
