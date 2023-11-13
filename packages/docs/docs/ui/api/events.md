@@ -15,6 +15,27 @@ const unsubscribe = ui.on("open", () => {
 
 The available event names.
 
+### `loading` {#loading}
+
+Delayed loading event. Fired when any network request issued by FinkditUI takes
+more than usual due to bad network conditions. If the network is quick enough
+this event never fires. Fired for the lazy load and search requests.
+
+Used to implement loading indicator in a way it does not flash when the
+responses instant. Clear the loading indicator in the
+[`loading-done`](#loading-done) event.
+
+If you need to know excatly when the search requests happen see
+[`fetch`](#fetch) and [`fetch-done`](#fetch-done) events.
+
+<Api page="ui.loading">Event Object Interface</Api>
+
+### `loading-done` {#loading-done}
+
+Fired when the [`loading`](#loading) event completes.
+
+<Api page="ui.openevent">Event Object Interface</Api>
+
 ### `open`
 
 When the modal is opened
