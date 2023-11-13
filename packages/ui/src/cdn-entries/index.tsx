@@ -603,7 +603,7 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 		const emitter = this.PRIVATE_events;
 		let timer: ReturnType<typeof setTimeout> | undefined;
 		let eventCount = 0;
-		let fired = false;
+		let loading = false;
 
 		const emitLoading = () => {
 			eventCount++;
@@ -615,11 +615,11 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 
 			timer = setTimeout(() => {
 				timer = undefined;
-				if (!fired) {
-					fired = true;
+				if (!loading) {
+					loading = true;
 					emitter.emit("loading", {});
 					this.PRIVATE_lazyEngine((engine) => {
-						engine.state.loading = fired;
+						engine.state.loading = loading;
 					});
 				}
 			}, this.PRIVATE_options.loadingThrottle ?? 1000);
@@ -640,11 +640,11 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 				clearTimeout(timer);
 				timer = undefined;
 
-				if (fired) {
-					fired = false;
+				if (loading) {
+					loading = false;
 					emitter.emit("loading-done", {});
 					this.PRIVATE_lazyEngine((engine) => {
-						engine.state.loading = fired;
+						engine.state.loading = loading;
 					});
 				}
 			}, 10);
