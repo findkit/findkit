@@ -74,6 +74,13 @@ export function useTermsImplementation(): string {
 /**
  * @public
  */
+function useLoadingImplementation() {
+	return useSearchEngineState().loading;
+}
+
+/**
+ * @public
+ */
 export function useTotalImplementation() {
 	const state = useSearchEngineState();
 
@@ -128,6 +135,7 @@ export interface Implementation {
 	useLang: typeof useLangImplementation;
 	useInput: typeof useInput;
 	useTotalHitCount: typeof useTotalHitCountImplementation;
+	useLoading: typeof useLoadingImplementation;
 	preact: PreactFunctions;
 }
 
@@ -143,6 +151,7 @@ export const js: Implementation = {
 	useInput,
 	useTotalHitCount: useTotalHitCountImplementation,
 	useLang: useLangImplementation,
+	useLoading: useLoadingImplementation,
 	preact: preactFunctions,
 };
 

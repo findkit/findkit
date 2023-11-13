@@ -240,11 +240,24 @@ export interface UnbindInputEvent {
 	input: HTMLInputElement;
 }
 
+/**
+ * @public
+ */
 export interface CustomRouterDataEvent<T extends FindkitUIGenerics> {
 	data: undefined extends T["customRouterData"]
 		? CustomRouterData
 		: T["customRouterData"];
 }
+
+/**
+ * @public
+ */
+export interface LoadingEvent {}
+
+/**
+ * @public
+ */
+export interface LoadingDoneEvent {}
 
 /**
  * @public
@@ -334,6 +347,17 @@ export interface FindkitUIEvents<T extends FindkitUIGenerics = {}> {
 	 * Emitted when the UI language changes
 	 */
 	lang: LanguageChangeEvent;
+
+	/**
+	 * Emitted when the UI starts loading something. Implementation code or a
+	 * search request.
+	 */
+	loading: LoadingEvent;
+
+	/**
+	 * Emitted when the UI finishes loading something. Always called after the `loading` event.
+	 */
+	"loading-done": LoadingDoneEvent;
 }
 
 /**

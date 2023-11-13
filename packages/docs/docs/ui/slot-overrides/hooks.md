@@ -100,6 +100,14 @@ Return total hit count. Includes count from all groups if multiple groups are us
 
 <Api page="ui.usetotalhitcount" />
 
+### `useLoading()` {#useLoading}
+
+[Delayed loading event](/ui/api/events#loading) as a hook. Return true when a
+network requet is taking longer than usual. Use to to implement custom loading
+indicators in a slot overrides.
+
+<Api page="ui.useLoading" />
+
 ### `useLang()` {#useLang}
 
 Return the current UI language. Can be used to implement custom ui string

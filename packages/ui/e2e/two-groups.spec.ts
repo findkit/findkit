@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import type { FindkitUI } from "../src/cdn-entries";
-import { spinnerLocator, staticEntry } from "./helpers";
+import { staticEntry } from "./helpers";
 
 declare const ui: FindkitUI;
 
@@ -8,14 +8,13 @@ test("can navigate to full group results and back", async ({ page }) => {
 	await page.goto(staticEntry("/two-groups"));
 	const hits = page.locator(".findkit--hit");
 	const groupTitles = page.locator(".findkit--group-title");
-	const loading = spinnerLocator(page);
 
 	await page.locator("text=open").click();
 
 	await groupTitles.first().waitFor({ state: "visible" });
 	expect(await groupTitles.count()).toBe(2);
 
-	await page.locator("input:visible").type("wordpress");
+	await page.locator("input:visible").fill("wordpress");
 
 	expect(await groupTitles.count()).toBe(2);
 	await hits.first().waitFor({ state: "visible" });
@@ -25,26 +24,19 @@ test("can navigate to full group results and back", async ({ page }) => {
 
 	await page.locator(".findkit--single-group-link").first().click();
 
-	await loading.waitFor({ state: "hidden" });
-
+	await expect.poll(() => hits.count()).toBeGreaterThan(hitCount1);
 	const hitCount2 = await hits.count();
-	expect(hitCount2).toBeGreaterThan(hitCount1);
 
 	expect(await groupTitles.count()).toBe(1);
 
 	await page.locator(".findkit--load-more-button").first().click();
 
-	await loading.waitFor({ state: "hidden" });
-
+	await expect.poll(() => hits.count()).toBeGreaterThan(hitCount2);
 	const hitCount3 = await hits.count();
-	expect(hitCount3).toBeGreaterThan(hitCount2);
 
 	await page.locator(".findkit--back-link").first().click();
 
-	await loading.waitFor({ state: "hidden" });
-
-	const hitCount4 = await hits.count();
-	expect(hitCount4).toBeLessThan(hitCount3);
+	await expect.poll(() => hits.count()).toBeLessThan(hitCount3);
 });
 
 test("refresh restores search results", async ({ page }) => {
@@ -53,7 +45,7 @@ test("refresh restores search results", async ({ page }) => {
 	const hits = page.locator(".findkit--hit");
 
 	await page.locator("text=open").click();
-	await page.locator("input:visible").type("mikko");
+	await page.locator("input:visible").fill("mikko");
 	await hits.first().waitFor({ state: "visible" });
 
 	await page.reload();
@@ -86,10 +78,9 @@ test("back button works", async ({ page }) => {
 	await page.goto(staticEntry("/two-groups"));
 	const hits = page.locator(".findkit--hit");
 	const groupTitles = page.locator(".findkit--group-title");
-	const loading = spinnerLocator(page);
 
 	await page.locator("text=open").click();
-	await page.locator("input:visible").type("mikko");
+	await page.locator("input:visible").fill("mikko");
 
 	expect(await groupTitles.count()).toBe(2);
 	await hits.first().waitFor({ state: "visible" });
@@ -98,9 +89,7 @@ test("back button works", async ({ page }) => {
 
 	await moreLink.first().click();
 
-	await loading.waitFor({ state: "hidden" });
-
-	expect(await groupTitles.count()).toBe(1);
+	await expect.poll(() => groupTitles.count()).toBe(1);
 
 	await page.goBack();
 	await moreLink.first().waitFor({ state: "visible" });
@@ -118,7 +107,7 @@ test("forward button restores search terms", async ({ page }) => {
 	const input = page.locator("input:visible");
 
 	await page.locator("text=open").click();
-	await input.type("mikko");
+	await input.fill("mikko");
 
 	await hits.first().waitFor({ state: "visible" });
 
@@ -137,7 +126,7 @@ test("escape closes the modal", async ({ page }) => {
 	const input = page.locator("input:visible");
 
 	await page.locator("text=open").click();
-	await input.type("mikko");
+	await input.fill("mikko");
 
 	await hits.first().waitFor({ state: "visible" });
 
@@ -166,8 +155,6 @@ test("fetch counts", async ({ page }) => {
 		});
 	}
 
-	const loading = spinnerLocator(page);
-
 	await page.locator("text=open").click();
 
 	await page.waitForLoadState("networkidle");
@@ -181,22 +168,16 @@ test("fetch counts", async ({ page }) => {
 
 	await page.locator(".findkit--single-group-link").first().click();
 
-	await loading.waitFor({ state: "hidden" });
-
-	expect(await getCount()).toBe(2);
+	await expect.poll(() => getCount()).toBe(2);
 
 	await page.locator(".findkit--load-more-button").first().click();
 
-	await loading.waitFor({ state: "hidden" });
-
-	expect(await getCount()).toBe(3);
+	await expect.poll(() => getCount()).toBe(3);
 
 	await page.locator(".findkit--back-link").first().click();
 
-	await loading.waitFor({ state: "hidden" });
-
 	// Eh, could optimize and remove this fetch
-	expect(await getCount()).toBe(4);
+	await expect.poll(() => getCount()).toBe(4);
 });
 
 test("fetches only once when navigating directly to results", async ({
@@ -247,7 +228,7 @@ test("can show 'All results shown' and 'No results' on group view", async ({
 	);
 
 	await page.locator("text=open").click();
-	await input.type("esa-matti");
+	await input.fill("esa-matti");
 
 	await hits.first().waitFor({ state: "visible" });
 

@@ -343,6 +343,12 @@ export const useGroups = createShellFunction("useGroups");
 export const useTotalHitCount = createShellFunction("useTotalHitCount");
 
 /**
+ * Return true when the search is loading something for too long. Works like
+ * the `loading` event.
+ */
+export const useLoading = createShellFunction("useLoading");
+
+/**
  * Returns a ref for binding a inputs to the search
  *
  * Example:
@@ -509,6 +515,11 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 		 */
 		overrides?: Partial<TranslationStrings>;
 	};
+
+	/**
+	 * Timeout for the `loading` event
+	 */
+	loadingThrottle?: number;
 }
 
 /**
@@ -575,6 +586,7 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	constructor(options: FindkitUIOptions<T>) {
 		this.PRIVATE_options = options;
 		this.PRIVATE_events = new Emitter(this);
+		this.emitLoadingEvents();
 
 		if (
 			this.PRIVATE_isAlreadyOpened() ||
@@ -585,6 +597,67 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 		}
 
 		this.PRIVATE_events.emit("init", {});
+	}
+
+	private emitLoadingEvents() {
+		const emitter = this.PRIVATE_events;
+		let timer: ReturnType<typeof setTimeout> | undefined;
+		let eventCount = 0;
+		let loading = false;
+
+		const emitLoading = () => {
+			eventCount++;
+
+			// already going to fire
+			if (timer) {
+				return;
+			}
+
+			timer = setTimeout(() => {
+				timer = undefined;
+				if (!loading) {
+					loading = true;
+					emitter.emit("loading", {});
+					this.PRIVATE_lazyEngine((engine) => {
+						engine.state.loading = loading;
+					});
+				}
+			}, this.PRIVATE_options.loadingThrottle ?? 1000);
+		};
+
+		const emitDone = () => {
+			// Use small timeout on done event too to skip it if another loading
+			// event is fired soon after the last one
+			setTimeout(() => {
+				eventCount--;
+
+				// Fire done only after all concurrent loading events are done
+				if (eventCount > 0) {
+					return;
+				}
+
+				// Do not fire loading event if the done event was fired before
+				clearTimeout(timer);
+				timer = undefined;
+
+				if (loading) {
+					loading = false;
+					emitter.emit("loading-done", {});
+					this.PRIVATE_lazyEngine((engine) => {
+						engine.state.loading = loading;
+					});
+				}
+			}, 10);
+		};
+
+		emitter.on("fetch", emitLoading);
+		emitter.on("fetch-done", emitDone);
+		emitter.once("request-open", (e) => {
+			if (!e.preloaded) {
+				emitLoading();
+				emitter.once("loaded", emitDone);
+			}
+		});
 	}
 
 	/**
