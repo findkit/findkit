@@ -343,6 +343,12 @@ export const useGroups = createShellFunction("useGroups");
 export const useTotalHitCount = createShellFunction("useTotalHitCount");
 
 /**
+ * Return true when the search is loading something for too long. Works like
+ * the `loading` event.
+ */
+export const useLoading = createShellFunction("useLoading");
+
+/**
  * Returns a ref for binding a inputs to the search
  *
  * Example:
@@ -554,60 +560,6 @@ export interface FindkitUIGenerics {
 	customRouterData?: CustomRouterData;
 }
 
-function emitLoadingEvents(emitter: Emitter<FindkitUIEvents<any>, unknown>) {
-	let timer: ReturnType<typeof setTimeout> | undefined;
-	let eventCount = 0;
-	let fired = false;
-
-	function emitLoading() {
-		eventCount++;
-
-		// already going to fire
-		if (timer) {
-			return;
-		}
-
-		timer = setTimeout(() => {
-			timer = undefined;
-			if (!fired) {
-				fired = true;
-				emitter.emit("loading", {});
-			}
-		}, 200);
-	}
-
-	function emitDone() {
-		// Use small timeout on done event too to skip it if another loading
-		// event is fired soon after the last one
-		setTimeout(() => {
-			eventCount--;
-
-			// Fire done only after all concurrent loading events are done
-			if (eventCount > 0) {
-				return;
-			}
-
-			// Do not fire loading event if the done event was fired before
-			clearTimeout(timer);
-			timer = undefined;
-
-			if (fired) {
-				fired = false;
-				emitter.emit("loading-done", {});
-			}
-		}, 10);
-	}
-
-	emitter.on("fetch", emitLoading);
-	emitter.on("fetch-done", emitDone);
-	emitter.once("request-open", (e) => {
-		if (!e.preloaded) {
-			emitLoading();
-			emitter.once("loaded", emitDone);
-		}
-	});
-}
-
 /**
  * The Lazy loading Findkit UI
  *
@@ -629,7 +581,7 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	constructor(options: FindkitUIOptions<T>) {
 		this.PRIVATE_options = options;
 		this.PRIVATE_events = new Emitter(this);
-		emitLoadingEvents(this.PRIVATE_events);
+		this.emitLoadingEvents();
 
 		if (
 			this.PRIVATE_isAlreadyOpened() ||
@@ -640,6 +592,67 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 		}
 
 		this.PRIVATE_events.emit("init", {});
+	}
+
+	private emitLoadingEvents() {
+		const emitter = this.PRIVATE_events;
+		let timer: ReturnType<typeof setTimeout> | undefined;
+		let eventCount = 0;
+		let fired = false;
+
+		const emitLoading = () => {
+			eventCount++;
+
+			// already going to fire
+			if (timer) {
+				return;
+			}
+
+			timer = setTimeout(() => {
+				timer = undefined;
+				if (!fired) {
+					fired = true;
+					emitter.emit("loading", {});
+					this.PRIVATE_lazyEngine((engine) => {
+						engine.state.loading = fired;
+					});
+				}
+			}, 200);
+		};
+
+		const emitDone = () => {
+			// Use small timeout on done event too to skip it if another loading
+			// event is fired soon after the last one
+			setTimeout(() => {
+				eventCount--;
+
+				// Fire done only after all concurrent loading events are done
+				if (eventCount > 0) {
+					return;
+				}
+
+				// Do not fire loading event if the done event was fired before
+				clearTimeout(timer);
+				timer = undefined;
+
+				if (fired) {
+					fired = false;
+					emitter.emit("loading-done", {});
+					this.PRIVATE_lazyEngine((engine) => {
+						engine.state.loading = fired;
+					});
+				}
+			}, 10);
+		};
+
+		emitter.on("fetch", emitLoading);
+		emitter.on("fetch-done", emitDone);
+		emitter.once("request-open", (e) => {
+			if (!e.preloaded) {
+				emitLoading();
+				emitter.once("loaded", emitDone);
+			}
+		});
 	}
 
 	/**

@@ -348,7 +348,6 @@
 
 .search-input-icon-container-hide {
 	opacity: 0;
-	transition-delay: 1s;
 }
 
 .spinner:after {
@@ -365,7 +364,6 @@
 }
 
 .spinning {
-	transition-delay: 1s;
 	opacity: 1;
 }
 

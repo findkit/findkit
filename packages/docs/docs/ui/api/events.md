@@ -28,6 +28,9 @@ responses instant. Clear the loading indicator in the
 If you need to know excatly when the search requests happen see
 [`fetch`](#fetch) and [`fetch-done`](#fetch-done) events.
 
+Also available as [`useLoading`](/ui/slot-overrides/hooks#useLoading) slot
+override hook.
+
 <Api page="ui.loading">Event Object Interface</Api>
 
 ### `loading-done` {#loading-done}

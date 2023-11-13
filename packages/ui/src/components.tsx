@@ -566,7 +566,7 @@ export function Spinner(props: { spinning?: boolean }) {
 		<View
 			cn={{
 				spinner: true,
-				spinning: props.spinning !== false && state.status === "fetching",
+				spinning: props.spinning !== false && state.loading,
 			}}
 		></View>
 	);

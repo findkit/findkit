@@ -255,7 +255,7 @@ function SearchInput() {
 			<View
 				cn={{
 					["search-input-icon-container"]: true,
-					["search-input-icon-container-hide"]: state.status === "fetching",
+					["search-input-icon-container-hide"]: state.loading,
 				}}
 			>
 				<Slot name="SearchInputIcon" props={{}} errorFallback={<Logo />}>

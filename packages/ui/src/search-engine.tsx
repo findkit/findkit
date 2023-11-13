@@ -238,6 +238,8 @@ export interface State {
 
 	status: Status;
 
+	loading: boolean;
+
 	currentGroupId: string | undefined;
 
 	infiniteScroll: boolean;
@@ -681,6 +683,7 @@ export class SearchEngine {
 			lang: undefined,
 			lockScroll: options.lockScroll ?? true,
 			status: "closed",
+			loading: false,
 			infiniteScroll: options.infiniteScroll ?? true,
 			error: undefined,
 			resultGroups: {},
