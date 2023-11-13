@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { spinnerLocator, staticEntry } from "./helpers";
+import { staticEntry } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 
@@ -106,7 +106,6 @@ test("updates from history.pushState()", async ({ page, browserName }) => {
 	await page.goto(staticEntry("/dummy"));
 
 	const hits = page.locator(".findkit--hit a");
-	const loading = spinnerLocator(page);
 	const input = page.locator('[aria-label="Search input"]');
 
 	await page.evaluate(async () => {
@@ -130,15 +129,14 @@ test("updates from history.pushState()", async ({ page, browserName }) => {
 	await page.evaluate(async () => {
 		history.pushState(undefined, "", "?fdk_q=wordpress");
 	});
-	await loading.waitFor({ state: "hidden" });
 
-	const result2 = await hits
-		.first()
-		.evaluate((e: any) => e.getAttribute("href"));
+	await expect
+		.poll(() => {
+			return hits.first().evaluate((e: any) => e.getAttribute("href"));
+		})
+		.not.toBe(result1);
 
 	await expect(input).toHaveValue("wordpress");
-
-	expect(result1).not.toBe(result2);
 });
 
 test("modal updates url", async ({ page }) => {

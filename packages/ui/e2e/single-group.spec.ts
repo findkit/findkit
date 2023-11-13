@@ -1,14 +1,13 @@
 import { test, expect } from "@playwright/test";
 import { assertNotNil } from "@valu/assert";
 import type { FindkitUI } from "../src/cdn-entries/index";
-import { getHitHosts, spinnerLocator, staticEntry } from "./helpers";
+import { getHitHosts, staticEntry } from "./helpers";
 
 declare const ui: FindkitUI;
 
 test("can load more results when using only one group", async ({ page }) => {
 	await page.goto(staticEntry("/single-group"));
 	const hits = page.locator(".findkit--hit");
-	const loading = spinnerLocator(page);
 
 	const button = page.locator("button", { hasText: "open" });
 
@@ -16,7 +15,7 @@ test("can load more results when using only one group", async ({ page }) => {
 
 	const input = page.locator("input:visible");
 
-	await input.type("valu");
+	await input.fill("valu");
 
 	await hits.first().waitFor({ state: "visible" });
 
@@ -29,10 +28,7 @@ test("can load more results when using only one group", async ({ page }) => {
 
 	await page.locator(".findkit--load-more-button").first().click();
 
-	await loading.waitFor({ state: "hidden" });
-
-	const hitCount2 = await hits.count();
-	expect(hitCount2).toBeGreaterThan(hitCount1);
+	await expect.poll(() => hits.count()).toBeGreaterThan(hitCount1);
 
 	await page
 		.locator(".findkit--back-link")
@@ -45,7 +41,7 @@ test("the input is cleared when the modal is closed", async ({ page }) => {
 	const hits = page.locator(".findkit--hit");
 
 	await page.locator("button", { hasText: "open" }).click();
-	await page.locator("input:visible").type("mikko");
+	await page.locator("input:visible").fill("mikko");
 
 	await hits.first().waitFor({ state: "visible" });
 
@@ -96,7 +92,7 @@ test.describe("small window", () => {
 		const header = page.locator(".findkit--header");
 
 		await button.click();
-		await input.type("mikko");
+		await input.fill("mikko");
 
 		const hits = page.locator(".findkit--hit");
 		await hits.first().waitFor({ state: "visible" });
@@ -159,9 +155,9 @@ test("emits debounced-search event", async ({ page }) => {
 	});
 
 	const input = page.locator('[aria-label="Search input"]');
-	await input.type("valu ");
+	await input.pressSequentially("valu ");
 	await page.waitForTimeout(500);
-	await input.type("wordpress");
+	await input.pressSequentially("wordpress");
 
 	expect(await termsPromise).toEqual("valu wordpress");
 });
@@ -175,7 +171,7 @@ test("can navigate to hit and come back retaining url and input value", async ({
 	await button.click();
 
 	const input = page.locator('[aria-label="Search input"]');
-	await input.type("wordpress");
+	await input.fill("wordpress");
 	const hitUrl = await hits.first().getAttribute("href");
 	await hits.first().click();
 
@@ -207,7 +203,7 @@ test("emits hit-click events and can prevent default", async ({ page }) => {
 	});
 
 	const input = page.locator('[aria-label="Search input"]');
-	await input.type("wordpress");
+	await input.fill("wordpress");
 	const hitUrl = await hits.first().getAttribute("href");
 	await hits.first().click();
 
@@ -224,7 +220,7 @@ test("can update groups on the fly", async ({ page }) => {
 
 	const hits = page.locator(".findkit--hit a");
 	const input = page.locator('[aria-label="Search input"]');
-	await input.type("valu");
+	await input.fill("valu");
 	await hits.first().waitFor({ state: "visible" });
 
 	expect(await getHitHosts(page)).toEqual(["www.valu.fi"]);
@@ -244,10 +240,7 @@ test("can update groups on the fly", async ({ page }) => {
 		]);
 	});
 
-	const loading = spinnerLocator(page);
-	await loading.waitFor({ state: "hidden" });
-
-	expect(await getHitHosts(page)).toEqual(["statement.fi"]);
+	await expect.poll(() => getHitHosts(page)).toEqual(["statement.fi"]);
 });
 
 test("can update groups on the fly with update function", async ({ page }) => {
@@ -257,7 +250,7 @@ test("can update groups on the fly with update function", async ({ page }) => {
 
 	const hits = page.locator(".findkit--hit a");
 	const input = page.locator('[aria-label="Search input"]');
-	await input.type("valu");
+	await input.fill("valu");
 	await hits.first().waitFor({ state: "visible" });
 
 	expect(await getHitHosts(page)).toEqual(["www.valu.fi"]);
@@ -268,10 +261,7 @@ test("can update groups on the fly with update function", async ({ page }) => {
 		});
 	});
 
-	const loading = spinnerLocator(page);
-	await loading.waitFor({ state: "hidden" });
-
-	expect(await getHitHosts(page)).toEqual(["statement.fi"]);
+	await expect.poll(() => getHitHosts(page)).toEqual(["statement.fi"]);
 });
 
 test("can infinite scroll", async ({ page, browserName }) => {
@@ -298,7 +288,7 @@ test("can infinite scroll", async ({ page, browserName }) => {
 
 	const hits = page.locator(".findkit--hit a");
 	const input = page.locator('[aria-label="Search input"]');
-	await input.type("valu");
+	await input.fill("valu");
 	await hits.first().waitFor({ state: "visible" });
 
 	const count = await hits.count();
@@ -324,7 +314,7 @@ test("can click url link after scrolling", async ({ page }) => {
 	// const hitUrlLink = page.locator(".findkit--hit-title-link");
 
 	await button.click();
-	await input.type("mikko");
+	await input.fill("mikko");
 
 	await hitUrlLink.first().waitFor({ state: "visible" });
 
