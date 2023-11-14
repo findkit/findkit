@@ -85,7 +85,7 @@ Emitted when the status changes
 Emitted before sending a search request.
 
 It possible to make transient updates to the search request inside the `fetch`
-event handler eighter by updating the search terms on the event object
+event handler either by updating the search terms on the event object
 `event.terms` property or by calling the `event.transientUpdateParams()` or
 `event.transientUpdateGroups()`. The updates are only used for that specific
 search and are not not persisted to the internal FindkitUI state. The
