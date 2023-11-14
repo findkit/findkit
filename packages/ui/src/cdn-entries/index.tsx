@@ -9,10 +9,10 @@ import type {
 	FindkitURLSearchParams,
 	Status,
 	GroupOrder,
-	GroupDefinitionWithDefaults,
-	SearchParamsWithDefaults,
 	Sort,
 	CustomRouterData,
+	GroupsOrDefault,
+	SearchParamsOrDefault,
 } from "../search-engine";
 import type { RouterBackend } from "../router";
 import type {
@@ -540,19 +540,6 @@ type Methods<Klass> = {
 		? Method
 		: never;
 }[keyof Klass];
-
-/**
- * Extract user defined groups or default to tuple of single group
- */
-type GroupsOrDefault<T extends FindkitUIGenerics> =
-	undefined extends T["groups"]
-		? [GroupDefinitionWithDefaults]
-		: NonNullable<T["groups"]>;
-
-type SearchParamsOrDefault<T extends FindkitUIGenerics> =
-	undefined extends T["params"]
-		? SearchParamsWithDefaults
-		: NonNullable<T["params"]>;
 
 /**
  * Generic type for defining custom ui.params  and ui.updateParams() types

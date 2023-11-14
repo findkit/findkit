@@ -82,7 +82,58 @@ Emitted when the status changes
 
 ### `fetch`
 
-Emitted right before sending a search request.
+Emitted before sending a search request.
+
+It possible to make transient updates to the search request inside the `fetch`
+event handler either by updating the search terms on the event object
+`event.terms` property or by calling the `event.transientUpdateParams()` or
+`event.transientUpdateGroups()`. The updates are only used for that specific
+search and are not not persisted to the internal FindkitUI state. The
+`transient*` methods otherwise work like the normal
+[`updateParams`](/ui/api/#updateParams) and
+[`updateGroups`](/ui/api/#updateGroups) methods.
+
+A common use case is to sort results by creation date when there are no search
+terms and by relevancy when user types some search terms.
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<token>",
+	minTerms: 0,
+});
+
+ui.on("fetch", (event) => {
+	if (event.terms.length === 0) {
+		// Sort by creation date when there is no search terms
+		event.transientUpdateParams((params) => {
+			params.sort = { created: { $order: "desc" } };
+		});
+	}
+});
+```
+
+Another use case is to implement customs terms that actually are filters:
+
+```ts
+ui.on("fetch", (event) => {
+	const tags = [];
+
+	// Turn "tag:electronics computer" to "computer"
+	event.terms = event.terms.replaceAll(/tag:([^ ]+)/g, (tag) => {
+		tags.push(tag);
+		return "";
+	});
+
+	// And filter using the "electronics" tag
+	if (tags.length > 0) {
+		event.transientUpdateParams({
+			filter: { tags: { $all: tags } },
+		});
+	}
+});
+```
+
+_The transient methods and terms updating is added in v0.13.0_
 
 <Api page="ui.fetchevent">Event Object Interface</Api>
 
