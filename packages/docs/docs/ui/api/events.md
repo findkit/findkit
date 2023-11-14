@@ -103,8 +103,8 @@ const ui = new FindkitUI({
 });
 
 ui.on("fetch", (event) => {
-	if (event.terms.length === 0) {
-		// Sort by creation date when there is no search terms
+	// Sort by creation date when there is no search terms
+	if (event.terms.length.trim() === "") {
 		event.transientUpdateParams((params) => {
 			params.sort = { created: { $order: "desc" } };
 		});
