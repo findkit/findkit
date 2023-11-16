@@ -43,15 +43,17 @@ we will be using the npm import but it can be replaced with the CDN import.
 If you cannot create `<script type="module">` directly you can load the module from
 old style `<script>` tag with:
 
-```js
-window.onFindkitUIModule = ({ FindkitUI }) => {
-  const ui = new FindkitUI({ publicToken: "<TOKEN>" });
-};
+```html
+<script>
+  window.onFindkitUIModule = ({ FindkitUI }) => {
+    const ui = new FindkitUI({ publicToken: "<TOKEN>" });
+  };
 
-const script = document.createElement("script");
-script.type = "module";
-script.innerHTML = 'import("https://cdn.findkit.com/ui/v0.12.0/esm/index.js").then(onFindkitUIModule)';
-document.head.append(script);
+  const script = document.createElement("script");
+  script.type = "module";
+  script.innerHTML = 'import("https://cdn.findkit.com/ui/v0.12.0/esm/index.js").then(onFindkitUIModule)';
+  document.head.append(script);
+</scrip>
 ```
 
 See the [demo here](https://jsfiddle.net/6dagn0qy/6/);
