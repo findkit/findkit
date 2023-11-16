@@ -522,7 +522,7 @@ function Style(props: { css?: string; layer?: string; href?: string }) {
 		// css import
 		css = `@import url("${props.href}")`;
 		if (props.layer) {
-			css += `layer(${props.layer})`;
+			css += ` layer(${props.layer})`;
 		}
 		css += ";";
 	} else if (props.css) {
