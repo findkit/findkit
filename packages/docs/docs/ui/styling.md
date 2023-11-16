@@ -6,7 +6,7 @@ means that if you want to customize the styles you cannot just target the class
 names directly in your stylesheets. You must add the styles inside the Shadow
 Root or disable the Shadom DOM.
 
-## Adding Styles inside the Shadow Root
+### Adding Styles inside the Shadow Root
 
 Just pass the custom CSS in the `css` option.
 
@@ -28,7 +28,7 @@ const ui = new FindkitUI({
 });
 ```
 
-## Disabling Shadow DOM {#shadow-dom}
+### Disabling Shadow DOM {#shadow-dom}
 
 If you want to use your existing stylesheets you can just disable the Shadow DOM
 creation in `FindkitUI` with [`shadowDom: false`](/ui/api/#shadowDom) option:
