@@ -58,9 +58,20 @@ Use this CSS to enable page scrolling:
 
 ### `shadowDom: boolean` {#shadowDom}
 
-Disable shadow dom. See [Styling](/ui/styling).
+Enable or disable shadow dom. See [Styling](/ui/styling).
+
+Defaults to `true`.
 
 <Api page="ui.findkituioptions.shadowDom" />
+
+### `cssLayers: boolean` {#cssLayers}
+
+Enable or disable [CSS Layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer).
+See [Styling](/ui/styling#css-layers).
+
+Defaults to `true`.
+
+<Api page="ui.findkituioptions.cssLayers" />
 
 ### `slots: object` {#slots}
 

@@ -651,3 +651,61 @@ test("no side scroll", async ({ page }) => {
 
 	await expect(page).toHaveScreenshot();
 });
+
+test("build-in css is in a CSS Layer", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+
+		const style = document.createElement("style");
+		document.head.appendChild(style);
+
+		// Low specificity selector. The FindkitUI core CSS has more specific
+		// selector for the border but this still overrides it because it's not
+		// in a CSS Layer which has always higher specificity.
+		style.innerHTML = `input { border: 5px solid red; }`;
+
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			shadowDom: false,
+			// True is the default
+			// cssLayers: true,
+		});
+
+		ui.open();
+	});
+
+	const header = page.locator(".findkit--header");
+	await header.waitFor({ state: "visible" });
+
+	await expect(header).toHaveScreenshot();
+});
+
+test("can disable CSS Layers", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+
+		const style = document.createElement("style");
+		document.head.appendChild(style);
+
+		// Low specificity selector. The FindkitUI core CSS has more specific
+		// selector so this has no effect
+		style.innerHTML = `input { border: 5px solid red; }`;
+
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			cssLayers: false,
+			shadowDom: false,
+		});
+
+		ui.open();
+	});
+
+	const header = page.locator(".findkit--header");
+	await header.waitFor({ state: "visible" });
+
+	await expect(header).toHaveScreenshot();
+});
