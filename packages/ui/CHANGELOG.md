@@ -1,3 +1,18 @@
+## v0.13.0
+
+2023-11-16
+
+- BREAKING: Use [CSS Layers](https://docs.findkit.com/ui/styling#css-layers) in build-in styles [901cb43](https://github.com/findkit/findkit/commit/901cb43) - Esa-Matti Suuronen
+  - Possibly breaking if using `shadowDom: false`
+  - Set [`cssLayers: false`](https://docs.findkit.com/ui/api/#cssLayers) if you see issues with CSS
+- Allow transient search params and terms update during fetch event [6417aaf](https://github.com/findkit/findkit/commit/6417aaf) - Esa-Matti Suuronen
+  - Add `event.transientUpdateParams()` and `event.transientUpdateGroups()` methods to the [`fetch`](https://docs.findkit.com/ui/api/events/#fetch) event object
+- Add [`loading`](https://docs.findkit.com/ui/api/events/#loading) and [`loading-done`](https://docs.findkit.com/ui/api/events/#loading) events [892b8fc](https://github.com/findkit/findkit/commit/892b8fc) for easy loading indicator implementing - Esa-Matti Suuronen
+- Add [useLoading()](https://docs.findkit.com/ui/slot-overrides/hooks#useLoading) hook and dog food the "loading" event [b3cd452](https://github.com/findkit/findkit/commit/b3cd452) - Esa-Matti Suuronen
+- Fix lazy loading when loading the same version from different bundles [b7e9022](https://github.com/findkit/findkit/commit/b7e9022) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.12.1...ui/v0.13.0
+
 ## v0.12.1
 
 2023-11-07
