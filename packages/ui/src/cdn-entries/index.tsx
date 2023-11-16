@@ -19,7 +19,7 @@ import type {
 	Implementation,
 	SearchResultHitWithGroupId,
 } from "./implementation";
-import type { init } from "../modal";
+import type { LayeredCSS, init } from "../modal";
 import type { CustomFields } from "@findkit/fetch";
 import {
 	Emitter,
@@ -365,7 +365,12 @@ export const useInput = createShellFunction("useInput");
  */
 export const useLang = createShellFunction("useLang");
 
-async function preloadStylesheet(href: string) {
+async function preloadStylesheet(style: LayeredCSS) {
+	const href = typeof style === "string" ? style : style.href;
+	if (!href) {
+		return;
+	}
+
 	const link = doc().createElement("link");
 	link.rel = "preload";
 	link.as = "style";
@@ -462,6 +467,7 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	 */
 	params?: T["params"];
 	shadowDom?: boolean;
+	cssLayers?: boolean;
 	minTerms?: number;
 	css?: string;
 	infiniteScroll?: boolean;
@@ -800,17 +806,23 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 		});
 	};
 
-	PRIVATE_getStyleSheets(): string[] {
-		const sheets = [];
+	/**
+	 * Return css file urls
+	 */
+	PRIVATE_getStyleSheets(): LayeredCSS[] {
+		const sheets: LayeredCSS[] = [];
 
 		// If there is a load option we asume it returns the css too. So we can
 		// skip loading the cdn css.
 		if (!this.PRIVATE_options.load) {
-			sheets.push(cdnFile("styles.css"));
+			sheets.push({ href: cdnFile("styles.css"), layer: "findkit.core" });
 		}
 
 		if (this.PRIVATE_options.styleSheet) {
-			sheets.push(this.PRIVATE_options.styleSheet);
+			sheets.push({
+				href: this.PRIVATE_options.styleSheet,
+				layer: "findkit.user",
+			});
 		}
 
 		return sheets;
@@ -883,15 +895,22 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 			...rest
 		} = this.PRIVATE_options;
 
-		const allCSS = [impl.css, userCSS].filter(Boolean).join("\n");
+		const allCSS: LayeredCSS[] = this.PRIVATE_getStyleSheets();
+
+		if (impl.css) {
+			allCSS.push({ css: impl.css, layer: "findkit.core" });
+		}
+
+		if (userCSS) {
+			allCSS.push({ css: userCSS, layer: "findkit.user" });
+		}
 
 		const createEngine = (container?: Element) => {
 			this.PRIVATE_resources.create(() => {
 				const { engine, host } = impl.js.init({
 					...rest,
 					container,
-					css: allCSS,
-					styleSheets: this.PRIVATE_getStyleSheets(),
+					layeredCSS: allCSS,
 					instanceId: this.id,
 					events: this.PRIVATE_events as any as Emitter<
 						FindkitUIEvents<{}>,

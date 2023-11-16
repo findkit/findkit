@@ -515,6 +515,65 @@ function getHtmlFontSize() {
 	);
 }
 
+function Style(props: { css?: string; layer?: string; href?: string }) {
+	let css = "";
+
+	if (props.href) {
+		// css import
+		css = `@import url("${props.href}")`;
+		if (props.layer) {
+			css += `layer(${props.layer})`;
+		}
+		css += ";";
+	} else if (props.css) {
+		css = props.css;
+		if (props.layer) {
+			css = `@layer ${props.layer} {\n${css}\n}`;
+		}
+	}
+
+	if (!css) {
+		return null;
+	}
+
+	return (
+		<style
+			dangerouslySetInnerHTML={{
+				__html: css,
+			}}
+		/>
+	);
+}
+
+export type LayeredCSS = {
+	css?: string;
+	href?: string;
+	layer?: "findkit.core" | "findkit.user";
+};
+
+function supportsCSSLayers() {
+	const style = document.createElement("style");
+	style.id = "findkit-test";
+	style.textContent = `
+        @layer findkit-test {
+			#findkit-test {
+				--findkit--test: 1
+			}
+        }
+	`;
+
+	document.head.appendChild(style);
+
+	const res = getComputedStyle(style).getPropertyValue("--findkit--test");
+	style.remove();
+	return Boolean(res);
+}
+
+let SUPPORTS_CSS_LAYERS = false;
+if (typeof document !== "undefined") {
+	SUPPORTS_CSS_LAYERS = supportsCSSLayers();
+}
+
 /**
  * @public
  */
@@ -522,9 +581,9 @@ export function init(_options: {
 	publicToken: string;
 	instanceId: string;
 	shadowDom?: boolean;
-	css?: string;
+	cssLayers?: boolean;
 	minTerms?: number;
-	styleSheets: string[];
+	layeredCSS: LayeredCSS[];
 	slots?: Partial<Slots>;
 	events: Emitter<FindkitUIEvents, unknown>;
 	searchEndpoint?: string;
@@ -570,7 +629,7 @@ export function init(_options: {
 		);
 	}
 
-	let css = "";
+	let scrollLockCSS = "";
 
 	if (options.modal === false) {
 		options.pageScroll = true;
@@ -579,7 +638,7 @@ export function init(_options: {
 
 	if (options.pageScroll) {
 		options.lockScroll = false;
-		css = `
+		scrollLockCSS = `
 			.${cn("modal-container")} {
 				inset: initial;
 				position: absolute;
@@ -628,6 +687,19 @@ export function init(_options: {
 
 	const fontDivisor = options.fontDivisor ?? getHtmlFontSize();
 
+	const styles = options.layeredCSS.map((style) => {
+		if (!SUPPORTS_CSS_LAYERS || options.cssLayers === false) {
+			return { ...style, layer: undefined };
+		}
+
+		return style;
+	});
+
+	const coreStyles = styles.filter((style) => style.layer === "findkit.core");
+	const userStyles = styles.filter((style) => style.layer !== "findkit.core");
+
+	coreStyles.push({ css: scrollLockCSS, layer: "findkit.core" });
+
 	// Generates
 	// --findkit--font-8: 0.5rem;
 	// --findkit--font-12: 0.75rem;
@@ -641,18 +713,16 @@ export function init(_options: {
 	ReactDOM.render(
 		<StrictMode>
 			<>
-				<style
-					dangerouslySetInnerHTML={{
-						__html: `:host, :root {\n${fontSizes}\n}`,
-					}}
-				/>
-				{options.styleSheets.map((href) => (
-					<link key={href} rel="stylesheet" href={href} />
-				))}
-				{css ? <style dangerouslySetInnerHTML={{ __html: css }} /> : null}
-				{options.css ? (
-					<style dangerouslySetInnerHTML={{ __html: options.css }} />
-				) : null}
+				<Style css={`:host, :root {\n${fontSizes}\n}`} />
+
+				{coreStyles.map((style) => {
+					return <Style key={style.href} {...style} />;
+				})}
+
+				{userStyles.map((style) => {
+					return <Style key={style.href || style.css} {...style} />;
+				})}
+
 				<FindkitProvider engine={engine} slots={options.slots ?? {}}>
 					{options.modal === false ? <Plain /> : <Modal />}
 				</FindkitProvider>
