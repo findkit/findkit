@@ -53,7 +53,7 @@ old style `<script>` tag with:
   script.type = "module";
   script.innerHTML = 'import("https://cdn.findkit.com/ui/v0.12.0/esm/index.js").then(onFindkitUIModule)';
   document.head.append(script);
-</scrip>
+</script>
 ```
 
 See the [demo here](https://jsfiddle.net/6dagn0qy/6/);
