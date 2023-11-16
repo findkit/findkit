@@ -1,6 +1,6 @@
 # Styling
 
-Findkit UI following techniques for the CSS it provides:
+Findkit UI uses following techniques for the CSS it provides:
 
 - CSS class names are prefixed with `findkit--`
 - The HTML elements are rendered into a Shadow DOM
