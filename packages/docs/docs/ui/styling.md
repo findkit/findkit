@@ -55,14 +55,6 @@ custom styles passed to the `css` option are added to a `findkit.user` layer
 which becomes after core layer. If you cannot work with CSS Layers you can
 disable them with the [`cssLayers: false`](/ui/api/#cssLayers) option.
 
-:::tip
-CSS Layers tl;dr
-
-They help with CSS selector specicifity. Any CSS that is not
-in a CSS Layer or is in a latter layer is automatically more specific that
-former layers. Read more on
-[MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer).
-
 If you use CSS Layers in your own code you should order the layers in a way
 that your CSS layer comes after the `findkit` layer so your CSS code
 overrides the FindkitUI Styles.
@@ -71,6 +63,13 @@ overrides the FindkitUI Styles.
 @layer findkit, mystyles;
 ```
 
+:::tip
+CSS Layers tl;dr
+
+They help with CSS selector specicifity. Any CSS that is not in a CSS Layer or
+is in a latter layer is automatically more specific than the CSS in former
+layers regardless of any specicifity rules. Read more on
+[MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer).
 :::
 
 ## CSS Variables {#css-variables}
