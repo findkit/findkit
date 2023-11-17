@@ -25,7 +25,7 @@ test("all group params are optional", async ({ page }) => {
 		const ui = new MOD.FindkitUI({
 			publicToken: "pW1D0p0Dg",
 			minTerms: 0,
-			groups: [{}, {}],
+			groups: [{ id: "1" }, { id: "2" }],
 		});
 		ui.open();
 
@@ -34,7 +34,7 @@ test("all group params are optional", async ({ page }) => {
 		return ui.groups.map((g) => g.id);
 	});
 
-	expect(ids).toEqual(["group-1", "group-2"]);
+	expect(ids).toEqual(["1", "2"]);
 
 	const groups = page.locator(".findkit--group");
 	await expect(groups).toHaveCount(2);

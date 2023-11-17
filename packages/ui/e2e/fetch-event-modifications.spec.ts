@@ -19,7 +19,7 @@ test("can make transient search params updates with transientUpdateParams", asyn
 			params: {
 				sort: {
 					price: {
-						$order: "asc",
+						$order: "asc" as "asc" | "desc",
 					},
 				},
 			},
@@ -81,7 +81,7 @@ test("can persist changes made in the 'fetch' with ui.updateParams()", async ({
 			params: {
 				sort: {
 					price: {
-						$order: "asc",
+						$order: "asc" as "asc" | "desc",
 					},
 				},
 			},

@@ -25,7 +25,12 @@ import { Emitter, FindkitUIEvents, lazyValue } from "./emitter";
 import { TranslationStrings } from "./translations";
 import { listen, Resources } from "./resources";
 import { Filter } from "./filter-type";
-import { FetchEvent, FindkitUIGenerics, VERSION } from "./cdn-entries";
+import {
+	FetchEvent,
+	FindkitUIGenerics,
+	FindkitUIOptions,
+	VERSION,
+} from "./cdn-entries";
 
 export const DEFAULT_HIGHLIGHT_LENGTH = 250;
 export const DEFAULT_PREVIEW_SIZE = 5;
@@ -328,15 +333,23 @@ function assertInputEvent(e: {
 /**
  * Extract user defined groups or default to tuple of single group
  */
-export type GroupsOrDefault<T extends FindkitUIGenerics> =
-	undefined extends T["groups"]
+export type GroupsOrDefault<
+	T extends FindkitUIGenerics,
+	O extends FindkitUIOptions<T>,
+> = undefined extends T["groups"]
+	? undefined extends O["groups"]
 		? [GroupDefinitionWithDefaults]
-		: NonNullable<T["groups"]>;
+		: NonNullable<O["groups"]>
+	: NonNullable<T["groups"]>;
 
-export type SearchParamsOrDefault<T extends FindkitUIGenerics> =
-	undefined extends T["params"]
+export type SearchParamsOrDefault<
+	T extends FindkitUIGenerics,
+	O extends FindkitUIOptions<T>,
+> = undefined extends T["params"]
+	? undefined extends O["params"]
 		? SearchParamsWithDefaults
-		: NonNullable<T["params"]>;
+		: NonNullable<O["params"]>
+	: NonNullable<T["params"]>;
 
 /**
  * @public
@@ -349,8 +362,8 @@ export type UpdateGroupsArgument<T extends GroupDefinition[]> =
  * @public
  */
 export type UpdateParamsArgument<T extends SearchParams> =
-	| SearchParams
-	| ((params: T) => SearchParams | undefined | void);
+	| Partial<T>
+	| ((params: T) => T | undefined | void);
 
 const instanceIds = new Set<string>();
 
@@ -889,9 +902,9 @@ export class SearchEngine {
 			: document;
 	}
 
-	getParams(): SearchParams {
+	getParams(): SearchParamsWithDefaults {
 		const group = this.state.nextGroupDefinitions[0];
-		return group?.params ?? {};
+		return group?.params ?? (ensureDefaults([{}]) as any);
 	}
 
 	getGroups(): GroupDefinition[] {
@@ -1366,7 +1379,7 @@ export class SearchEngine {
 		this.state.nextGroupDefinitions = ref(nextGroups);
 
 		this.events.emit("groups", {
-			groups: this.getGroups(),
+			groups: this.getGroups() as any,
 		});
 
 		const group = this.state.nextGroupDefinitions[0];

@@ -42,6 +42,9 @@ t("can update partial params with ui.params", () => {
 		},
 	});
 
+	// @ts-expect-error
+	ui.updateParams({ filter: "bad" });
+
 	ui.on("fetch", (e) => {
 		e.transientUpdateParams({
 			filter: {
@@ -98,12 +101,10 @@ t("can add generic params to FindkitUI", () => {
 		params.filter.price.$eq = "bad";
 	});
 
-	// can replace with any valid SearchParams
-	ui.updateParams({
-		filter: {
-			price: { $eq: "other" },
-		},
-	});
+	ui.updateParams({ filter: { price: { $eq: 4 } } });
+
+	// @ts-expect-error
+	ui.updateParams({ filter: { price: { $eq: "bad" } } });
 
 	ui.updateParams({
 		filter: {
@@ -122,12 +123,10 @@ t("can add generic params to FindkitUI", () => {
 			params.filter.price.$eq = "bad";
 		});
 
-		// can replace with any valid SearchParams
-		e.transientUpdateParams({
-			filter: {
-				price: { $eq: "other" },
-			},
-		});
+		e.transientUpdateParams({ filter: { price: { $eq: 4 } } });
+
+		// @ts-expect-error
+		e.transientUpdateParams({ filter: { price: { $eq: "bad" } } });
 
 		e.transientUpdateParams({
 			filter: {
@@ -266,6 +265,119 @@ t("generic params is constrained in FindkitUI", () => {
 	}>({
 		publicToken: "",
 	});
+});
+
+t("generic params from defaults", () => {
+	const ui = new FindkitUI({
+		publicToken: "",
+		params: {
+			filter: {
+				price: { $eq: 1 },
+			},
+		},
+	});
+
+	ui.params.filter.price.$eq;
+
+	// @ts-expect-error
+	ui.params.filter.price.$eq === "bad";
+
+	ui.params.filter.price.$eq === 2;
+
+	ui.updateParams((params) => {
+		// @ts-expect-error
+		params.filter.price.$eq === "bad";
+
+		params.filter.price.$eq === 2;
+	});
+
+	ui.updateParams({ filter: { price: { $eq: 1 } } });
+
+	// @ts-expect-error
+	ui.updateParams({ filter: { price: { $eq: "bad" } } });
+
+	ui.on("fetch", (e) => {
+		e.transientUpdateParams((params) => {
+			// @ts-expect-error
+			params.filter.price.$eq === "bad";
+
+			params.filter.price.$eq === 2;
+		});
+
+		e.transientUpdateParams({ filter: { price: { $eq: 1 } } });
+
+		// @ts-expect-error
+		e.transientUpdateParams({ filter: { price: { $eq: "bad" } } });
+	});
+});
+
+t("generic groups from defaults", () => {
+	const ui = new FindkitUI({
+		publicToken: "",
+
+		groups: [
+			{
+				id: "first" as const,
+				params: {
+					lang: undefined as string | undefined,
+				},
+			},
+			{
+				id: "second" as const,
+				title: "foo",
+				params: {
+					lang: "sdf",
+				},
+			},
+		],
+	});
+
+	ui.updateGroups((group1) => {});
+
+	ui.updateGroups((group1, group2) => {
+		// No title in the first group
+		// @ts-expect-error
+		group1.title;
+
+		group2.title.toUpperCase();
+
+		group1.params.lang = "en";
+	});
+
+	ui.on("fetch", (e) => {
+		e.transientUpdateGroups((group1, group2) => {
+			// No title in the first group
+			// @ts-expect-error
+			group1.title;
+
+			group2.title.toUpperCase();
+
+			group1.params.lang = "en";
+		});
+
+		e.transientUpdateGroups((...groups) => {
+			for (const group of groups) {
+				group.params.lang = "en";
+			}
+		});
+	});
+
+	const group1 = ui.groups[0];
+	// @ts-expect-error
+	group1.id === "bad";
+
+	group1.id === "first";
+
+	ui.groups[0].params.lang?.toLowerCase();
+
+	// @ts-expect-error
+	ui.groups[0].params.lang.toLowerCase();
+
+	const group2 = ui.groups[1];
+	group2.id === "second";
+
+	// @ts-expect-error
+	group2.id === "bad";
 });
 
 t("groups have params object by default", () => {
