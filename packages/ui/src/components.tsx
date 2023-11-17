@@ -241,7 +241,6 @@ function Hit(props: {
 
 function HitList(props: {
 	groupId: string;
-	title?: string;
 	total: number;
 	hits: ReadonlyArray<SearchResultHit>;
 }) {
@@ -249,10 +248,6 @@ function HitList(props: {
 
 	return (
 		<>
-			{props.title ? (
-				<GroupTitle title={props.title} total={props.total} />
-			) : null}
-
 			{props.hits.map((hit, index) => {
 				const last = index === props.hits.length - 1;
 				return (
@@ -318,15 +313,19 @@ function MultiGroupResults() {
 				})
 				.sort(orderGroups)
 				.map((sortGroup) => {
+					const title = sortGroup.groupDefinition.title;
+					const total = sortGroup.results.total;
+
 					return (
 						<View
 							key={sortGroup.groupDefinition.id}
 							cn="group"
 							data-group-id={sortGroup.groupDefinition.id}
 						>
+							<GroupTitle title={title} total={total} />
+
 							<HitList
 								groupId={sortGroup.groupDefinition.id}
-								title={sortGroup.groupDefinition.title}
 								total={sortGroup.results.total}
 								hits={sortGroup.results.hits.slice(
 									0,
@@ -410,12 +409,11 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 		<>
 			{groupCount > 1 && <AllResultsLink>{t("go-back")}</AllResultsLink>}
 
-			<HitList
-				groupId={props.groupId}
-				hits={group.hits}
-				total={group.total}
-				title={groupCount > 1 ? def?.title : undefined}
-			/>
+			{groupCount > 1 && def ? (
+				<GroupTitle title={def.title} total={group.total} />
+			) : null}
+
+			<HitList groupId={props.groupId} hits={group.hits} total={group.total} />
 
 			<View cn="footer">
 				<FooterContent
