@@ -78,6 +78,28 @@ export interface LayoutSlotProps {
 /**
  * @public
  */
+export interface GroupSlotProps {
+	/**
+	 * The original content
+	 */
+	children: any;
+
+	id: string;
+
+	title: string;
+
+	total: number;
+
+	fetchedHits: number;
+
+	unstable_title: any;
+	unstable_footer: any;
+	unstable_hits: any;
+}
+
+/**
+ * @public
+ */
 export interface Slots {
 	/**
 	 * Component override for the result item
@@ -103,6 +125,11 @@ export interface Slots {
 	 * The magnifying glass icon in the default search input
 	 */
 	SearchInputIcon(props: { children: any }): any;
+
+	/**
+	 * Slot for a group of results when using multiple groups
+	 */
+	Group(props: GroupSlotProps): any;
 }
 
 export interface SlotProps<Name extends keyof Slots> {

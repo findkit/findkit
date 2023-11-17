@@ -315,25 +315,23 @@ function MultiGroupResults() {
 				.map((sortGroup) => {
 					const title = sortGroup.groupDefinition.title;
 					const total = sortGroup.results.total;
+					const id = sortGroup.groupDefinition.id;
 
-					return (
-						<View
-							key={sortGroup.groupDefinition.id}
-							cn="group"
-							data-group-id={sortGroup.groupDefinition.id}
-						>
-							<GroupTitle title={title} total={total} />
+					const titleElement = <GroupTitle title={title} total={total} />;
+					const hitsElement = (
+						<HitList
+							groupId={id}
+							total={total}
+							hits={sortGroup.results.hits.slice(
+								0,
+								sortGroup.groupDefinition.previewSize,
+							)}
+						/>
+					);
 
-							<HitList
-								groupId={sortGroup.groupDefinition.id}
-								total={sortGroup.results.total}
-								hits={sortGroup.results.hits.slice(
-									0,
-									sortGroup.groupDefinition.previewSize,
-								)}
-							/>
-
-							{sortGroup.results.total === sortGroup.results.hits.length ? (
+					const footerElement = (
+						<>
+							{total === sortGroup.results.hits.length ? (
 								<View
 									cn={[
 										"group-all-results-shown",
@@ -345,13 +343,33 @@ function MultiGroupResults() {
 										: t("all-results-shown")}
 								</View>
 							) : (
-								<SingleGroupLink
-									groupId={sortGroup.groupDefinition.id}
-									groupTitle={sortGroup.groupDefinition.title}
-								>
+								<SingleGroupLink groupId={id} groupTitle={title}>
 									{t("show-all")}
 								</SingleGroupLink>
 							)}
+						</>
+					);
+
+					return (
+						<View key={id} cn="group" data-group-id={id}>
+							<Slot
+								name="Group"
+								errorChildren={<>{title}</>}
+								props={{
+									id,
+									title,
+									total,
+									fetchedHits: sortGroup.results.hits.length,
+
+									unstable_title: titleElement,
+									unstable_hits: hitsElement,
+									unstable_footer: footerElement,
+								}}
+							>
+								{titleElement}
+								{hitsElement}
+								{footerElement}
+							</Slot>
 						</View>
 					);
 				})}
