@@ -92,9 +92,25 @@ export interface GroupSlotProps {
 
 	fetchedHits: number;
 
-	unstable_title: any;
-	unstable_footer: any;
-	unstable_hits: any;
+	hits: ReadonlyArray<SearchResultHit>;
+	previewSize: number | undefined;
+
+	parts: {
+		Title(props: { title: string; total: number }): any;
+		Footer(props: {
+			total: number;
+			fetchedHits: number;
+			id: string;
+			title: string;
+		}): any;
+		Hits(props: {
+			id: string;
+			total: number;
+			title: string;
+			hits: ReadonlyArray<SearchResultHit>;
+			previewSize: number | undefined;
+		}): any;
+	};
 }
 
 /**
@@ -134,7 +150,7 @@ export interface Slots {
 
 export interface SlotProps<Name extends keyof Slots> {
 	name: Name;
-	props: Omit<Parameters<Slots[Name]>[0], "children">;
+	props: Omit<Parameters<Slots[Name]>[0], "children" | "parts">;
 	children: ReactNode;
 }
 
@@ -197,4 +213,28 @@ export class Slot<Name extends keyof Slots> extends React.Component<
 			</SlotInner>
 		);
 	}
+}
+
+type NoChildren<T> = T extends { children: any } ? Omit<T, "children"> : T;
+type NoChildrenProps<T extends (props: any) => any> = NoChildren<
+	Parameters<T>[0]
+>;
+type Parts<T> = T extends { parts: infer P } ? P : {};
+
+export function createSlotComponent<Name extends keyof Slots>(
+	name: Name,
+	options: {
+		render: (props: NoChildrenProps<Slots[Name]>) => any;
+		parts: Parts<Parameters<Slots[Name]>[0]>;
+	},
+) {
+	const Default = options.render as any;
+
+	return (props: SlotProps<Name>["props"]) => {
+		return (
+			<Slot name={name} props={{ ...props, parts: options.parts }}>
+				<Default {...props} />
+			</Slot>
+		);
+	};
 }

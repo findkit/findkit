@@ -24,7 +24,7 @@ import {
 	SearchResultHit,
 	SortGroup,
 } from "./search-engine";
-import { Slot, Slots } from "./slots";
+import { Slot, Slots, createSlotComponent } from "./slots";
 import { createTranslator } from "./translations";
 import { cn, isProd, scrollToTop, View } from "./utils";
 
@@ -264,9 +264,53 @@ function HitList(props: {
 	);
 }
 
+const GroupSlot = createSlotComponent("Group", {
+	parts: {
+		Title(props) {
+			return <GroupTitle title={props.title} total={props.total} />;
+		},
+		Hits(props) {
+			return (
+				<HitList
+					groupId={props.id}
+					total={props.total}
+					hits={props.hits.slice(0, props.previewSize)}
+				/>
+			);
+		},
+		Footer(props) {
+			const t = useTranslator();
+
+			return (
+				<>
+					{props.total === props.fetchedHits ? (
+						<View
+							cn={["group-all-results-shown", "group-header-footer-spacing"]}
+						>
+							{props.total === 0 ? t("no-results") : t("all-results-shown")}
+						</View>
+					) : (
+						<SingleGroupLink groupId={props.id} groupTitle={props.title}>
+							{t("show-all")}
+						</SingleGroupLink>
+					)}
+				</>
+			);
+		},
+	},
+	render(props) {
+		return (
+			<>
+				<props.parts.Title {...props} />
+				<props.parts.Hits {...props} />
+				<props.parts.Footer {...props} />
+			</>
+		);
+	},
+});
+
 function MultiGroupResults() {
 	const state = useSearchEngineState();
-	const t = useTranslator();
 	const groupOrder = state.groupOrder;
 
 	function orderGroups(a: SortGroup, b: SortGroup) {
@@ -313,63 +357,18 @@ function MultiGroupResults() {
 				})
 				.sort(orderGroups)
 				.map((sortGroup) => {
-					const title = sortGroup.groupDefinition.title;
-					const total = sortGroup.results.total;
 					const id = sortGroup.groupDefinition.id;
-
-					const titleElement = <GroupTitle title={title} total={total} />;
-					const hitsElement = (
-						<HitList
-							groupId={id}
-							total={total}
-							hits={sortGroup.results.hits.slice(
-								0,
-								sortGroup.groupDefinition.previewSize,
-							)}
-						/>
-					);
-
-					const footerElement = (
-						<>
-							{total === sortGroup.results.hits.length ? (
-								<View
-									cn={[
-										"group-all-results-shown",
-										"group-header-footer-spacing",
-									]}
-								>
-									{sortGroup.results.total === 0
-										? t("no-results")
-										: t("all-results-shown")}
-								</View>
-							) : (
-								<SingleGroupLink groupId={id} groupTitle={title}>
-									{t("show-all")}
-								</SingleGroupLink>
-							)}
-						</>
-					);
 
 					return (
 						<View key={id} cn="group" data-group-id={id}>
-							<Slot
-								name="Group"
-								errorChildren={<>{title}</>}
-								props={{
-									id,
-									title,
-									total,
-									fetchedHits: sortGroup.results.hits.length,
-
-									unstable_title: titleElement,
-									unstable_hits: hitsElement,
-									unstable_footer: footerElement,
-								}}
-							>
-								{titleElement}
-								{hitsElement}
-								{footerElement}
-							</Slot>
+							<GroupSlot
+								id={id}
+								title={sortGroup.groupDefinition.title}
+								total={sortGroup.results.total}
+								fetchedHits={sortGroup.results.hits.length}
+								hits={sortGroup.results.hits}
+								previewSize={sortGroup.groupDefinition.previewSize}
+							/>
 						</View>
 					);
 				})}
