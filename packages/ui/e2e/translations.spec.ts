@@ -336,12 +336,12 @@ test("can limit groups lang to based on <html lang>", async ({ page }) => {
 				{
 					id: "1",
 					title: "Group 1",
-					params: {},
+					params: { lang: undefined as string | undefined },
 				},
 				{
 					id: "2",
 					title: "Group 2",
-					params: {},
+					params: { lang: undefined as string | undefined },
 				},
 			],
 			slots: {

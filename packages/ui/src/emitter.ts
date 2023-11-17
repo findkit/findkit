@@ -1,4 +1,4 @@
-import { FindkitUIGenerics, Status } from "./cdn-entries";
+import { FindkitUIGenerics, FindkitUIOptions, Status } from "./cdn-entries";
 import type {
 	CustomRouterData,
 	GroupsOrDefault,
@@ -127,7 +127,10 @@ export interface DebouncedSearchEvent {
 /**
  * @public
  */
-export interface FetchEvent<T extends FindkitUIGenerics> {
+export interface FetchEvent<
+	G extends FindkitUIGenerics = FindkitUIGenerics,
+	O extends FindkitUIOptions<G> = FindkitUIOptions<G>,
+> {
 	/**
 	 * The search terms used for the request
 	 */
@@ -144,7 +147,7 @@ export interface FetchEvent<T extends FindkitUIGenerics> {
 	 * Added in 0.13.0
 	 */
 	transientUpdateParams: (
-		arg: UpdateParamsArgument<SearchParamsOrDefault<T>>,
+		arg: UpdateParamsArgument<SearchParamsOrDefault<G, O>>,
 	) => void;
 
 	/**
@@ -153,7 +156,7 @@ export interface FetchEvent<T extends FindkitUIGenerics> {
 	 * Added in 0.13.0
 	 */
 	transientUpdateGroups: (
-		arg: UpdateGroupsArgument<GroupsOrDefault<T>>,
+		arg: UpdateGroupsArgument<GroupsOrDefault<G, O>>,
 	) => void;
 }
 
@@ -213,15 +216,21 @@ export interface RequestOpenEvent {
 /**
  * @public
  */
-export interface GroupsChangeEvent<T extends FindkitUIGenerics> {
-	groups: NonNullable<T["groups"]>;
+export interface GroupsChangeEvent<
+	G extends FindkitUIGenerics = FindkitUIGenerics,
+	O extends FindkitUIOptions<G> = FindkitUIOptions<G>,
+> {
+	groups: GroupsOrDefault<G, O>;
 }
 
 /**
  * @public
  */
-export interface ParamsChangeEvent<T extends FindkitUIGenerics> {
-	params: NonNullable<T["params"]>;
+export interface ParamsChangeEvent<
+	G extends FindkitUIGenerics = FindkitUIGenerics,
+	O extends FindkitUIOptions<G> = FindkitUIOptions<G>,
+> {
+	params: SearchParamsOrDefault<G, O>;
 }
 
 /**
@@ -289,7 +298,10 @@ export interface LoadingDoneEvent {}
  *
  * FindkitUI event definitions
  */
-export interface FindkitUIEvents<T extends FindkitUIGenerics = {}> {
+export interface FindkitUIEvents<
+	G extends FindkitUIGenerics = FindkitUIGenerics,
+	O extends FindkitUIOptions<G> = FindkitUIOptions<G>,
+> {
 	/**
 	 * Emitted when the internal UI status changes.
 	 */
@@ -301,12 +313,12 @@ export interface FindkitUIEvents<T extends FindkitUIGenerics = {}> {
 	 */
 	"debounced-search": DebouncedSearchEvent;
 
-	"custom-router-data": CustomRouterDataEvent<T>;
+	"custom-router-data": CustomRouterDataEvent<G>;
 
 	/**
 	 * Search request starts
 	 */
-	fetch: FetchEvent<T>;
+	fetch: FetchEvent<G, O>;
 
 	/**
 	 * When a search request finishes
@@ -354,12 +366,12 @@ export interface FindkitUIEvents<T extends FindkitUIGenerics = {}> {
 	/**
 	 * Emitted when groups change
 	 */
-	groups: GroupsChangeEvent<T>;
+	groups: GroupsChangeEvent<G>;
 
 	/**
 	 * Emitted when the search params change
 	 */
-	params: ParamsChangeEvent<T>;
+	params: ParamsChangeEvent<G>;
 
 	"hit-click": HitClickEvent;
 

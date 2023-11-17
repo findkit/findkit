@@ -554,7 +554,7 @@ type Methods<Klass> = {
  */
 export interface FindkitUIGenerics {
 	params?: SearchParams;
-	groups?: GroupDefinition[];
+	groups?: [GroupDefinition, ...GroupDefinition[]];
 	customRouterData?: CustomRouterData;
 }
 
@@ -563,11 +563,15 @@ export interface FindkitUIGenerics {
  *
  * @public
  */
-export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
+export class FindkitUI<
+	G extends FindkitUIGenerics = FindkitUIGenerics,
+	O extends FindkitUIOptions<G> = FindkitUIOptions<G>,
+	E extends FindkitUIEvents<G, O> = FindkitUIEvents<G, O>,
+> {
 	private PRIVATE_loading = false;
 
-	private PRIVATE_options: FindkitUIOptions<T>;
-	private PRIVATE_events: Emitter<FindkitUIEvents<T>, FindkitUI<T>>;
+	private PRIVATE_options: O;
+	private PRIVATE_events: Emitter<E, FindkitUI<G, O>>;
 	private PRIVATE_resources = new Resources();
 	private PRIVATE_lazyEngine = lazyValue<SearchEngine>();
 
@@ -576,9 +580,9 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	 */
 	container?: Element;
 
-	constructor(options: FindkitUIOptions<T>) {
+	constructor(options: O) {
 		this.PRIVATE_options = options;
-		this.PRIVATE_events = new Emitter(this);
+		this.PRIVATE_events = new Emitter<E, FindkitUI<G, O>>(this as any);
 		this.emitLoadingEvents();
 
 		if (
@@ -679,13 +683,13 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	/**
 	 * Update groups
 	 */
-	updateGroups: (arg: UpdateGroupsArgument<GroupsOrDefault<T>>) => void =
+	updateGroups: (arg: UpdateGroupsArgument<GroupsOrDefault<G, O>>) => void =
 		this.PRIVATE_createShellMethod("updateGroups") as any;
 
-	setCustomRouterData: (data: NonNullable<T["customRouterData"]>) => void =
+	setCustomRouterData: (data: NonNullable<G["customRouterData"]>) => void =
 		this.PRIVATE_createShellMethod("setCustomRouterData");
 
-	get groups(): GroupsOrDefault<T> {
+	get groups(): GroupsOrDefault<G, O> {
 		return (this.PRIVATE_lazyEngine.get()?.getGroups() ??
 			this.PRIVATE_options.groups ??
 			[]) as any;
@@ -694,10 +698,11 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	/**
 	 * Update search params
 	 */
-	updateParams: (arg: UpdateParamsArgument<SearchParamsOrDefault<T>>) => void =
-		this.PRIVATE_createShellMethod("updateParams");
+	updateParams: (
+		arg: UpdateParamsArgument<SearchParamsOrDefault<G, O>>,
+	) => void = this.PRIVATE_createShellMethod("updateParams");
 
-	get params(): SearchParamsOrDefault<T> {
+	get params(): SearchParamsOrDefault<G, O> {
 		return (this.PRIVATE_lazyEngine.get()?.getParams() ??
 			this.PRIVATE_options.params ?? {
 				tagQuery: [],
@@ -709,13 +714,11 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	 *
 	 * @returns a function to unbind the handler
 	 */
-	on<EventName extends keyof FindkitUIEvents<T>>(
+	on<EventName extends keyof E>(
 		eventName: EventName,
-		handler: (
-			event: FindkitUIEvents<T>[EventName] & { source: FindkitUI<T> },
-		) => void,
+		handler: (event: E[EventName] & { source: FindkitUI<G> }) => void,
 	) {
-		return this.PRIVATE_events.on(eventName, handler);
+		return this.PRIVATE_events.on(eventName, handler as any);
 	}
 
 	/**
@@ -723,13 +726,11 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 	 *
 	 * @returns a function to unbind the handler
 	 */
-	once<EventName extends keyof FindkitUIEvents<T>>(
+	once<EventName extends keyof E>(
 		eventName: EventName,
-		handler: (
-			event: FindkitUIEvents<T>[EventName] & { source: FindkitUI<T> },
-		) => void,
+		handler: (event: E[EventName] & { source: FindkitUI<G> }) => void,
 	) {
-		return this.PRIVATE_events.once(eventName, handler);
+		return this.PRIVATE_events.once(eventName, handler as any);
 	}
 
 	/**
@@ -912,10 +913,7 @@ export class FindkitUI<T extends FindkitUIGenerics = FindkitUIGenerics> {
 					container,
 					layeredCSS: allCSS,
 					instanceId: this.id,
-					events: this.PRIVATE_events as any as Emitter<
-						FindkitUIEvents<{}>,
-						FindkitUI<T>
-					>,
+					events: this.PRIVATE_events as any,
 					searchEndpoint: this.PRIVATE_options.searchEndpoint,
 				});
 
