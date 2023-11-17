@@ -33,7 +33,8 @@ import {
 import { cn, deprecationNotice, getScrollContainer, View } from "./utils";
 import type { Emitter, FindkitUIEvents } from "./emitter";
 import { TranslationStrings } from "./translations";
-import { Slot, Slots } from "./slots";
+import { Slots } from "./slots";
+import { Slot } from "./slots-core";
 
 function useScrollLock(lock: boolean) {
 	useEffect(() => {

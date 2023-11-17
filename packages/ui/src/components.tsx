@@ -24,7 +24,8 @@ import {
 	SearchResultHit,
 	SortGroup,
 } from "./search-engine";
-import { Slot, Slots, createSlotComponent } from "./slots";
+import { Slots } from "./slots";
+import { createSlotComponent } from "./slots-core";
 import { createTranslator } from "./translations";
 import { cn, isProd, scrollToTop, View } from "./utils";
 
@@ -153,6 +154,67 @@ function StarIcon(props: { title: string }) {
 	);
 }
 
+const HitSlot = createSlotComponent("Hit", {
+	errorChildren(props) {
+		return (
+			<>
+				{props.hit.title}
+				<a href={props.hit.url}>{props.hit.url}</a>
+			</>
+		);
+	},
+	parts: {
+		TitleLink(props) {
+			const t = useTranslator();
+			return (
+				<View as="h3" cn="hit-title">
+					{props.hit.superwordsMatch ? (
+						<StarIcon title={t("superwords-match")} />
+					) : null}
+
+					<View
+						as="a"
+						cn={["hit-title-link", "link"]}
+						href={props.hit.url}
+						data-kb-action
+					>
+						{props.hit.title}
+					</View>
+				</View>
+			);
+		},
+		Highlight(props) {
+			return (
+				<View
+					cn="highlight"
+					dangerouslySetInnerHTML={{ __html: props.hit.highlight }}
+				></View>
+			);
+		},
+		URLLink(props) {
+			return (
+				<View
+					as="a"
+					cn={["hit-url", "link"]}
+					href={props.hit.url}
+					tabIndex={-1}
+				>
+					{props.hit.url}
+				</View>
+			);
+		},
+	},
+	render(props) {
+		return (
+			<>
+				<props.parts.TitleLink {...props} />
+				<props.parts.Highlight {...props} />
+				<props.parts.URLLink {...props} />
+			</>
+		);
+	},
+});
+
 function Hit(props: {
 	hit: SearchResultHit;
 	groupId: string;
@@ -160,7 +222,6 @@ function Hit(props: {
 	containerRef: ReturnType<typeof useSearchMoreOnReveal> | undefined;
 }) {
 	const engine = useSearchEngine();
-	const t = useTranslator();
 	const kbAttrs = useKeyboardItemAttributes(
 		`hit-${props.groupId}-${props.hitIndex}`,
 	);
@@ -193,48 +254,7 @@ function Hit(props: {
 			{...kbAttrs}
 			onClick={handleLinkClick}
 		>
-			<Slot
-				name="Hit"
-				key={props.hit.url}
-				errorChildren={
-					<>
-						{props.hit.title}
-						<a href={props.hit.url}>{props.hit.url}</a>
-					</>
-				}
-				props={{
-					hit: props.hit,
-				}}
-			>
-				<View as="h3" cn="hit-title">
-					{props.hit.superwordsMatch ? (
-						<StarIcon title={t("superwords-match")} />
-					) : null}
-
-					<View
-						as="a"
-						cn={["hit-title-link", "link"]}
-						href={props.hit.url}
-						data-kb-action
-					>
-						{props.hit.title}
-					</View>
-				</View>
-
-				<View
-					cn="highlight"
-					dangerouslySetInnerHTML={{ __html: props.hit.highlight }}
-				></View>
-
-				<View
-					as="a"
-					cn={["hit-url", "link"]}
-					href={props.hit.url}
-					tabIndex={-1}
-				>
-					{props.hit.url}
-				</View>
-			</Slot>
+			<HitSlot hit={props.hit} />
 		</View>
 	);
 }
