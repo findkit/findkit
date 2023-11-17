@@ -24,18 +24,42 @@ If you are looking for UI translations, see the UI Library [translations](/ui/tr
 
 ## Supported Languages
 
-Following languages are supported. If your language is not listed here, please
-contact us as we are in process of adding more languages.
+Following languages are supported.
 
+- Arabic (`ar`)
+- Armenian (`hy`)
+- Basque (`eu`)
+- Bengali (`bn`)
+- Bulgarian (`bg`)
+- Catalan (`ca`)
 - Chinese (`zh`)
+- Czech (`cs`)
+- Danish (`da`)
+- Dutch (`nl`)
 - English (`en`)
+- Estonian (`et`)
 - Finnish (`fi`)
 - French (`fr`)
+- Galician (`gl`)
 - German (`de`)
+- Greek (`el`)
+- Hindi (`hi`)
+- Hungarian (`hu`)
+- Indonesian (`id`)
+- Irish (`ga`)
 - Italian (`it`)
+- Latvian (`lv`)
+- Lithuanian (`lt`)
+- Norwegian (`no`)
+- Persian (`fa`)
+- Portuguese (`pt`)
+- Romanian (`ro`)
 - Russian (`ru`)
 - Spanish (`es`)
-- Swedish (`se`)
+- Swedish (`sv`)
+- Thai (`th`)
+- Turkish (`tr`)
+- Ukrainian (`uk`)
 
 :::tip
 Non-supported
