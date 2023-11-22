@@ -267,7 +267,7 @@ function SearchInput(props: { placeholder?: string; logo?: ReactNode }) {
 	);
 }
 
-function CloseButton() {
+function CloseButton(props: { children?: ReactNode }) {
 	const engine = useSearchEngine();
 	const t = useTranslator();
 
@@ -281,7 +281,11 @@ function CloseButton() {
 				engine.close();
 			}}
 		>
-			{t("close")} <Cross />
+			{props.children ?? (
+				<>
+					{t("close")} <Cross />
+				</>
+			)}
 		</View>
 	);
 }

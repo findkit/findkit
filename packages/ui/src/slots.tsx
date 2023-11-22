@@ -39,7 +39,7 @@ export interface HeaderSlotProps {
 		/**
 		 * Component for the close button
 		 */
-		CloseButton: () => any;
+		CloseButton: (props: { children?: any }) => any;
 	};
 }
 
