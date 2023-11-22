@@ -93,8 +93,12 @@ function SingleGroupLink(props: {
 				engine.updateAddressBar(nextParams, { push: true });
 			}}
 		>
-			<View cn="link-text">{props.children}</View>
-			<Arrow direction="right" />
+			{props.children ?? (
+				<>
+					<View cn="link-text">{t("show-all")}</View>
+					<Arrow direction="right" />
+				</>
+			)}
 			<View cn="hover-bg" />
 		</View>
 	);
@@ -344,7 +348,7 @@ const GroupSlot = createSlotComponent("Group", {
 						<SingleGroupLink
 							groupId={context.id}
 							groupTitle={title}
-							children={props.children ?? t("show-all")}
+							children={props.children}
 						/>
 					)}
 				</>
