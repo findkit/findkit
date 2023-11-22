@@ -28,7 +28,7 @@ export interface HeaderSlotProps {
 	 *
 	 * @deprecated use parts.CloseButton instead
 	 */
-	CloseButton: () => any;
+	CloseButton: (props: { children?: any }) => any;
 
 	parts: {
 		/**
