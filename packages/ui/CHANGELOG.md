@@ -1,9 +1,27 @@
+## v0.14.0
+
+2023-11-22
+
+- Add Group slot
+  - TODO docs link
+- Add "Part Components" to slots props
+  - TODO docs link
+- Export HitSlotProps [8f22259](https://github.com/findkit/findkit/commit/8f22259) - Esa-Matti Suuronen
+- Add `groupId to Hit slot [4de6e51](https://github.com/findkit/findkit/commit/4de6e51) - Esa-Matti Suuronen
+- Add preact devtools bridge [f2483e2](https://github.com/findkit/findkit/commit/f2483e2) - Esa-Matti Suuronen
+- Infer generics from constructor options too [9bc3136](https://github.com/findkit/findkit/commit/9bc3136) - Esa-Matti Suuronen
+- BREAKING: Replace SearchInputIcon with icon prop in Header SearchInput part [009244b](https://github.com/findkit/findkit/commit/009244b) - Esa-Matti Suuronen
+  - If used the SearchInputIcon slot
+  - Not likely
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.13.0...ui/v0.14.0
+
 ## v0.13.0
 
 2023-11-16
 
-- BREAKING: Use [CSS Layers](https://docs.findkit.com/ui/styling#css-layers) in build-in styles [901cb43](https://github.com/findkit/findkit/commit/901cb43) - Esa-Matti Suuronen
-  - Possibly breaking if using `shadowDom: false`
+- Use [CSS Layers](https://docs.findkit.com/ui/styling#css-layers) in build-in styles [901cb43](https://github.com/findkit/findkit/commit/901cb43) - Esa-Matti Suuronen
+  - Possibly BREAKING if using `shadowDom: false`
   - Set [`cssLayers: false`](https://docs.findkit.com/ui/api/#cssLayers) if you see issues with CSS
 - Allow transient search params and terms update during fetch event [6417aaf](https://github.com/findkit/findkit/commit/6417aaf) - Esa-Matti Suuronen
   - Add `event.transientUpdateParams()` and `event.transientUpdateGroups()` methods to the [`fetch`](https://docs.findkit.com/ui/api/events/#fetch) event object
