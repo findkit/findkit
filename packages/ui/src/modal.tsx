@@ -5,6 +5,7 @@ import React, {
 	useEffect,
 	useState,
 	useLayoutEffect,
+	ReactNode,
 } from "react";
 import ReactDOM from "react-dom";
 import {
@@ -33,7 +34,8 @@ import {
 import { cn, deprecationNotice, getScrollContainer, View } from "./utils";
 import type { Emitter, FindkitUIEvents } from "./emitter";
 import { TranslationStrings } from "./translations";
-import { Slot, Slots } from "./slots";
+import { Slots } from "./slots";
+import { SlotCatchBoundary, createSlotComponent } from "./slots-core";
 
 function useScrollLock(lock: boolean) {
 	useEffect(() => {
@@ -232,7 +234,7 @@ function FetchError() {
 	);
 }
 
-function SearchInput() {
+function SearchInput(props: { placeholder?: string; icon?: ReactNode }) {
 	const inputRef = useInput();
 	const t = useTranslator();
 	const state = useSearchEngineState();
@@ -246,6 +248,7 @@ function SearchInput() {
 			<View
 				as="input"
 				aria-describedby="search-instructions"
+				placeholder={props.placeholder}
 				cn="search-input"
 				type="text"
 				ref={inputRef}
@@ -258,16 +261,13 @@ function SearchInput() {
 					["search-input-icon-container-hide"]: state.loading,
 				}}
 			>
-				<Slot name="SearchInputIcon" props={{}} errorFallback={<Logo />}>
-					{/* Too small to render the default error component. Just log the error. */}
-					<Logo />
-				</Slot>
+				{props.icon ?? <Logo />}
 			</View>
 		</View>
 	);
 }
 
-function CloseButton() {
+function CloseButton(props: { children?: ReactNode }) {
 	const engine = useSearchEngine();
 	const t = useTranslator();
 
@@ -281,10 +281,29 @@ function CloseButton() {
 				engine.close();
 			}}
 		>
-			{t("close")} <Cross />
+			{props.children ?? (
+				<>
+					{t("close")} <Cross />
+				</>
+			)}
 		</View>
 	);
 }
+
+const HeaderSlot = createSlotComponent("Header", {
+	parts: {
+		Input: SearchInput,
+		CloseButton,
+	},
+	render() {
+		return (
+			<>
+				<CloseButton />
+				<SearchInput />
+			</>
+		);
+	},
+});
 
 function Modal() {
 	const view = useView();
@@ -333,22 +352,16 @@ function Modal() {
 				"header-hidden": isScrollingDown,
 			}}
 		>
-			<Slot
-				name="Header"
-				props={{ Input: SearchInput, CloseButton: CloseButton }}
-			>
-				<CloseButton />
-				<SearchInput />
-			</Slot>
+			<HeaderSlot Input={SearchInput} CloseButton={CloseButton} />
 		</View>
 	) : null;
 
 	const content = (
 		<View cn="content">
 			<FetchError />
-			<Slot name="Content" props={{}}>
+			<SlotCatchBoundary name="Content" props={{}}>
 				<Results />
-			</Slot>
+			</SlotCatchBoundary>
 		</View>
 	);
 
@@ -382,7 +395,7 @@ function Modal() {
 					["view-single"]: view === "single",
 				}}
 			>
-				<Slot
+				<SlotCatchBoundary
 					name="Layout"
 					props={{
 						header,
@@ -391,7 +404,7 @@ function Modal() {
 				>
 					{header}
 					{content}
-				</Slot>
+				</SlotCatchBoundary>
 			</View>
 		</View>
 	);
@@ -433,20 +446,20 @@ export function Plain() {
 	useScrollRestore(containerRef);
 
 	const header = state.header ? (
-		<Slot
+		<SlotCatchBoundary
 			name="Header"
 			props={{ Input: SearchInput, CloseButton: CloseButton }}
 		>
 			<SearchInput />
-		</Slot>
+		</SlotCatchBoundary>
 	) : null;
 
 	const content = (
 		<View cn="content">
 			<FetchError />
-			<Slot name="Content" props={{}}>
+			<SlotCatchBoundary name="Content" props={{}}>
 				<Results />
-			</Slot>
+			</SlotCatchBoundary>
 		</View>
 	);
 
@@ -462,10 +475,10 @@ export function Plain() {
 			}}
 			data-id={engine.instanceId}
 		>
-			<Slot name="Layout" props={{ header, content }}>
+			<SlotCatchBoundary name="Layout" props={{ header, content }}>
 				{header}
 				{content}
-			</Slot>
+			</SlotCatchBoundary>
 		</View>
 	);
 }

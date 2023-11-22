@@ -24,7 +24,8 @@ import {
 	SearchResultHit,
 	SortGroup,
 } from "./search-engine";
-import { Slot, Slots } from "./slots";
+import { Slots } from "./slots";
+import { createSlotComponent, useSlotContext } from "./slots-core";
 import { createTranslator } from "./translations";
 import { cn, isProd, scrollToTop, View } from "./utils";
 
@@ -92,8 +93,12 @@ function SingleGroupLink(props: {
 				engine.updateAddressBar(nextParams, { push: true });
 			}}
 		>
-			<View cn="link-text">{props.children}</View>
-			<Arrow direction="right" />
+			{props.children ?? (
+				<>
+					<View cn="link-text">{t("show-all")}</View>
+					<Arrow direction="right" />
+				</>
+			)}
 			<View cn="hover-bg" />
 		</View>
 	);
@@ -125,10 +130,20 @@ function AllResultsLink(props: { children: ReactNode }) {
 	);
 }
 
-function GroupTitle(props: { title: string; total: number }) {
+function GroupTitle(props: {
+	title: string;
+	total: number;
+	children?: ReactNode;
+}) {
 	return (
 		<View as="h2" cn="group-title" aria-label={props.title}>
-			{props.title} {props.total > 0 ? `(${props.total})` : ""}
+			{props.children ? (
+				props.children
+			) : (
+				<>
+					{props.title} {props.total > 0 ? `(${props.total})` : ""}
+				</>
+			)}
 		</View>
 	);
 }
@@ -153,6 +168,70 @@ function StarIcon(props: { title: string }) {
 	);
 }
 
+const HitSlot = createSlotComponent("Hit", {
+	errorChildren(props) {
+		return (
+			<>
+				{props.hit.title}
+				<a href={props.hit.url}>{props.hit.url}</a>
+			</>
+		);
+	},
+	parts: {
+		TitleLink(props) {
+			const context = useSlotContext("Hit");
+			const href = props.href ?? context.hit.url;
+			const superwordsMatch =
+				props.superwordsMatch ?? context.hit.superwordsMatch;
+
+			const t = useTranslator();
+			return (
+				<View as="h3" cn="hit-title">
+					{superwordsMatch ? <StarIcon title={t("superwords-match")} /> : null}
+
+					<View
+						as="a"
+						cn={["hit-title-link", "link"]}
+						href={href}
+						data-kb-action
+					>
+						{props.children ?? context.hit.title}
+					</View>
+				</View>
+			);
+		},
+		Highlight(props) {
+			const context = useSlotContext("Hit");
+			const highlight = props.highlight ?? context.hit.highlight;
+
+			return (
+				<View
+					cn="highlight"
+					dangerouslySetInnerHTML={{ __html: highlight }}
+				></View>
+			);
+		},
+		URLLink(props) {
+			const context = useSlotContext("Hit");
+			const href = props.href ?? context.hit.url;
+			return (
+				<View as="a" cn={["hit-url", "link"]} href={href} tabIndex={-1}>
+					{props.children ?? href}
+				</View>
+			);
+		},
+	},
+	render(props) {
+		return (
+			<>
+				<props.parts.TitleLink />
+				<props.parts.Highlight />
+				<props.parts.URLLink />
+			</>
+		);
+	},
+});
+
 function Hit(props: {
 	hit: SearchResultHit;
 	groupId: string;
@@ -160,7 +239,6 @@ function Hit(props: {
 	containerRef: ReturnType<typeof useSearchMoreOnReveal> | undefined;
 }) {
 	const engine = useSearchEngine();
-	const t = useTranslator();
 	const kbAttrs = useKeyboardItemAttributes(
 		`hit-${props.groupId}-${props.hitIndex}`,
 	);
@@ -193,55 +271,13 @@ function Hit(props: {
 			{...kbAttrs}
 			onClick={handleLinkClick}
 		>
-			<Slot
-				name="Hit"
-				key={props.hit.url}
-				errorChildren={
-					<>
-						{props.hit.title}
-						<a href={props.hit.url}>{props.hit.url}</a>
-					</>
-				}
-				props={{
-					hit: props.hit,
-				}}
-			>
-				<View as="h3" cn="hit-title">
-					{props.hit.superwordsMatch ? (
-						<StarIcon title={t("superwords-match")} />
-					) : null}
-
-					<View
-						as="a"
-						cn={["hit-title-link", "link"]}
-						href={props.hit.url}
-						data-kb-action
-					>
-						{props.hit.title}
-					</View>
-				</View>
-
-				<View
-					cn="highlight"
-					dangerouslySetInnerHTML={{ __html: props.hit.highlight }}
-				></View>
-
-				<View
-					as="a"
-					cn={["hit-url", "link"]}
-					href={props.hit.url}
-					tabIndex={-1}
-				>
-					{props.hit.url}
-				</View>
-			</Slot>
+			<HitSlot hit={props.hit} />
 		</View>
 	);
 }
 
 function HitList(props: {
 	groupId: string;
-	title?: string;
 	total: number;
 	hits: ReadonlyArray<SearchResultHit>;
 }) {
@@ -249,10 +285,6 @@ function HitList(props: {
 
 	return (
 		<>
-			{props.title ? (
-				<GroupTitle title={props.title} total={props.total} />
-			) : null}
-
 			{props.hits.map((hit, index) => {
 				const last = index === props.hits.length - 1;
 				return (
@@ -269,9 +301,72 @@ function HitList(props: {
 	);
 }
 
+const GroupSlot = createSlotComponent("Group", {
+	parts: {
+		Title(props) {
+			const context = useSlotContext("Group");
+			const title = props.title ?? context.title;
+
+			return (
+				<GroupTitle
+					title={title}
+					total={context.total}
+					children={props.children}
+				/>
+			);
+		},
+
+		Hits() {
+			const context = useSlotContext("Group");
+
+			return (
+				<HitList
+					groupId={context.id}
+					total={context.total}
+					hits={context.hits.slice(0, context.previewSize)}
+				/>
+			);
+		},
+
+		ShowAllLink(props) {
+			const t = useTranslator();
+			const context = useSlotContext("Group");
+			const title = props.title ?? context.title;
+
+			return (
+				<>
+					{context.total === context.fetchedHits ? (
+						<View
+							cn={["group-all-results-shown", "group-header-footer-spacing"]}
+						>
+							{context.total === 0
+								? props.noResults ?? t("no-results")
+								: props.allResultsShown ?? t("all-results-shown")}
+						</View>
+					) : (
+						<SingleGroupLink
+							groupId={context.id}
+							groupTitle={title}
+							children={props.children}
+						/>
+					)}
+				</>
+			);
+		},
+	},
+	render(props) {
+		return (
+			<>
+				<props.parts.Title />
+				<props.parts.Hits />
+				<props.parts.ShowAllLink />
+			</>
+		);
+	},
+});
+
 function MultiGroupResults() {
 	const state = useSearchEngineState();
-	const t = useTranslator();
 	const groupOrder = state.groupOrder;
 
 	function orderGroups(a: SortGroup, b: SortGroup) {
@@ -318,41 +413,18 @@ function MultiGroupResults() {
 				})
 				.sort(orderGroups)
 				.map((sortGroup) => {
+					const id = sortGroup.groupDefinition.id;
+
 					return (
-						<View
-							key={sortGroup.groupDefinition.id}
-							cn="group"
-							data-group-id={sortGroup.groupDefinition.id}
-						>
-							<HitList
-								groupId={sortGroup.groupDefinition.id}
+						<View key={id} cn="group" data-group-id={id}>
+							<GroupSlot
+								id={id}
 								title={sortGroup.groupDefinition.title}
 								total={sortGroup.results.total}
-								hits={sortGroup.results.hits.slice(
-									0,
-									sortGroup.groupDefinition.previewSize,
-								)}
+								fetchedHits={sortGroup.results.hits.length}
+								hits={sortGroup.results.hits}
+								previewSize={sortGroup.groupDefinition.previewSize}
 							/>
-
-							{sortGroup.results.total === sortGroup.results.hits.length ? (
-								<View
-									cn={[
-										"group-all-results-shown",
-										"group-header-footer-spacing",
-									]}
-								>
-									{sortGroup.results.total === 0
-										? t("no-results")
-										: t("all-results-shown")}
-								</View>
-							) : (
-								<SingleGroupLink
-									groupId={sortGroup.groupDefinition.id}
-									groupTitle={sortGroup.groupDefinition.title}
-								>
-									{t("show-all")}
-								</SingleGroupLink>
-							)}
 						</View>
 					);
 				})}
@@ -410,12 +482,11 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 		<>
 			{groupCount > 1 && <AllResultsLink>{t("go-back")}</AllResultsLink>}
 
-			<HitList
-				groupId={props.groupId}
-				hits={group.hits}
-				total={group.total}
-				title={groupCount > 1 ? def?.title : undefined}
-			/>
+			{groupCount > 1 && def ? (
+				<GroupTitle title={def.title} total={group.total} />
+			) : null}
+
+			<HitList groupId={props.groupId} hits={group.hits} total={group.total} />
 
 			<View cn="footer">
 				<FooterContent

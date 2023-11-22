@@ -46,6 +46,8 @@ import type {
 	HeaderSlotProps,
 	ContentSlotProps,
 	LayoutSlotProps,
+	GroupSlotProps,
+	ShowAllLinkProps,
 } from "../slots";
 import type { PreactFunctions } from "./preact-subset";
 import type { Filter, Operator } from "../filter-type";
@@ -94,6 +96,8 @@ export {
 	Filter,
 	Operator,
 	Sort,
+	GroupSlotProps,
+	ShowAllLinkProps,
 };
 
 const doc = () => document;

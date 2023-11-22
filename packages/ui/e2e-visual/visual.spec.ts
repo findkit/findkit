@@ -180,7 +180,7 @@ test("can remove the close button", async ({ page }) => {
 				Header(props) {
 					return html`
 						No close button!
-						<${props.Input} />
+						<${props.parts.Input} />
 					`;
 				},
 			},
@@ -416,29 +416,6 @@ test("hit error boundary", async ({ page }) => {
 	await expect(page).toHaveScreenshot({
 		mask: [page.locator(".findkit--error-props")],
 	});
-});
-
-test("custom search input icon", async ({ page }) => {
-	await page.goto(staticEntry("/dummy"));
-
-	await page.evaluate(async () => {
-		const { html, FindkitUI } = MOD;
-		const ui = new FindkitUI({
-			publicToken: "pW1D0p0Dg",
-			slots: {
-				SearchInputIcon() {
-					return html`<div style=${{ fontSize: "small" }}>Search</div>`;
-				},
-			},
-		});
-
-		ui.open("");
-	});
-
-	const header = page.locator(".findkit--header");
-	await header.first().waitFor({ state: "visible" });
-
-	await expect(header).toHaveScreenshot();
 });
 
 test("can restore findkit icon branding", async ({ page }) => {
@@ -708,4 +685,75 @@ test("can disable CSS Layers", async ({ page }) => {
 	await header.waitFor({ state: "visible" });
 
 	await expect(header).toHaveScreenshot();
+});
+
+test("slots part props", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI, html } = MOD;
+
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			minTerms: 0,
+			groups: [
+				{
+					id: "group1",
+					title: "Group 1",
+					previewSize: 2,
+				},
+				{
+					id: "group2",
+					title: "Group 2",
+					previewSize: 2,
+				},
+			],
+
+			slots: {
+				Header(props) {
+					// prettier-ignore
+					return html`
+						<${props.parts.CloseButton}>Custom Close</${props.parts.CloseButton}>
+						<${props.parts.Input} placeholder="Custom place holder" icon=${html`<b>FDK</b>`} />
+					`
+				},
+				Hit(props) {
+					// prettier-ignore
+					return html`
+						<${props.parts.TitleLink}><i>Custom hit title</i></${props.parts.TitleLink}>
+						<${props.parts.Highlight} highlight="Custom <em>highlight</em>" />
+						<${props.parts.URLLink}><i>Custom URL link</i></${props.parts.TitleLink}>
+					`;
+				},
+				Group(props) {
+					// prettier-ignore
+					return html`
+						<${props.parts.Title}><h2>Title Children</h2></${props.parts.Title}>
+						<${props.parts.Hits} />
+						<${props.parts.ShowAllLink}
+							noResults="Custom no results"
+							allResultsShown="Custom all results">
+							Custom Show All
+						</${props.parts.ShowAllLink}>
+					`;
+				},
+			},
+		});
+
+		ui.open();
+	});
+
+	const hit = page.locator(".findkit--hit").first();
+	await hit.waitFor({ state: "visible" });
+	await expect(page.locator(".findkit--container")).toHaveScreenshot();
+
+	await page.locator("input").fill("leather boots");
+	await page.waitForTimeout(300);
+	await page.waitForLoadState("networkidle");
+	await expect(page.locator(".findkit--container")).toHaveScreenshot();
+
+	await page.locator("input").fill("nothing not found");
+	await page.waitForTimeout(300);
+	await page.waitForLoadState("networkidle");
+	await expect(page.locator(".findkit--container")).toHaveScreenshot();
 });

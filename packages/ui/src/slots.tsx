@@ -1,6 +1,3 @@
-import React, { ReactNode } from "react";
-import { ErrorContainer } from "./components";
-import { useFindkitContext } from "./core-hooks";
 import { SearchResultHit } from "./search-engine";
 
 // Rules for slot definitions:
@@ -21,13 +18,29 @@ export interface HeaderSlotProps {
 
 	/**
 	 * Component for the search inpput
+	 *
+	 * @deprecated use parts.Input instead
 	 */
-	Input: () => any;
+	Input: (props: { placeholder?: string }) => any;
 
 	/**
 	 * Component for the close button
+	 *
+	 * @deprecated use parts.CloseButton instead
 	 */
-	CloseButton: () => any;
+	CloseButton: (props: { children?: any }) => any;
+
+	parts: {
+		/**
+		 * Component for the search inpput
+		 */
+		Input: (props: { placeholder?: string; icon?: any }) => any;
+
+		/**
+		 * Component for the close button
+		 */
+		CloseButton: (props: { children?: any }) => any;
+	};
 }
 
 /**
@@ -43,6 +56,16 @@ export interface HitSlotProps {
 	 * The hit data
 	 */
 	hit: SearchResultHit;
+
+	parts: {
+		TitleLink(props: {
+			children?: any;
+			superwordsMatch?: boolean;
+			href?: string;
+		}): any;
+		Highlight(props: { highlight?: string }): any;
+		URLLink(props: { href?: string; children?: any }): any;
+	};
 }
 
 /**
@@ -77,12 +100,67 @@ export interface LayoutSlotProps {
 
 /**
  * @public
+ *
+ * Props for AllResultsLink component in Group slot parts
+ */
+export interface ShowAllLinkProps {
+	/**
+	 * Element to render inside the link when there are more results show
+	 */
+	children?: any;
+
+	/**
+	 * Render when there are no results
+	 */
+	noResults?: any;
+
+	/**
+	 * Render when all resuls are already shown
+	 */
+	allResultsShown?: any;
+
+	/**
+	 * Link aria-label
+	 */
+	title?: string;
+}
+
+/**
+ * @public
+ */
+export interface GroupSlotProps {
+	/**
+	 * The original content
+	 */
+	children: any;
+
+	id: string;
+
+	title: string;
+
+	total: number;
+
+	fetchedHits: number;
+
+	hits: ReadonlyArray<SearchResultHit>;
+
+	previewSize: number | undefined;
+
+	parts: {
+		Title(props: { title?: string; children?: any }): any;
+		Hits(props: {}): any;
+		ShowAllLink(props: ShowAllLinkProps): any;
+	};
+}
+
+/**
+ * @public
  */
 export interface Slots {
 	/**
 	 * Component override for the result item
 	 */
-	Hit(props: { hit: SearchResultHit; children: any }): any;
+	Hit(props: HitSlotProps): any;
 
 	/**
 	 * Header component which hides automatically when scrolling down
@@ -100,74 +178,7 @@ export interface Slots {
 	Layout(props: LayoutSlotProps): any;
 
 	/**
-	 * The magnifying glass icon in the default search input
+	 * Slot for a group of results when using multiple groups
 	 */
-	SearchInputIcon(props: { children: any }): any;
-}
-
-export interface SlotProps<Name extends keyof Slots> {
-	name: Name;
-	props: Omit<Parameters<Slots[Name]>[0], "children">;
-	children: ReactNode;
-}
-
-function SlotInner<Name extends keyof Slots>(props: SlotProps<Name>) {
-	const context = useFindkitContext();
-
-	const SlotComponent = context.slots[props.name] as any;
-
-	if (!SlotComponent) {
-		return <>{props.children}</>;
-	}
-
-	return <SlotComponent {...props.props}>{props.children}</SlotComponent>;
-}
-
-export class Slot<Name extends keyof Slots> extends React.Component<
-	SlotProps<Name> & { errorFallback?: ReactNode; errorChildren?: ReactNode },
-	{ error: string | null }
-> {
-	constructor(props: any) {
-		super(props);
-		this.state = { error: null };
-	}
-
-	static getDerivedStateFromError(error: Error) {
-		return { error: String(error.message ?? error) };
-	}
-
-	componentDidCatch(error: any) {
-		queueMicrotask(() => {
-			console.error(
-				`[findkit] Error rendering slot override "${this.props.name}"`,
-				this.props.props,
-			);
-			// Throw the error again out of this stack frame to avoid crashing
-			// the app but to generate a global unhandled error which can be
-			// capture by error tracking tools like Sentry
-			throw error;
-		});
-	}
-
-	render() {
-		if (this.state.error !== null) {
-			return (
-				this.props.errorFallback ?? (
-					<ErrorContainer
-						title={`Error rendering slot "${this.props.name}"`}
-						props={this.props.props}
-						error={this.state.error}
-					>
-						{this.props.errorChildren}
-					</ErrorContainer>
-				)
-			);
-		}
-
-		return (
-			<SlotInner name={this.props.name} props={this.props.props}>
-				{this.props.children}
-			</SlotInner>
-		);
-	}
+	Group(props: GroupSlotProps): any;
 }
