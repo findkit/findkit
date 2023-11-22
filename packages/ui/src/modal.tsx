@@ -34,7 +34,7 @@ import { cn, deprecationNotice, getScrollContainer, View } from "./utils";
 import type { Emitter, FindkitUIEvents } from "./emitter";
 import { TranslationStrings } from "./translations";
 import { Slots } from "./slots";
-import { Slot, createSlotComponent } from "./slots-core";
+import { SlotCatchBoundary, createSlotComponent } from "./slots-core";
 
 function useScrollLock(lock: boolean) {
 	useEffect(() => {
@@ -260,10 +260,14 @@ function SearchInput(props: { placeholder?: string }) {
 					["search-input-icon-container-hide"]: state.loading,
 				}}
 			>
-				<Slot name="SearchInputIcon" props={{}} errorFallback={<Logo />}>
+				<SlotCatchBoundary
+					name="SearchInputIcon"
+					props={{}}
+					errorFallback={<Logo />}
+				>
 					{/* Too small to render the default error component. Just log the error. */}
 					<Logo />
-				</Slot>
+				</SlotCatchBoundary>
 			</View>
 		</View>
 	);
@@ -357,9 +361,9 @@ function Modal() {
 	const content = (
 		<View cn="content">
 			<FetchError />
-			<Slot name="Content" props={{}}>
+			<SlotCatchBoundary name="Content" props={{}}>
 				<Results />
-			</Slot>
+			</SlotCatchBoundary>
 		</View>
 	);
 
@@ -393,7 +397,7 @@ function Modal() {
 					["view-single"]: view === "single",
 				}}
 			>
-				<Slot
+				<SlotCatchBoundary
 					name="Layout"
 					props={{
 						header,
@@ -402,7 +406,7 @@ function Modal() {
 				>
 					{header}
 					{content}
-				</Slot>
+				</SlotCatchBoundary>
 			</View>
 		</View>
 	);
@@ -444,20 +448,20 @@ export function Plain() {
 	useScrollRestore(containerRef);
 
 	const header = state.header ? (
-		<Slot
+		<SlotCatchBoundary
 			name="Header"
 			props={{ Input: SearchInput, CloseButton: CloseButton }}
 		>
 			<SearchInput />
-		</Slot>
+		</SlotCatchBoundary>
 	) : null;
 
 	const content = (
 		<View cn="content">
 			<FetchError />
-			<Slot name="Content" props={{}}>
+			<SlotCatchBoundary name="Content" props={{}}>
 				<Results />
-			</Slot>
+			</SlotCatchBoundary>
 		</View>
 	);
 
@@ -473,10 +477,10 @@ export function Plain() {
 			}}
 			data-id={engine.instanceId}
 		>
-			<Slot name="Layout" props={{ header, content }}>
+			<SlotCatchBoundary name="Layout" props={{ header, content }}>
 				{header}
 				{content}
-			</Slot>
+			</SlotCatchBoundary>
 		</View>
 	);
 }

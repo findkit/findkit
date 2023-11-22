@@ -9,7 +9,7 @@ export interface SlotProps<Name extends keyof Slots> {
 	children: ReactNode;
 }
 
-function SlotInner<Name extends keyof Slots>(props: SlotProps<Name>) {
+function SlotRender<Name extends keyof Slots>(props: SlotProps<Name>) {
 	const context = useFindkitContext();
 
 	const SlotComponent = context.slots[props.name] as any;
@@ -21,7 +21,9 @@ function SlotInner<Name extends keyof Slots>(props: SlotProps<Name>) {
 	return <SlotComponent {...props.props}>{props.children}</SlotComponent>;
 }
 
-export class Slot<Name extends keyof Slots> extends React.Component<
+export class SlotCatchBoundary<
+	Name extends keyof Slots,
+> extends React.Component<
 	SlotProps<Name> & { errorFallback?: ReactNode; errorChildren?: ReactNode },
 	{ error: string | null }
 > {
@@ -63,9 +65,9 @@ export class Slot<Name extends keyof Slots> extends React.Component<
 		}
 
 		return (
-			<SlotInner name={this.props.name} props={this.props.props}>
+			<SlotRender name={this.props.name} props={this.props.props}>
 				{this.props.children}
-			</SlotInner>
+			</SlotRender>
 		);
 	}
 }
@@ -86,16 +88,21 @@ export function createSlotComponent<Name extends keyof Slots>(
 ) {
 	const Default = options.render as any;
 	const ErrorChildren = options.errorChildren as any;
+	Default.displayName = `DefaultFill[${name}]`;
 
-	return (props: SlotProps<Name>["props"]) => {
+	const SlotContainer = (props: SlotProps<Name>["props"]) => {
 		return (
-			<Slot
+			<SlotCatchBoundary
 				name={name}
 				props={{ ...props, parts: options.parts }}
 				errorChildren={ErrorChildren ? <ErrorChildren {...props} /> : <></>}
 			>
 				<Default {...props} parts={options.parts} />
-			</Slot>
+			</SlotCatchBoundary>
 		);
 	};
+
+	SlotContainer.displayName = `Slot[${name}]`;
+
+	return SlotContainer;
 }
