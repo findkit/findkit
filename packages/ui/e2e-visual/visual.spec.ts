@@ -180,7 +180,7 @@ test("can remove the close button", async ({ page }) => {
 				Header(props) {
 					return html`
 						No close button!
-						<${props.Input} />
+						<${props.parts.Input} />
 					`;
 				},
 			},
