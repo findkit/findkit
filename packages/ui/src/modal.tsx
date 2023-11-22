@@ -233,7 +233,7 @@ function FetchError() {
 	);
 }
 
-function SearchInput() {
+function SearchInput(props: { placeholder?: string }) {
 	const inputRef = useInput();
 	const t = useTranslator();
 	const state = useSearchEngineState();
@@ -247,6 +247,7 @@ function SearchInput() {
 			<View
 				as="input"
 				aria-describedby="search-instructions"
+				placeholder={props.placeholder}
 				cn="search-input"
 				type="text"
 				ref={inputRef}

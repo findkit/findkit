@@ -19,7 +19,7 @@ export interface HeaderSlotProps {
 	/**
 	 * Component for the search inpput
 	 */
-	Input: () => any;
+	Input: (props: { placeholder?: string }) => any;
 
 	/**
 	 * Component for the close button
