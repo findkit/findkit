@@ -234,7 +234,7 @@ function FetchError() {
 	);
 }
 
-function SearchInput(props: { placeholder?: string; logo?: ReactNode }) {
+function SearchInput(props: { placeholder?: string; icon?: ReactNode }) {
 	const inputRef = useInput();
 	const t = useTranslator();
 	const state = useSearchEngineState();
@@ -261,7 +261,7 @@ function SearchInput(props: { placeholder?: string; logo?: ReactNode }) {
 					["search-input-icon-container-hide"]: state.loading,
 				}}
 			>
-				{props.logo ?? <Logo />}
+				{props.icon ?? <Logo />}
 			</View>
 		</View>
 	);

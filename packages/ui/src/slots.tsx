@@ -34,7 +34,7 @@ export interface HeaderSlotProps {
 		/**
 		 * Component for the search inpput
 		 */
-		Input: (props: { placeholder?: string; logo?: any }) => any;
+		Input: (props: { placeholder?: string; icon?: any }) => any;
 
 		/**
 		 * Component for the close button

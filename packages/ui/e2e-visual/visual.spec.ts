@@ -714,7 +714,7 @@ test("slots part props", async ({ page }) => {
 					// prettier-ignore
 					return html`
 						<${props.parts.CloseButton}>Custom Close</${props.parts.CloseButton}>
-						<${props.parts.Input} placeholder="Custom place holder" logo=${html`<b>FDK</b>`} />
+						<${props.parts.Input} placeholder="Custom place holder" icon=${html`<b>FDK</b>`} />
 					`
 				},
 				Hit(props) {
