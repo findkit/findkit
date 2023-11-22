@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, createContext, useContext } from "react";
 import { ErrorContainer } from "./components";
 import { useFindkitContext } from "./core-hooks";
 import { Slots } from "./slots";
@@ -78,6 +78,22 @@ type NoChildrenProps<T extends (props: any) => any> = NoChildren<
 >;
 type Parts<T> = T extends { parts: infer P } ? P : {};
 
+const SlotContext = createContext<any>({});
+
+export function useSlotContext<Name extends keyof Slots>(
+	name: Name,
+	orverrides?: Partial<SlotProps<Name>["props"]>,
+): SlotProps<Name>["props"] {
+	const context = useContext(SlotContext)[name];
+	if (!context) {
+		throw new Error(
+			`[findkit] Slot context "${name}" used outside of a slot context`,
+		);
+	}
+
+	return { ...context, ...(orverrides ?? {}) } as any;
+}
+
 export function createSlotComponent<Name extends keyof Slots>(
 	name: Name,
 	options: {
@@ -92,13 +108,15 @@ export function createSlotComponent<Name extends keyof Slots>(
 
 	const SlotContainer = (props: SlotProps<Name>["props"]) => {
 		return (
-			<SlotCatchBoundary
-				name={name}
-				props={{ ...props, parts: options.parts }}
-				errorChildren={ErrorChildren ? <ErrorChildren {...props} /> : <></>}
-			>
-				<Default {...props} parts={options.parts} />
-			</SlotCatchBoundary>
+			<SlotContext.Provider value={{ [name]: props }}>
+				<SlotCatchBoundary
+					name={name}
+					props={{ ...props, parts: options.parts }}
+					errorChildren={ErrorChildren ? <ErrorChildren {...props} /> : <></>}
+				>
+					<Default {...props} parts={options.parts} />
+				</SlotCatchBoundary>
+			</SlotContext.Provider>
 		);
 	};
 
