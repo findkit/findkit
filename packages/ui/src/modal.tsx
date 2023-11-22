@@ -34,7 +34,7 @@ import { cn, deprecationNotice, getScrollContainer, View } from "./utils";
 import type { Emitter, FindkitUIEvents } from "./emitter";
 import { TranslationStrings } from "./translations";
 import { Slots } from "./slots";
-import { Slot } from "./slots-core";
+import { Slot, createSlotComponent } from "./slots-core";
 
 function useScrollLock(lock: boolean) {
 	useEffect(() => {
@@ -288,6 +288,21 @@ function CloseButton() {
 	);
 }
 
+const HeaderSlot = createSlotComponent("Header", {
+	parts: {
+		Input: SearchInput,
+		CloseButton,
+	},
+	render() {
+		return (
+			<>
+				<CloseButton />
+				<SearchInput />
+			</>
+		);
+	},
+});
+
 function Modal() {
 	const view = useView();
 	const engine = useSearchEngine();
@@ -335,13 +350,7 @@ function Modal() {
 				"header-hidden": isScrollingDown,
 			}}
 		>
-			<Slot
-				name="Header"
-				props={{ Input: SearchInput, CloseButton: CloseButton }}
-			>
-				<CloseButton />
-				<SearchInput />
-			</Slot>
+			<HeaderSlot Input={SearchInput} CloseButton={CloseButton} />
 		</View>
 	) : null;
 

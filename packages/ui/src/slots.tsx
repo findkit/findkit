@@ -18,13 +18,29 @@ export interface HeaderSlotProps {
 
 	/**
 	 * Component for the search inpput
+	 *
+	 * @deprecated use parts.Input instead
 	 */
 	Input: (props: { placeholder?: string }) => any;
 
 	/**
 	 * Component for the close button
+	 *
+	 * @deprecated use parts.CloseButton instead
 	 */
 	CloseButton: () => any;
+
+	parts: {
+		/**
+		 * Component for the search inpput
+		 */
+		Input: (props: { placeholder?: string }) => any;
+
+		/**
+		 * Component for the close button
+		 */
+		CloseButton: () => any;
+	};
 }
 
 /**
