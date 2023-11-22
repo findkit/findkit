@@ -31,37 +31,6 @@ const ui = new FindkitUI({
 
 <Api page="ui.slots.header" />
 
-### `SearchInputIcon`
-
-Added in v0.7.0
-
-#### Props
-
-- `children`: The original magnifying glass icon
-
-Customize the icon on the left side of the build-in search input.
-
-Example: Render only the input
-
-```ts
-import { FindkitUI, html } from "@findkit/ui";
-
-const ui = new FindkitUI({
-	publicToken: "<TOKEN>",
-	slots: {
-		SearchInputIcon(props) {
-			return html`<img
-				class="my-icon"
-				src="https://example.com/icon.png"
-				alt="icon"
-			/>`;
-		},
-	},
-});
-```
-
-<Api page="ui.slots.header" />
-
 ### `Content`
 
 #### Props

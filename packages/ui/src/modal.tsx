@@ -5,6 +5,7 @@ import React, {
 	useEffect,
 	useState,
 	useLayoutEffect,
+	ReactNode,
 } from "react";
 import ReactDOM from "react-dom";
 import {
@@ -233,7 +234,7 @@ function FetchError() {
 	);
 }
 
-function SearchInput(props: { placeholder?: string }) {
+function SearchInput(props: { placeholder?: string; logo?: ReactNode }) {
 	const inputRef = useInput();
 	const t = useTranslator();
 	const state = useSearchEngineState();
@@ -260,14 +261,7 @@ function SearchInput(props: { placeholder?: string }) {
 					["search-input-icon-container-hide"]: state.loading,
 				}}
 			>
-				<SlotCatchBoundary
-					name="SearchInputIcon"
-					props={{}}
-					errorFallback={<Logo />}
-				>
-					{/* Too small to render the default error component. Just log the error. */}
-					<Logo />
-				</SlotCatchBoundary>
+				{props.logo ?? <Logo />}
 			</View>
 		</View>
 	);

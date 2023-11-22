@@ -34,7 +34,7 @@ export interface HeaderSlotProps {
 		/**
 		 * Component for the search inpput
 		 */
-		Input: (props: { placeholder?: string }) => any;
+		Input: (props: { placeholder?: string; logo?: any }) => any;
 
 		/**
 		 * Component for the close button
@@ -176,11 +176,6 @@ export interface Slots {
 	 * Layout component which wraps the header and content
 	 */
 	Layout(props: LayoutSlotProps): any;
-
-	/**
-	 * The magnifying glass icon in the default search input
-	 */
-	SearchInputIcon(props: { children: any }): any;
 
 	/**
 	 * Slot for a group of results when using multiple groups
