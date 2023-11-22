@@ -57,6 +57,11 @@ export interface HitSlotProps {
 	 */
 	hit: SearchResultHit;
 
+	/**
+	 * Group id
+	 */
+	groupId: string;
+
 	parts: {
 		TitleLink(props: {
 			children?: any;

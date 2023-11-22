@@ -271,7 +271,7 @@ function Hit(props: {
 			{...kbAttrs}
 			onClick={handleLinkClick}
 		>
-			<HitSlot hit={props.hit} />
+			<HitSlot hit={props.hit} groupId={props.groupId} />
 		</View>
 	);
 }
