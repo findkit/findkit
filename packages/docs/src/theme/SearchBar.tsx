@@ -1,19 +1,132 @@
 import React, { useEffect } from "react";
-import { FindkitUI, css } from "@findkit/ui";
+import {
+	FindkitUI,
+	html,
+	css,
+	useTerms,
+	Sort,
+	HitSlotProps,
+} from "@findkit/ui";
 
 const ui = new FindkitUI({
 	publicToken: "p68GxRvaA",
+	minTerms: 0,
 	css: css`
 		.findkit--magnifying-glass-lightning {
 			visibility: visible;
 		}
+
+		@media (min-width: 900px) and (min-height: 600px) {
+			.findkit--modal {
+				margin-top: 3rem;
+				margin-bottom: 3rem;
+				max-width: 850px;
+			}
+		}
+
+		.blog-created {
+			margin-bottom: 0.5rem;
+			font-style: italic;
+			color: gray;
+			font-size: small;
+			margin-left: var(--findkit--space-3);
+		}
 	`,
-	params: {
-		filter: {
-			tags: "domain/docs.findkit.com",
+
+	groups: [
+		{
+			id: "docs",
+			title: "Docs",
+			params: {
+				filter: {
+					tags: "domain/docs.findkit.com",
+				},
+			},
+		},
+		{
+			id: "findkitcom",
+			title: "Findkit.com",
+			params: {
+				// Allow modification in the transient update
+				sort: undefined as undefined | Sort,
+				filter: {
+					tags: "domain/findkit.com",
+				},
+			},
+		},
+	],
+
+	slots: {
+		Header(props) {
+			return html`
+				<${props.parts.CloseButton} />
+				<${props.parts.Input} placeholder="Search from the docs..." />
+			`;
+		},
+
+		Group(props) {
+			const terms = useTerms();
+
+			// Render custom view for the findkitcom group when no terms are entered
+			if (terms.trim() === "" && props.id === "findkitcom") {
+				return html`
+					<h2 class="findkit--group-title">Latest from the Blog</h2>
+					<${props.parts.Hits} />
+				`;
+			}
+
+			// and hide other groups
+			if (terms.trim() === "") {
+				return null;
+			}
+
+			return props.children;
+		},
+
+		Hit(props) {
+			const terms = useTerms();
+
+			// Render custom view for the findkitcom group when no terms are entered
+			if (terms.trim() === "" && props.groupId === "findkitcom") {
+				return html`<${BlogHit} ...${props} />`;
+			}
+
+			return props.children;
 		},
 	},
 });
+
+ui.on("fetch", (e) => {
+	e.transientUpdateGroups((_docs, findkitcom) => {
+		// Limit findkitcom group to blog posts only when no terms are entered.
+		if (e.terms.trim() === "") {
+			findkitcom.params.filter.tags = "wp_post_type/post";
+			findkitcom.params.sort = { created: { $order: "desc" } };
+		}
+	});
+});
+
+function BlogHit(props: HitSlotProps) {
+	const created = props.hit.created;
+	const createdFormatted = created
+		? new Date(created).toLocaleDateString()
+		: null;
+
+	return html`
+		<${props.parts.TitleLink} />
+		<${props.parts.Highlight}
+			highlight=${props.hit.customFields.excerpt?.value ?? ""}
+		/>
+		<div class="blog-created">${createdFormatted}</div>
+	`;
+}
+
+declare const module: any;
+if (typeof module !== "undefined" && module.hot) {
+	module.hot.dispose(() => {
+		ui.dispose();
+	});
+}
 
 export default function SearchBarWrapper() {
 	useEffect(() => {
