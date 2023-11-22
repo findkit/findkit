@@ -59,12 +59,12 @@ export interface HitSlotProps {
 
 	parts: {
 		TitleLink(props: {
-			title?: any;
+			children?: any;
 			superwordsMatch?: boolean;
-			url?: string;
+			href?: string;
 		}): any;
 		Highlight(props: { highlight?: string }): any;
-		URLLink(props: { url?: string }): any;
+		URLLink(props: { href?: string; children?: any }): any;
 	};
 }
 

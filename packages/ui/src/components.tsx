@@ -180,8 +180,7 @@ const HitSlot = createSlotComponent("Hit", {
 	parts: {
 		TitleLink(props) {
 			const context = useSlotContext("Hit");
-			const title = props.title ?? context.hit.title;
-			const url = props.url ?? context.hit.url;
+			const href = props.href ?? context.hit.url;
 			const superwordsMatch =
 				props.superwordsMatch ?? context.hit.superwordsMatch;
 
@@ -193,10 +192,10 @@ const HitSlot = createSlotComponent("Hit", {
 					<View
 						as="a"
 						cn={["hit-title-link", "link"]}
-						href={url}
+						href={href}
 						data-kb-action
 					>
-						{title}
+						{props.children ?? context.hit.title}
 					</View>
 				</View>
 			);
@@ -214,10 +213,10 @@ const HitSlot = createSlotComponent("Hit", {
 		},
 		URLLink(props) {
 			const context = useSlotContext("Hit");
-			const url = props.url ?? context.hit.url;
+			const href = props.href ?? context.hit.url;
 			return (
-				<View as="a" cn={["hit-url", "link"]} href={url} tabIndex={-1}>
-					{url}
+				<View as="a" cn={["hit-url", "link"]} href={href} tabIndex={-1}>
+					{props.children ?? href}
 				</View>
 			);
 		},
