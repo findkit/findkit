@@ -25,7 +25,7 @@ import {
 	SortGroup,
 } from "./search-engine";
 import { Slots } from "./slots";
-import { createSlotComponent } from "./slots-core";
+import { createSlotComponent, useSlotContext } from "./slots-core";
 import { createTranslator } from "./translations";
 import { cn, isProd, scrollToTop, View } from "./utils";
 
@@ -126,10 +126,20 @@ function AllResultsLink(props: { children: ReactNode }) {
 	);
 }
 
-function GroupTitle(props: { title: string; total: number }) {
+function GroupTitle(props: {
+	title: string;
+	total: number;
+	children?: ReactNode;
+}) {
 	return (
 		<View as="h2" cn="group-title" aria-label={props.title}>
-			{props.title} {props.total > 0 ? `(${props.total})` : ""}
+			{props.children ? (
+				props.children
+			) : (
+				<>
+					{props.title} {props.total > 0 ? `(${props.total})` : ""}
+				</>
+			)}
 		</View>
 	);
 }
@@ -165,41 +175,45 @@ const HitSlot = createSlotComponent("Hit", {
 	},
 	parts: {
 		TitleLink(props) {
+			const context = useSlotContext("Hit");
+			const title = props.title ?? context.hit.title;
+			const url = props.url ?? context.hit.url;
+			const superwordsMatch =
+				props.superwordsMatch ?? context.hit.superwordsMatch;
+
 			const t = useTranslator();
 			return (
 				<View as="h3" cn="hit-title">
-					{props.hit.superwordsMatch ? (
-						<StarIcon title={t("superwords-match")} />
-					) : null}
+					{superwordsMatch ? <StarIcon title={t("superwords-match")} /> : null}
 
 					<View
 						as="a"
 						cn={["hit-title-link", "link"]}
-						href={props.hit.url}
+						href={url}
 						data-kb-action
 					>
-						{props.hit.title}
+						{title}
 					</View>
 				</View>
 			);
 		},
 		Highlight(props) {
+			const context = useSlotContext("Hit");
+			const highlight = props.highlight ?? context.hit.highlight;
+
 			return (
 				<View
 					cn="highlight"
-					dangerouslySetInnerHTML={{ __html: props.hit.highlight }}
+					dangerouslySetInnerHTML={{ __html: highlight }}
 				></View>
 			);
 		},
 		URLLink(props) {
+			const context = useSlotContext("Hit");
+			const url = props.url ?? context.hit.url;
 			return (
-				<View
-					as="a"
-					cn={["hit-url", "link"]}
-					href={props.hit.url}
-					tabIndex={-1}
-				>
-					{props.hit.url}
+				<View as="a" cn={["hit-url", "link"]} href={url} tabIndex={-1}>
+					{url}
 				</View>
 			);
 		},
@@ -207,9 +221,9 @@ const HitSlot = createSlotComponent("Hit", {
 	render(props) {
 		return (
 			<>
-				<props.parts.TitleLink {...props} />
-				<props.parts.Highlight {...props} />
-				<props.parts.URLLink {...props} />
+				<props.parts.TitleLink />
+				<props.parts.Highlight />
+				<props.parts.URLLink />
 			</>
 		);
 	},
@@ -287,32 +301,51 @@ function HitList(props: {
 const GroupSlot = createSlotComponent("Group", {
 	parts: {
 		Title(props) {
-			return <GroupTitle title={props.title} total={props.total} />;
-		},
-		Hits(props) {
+			const context = useSlotContext("Group");
+			const title = props.title ?? context.title;
+
 			return (
-				<HitList
-					groupId={props.id}
-					total={props.total}
-					hits={props.hits.slice(0, props.previewSize)}
+				<GroupTitle
+					title={title}
+					total={context.total}
+					children={props.children}
 				/>
 			);
 		},
-		Footer(props) {
+
+		Hits() {
+			const context = useSlotContext("Group");
+
+			return (
+				<HitList
+					groupId={context.id}
+					total={context.total}
+					hits={context.hits.slice(0, context.previewSize)}
+				/>
+			);
+		},
+
+		ShowAllLink(props) {
 			const t = useTranslator();
+			const context = useSlotContext("Group");
+			const title = props.title ?? context.title;
 
 			return (
 				<>
-					{props.total === props.fetchedHits ? (
+					{context.total === context.fetchedHits ? (
 						<View
 							cn={["group-all-results-shown", "group-header-footer-spacing"]}
 						>
-							{props.total === 0 ? t("no-results") : t("all-results-shown")}
+							{context.total === 0
+								? props.noResults ?? t("no-results")
+								: props.allResultsShown ?? t("all-results-shown")}
 						</View>
 					) : (
-						<SingleGroupLink groupId={props.id} groupTitle={props.title}>
-							{t("show-all")}
-						</SingleGroupLink>
+						<SingleGroupLink
+							groupId={context.id}
+							groupTitle={title}
+							children={props.children ?? t("show-all")}
+						/>
 					)}
 				</>
 			);
@@ -321,9 +354,9 @@ const GroupSlot = createSlotComponent("Group", {
 	render(props) {
 		return (
 			<>
-				<props.parts.Title {...props} />
-				<props.parts.Hits {...props} />
-				<props.parts.Footer {...props} />
+				<props.parts.Title />
+				<props.parts.Hits />
+				<props.parts.ShowAllLink />
 			</>
 		);
 	},

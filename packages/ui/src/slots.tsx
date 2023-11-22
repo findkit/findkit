@@ -58,9 +58,13 @@ export interface HitSlotProps {
 	hit: SearchResultHit;
 
 	parts: {
-		TitleLink(props: { hit: SearchResultHit }): any;
-		Highlight(props: { hit: SearchResultHit }): any;
-		URLLink(props: { hit: SearchResultHit }): any;
+		TitleLink(props: {
+			title?: any;
+			superwordsMatch?: boolean;
+			url?: string;
+		}): any;
+		Highlight(props: { highlight?: string }): any;
+		URLLink(props: { url?: string }): any;
 	};
 }
 
@@ -96,6 +100,33 @@ export interface LayoutSlotProps {
 
 /**
  * @public
+ *
+ * Props for AllResultsLink component in Group slot parts
+ */
+export interface ShowAllLinkProps {
+	/**
+	 * Element to render inside the link when there are more results show
+	 */
+	children?: any;
+
+	/**
+	 * Render when there are no results
+	 */
+	noResults?: any;
+
+	/**
+	 * Render when all resuls are already shown
+	 */
+	allResultsShown?: any;
+
+	/**
+	 * Link aria-label
+	 */
+	title?: string;
+}
+
+/**
+ * @public
  */
 export interface GroupSlotProps {
 	/**
@@ -116,20 +147,9 @@ export interface GroupSlotProps {
 	previewSize: number | undefined;
 
 	parts: {
-		Title(props: { title: string; total: number }): any;
-		Footer(props: {
-			total: number;
-			fetchedHits: number;
-			id: string;
-			title: string;
-		}): any;
-		Hits(props: {
-			id: string;
-			total: number;
-			title: string;
-			hits: ReadonlyArray<SearchResultHit>;
-			previewSize: number | undefined;
-		}): any;
+		Title(props: { title?: string; children?: any }): any;
+		Hits(props: {}): any;
+		ShowAllLink(props: ShowAllLinkProps): any;
 	};
 }
 
