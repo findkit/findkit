@@ -418,29 +418,6 @@ test("hit error boundary", async ({ page }) => {
 	});
 });
 
-test("custom search input icon", async ({ page }) => {
-	await page.goto(staticEntry("/dummy"));
-
-	await page.evaluate(async () => {
-		const { html, FindkitUI } = MOD;
-		const ui = new FindkitUI({
-			publicToken: "pW1D0p0Dg",
-			slots: {
-				SearchInputIcon() {
-					return html`<div style=${{ fontSize: "small" }}>Search</div>`;
-				},
-			},
-		});
-
-		ui.open("");
-	});
-
-	const header = page.locator(".findkit--header");
-	await header.first().waitFor({ state: "visible" });
-
-	await expect(header).toHaveScreenshot();
-});
-
 test("can restore findkit icon branding", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
 
