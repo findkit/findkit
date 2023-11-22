@@ -12,7 +12,7 @@ on:
       - "packages/ui-examples/**"
       - ".github/workflows/deploy-docs.yml"
 jobs:
-  test:
+  deploy-docs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     if: ${{ github.event.repository.full_name == 'findkit/findkit' }}
