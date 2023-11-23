@@ -302,6 +302,11 @@ export interface FindkitSearchGroupParams {
 	lang?: string;
 
 	/**
+	 * Do not actually execute the search, always return an empty result
+	 */
+	skip?: boolean;
+
+	/**
 	 * EXPERIMENTAL
 	 *
 	 * Return content for each hit. Must be explicitly enabled in the findkit.toml file

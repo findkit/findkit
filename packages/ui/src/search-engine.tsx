@@ -133,6 +133,13 @@ export interface SearchParams {
 	size?: number;
 
 	/**
+	 * New in v0.15.0
+	 *
+	 * https://docs.findkit.com/ui/api/params#skip
+	 */
+	skip?: boolean;
+
+	/**
 	 * https://docs.findkit.com/ui/api/params#lang
 	 */
 	lang?: string;
@@ -1536,6 +1543,7 @@ export class SearchEngine {
 					tagQuery: group.params.tagQuery ?? [],
 					tagBoost: group.params.tagBoost,
 					content: group.params.content,
+					skip: group.params.skip,
 					createdDecay: group.params.createdDecay,
 					modifiedDecay: group.params.modifiedDecay,
 					decayScale: group.params.decayScale,
