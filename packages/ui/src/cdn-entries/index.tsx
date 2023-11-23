@@ -49,6 +49,9 @@ import type {
 	GroupSlotProps,
 	ShowAllLinkProps,
 	HitSlotProps,
+	HeaderSlotParts,
+	HitSlotParts,
+	GroupSlotParts,
 } from "../slots";
 import type { PreactFunctions } from "./preact-subset";
 import type { Filter, Operator } from "../filter-type";
@@ -98,7 +101,10 @@ export {
 	Operator,
 	Sort,
 	GroupSlotProps,
+	GroupSlotParts,
+	HeaderSlotParts,
 	ShowAllLinkProps,
+	HitSlotParts,
 	HitSlotProps,
 };
 

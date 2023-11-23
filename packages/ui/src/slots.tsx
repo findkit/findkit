@@ -9,6 +9,28 @@ import { SearchResultHit } from "./search-engine";
 
 /**
  * @public
+ *
+ * Part components for the Header slot.
+ * See {@link Slots}.
+ */
+export interface HeaderSlotParts {
+	/**
+	 * Component for the search inpput
+	 */
+	Input: (props: { placeholder?: string; icon?: any }) => any;
+
+	/**
+	 * Component for the close button
+	 *
+	 */
+	CloseButton: (props: { children?: any }) => any;
+}
+
+/**
+ * @public
+ *
+ * Props for the Header slot component override.
+ * See {@link Slots}.
  */
 export interface HeaderSlotProps {
 	/**
@@ -30,21 +52,46 @@ export interface HeaderSlotProps {
 	 */
 	CloseButton: (props: { children?: any }) => any;
 
-	parts: {
-		/**
-		 * Component for the search inpput
-		 */
-		Input: (props: { placeholder?: string; icon?: any }) => any;
-
-		/**
-		 * Component for the close button
-		 */
-		CloseButton: (props: { children?: any }) => any;
-	};
+	/**
+	 * Part components for the header
+	 *
+	 * New in 0.14.0
+	 */
+	parts: HeaderSlotParts;
 }
 
 /**
  * @public
+ *
+ * Part components for the Hit slot.
+ * See {@link Slots}.
+ */
+export interface HitSlotParts {
+	/**
+	 * The hit title
+	 */
+	TitleLink(props: {
+		children?: any;
+		superwordsMatch?: boolean;
+		href?: string;
+	}): any;
+
+	/**
+	 * The highlights based on the search terms
+	 */
+	Highlight(props: { highlight?: string }): any;
+
+	/**
+	 * The url as a link
+	 */
+	URLLink(props: { href?: string; children?: any }): any;
+}
+
+/**
+ * @public
+ *
+ * Props for the Hit slot component override.
+ * See {@link Slots}.
  */
 export interface HitSlotProps {
 	/**
@@ -62,19 +109,19 @@ export interface HitSlotProps {
 	 */
 	groupId: string;
 
-	parts: {
-		TitleLink(props: {
-			children?: any;
-			superwordsMatch?: boolean;
-			href?: string;
-		}): any;
-		Highlight(props: { highlight?: string }): any;
-		URLLink(props: { href?: string; children?: any }): any;
-	};
+	/**
+	 * Part components for the hit
+	 *
+	 * New in 0.14.0
+	 */
+	parts: HitSlotParts;
 }
 
 /**
  * @public
+ *
+ * Props for the Content slot component override.
+ * See {@link Slots}.
  */
 export interface ContentSlotProps {
 	/**
@@ -85,6 +132,9 @@ export interface ContentSlotProps {
 
 /**
  * @public
+ *
+ * Props for the Layout slot component override.
+ * See {@link Slots}.
  */
 export interface LayoutSlotProps {
 	/**
@@ -106,7 +156,8 @@ export interface LayoutSlotProps {
 /**
  * @public
  *
- * Props for AllResultsLink component in Group slot parts
+ * Props for AllResultsLink component in Group slot parts.
+ * See {@link Slots}.
  */
 export interface ShowAllLinkProps {
 	/**
@@ -132,6 +183,28 @@ export interface ShowAllLinkProps {
 
 /**
  * @public
+ *
+ * Part components for the Group slot
+ */
+export interface GroupSlotParts {
+	/**
+	 * The group title
+	 */
+	Title(props: { title?: string; children?: any }): any;
+
+	/**
+	 * Hits shown in the group
+	 */
+	Hits(props: {}): any;
+
+	/**
+	 * Component for the "show all" link
+	 */
+	ShowAllLink(props: ShowAllLinkProps): any;
+}
+
+/**
+ * @public
  */
 export interface GroupSlotProps {
 	/**
@@ -151,15 +224,18 @@ export interface GroupSlotProps {
 
 	previewSize: number | undefined;
 
-	parts: {
-		Title(props: { title?: string; children?: any }): any;
-		Hits(props: {}): any;
-		ShowAllLink(props: ShowAllLinkProps): any;
-	};
+	/**
+	 * Part components for the group
+	 *
+	 * New in 0.14.0
+	 */
+	parts: GroupSlotParts;
 }
 
 /**
  * @public
+ *
+ * All avaivable slots
  */
 export interface Slots {
 	/**
