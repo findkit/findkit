@@ -165,3 +165,10 @@ using a MongoDB style filtering query. Read more on the
 [Filtering](/ui/filtering) page.
 
 <Api page="ui.filter" />
+
+### `skip: boolean` {#skip}
+
+_New in v0.15.0_
+
+Skip the search and always return an empty reponse. Can be used to optimize the
+search request when visually hiding some of the groups.
