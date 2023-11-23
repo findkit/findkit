@@ -1,12 +1,5 @@
 import React, { useEffect } from "react";
-import {
-	FindkitUI,
-	html,
-	css,
-	useTerms,
-	Sort,
-	HitSlotProps,
-} from "@findkit/ui";
+import { FindkitUI, html, css, useTerms, HitSlotProps } from "@findkit/ui";
 
 const ui = new FindkitUI({
 	publicToken: "p68GxRvaA",
@@ -38,6 +31,7 @@ const ui = new FindkitUI({
 			id: "docs",
 			title: "Docs",
 			params: {
+				skip: false as boolean,
 				filter: {
 					tags: "domain/docs.findkit.com",
 				},
@@ -47,10 +41,22 @@ const ui = new FindkitUI({
 			id: "findkitcom",
 			title: "Findkit.com",
 			params: {
-				// Allow modification in the transient update
-				sort: undefined as undefined | Sort,
+				skip: false as boolean,
 				filter: {
 					tags: "domain/findkit.com",
+				},
+			},
+		},
+		{
+			id: "blog",
+			title: "Latest from the Blog",
+			params: {
+				skip: true as boolean,
+				filter: {
+					tags: "wp_post_type/post",
+				},
+				sort: {
+					created: { $order: "desc" },
 				},
 			},
 		},
@@ -67,15 +73,19 @@ const ui = new FindkitUI({
 		Group(props) {
 			const terms = useTerms();
 
-			// Render custom view for the findkitcom group when no terms are entered
-			if (terms.trim() === "" && props.id === "findkitcom") {
-				return html`
-					<h2 class="findkit--group-title">Latest from the Blog</h2>
-					<${props.parts.Hits} />
-				`;
+			if (props.id === "blog") {
+				// Show blog group only when there are no search terms
+				if (terms.trim() === "") {
+					return html`
+						<h2 class="findkit--group-title">Latest from the Blog</h2>
+						<${props.parts.Hits} />
+					`;
+				} else {
+					return null;
+				}
 			}
 
-			// and hide other groups
+			// Hide other groups when there are no search terms
 			if (terms.trim() === "") {
 				return null;
 			}
@@ -87,7 +97,7 @@ const ui = new FindkitUI({
 			const terms = useTerms();
 
 			// Render custom view for the findkitcom group when no terms are entered
-			if (terms.trim() === "" && props.groupId === "findkitcom") {
+			if (terms.trim() === "" && props.groupId === "blog") {
 				return html`<${BlogHit} ...${props} />`;
 			}
 
@@ -97,11 +107,12 @@ const ui = new FindkitUI({
 });
 
 ui.on("fetch", (e) => {
-	e.transientUpdateGroups((_docs, findkitcom) => {
-		// Limit findkitcom group to blog posts only when no terms are entered.
+	e.transientUpdateGroups((docs, findkitcom, blog) => {
+		// Fetch only the blog group when there are no search terms
 		if (e.terms.trim() === "") {
-			findkitcom.params.filter.tags = "wp_post_type/post";
-			findkitcom.params.sort = { created: { $order: "desc" } };
+			blog.params.skip = false;
+			docs.params.skip = true;
+			findkitcom.params.skip = true;
 		}
 	});
 });
