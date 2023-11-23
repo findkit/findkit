@@ -26,7 +26,7 @@ importers:
       '@docusaurus/core': 2.1.0
       '@docusaurus/module-type-aliases': 2.1.0
       '@docusaurus/preset-classic': 2.1.0
-      '@findkit/ui': workspace:^0.14.0
+      '@findkit/ui': workspace:^0.15.0
       '@mdx-js/react': ^1.6.22
       '@types/node': ^16.0.0
       '@types/react': '17'
@@ -177,7 +177,7 @@ importers:
 
   packages/ui-examples:
     specifiers:
-      '@findkit/ui': workspace:^0.14.0
+      '@findkit/ui': workspace:^0.15.0
       '@types/react': ^18.0.21
       '@types/react-dom': ^18.0.6
       npm-run-all: ^4.1.5
