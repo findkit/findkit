@@ -135,6 +135,10 @@ function GroupTitle(props: {
 	total: number;
 	children?: ReactNode;
 }) {
+	if (!props.children && !props.title) {
+		return null;
+	}
+
 	return (
 		<View as="h2" cn="group-title" aria-label={props.title}>
 			{props.children ? (
