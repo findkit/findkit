@@ -4,15 +4,16 @@
 
 ### `Header`
 
+<Api page="ui.slots.header" />
+
 #### Props
 
-- `Input`: Component for the close button
-- `CloseButton`: Component for the close button
 - `children`: The original header content
+- `parts` <Api page="ui.slots.headerslotparts">details</Api>
 
 The search input and close button area which hides on scroll.
 
-The component props can be used to render only part of the header elements.
+The part props can be used to render only parts of the header element.
 
 Example: Render only the input
 
@@ -23,15 +24,15 @@ const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
 	slots: {
 		Header(props) {
-			return html`<${props.Input} />`;
+			return html`<${props.parts.Input} />`;
 		},
 	},
 });
 ```
 
-<Api page="ui.slots.header" />
-
 ### `Content`
+
+<Api page="ui.slots.content" />
 
 #### Props
 
@@ -39,9 +40,9 @@ const ui = new FindkitUI({
 
 The content below the header.
 
-<Api page="ui.slots.content" />
-
 ### `Layout`
+
+<Api page="ui.slots.layout" />
 
 #### Props
 
@@ -52,17 +53,30 @@ The content below the header.
 The containing element for the header and the content elements. This slot can be
 used to customize the element positioning.
 
-<Api page="ui.slots.layout" />
+## `Group`
+
+<Api page="ui.slots.Group" />
+
+#### Props
+
+- `children`
+- `parts` <Api page="ui.groupslotparts">details</Api>
+
+The list of hits on the initial view when using multiple [groups](/ui/api/groups).
 
 ## `Hit`
 
-- `children`
-- `hit`: The <Api page="ui.searchresulthit">search result hit</Api>
-
-Used to customize how the search results are rendered. See [Custom
-Fields](/ui/slot-overrides/custom-fields).
-
 <Api page="ui.slots.hit" />
+
+#### Props
+
+- `children`
+- `groupId`: The [group id](/ui/api/groups#id). New in v.0.15.0.
+- `hit`: The <Api page="ui.searchresulthit">search result hit</Api>
+- `parts` <Api page="ui.hitslotparts">details</Api>
+
+Used to customize how the each search result hits are rendered. See [Custom
+Fields](/ui/slot-overrides/custom-fields).
 
 Example
 
@@ -80,10 +94,7 @@ const ui = new FindkitUI({
 						<a href=${props.hit.url}>${props.hit.title}</a>
 						(${props.hit.score})
 					</h2>
-					<p
-						class="highlight"
-						dangerouslySetInnerHTML=${{ __html: props.hit.highlight }}
-					></p>
+					<${props.parts.Highlight} />
 					tags: ${props.hit.tags.join(", ")}
 				</div>
 			`;

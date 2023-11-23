@@ -21,10 +21,7 @@
 									<a href=${props.hit.url}>${props.hit.title}</a>
 									(${props.hit.score})
 								</h2>
-								<p
-									class="highlight"
-									dangerouslySetInnerHTML=${{ __html: props.hit.highlight }}
-								></p>
+								<${props.parts.Highlight} />
 								tags: ${props.hit.tags.join(", ")}
 							</div>
 						`;

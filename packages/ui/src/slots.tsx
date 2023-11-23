@@ -39,14 +39,14 @@ export interface HeaderSlotProps {
 	children: any;
 
 	/**
-	 * Component for the search inpput
+	 * DEPRECATED Component for the search inpput
 	 *
 	 * @deprecated use parts.Input instead
 	 */
 	Input: (props: { placeholder?: string }) => any;
 
 	/**
-	 * Component for the close button
+	 * DEPRECATED Component for the close button
 	 *
 	 * @deprecated use parts.CloseButton instead
 	 */
