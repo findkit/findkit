@@ -59,8 +59,13 @@ used to customize the element positioning.
 
 #### Props
 
-- `children`
+- `title`: The group title string
+- `previewSize`: The preview size number
+- `total`: Total hits in the group
+- `fetchedHits`: How many of the hits has been fetched
+- `id`: The group id
 - `parts` <Api page="ui.groupslotparts">details</Api>
+- `children`
 
 The list of hits on the initial view when using multiple [groups](/ui/api/groups).
 
