@@ -1,3 +1,13 @@
+## v0.15.0
+
+2023-11-23
+
+- Add skip search param [953f9d4](https://github.com/findkit/findkit/commit/953f9d4) - Esa-Matti Suuronen
+- Regression fix: Hide group title element when there is no title [ddd355b](https://github.com/findkit/findkit/commit/ddd355b) - Esa-Matti Suuronen
+- Hide group completely when it has no children [0b265c2](https://github.com/findkit/findkit/commit/0b265c2) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.14.0...ui/v0.15.0
+
 ## v0.14.0
 
 2023-11-22
