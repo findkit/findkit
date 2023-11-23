@@ -212,6 +212,10 @@
 	margin-top: var(--space-6);
 }
 
+.group:empty {
+	display: none;
+}
+
 .group-title {
 	margin: 0;
 	margin-left: var(--space-3);
