@@ -132,12 +132,13 @@ function BlogHit(props: HitSlotProps) {
 	`;
 }
 
+console.log("module.hot 5", module.hot, import.meta);
+
 declare const module: any;
-if (typeof module !== "undefined" && module.hot) {
-	module.hot.dispose(() => {
-		ui.dispose();
-	});
-}
+import.meta.hot?.dispose(() => {
+	console.log("disposing");
+	ui.dispose();
+});
 
 export default function SearchBarWrapper() {
 	useEffect(() => {

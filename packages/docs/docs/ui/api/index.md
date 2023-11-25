@@ -151,8 +151,27 @@ specific search running on the same page.
 :::note
 If you have only one search setup and you are getting an error about a
 conflicting instance id it means you are accidentally doing multiple `new
-Findkit()` calls without calling [`dispose`](#dispose) on the previous
+Findkit()` calls without calling [`.dispose()`](#dispose) on the previous
 instance.
+
+### Hot Module Reloading
+
+If you are using hot module loading you might need to dispose the UI instance
+when the module is disposed:
+
+```ts
+// Vite
+import.meta.hot?.dispose(() => {
+	ui.dispose();
+});
+
+// Webpack, Next.js etc.
+module.hot?.dispose(() => {
+	ui.dispose();
+});
+```
+
+### React Component
 
 If you are creating the FindkitUI instance inside a React component you must
 call the `dispose` method on a `useEffect` cleanup. See the [React custom

@@ -2,7 +2,7 @@
 
 2023-11-23
 
-- Add skip search param [953f9d4](https://github.com/findkit/findkit/commit/953f9d4) - Esa-Matti Suuronen
+- Add [skip search param](https://docs.findkit.com/ui/api/params#skip) [953f9d4](https://github.com/findkit/findkit/commit/953f9d4) - Esa-Matti Suuronen
 - Regression fix: Hide group title element when there is no title [ddd355b](https://github.com/findkit/findkit/commit/ddd355b) - Esa-Matti Suuronen
 - Hide group completely when it has no children [0b265c2](https://github.com/findkit/findkit/commit/0b265c2) - Esa-Matti Suuronen
 
@@ -12,13 +12,12 @@ All changes https://github.com/findkit/findkit/compare/ui/v0.14.0...ui/v0.15.0
 
 2023-11-22
 
-- Add Group slot
-  - TODO docs link
+- Add [Group slot](https://docs.findkit.com/ui/slot-overrides/slots#group)
 - Add "Part Components" to slots props
-  - TODO docs link
 - Export HitSlotProps [8f22259](https://github.com/findkit/findkit/commit/8f22259) - Esa-Matti Suuronen
 - Add `groupId to Hit slot [4de6e51](https://github.com/findkit/findkit/commit/4de6e51) - Esa-Matti Suuronen
 - Add preact devtools bridge [f2483e2](https://github.com/findkit/findkit/commit/f2483e2) - Esa-Matti Suuronen
+  - You may now inspect Findkit UI with [Preact Devtools](https://preactjs.github.io/preact-devtools/)
 - Infer generics from constructor options too [9bc3136](https://github.com/findkit/findkit/commit/9bc3136) - Esa-Matti Suuronen
 - BREAKING: Replace SearchInputIcon with icon prop in Header SearchInput part [009244b](https://github.com/findkit/findkit/commit/009244b) - Esa-Matti Suuronen
   - If used the SearchInputIcon slot
