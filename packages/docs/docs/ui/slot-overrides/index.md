@@ -46,7 +46,7 @@ Try it on Codesandbox
 ## Props
 
 Each slot receives a `children` property which can be used to render the default
-slot content. This can used to render content before or after the content.
+slot content. This can used to render custom elements before or after the content.
 
 Here's how you would render content before the build-in input:
 
@@ -93,8 +93,4 @@ function SlotComponent() {
 	// ...
 }
 ```
-
-That being said the raw Preact / React components are available on Github which
-could be imported to your codebase as is. If you are interested in this feel free to
-contact us for help.
 :::
