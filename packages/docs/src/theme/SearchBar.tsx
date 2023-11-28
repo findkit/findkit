@@ -167,7 +167,8 @@ const ui = new FindkitUI({
 ui.on("fetch", (e) => {
 	// Make a non-persistent update to the search groups only for this fetch request
 	e.transientUpdateGroups((docs, findkitcom, blog) => {
-		// Fetch only the blog group when there are no search terms
+		// When search terms are added enable the search for docs and
+		// findkitcom but disable for the blog
 		if (e.terms.trim() !== "") {
 			// https://docs.findkit.com/ui/api/params#skip
 			blog.params.skip = true;
