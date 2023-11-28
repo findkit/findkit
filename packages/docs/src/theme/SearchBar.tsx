@@ -164,7 +164,7 @@ const ui = new FindkitUI({
 // Modify the search request on the fly based on the search terms
 // https://docs.findkit.com/ui/api/events#fetch
 ui.on("fetch", (e) => {
-	// Make a non-persistent update the search groups only for this fetch request
+	// Make a non-persistent update to the search groups only for this fetch request
 	e.transientUpdateGroups((docs, findkitcom, blog) => {
 		// Fetch only the blog group when there are no search terms
 		if (e.terms.trim() !== "") {
