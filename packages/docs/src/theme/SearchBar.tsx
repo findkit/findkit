@@ -1,6 +1,6 @@
-// Custom Findkit Search for docs.findkit.com which renders shows latests blog posts
-// when user has not typed any search terms but searches from all content on
-// findkit.com and docs.findkit.com when user types search terms
+// Custom Findkit Search for docs.findkit.com which shows the latests blog
+// posts when user has not typed any search terms but searches from all content
+// on findkit.com and docs.findkit.com when user types search terms
 
 // This file exports the Docusaurus search bar component which renders a button
 // which opens the FindkitUI modal
