@@ -1,7 +1,14 @@
-// Docusaurus search bar component
-// See setup in https://docs.findkit.com/ui/setup
+// Custom Findkit Search for docs.findkit.com which renders shows latests blog posts
+// when user has not typed any search terms but searches from all content on
+// findkit.com and docs.findkit.com when user types search terms
 
-import React, { useEffect } from "react";
+// This file exports the Docusaurus search bar component which renders a button
+// which opens the FindkitUI modal
+
+// Used only for the Docusaurus search bar component
+import React, { useEffect, useRef } from "react";
+
+// npm installed @findkit/ui https://docs.findkit.com/ui/setup#npm
 import { FindkitUI, html, css, useTerms, HitSlotProps } from "@findkit/ui";
 
 const ui = new FindkitUI({
@@ -155,10 +162,13 @@ const ui = new FindkitUI({
 });
 
 // Modify the search request on the fly based on the search terms
+// https://docs.findkit.com/ui/api/events#fetch
 ui.on("fetch", (e) => {
+	// Make a non-persistent update the search groups only for this fetch request
 	e.transientUpdateGroups((docs, findkitcom, blog) => {
 		// Fetch only the blog group when there are no search terms
 		if (e.terms.trim() !== "") {
+			// https://docs.findkit.com/ui/api/params#skip
 			blog.params.skip = false;
 			docs.params.skip = true;
 			findkitcom.params.skip = true;
@@ -193,12 +203,19 @@ module.hot?.dispose(() => {
 // Wrap FindkitUI into a React Component. This export is picked by Docusaurus.
 // https://docs.findkit.com/ui/patterns/embedding/react
 export default function SearchBarWrapper() {
+	const ref = useRef<HTMLButtonElement>(null);
+
 	useEffect(() => {
-		return ui.openFrom("button.open-search");
+		if (ref.current) {
+			// Bind to the button and return the unbind function as the effect
+			// cleanup to remove click handler when the component unmounts
+			// https://docs.findkit.com/ui/api/#openFrom
+			return ui.openFrom(ref.current);
+		}
 	}, []);
 
 	return (
-		<button type="button" className="open-search">
+		<button ref={ref} type="button" className="open-search">
 			<Logo />
 		</button>
 	);
