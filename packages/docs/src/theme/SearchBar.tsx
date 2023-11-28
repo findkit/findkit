@@ -106,6 +106,7 @@ const ui = new FindkitUI({
 			// Must use the build-in html tagged template literal to render
 			// HTML instead of JSX because JSX is for the React in Docusaurus
 			// in this file
+			// https://docs.findkit.com/ui/slot-overrides/hooks#html
 			return html`
 				<${props.parts.CloseButton} />
 				<${props.parts.Input} placeholder="Search from the docs..." />
