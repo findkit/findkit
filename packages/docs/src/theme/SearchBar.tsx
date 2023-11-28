@@ -167,7 +167,7 @@ ui.on("fetch", (e) => {
 });
 
 // Custom Slot Override component for FindkitUI which renders the created date
-// for the blog posts
+// and the excerpt for the blog posts
 function BlogHit(props: HitSlotProps) {
 	const created = props.hit.created;
 	const createdFormatted = created
