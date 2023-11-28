@@ -170,9 +170,9 @@ ui.on("fetch", (e) => {
 		// Fetch only the blog group when there are no search terms
 		if (e.terms.trim() !== "") {
 			// https://docs.findkit.com/ui/api/params#skip
-			blog.params.skip = false;
-			docs.params.skip = true;
-			findkitcom.params.skip = true;
+			blog.params.skip = true;
+			docs.params.skip = false;
+			findkitcom.params.skip = false;
 		}
 	});
 });
