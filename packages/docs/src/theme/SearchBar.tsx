@@ -1,9 +1,17 @@
+// Docusaurus search bar component
+// See setup in https://docs.findkit.com/ui/setup
+
 import React, { useEffect } from "react";
 import { FindkitUI, html, css, useTerms, HitSlotProps } from "@findkit/ui";
 
 const ui = new FindkitUI({
 	publicToken: "p68GxRvaA",
+	// Show search results even without search terms so we can get the blog
+	// posts
 	minTerms: 0,
+
+	// Add some custom styles into the FindkitUI Shadow DOM
+	// https://docs.findkit.com/ui/styling
 	css: css`
 		.findkit--magnifying-glass-lightning {
 			visibility: visible;
@@ -24,63 +32,101 @@ const ui = new FindkitUI({
 			font-size: small;
 			margin-left: var(--findkit--space-3);
 		}
+
+		.view-source,
+		.view-source:hover {
+			margin-left: var(--findkit--space-3);
+			text-decoration: none;
+			margin-bottom: var(--findkit--space-3);
+			color: var(--findkit--brand-color);
+			font-size: small;
+		}
+		.view-source:hover {
+			text-decoration: underline;
+		}
 	`,
 
+	// Create three groups: docs, findkitcom, and blog
+	// https://docs.findkit.com/ui/api/groups
 	groups: [
 		{
 			id: "docs",
 			title: "Docs",
 			params: {
-				skip: false as boolean,
-				filter: {
-					tags: "domain/docs.findkit.com",
-				},
+				// Initially skip searching the docs group as we only show the blog group
+				// https://docs.findkit.com/ui/api/params#skip
+				skip: true as boolean,
+
+				// Limit the group results to only the docs.findkit.com domain
+				// This tag is automatically added by the Findkit crawler
+				// https://docs.findkit.com/ui/filtering/
+				filter: { tags: "domain/docs.findkit.com" },
 			},
 		},
 		{
 			id: "findkitcom",
 			title: "Findkit.com",
 			params: {
-				skip: false as boolean,
-				filter: {
-					tags: "domain/findkit.com",
-				},
+				skip: true as boolean,
+				filter: { tags: "domain/findkit.com" },
 			},
 		},
 		{
 			id: "blog",
 			title: "Latest from the Blog",
 			params: {
-				skip: true as boolean,
-				filter: {
-					tags: "wp_post_type/post",
-				},
-				sort: {
-					created: { $order: "desc" },
-				},
+				// Let the blog group to be searched
+				skip: false as boolean,
+
+				// Limit the group to only blog posts. This tag is
+				// automatically added by the wp-findkit WordPress plugin
+				// https://findk.it/wp
+				filter: { tags: "wp_post_type/post" },
+
+				// Show the latest blog posts first
+				// https://docs.findkit.com/ui/api/params#sort
+				sort: { created: { $order: "desc" } },
 			},
 		},
 	],
 
+	// Slots are Preact components that can be used to customize the UI
+	// https://docs.findkit.com/ui/slot-overrides/
 	slots: {
+		// Create custom header just to add the custom placeholder text to the input
+		// https://docs.findkit.com/ui/slot-overrides/slots#header
 		Header(props) {
+			// Must use the build-in html tagged template literal to render
+			// HTML instead of JSX because JSX is for the React in Docusaurus
+			// in this file
 			return html`
 				<${props.parts.CloseButton} />
 				<${props.parts.Input} placeholder="Search from the docs..." />
 			`;
 		},
 
+		// https://docs.findkit.com/ui/slot-overrides/slots#group
 		Group(props) {
+			// Capture the search terms using the useTerms hook
+			// https://docs.findkit.com/ui/slot-overrides/hooks#useTerms
 			const terms = useTerms();
 
+			// When rendering the blog group, show the custom title and the
+			// Hits component
 			if (props.id === "blog") {
 				// Show blog group only when there are no search terms
 				if (terms.trim() === "") {
 					return html`
 						<h2 class="findkit--group-title">Latest from the Blog</h2>
+						<a
+							class="view-source"
+							href="https://github.com/findkit/findkit/blob/main/packages/docs/src/theme/SearchBar.tsx"
+							>View the source code for this search implementation</a
+						>
 						<${props.parts.Hits} />
 					`;
 				} else {
+					// Hide the blog group when there are search terms
 					return null;
 				}
 			}
@@ -90,9 +136,11 @@ const ui = new FindkitUI({
 				return null;
 			}
 
+			// Render other groups normally when there are search terms
 			return props.children;
 		},
 
+		// https://docs.findkit.com/ui/slot-overrides/slots#hit
 		Hit(props) {
 			const terms = useTerms();
 
@@ -106,10 +154,11 @@ const ui = new FindkitUI({
 	},
 });
 
+// Modify the search request on the fly based on the search terms
 ui.on("fetch", (e) => {
 	e.transientUpdateGroups((docs, findkitcom, blog) => {
 		// Fetch only the blog group when there are no search terms
-		if (e.terms.trim() === "") {
+		if (e.terms.trim() !== "") {
 			blog.params.skip = false;
 			docs.params.skip = true;
 			findkitcom.params.skip = true;
@@ -117,6 +166,8 @@ ui.on("fetch", (e) => {
 	});
 });
 
+// Custom Slot Override component for FindkitUI which renders the created date
+// for the blog posts
 function BlogHit(props: HitSlotProps) {
 	const created = props.hit.created;
 	const createdFormatted = created
@@ -132,14 +183,15 @@ function BlogHit(props: HitSlotProps) {
 	`;
 }
 
-console.log("module.hot 5", module.hot, import.meta);
-
+// Dispose the UI when the module is hot reloaded by the Docusaurus dev server
+// https://docs.findkit.com/ui/api/#hot-module-reloading
 declare const module: any;
-import.meta.hot?.dispose(() => {
-	console.log("disposing");
+module.hot?.dispose(() => {
 	ui.dispose();
 });
 
+// Wrap FindkitUI into a React Component. This export is picked by Docusaurus.
+// https://docs.findkit.com/ui/patterns/embedding/react
 export default function SearchBarWrapper() {
 	useEffect(() => {
 		return ui.openFrom("button.open-search");
