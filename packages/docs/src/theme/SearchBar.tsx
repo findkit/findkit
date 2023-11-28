@@ -2,8 +2,8 @@
 // posts when user has not typed any search terms but searches from all content
 // on findkit.com and docs.findkit.com when user types search terms
 
-// This file exports the Docusaurus search bar component which renders a button
-// which opens the FindkitUI modal
+// This file exports the Docusaurus search bar React component which renders a
+// button opening the FindkitUI modal
 
 // Used only for the Docusaurus search bar component
 import React, { useEffect, useRef } from "react";
