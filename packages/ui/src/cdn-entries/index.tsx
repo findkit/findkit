@@ -13,6 +13,7 @@ import type {
 	CustomRouterData,
 	GroupsOrDefault,
 	SearchParamsOrDefault,
+	CustomRouterDataSetter,
 } from "../search-engine";
 import type { RouterBackend } from "../router";
 import type {
@@ -97,6 +98,8 @@ export {
 	BindInputEvent,
 	UnbindInputEvent,
 	CustomRouterDataEvent,
+	CustomRouterData,
+	CustomRouterDataSetter,
 	Filter,
 	Operator,
 	Sort,
@@ -284,6 +287,13 @@ export const html = createShellFunction("html");
  * @public
  */
 export const h = createShellFunction("h");
+
+/**
+ * Manage custom router data from a slot override
+ *
+ * @public
+ */
+export const useCustomRouterData = createShellFunction("useCustomRouterData");
 
 /**
  * Lazily loaded preact hooks

@@ -361,6 +361,7 @@ The object values can only be strings. In Typescript terms the `data` type is
 
 - See [`custom-router-data`](/ui/api/events#custom-router-data) event
 - See [`defaultCustomRouterData`](#defaultCustomRouterData) constructor option
+- See [`useCustomRouterData`](/ui/slot-overrides/hooks#useCustomRouterData) slot override hook
 - Read the [Custom Router Data](/ui/custom-router-data) page for more information
 
 <Api page="ui.findkitui.setCustomRouterData" />
