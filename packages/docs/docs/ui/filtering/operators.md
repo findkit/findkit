@@ -32,9 +32,7 @@ String value is an implicit `$eq`. Eg. this can written as
 
 ```json
 {
-	"stock": {
-		"$gt": 0
-	}
+	"stock": { "$gt": 0 }
 }
 ```
 
@@ -49,6 +47,26 @@ String value is an implicit `$eq`. Eg. this can written as
 ### `$lte` {#$lte}
 
 "Less than or equal" version of [`$gt`](#$gt)
+
+### `$exists` {#$lte}
+
+Checks that value exists or not exists.
+
+Example: Mus have `price` custom field:
+
+```json
+{
+	"price": { "$exists": true }
+}
+```
+
+Must not have `price` custom field:
+
+```json
+{
+	"price": { "$exists": false }
+}
+```
 
 ### `$in` {#$in}
 
