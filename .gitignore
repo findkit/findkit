@@ -9,3 +9,4 @@ build
 
 # Local Netlify folder
 .netlify
+findkit-export-*.jsonl
