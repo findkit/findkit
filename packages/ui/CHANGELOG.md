@@ -1,3 +1,11 @@
+## v0.16.0
+
+2023-11-30
+
+- Add [useCustomRouterData](https://docs.findkit.com/ui/slot-overrides/hooks#useCustomRouterData)
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.15.0...ui/v0.16.0
+
 ## v0.15.0
 
 2023-11-23
