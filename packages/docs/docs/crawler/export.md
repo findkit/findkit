@@ -29,6 +29,7 @@ interface Doc {
 	title: string;
 	tags: string[];
 	content: string;
+	language: string;
 	superwords: string;
 	noHighlightContent: string;
 	customFieds: {
