@@ -51,6 +51,10 @@ function getLinkElement(el: any): HTMLAnchorElement | null {
 	return null;
 }
 
+export type CustomRouterDataSetter<T extends CustomRouterData> =
+	| T
+	| ((prevData: T) => T | void | undefined);
+
 /**
  * Like the findkit result but real dates instead of the string dates
  *
@@ -318,6 +322,8 @@ export interface State {
 	 * search results
 	 */
 	messages: { id: string; message: string }[];
+
+	pendingCustomRouterData: CustomRouterData | undefined;
 }
 
 /**
@@ -439,7 +445,7 @@ export class FindkitURLSearchParams {
 		);
 	}
 
-	getCustomData() {
+	getCustomData(): CustomRouterData | undefined {
 		const customData: CustomRouterData = {};
 
 		for (const [key, value] of this.PRIVATE_params.entries()) {
@@ -449,7 +455,7 @@ export class FindkitURLSearchParams {
 			}
 		}
 
-		return customData;
+		return Object.keys(customData).length === 0 ? undefined : customData;
 	}
 
 	getGroupId() {
@@ -732,6 +738,7 @@ export class SearchEngine {
 			inputs: [],
 
 			messages: [],
+			pendingCustomRouterData: undefined,
 
 			// Ensure groups are unique so mutating one does not mutate the
 			// other
@@ -1112,6 +1119,15 @@ export class SearchEngine {
 		const currentTerms = currentParams.getTerms() ?? "";
 		this.state.searchParams = this.PRIVATE_router.getSearchParamsString();
 
+		if (
+			deepEqual(
+				this.state.pendingCustomRouterData,
+				currentParams.getCustomData(),
+			)
+		) {
+			this.state.pendingCustomRouterData = undefined;
+		}
+
 		if (this.PRIVATE_ignoreNextAddressbarUpdate) {
 			this.PRIVATE_ignoreNextAddressbarUpdate = false;
 			return;
@@ -1193,10 +1209,25 @@ export class SearchEngine {
 
 	private PRIVATE_ignoreNextAddressbarUpdate = false;
 
-	private PRIVATE_pendingCustomRouterData?: CustomRouterData;
+	setCustomRouterData(
+		data: CustomRouterDataSetter<CustomRouterData>,
+		initial?: CustomRouterData,
+	) {
+		if (typeof data === "function") {
+			const prev = clone(this.getCustomRouterData(initial));
+			this.state.pendingCustomRouterData = data(prev) || prev;
+		} else {
+			this.state.pendingCustomRouterData = data;
+		}
+	}
 
-	setCustomRouterData(data: CustomRouterData) {
-		this.PRIVATE_pendingCustomRouterData = data;
+	getCustomRouterData(initial?: CustomRouterData) {
+		return (
+			this.state.pendingCustomRouterData ??
+			this.PRIVATE_getfindkitParams().getCustomData() ??
+			initial ??
+			this.PRIVATE_defaultCustomRouteData
+		);
 	}
 
 	private PRIVATE_getScrollContainer() {
@@ -1705,11 +1736,10 @@ export class SearchEngine {
 			this.state.nextGroupDefinitions = originalGroups;
 		}
 
-		if (this.PRIVATE_pendingCustomRouterData) {
+		if (this.state.pendingCustomRouterData) {
 			const next = this.PRIVATE_getfindkitParams().setCustomData(
-				this.PRIVATE_pendingCustomRouterData,
+				this.state.pendingCustomRouterData,
 			);
-			this.PRIVATE_pendingCustomRouterData = undefined;
 			this.updateAddressBar(next, {
 				push: false,
 				ignore: true,

@@ -1,10 +1,12 @@
 import "preact/devtools";
 import { html } from "htm/preact";
-import { createElement, useMemo } from "react";
+import { createElement, useCallback, useMemo, useRef } from "react";
 import { useInput, useSearchEngine, useSearchEngineState } from "../core-hooks";
 
 import { init } from "../modal";
 import {
+	CustomRouterData,
+	CustomRouterDataSetter,
 	SearchParams,
 	SearchResultHit,
 	UpdateParamsArgument,
@@ -15,6 +17,7 @@ import { preactFunctions, PreactFunctions } from "./preact-subset";
 /**
  * Read and update the search params
  *
+ * @public
  */
 function useParamsImplementation<T extends SearchParams>(): [
 	T,
@@ -26,6 +29,34 @@ function useParamsImplementation<T extends SearchParams>(): [
 	assertNonNullable(group, "useParams(): No group defined");
 
 	return [group.params, engine.updateParams] as any;
+}
+
+/**
+ * @public
+ */
+function useCustomRouterDataImplementation<T extends CustomRouterData>(
+	initial?: T,
+): [data: T, setData: (data: CustomRouterDataSetter<T>) => void] {
+	const state = useSearchEngineState();
+	const engine = useSearchEngine();
+	const initialRef = useRef(initial);
+
+	// getCustomRouterData() uses state.pendingCustomRouterData and
+	// state.searchParams internally so we can memoize the result based on
+	// those
+	const data = useMemo(() => {
+		return engine.getCustomRouterData(initialRef.current) ?? {};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [state.pendingCustomRouterData, state.searchParams]) as T;
+
+	const setData = useCallback(
+		(data: T) => {
+			engine.setCustomRouterData(data, initialRef.current);
+		},
+		[engine],
+	);
+
+	return [data, setData] as any;
 }
 
 /**
@@ -137,6 +168,7 @@ export interface Implementation {
 	useInput: typeof useInput;
 	useTotalHitCount: typeof useTotalHitCountImplementation;
 	useLoading: typeof useLoadingImplementation;
+	useCustomRouterData: typeof useCustomRouterDataImplementation;
 	preact: PreactFunctions;
 }
 
@@ -153,6 +185,7 @@ export const js: Implementation = {
 	useTotalHitCount: useTotalHitCountImplementation,
 	useLang: useLangImplementation,
 	useLoading: useLoadingImplementation,
+	useCustomRouterData: useCustomRouterDataImplementation,
 	preact: preactFunctions,
 };
 

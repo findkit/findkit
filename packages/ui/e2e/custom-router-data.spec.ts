@@ -372,3 +372,139 @@ test("emits custom-router-data on history object pushState and back navigation",
 		{ ding: "dong" },
 	]);
 });
+
+test("can use useCustomRouterData() hook", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	async function init() {
+		await page.evaluate(async () => {
+			const { FindkitUI, html, useCustomRouterData } = MOD;
+
+			const ui = new FindkitUI({
+				publicToken: "pW1D0p0Dg",
+				// Not used used because locally overridden with initial in useCustomRouterData()
+				defaultCustomRouterData: { counter: "5" },
+				slots: {
+					Header(props) {
+						const [data, setData] = useCustomRouterData({ counter: "1" });
+						const _typeTests = () => {
+							// @ts-expect-error
+							setData({ bad: "" });
+
+							// @ts-expect-error
+							setData({ counter: 1 });
+
+							setData((prev) => {
+								prev.counter = "3";
+
+								// @ts-expect-error
+								prev.counter = 1;
+
+								// @ts-expect-error
+								prev.bad = "";
+							});
+						};
+
+						const onClick = () => {
+							setData({ counter: String(Number(data.counter) + 1) });
+						};
+
+						return html`
+							${props.children}
+							<button type="button" onClick=${onClick} class="inc">
+								${data.counter}
+							</button>
+						`;
+					},
+				},
+			});
+			ui.open();
+
+			Object.assign(window, { ui });
+		});
+	}
+
+	await init();
+
+	const header = page.locator(".findkit--header");
+	await header.first().waitFor({ state: "visible" });
+	const input = page.locator("input");
+
+	const button = page.locator(".inc");
+	await expect(button).toHaveText("1");
+	await button.first().click();
+	await expect(button).toHaveText("2");
+
+	// wait for the throttle to pass
+	await page.waitForTimeout(300);
+	expect(page.url()).not.toContain("fdk.c.counter");
+
+	await input.fill("boots");
+
+	await expect.poll(() => page.url()).toContain("fdk.c.counter=2");
+
+	await page.reload();
+	await init();
+
+	await expect(button).toHaveText("2");
+});
+
+test("useCustomRouterData() inits with default data", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	async function init() {
+		await page.evaluate(async () => {
+			const { FindkitUI, html, useCustomRouterData } = MOD;
+
+			const ui = new FindkitUI({
+				publicToken: "pW1D0p0Dg",
+				defaultCustomRouterData: { counter: "5" },
+				slots: {
+					Header(props) {
+						// No initial passed, so gets the defaultCustomRouterData
+						const [data, setData] = useCustomRouterData();
+						const onClick = () => {
+							setData((data) => {
+								data.counter = String(Number(data.counter) + 1);
+							});
+						};
+
+						return html`
+							${props.children}
+							<button type="button" onClick=${onClick} class="inc">
+								${data.counter}
+							</button>
+						`;
+					},
+				},
+			});
+			ui.open();
+
+			Object.assign(window, { ui });
+		});
+	}
+
+	await init();
+
+	const header = page.locator(".findkit--header");
+	await header.first().waitFor({ state: "visible" });
+	const input = page.locator("input");
+
+	const button = page.locator(".inc");
+	await expect(button).toHaveText("5");
+	await button.first().click();
+	await expect(button).toHaveText("6");
+
+	// wait for the throttle to pass
+	await page.waitForTimeout(300);
+	expect(page.url()).not.toContain("fdk.c.counter");
+
+	await input.fill("boots");
+
+	await expect.poll(() => page.url()).toContain("fdk.c.counter=6");
+
+	await page.reload();
+	await init();
+
+	await expect(button).toHaveText("6");
+});

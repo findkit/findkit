@@ -115,6 +115,48 @@ translations on slot overrides. See [`setLang`](/ui/api/#setLang).
 
 <Api page="ui.uselanguage" />
 
+### `useCustomRouterData()` {#useCustomRouterData}
+
+_New in v0.16.0_
+
+Preact Hook version of the
+[`setCustomRouterData`](/ui/api/#setCustomRouterData) method. Works like
+`useState` but the value must be a flat object of string values. Eg. `{[key:
+string]: string}`
+
+```ts
+import { FindkitUI, html, useCustomRouterData, useParams } from "@findkit/ui";
+
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	slots: {
+		Header(props) {
+			const [data, setData] = useCustomRouterData({ value: "yes" });
+			const [params, setParams] = useParams();
+
+			const onClick = () => {
+				setData((data) => {
+					if (data.value === "yes") {
+						data.value = "no";
+					} else {
+						data.value = "yes";
+					}
+				});
+
+				// Update search params
+				updateParams(/* ... */);
+			};
+
+			return html`
+				<button type="button" onClick=${onClick}>${data.value}</button>
+			`;
+		},
+	},
+});
+```
+
+<Api page="ui.useCustomRouterData" />
+
 ### `preact` {#preact}
 
 Object of commonly used Preact Hooks. See the api docs for details.
