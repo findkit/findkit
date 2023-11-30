@@ -16,7 +16,7 @@ representing a crawled page.
 In TypeScript terms each line has a following type
 
 ```ts
-interface Line {
+interface Page {
 	id: string;
 	url: string;
 	status: string;
@@ -55,9 +55,9 @@ jq '.docs[0]' findkit-export-[ID].jsonl
 or if you want to convert the JSON Lines to JSON array use `-s`
 
 ```
-jq -s '{lines: [.[].docs[0]]}' findkit-export-[ID].jsonl
+jq -s '{docs: [.[].docs[0]]}' findkit-export-[ID].jsonl
 {
-    "lines": [ {...}, {...}, ... ]
+    "docs": [ {...}, {...}, ... ]
 }
 ```
 
