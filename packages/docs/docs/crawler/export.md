@@ -8,8 +8,8 @@ the project id (public token):
 findkit export --project <ID>
 ```
 
-The CLI will generate a "JSON Lines" file where each line is a JSON document
-representing a crawled page.
+The command will generate a "JSON Lines" file where each line is a JSON
+document representing a crawled page.
 
 ## Format
 
