@@ -11,6 +11,8 @@ findkit export --project <ID>
 The CLI will generate a "JSON Lines" file where each line is a JSON document
 representing a crawled page.
 
+## Format
+
 In TypeScript terms each line has a following type
 
 ```ts
@@ -40,6 +42,8 @@ interface Doc {
 
 Note that each page may generate multiple documents to the index but on normal
 setup each page corresponds just to a single document.
+
+## Transforming
 
 You may simplify the format with [jq](https://jqlang.github.io/jq/):
 
