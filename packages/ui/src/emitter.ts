@@ -16,7 +16,7 @@ import type {
 } from "./search-engine";
 
 export interface Handler {
-	(event: any): void;
+	(event: any, context: any): void;
 }
 
 export interface EventObject {
@@ -28,12 +28,12 @@ export interface EventObject {
  *
  * Simple event emitter
  */
-export class Emitter<Events extends {}, Source> {
+export class Emitter<Events extends {}, Context> {
 	private PRIVATE_handlers = new Map<keyof Events, Set<Handler>>();
-	private PRIVATE_source: Source;
+	private PRIVATE_context: Context;
 
-	constructor(source: Source) {
-		this.PRIVATE_source = source;
+	constructor(context: Context) {
+		this.PRIVATE_context = context;
 	}
 
 	/**
@@ -43,7 +43,7 @@ export class Emitter<Events extends {}, Source> {
 	 */
 	on<EventName extends keyof Events>(
 		eventName: EventName,
-		handler: (event: Events[EventName] & { source: Source }) => void,
+		handler: (event: Events[EventName], context: Context) => void,
 	) {
 		const set = this.PRIVATE_handlers.get(eventName) || new Set();
 		this.PRIVATE_handlers.set(eventName, set);
@@ -60,11 +60,11 @@ export class Emitter<Events extends {}, Source> {
 	 */
 	once<EventName extends keyof Events>(
 		eventName: EventName,
-		handler: (event: Events[EventName] & { source: Source }) => void,
+		handler: (event: Events[EventName], context: Context) => void,
 	) {
 		const off = this.on(eventName, (e) => {
 			off();
-			handler(e);
+			handler(e, this.PRIVATE_context);
 		});
 		return off;
 	}
@@ -74,7 +74,7 @@ export class Emitter<Events extends {}, Source> {
 	 */
 	off<EventName extends keyof Events>(
 		eventName: EventName,
-		handler: (event: any) => void,
+		handler: (event: any, context: Context) => void,
 	) {
 		const set = this.PRIVATE_handlers.get(eventName);
 		set?.delete(handler);
@@ -96,7 +96,6 @@ export class Emitter<Events extends {}, Source> {
 		eventName: EventName,
 		event: Events[EventName],
 	) {
-		Object.assign(event as any, { source: this.PRIVATE_source });
 		const set = this.PRIVATE_handlers.get(eventName);
 
 		if (typeof window !== "undefined") {
@@ -104,7 +103,7 @@ export class Emitter<Events extends {}, Source> {
 				detail: {
 					type: eventName,
 					payload: event,
-					instance: this.PRIVATE_source,
+					instance: this.PRIVATE_context,
 				},
 			});
 			window.dispatchEvent(browserEvent);
@@ -112,7 +111,7 @@ export class Emitter<Events extends {}, Source> {
 
 		if (set) {
 			for (const handler of set) {
-				handler(event);
+				handler(event, this.PRIVATE_context);
 			}
 		}
 	}
