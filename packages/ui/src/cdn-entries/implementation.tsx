@@ -156,7 +156,10 @@ export function useResultsImplementation(): SearchResultHitWithGroupId[] {
  * @public
  */
 export interface Implementation {
-	init: typeof init;
+	/**
+	 * Internal. Do not use.
+	 */
+	_init: typeof init;
 	h: (...args: any[]) => any;
 	html: (strings: TemplateStringsArray, ...values: any[]) => any;
 	useParams: typeof useParamsImplementation;
@@ -170,10 +173,12 @@ export interface Implementation {
 	useLoading: typeof useLoadingImplementation;
 	useCustomRouterData: typeof useCustomRouterDataImplementation;
 	preact: PreactFunctions;
+	css: (strings: TemplateStringsArray, ...expr: string[]) => string;
 }
 
 export const js: Implementation = {
-	init,
+	_init: init,
+	css: null as any, // set always in cdn-entries/index.ts
 	html,
 	h: createElement,
 	useGroups: useGroupsImplementation,
