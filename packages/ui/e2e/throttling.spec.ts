@@ -2,9 +2,7 @@ import { expect, test } from "@playwright/test";
 import { staticEntry } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
-declare const ui: InstanceType<
-	typeof import("../src/cdn-entries/index").FindkitUI
->;
+declare const ui: InstanceType<typeof MOD.FindkitUI>;
 
 test("search input is throttled", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
