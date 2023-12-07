@@ -348,7 +348,7 @@ export interface FindkitUIEvents<
 	"unbind-input": UnbindInputEvent;
 
 	/**
-	 * When the FinkitUI is intialized with the options. The options property
+	 * When the FinkitUI is initialized with the options. The options property
 	 * can be mutated.
 	 */
 	init: {
