@@ -1,4 +1,11 @@
-import { FindkitUIGenerics, FindkitUIOptions, Status } from "./cdn-entries";
+import {
+	FindkitUI,
+	FindkitUIGenerics,
+	FindkitUIOptions,
+	Implementation,
+	PreactFunctions,
+	Status,
+} from "./cdn-entries";
 import type {
 	CustomRouterData,
 	GroupsOrDefault,
@@ -9,7 +16,7 @@ import type {
 } from "./search-engine";
 
 export interface Handler {
-	(event: any): void;
+	(event: any, context: any): void;
 }
 
 export interface EventObject {
@@ -21,12 +28,12 @@ export interface EventObject {
  *
  * Simple event emitter
  */
-export class Emitter<Events extends {}, Source> {
+export class Emitter<Events extends {}, Context> {
 	private PRIVATE_handlers = new Map<keyof Events, Set<Handler>>();
-	private PRIVATE_source: Source;
+	private PRIVATE_context: Context;
 
-	constructor(source: Source) {
-		this.PRIVATE_source = source;
+	constructor(context: Context) {
+		this.PRIVATE_context = context;
 	}
 
 	/**
@@ -36,7 +43,7 @@ export class Emitter<Events extends {}, Source> {
 	 */
 	on<EventName extends keyof Events>(
 		eventName: EventName,
-		handler: (event: Events[EventName] & { source: Source }) => void,
+		handler: (event: Events[EventName], context: Context) => void,
 	) {
 		const set = this.PRIVATE_handlers.get(eventName) || new Set();
 		this.PRIVATE_handlers.set(eventName, set);
@@ -53,11 +60,11 @@ export class Emitter<Events extends {}, Source> {
 	 */
 	once<EventName extends keyof Events>(
 		eventName: EventName,
-		handler: (event: Events[EventName] & { source: Source }) => void,
+		handler: (event: Events[EventName], context: Context) => void,
 	) {
 		const off = this.on(eventName, (e) => {
 			off();
-			handler(e);
+			handler(e, this.PRIVATE_context);
 		});
 		return off;
 	}
@@ -67,7 +74,7 @@ export class Emitter<Events extends {}, Source> {
 	 */
 	off<EventName extends keyof Events>(
 		eventName: EventName,
-		handler: (event: any) => void,
+		handler: (event: any, context: Context) => void,
 	) {
 		const set = this.PRIVATE_handlers.get(eventName);
 		set?.delete(handler);
@@ -89,18 +96,22 @@ export class Emitter<Events extends {}, Source> {
 		eventName: EventName,
 		event: Events[EventName],
 	) {
-		Object.assign(event as any, { source: this.PRIVATE_source });
 		const set = this.PRIVATE_handlers.get(eventName);
 
-		if (typeof document !== "undefined") {
-			const browserEvent = new Event("findkit-ui-event");
-			Object.assign(browserEvent, { payload: event });
-			document.dispatchEvent(browserEvent);
+		if (typeof window !== "undefined") {
+			const browserEvent = new CustomEvent("findkituievent", {
+				detail: {
+					type: eventName,
+					data: event,
+					instance: this.PRIVATE_context,
+				},
+			});
+			window.dispatchEvent(browserEvent);
 		}
 
 		if (set) {
 			for (const handler of set) {
-				handler(event);
+				handler(event, this.PRIVATE_context);
 			}
 		}
 	}
@@ -337,9 +348,45 @@ export interface FindkitUIEvents<
 	"unbind-input": UnbindInputEvent;
 
 	/**
-	 * When the FinkitUI instance is created
+	 * When the FinkitUI is initialized with the options. The options property
+	 * can be mutated.
 	 */
-	init: {};
+	init: {
+		readonly instanceId: string;
+
+		/**
+		 * Mutable options passed to FindkitUI constructor
+		 */
+		options: FindkitUIOptions<FindkitUIGenerics>;
+
+		/**
+		 * https://docs.findkit.com/ui/slot-overrides/hooks#preact
+		 */
+		preact: PreactFunctions;
+
+		/**
+		 * Utils and hooks
+		 *
+		 * https://docs.findkit.com/ui/api/utils/
+		 * https://docs.findkit.com/ui/slot-overrides/hooks
+		 */
+		utils: {
+			h: (...args: any[]) => any;
+			html: (strings: TemplateStringsArray, ...values: any[]) => any;
+			css: (strings: TemplateStringsArray, ...expr: string[]) => string;
+			useParams: Implementation["useParams"];
+			useGroups: Implementation["useGroups"];
+			useTerms: Implementation["useTerms"];
+			useResults: Implementation["useResults"];
+			useTotal: Implementation["useTotal"];
+			useLang: Implementation["useLang"];
+			useInput: Implementation["useInput"];
+			useTotalHitCount: Implementation["useTotalHitCount"];
+			useLoading: Implementation["useLoading"];
+			useCustomRouterData: Implementation["useCustomRouterData"];
+		};
+		// Explicitly listing everything here to get cleaner generated docs
+	};
 
 	/**
 	 * When the UI discarded with .dispose()
@@ -444,21 +491,22 @@ export function lazyValue<T>() {
 	});
 }
 
-// interface MyEvents {
-// 	ding: {
-// 		instanceId: string;
-// 		dong: number;
-// 	};
-// }
+/**
+ * @public
+ *
+ * Union of all FindkitUI events tranformed to:
+ *
+ *  { type: "fetch", data: FetchEvent } | { type: "fetch-done", data: FetchDoneEvent } | ...
+ *
+ */
+type FindkitUIEventsUnion = {
+	[K in keyof FindkitUIEvents]: FindkitUIEvents[K] extends infer U
+		? { type: K; data: U; instance: FindkitUI<any, any> }
+		: never;
+}[keyof FindkitUIEvents];
 
-// const emitter = new Emitter<MyEvents>("sdf");
-
-// emitter.on("ding", (e) => {
-// 	const n: number = e.dong;
-
-// 	// @ts-expect-error
-// 	e.bad;
-// });
-
-// // @ts-expect-error
-// emitter.on("bad", () => {});
+declare global {
+	interface WindowEventMap {
+		findkituievent: CustomEvent<FindkitUIEventsUnion>;
+	}
+}

@@ -253,7 +253,7 @@ export function select<InstanceFilter extends typeof Element>(
 	}
 }
 
-const lazyImplementation: Partial<Implementation> = {};
+const lazyImplementation: Partial<Implementation> = { css };
 
 /**
  * Like the PRIVATE_createShellMethod but for standalone functions
@@ -295,34 +295,38 @@ export const h = createShellFunction("h");
  */
 export const useCustomRouterData = createShellFunction("useCustomRouterData");
 
-/**
- * Lazily loaded preact hooks
- *
- * @public
- */
-export const preact: PreactFunctions = new Proxy(
-	{},
-	{
-		get: (cache: any, prop) => {
-			const anyPreact = preactImplementation as any;
+function proxyFunctions<T extends object>(target: T): T {
+	const cache: any = {};
 
+	return new Proxy(target, {
+		get: (target, prop) => {
 			// Generate and cache proxy functions to ensure stable indendities
 			if (!cache[prop]) {
 				cache[prop] = (...args: any[]) => {
-					if (!anyPreact) {
+					const actual = (target as any)?.[prop];
+
+					if (!actual) {
 						throw new Error(
-							`[findkit] Cannot use '${String(prop)}': Preact not loaded yet!`,
+							// prettier-ignore
+							`[findkit] Cannot use '${String(prop)}': Implementation not loaded yet!`,
 						);
 					}
 
-					return anyPreact[prop](...args);
+					return actual.apply(target, args);
 				};
 			}
 
 			return cache[prop];
 		},
-	},
-) as any;
+	}) as any;
+}
+
+/**
+ * Lazily loaded preact hooks
+ *
+ * @public
+ */
+export const preact: PreactFunctions = proxyFunctions(preactImplementation);
 
 /**
  * Use search terms
@@ -603,8 +607,26 @@ export class FindkitUI<
 	container?: Element;
 
 	constructor(options: O) {
+		const initialInstanceId = options.instanceId ?? "fdk";
 		this.PRIVATE_options = options;
 		this.PRIVATE_events = new Emitter<E, FindkitUI<G, O>>(this as any);
+		const utils = proxyFunctions(
+			lazyImplementation,
+		) as Required<Implementation>;
+
+		const mutableWrap = {
+			// readonly instanceId so the original instance id is
+			// detectable even if it is modified in the options
+			instanceId: initialInstanceId,
+			utils,
+			preact,
+			options: { ...options, instanceId: initialInstanceId },
+		};
+
+		this.PRIVATE_events.emit("init", mutableWrap);
+		// Set the options again since the event handler might have modified them
+		this.PRIVATE_options = mutableWrap.options;
+
 		this.emitLoadingEvents();
 
 		if (
@@ -614,8 +636,6 @@ export class FindkitUI<
 		) {
 			void this.open();
 		}
-
-		this.PRIVATE_events.emit("init", {});
 	}
 
 	private emitLoadingEvents() {
@@ -930,7 +950,7 @@ export class FindkitUI<
 
 		const createEngine = (container?: Element) => {
 			this.PRIVATE_resources.create(() => {
-				const { engine, host } = impl.js.init({
+				const { engine, host } = impl.js._init({
 					...rest,
 					container,
 					layeredCSS: allCSS,
