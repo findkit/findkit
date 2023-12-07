@@ -10,8 +10,10 @@ test("can modify FindkitUI constructor options with a browser event", async ({
 
 	await page.evaluate(async () => {
 		window.addEventListener("findkituievent", (e) => {
+			console.log("event", e.detail);
+
 			// @ts-expect-error
-			e.detail.payload.type === "bad";
+			e.detail.data.type === "bad";
 
 			// @ts-expect-error
 			e.detail.instance.bad;
@@ -25,18 +27,18 @@ test("can modify FindkitUI constructor options with a browser event", async ({
 			}
 
 			// @ts-expect-error
-			e.detail.payload.bad;
+			e.detail.data.bad;
 
-			const { css, html, useParams } = e.detail.payload.utils;
-			const { useState } = e.detail.payload.preact;
+			const { css, html, useParams } = e.detail.data.utils;
+			const { useState } = e.detail.data.preact;
 
-			e.detail.payload.options.css = css`
+			e.detail.data.options.css = css`
 				.modified {
 					color: red;
 				}
 			`;
 
-			e.detail.payload.options.slots = {
+			e.detail.data.options.slots = {
 				Header(props) {
 					const [params] = useParams();
 					const [state] = useState("preact state");
@@ -51,7 +53,7 @@ test("can modify FindkitUI constructor options with a browser event", async ({
 			};
 		});
 
-		window.addEventListener("findkitui", (e) => {
+		window.addEventListener("findkituievent", (e) => {
 			if (e.detail.type !== "init") {
 				return;
 			}
