@@ -10,8 +10,6 @@ test("can modify FindkitUI constructor options with a browser event", async ({
 
 	await page.evaluate(async () => {
 		window.addEventListener("findkituievent", (e) => {
-			console.log("event", e.detail);
-
 			// @ts-expect-error
 			e.detail.data.type === "bad";
 
