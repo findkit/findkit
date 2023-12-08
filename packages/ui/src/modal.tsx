@@ -636,9 +636,10 @@ export function init(_options: {
 		);
 	}
 
-	if (options.groups && options.params) {
+	const hasGroups = options.groups && options.groups.length > 0;
+	if (hasGroups && options.params) {
 		console.error(
-			"[ERROR] groups and params passed to Findkit. Use one or the other.",
+			"[ERROR] Both `groups` and `params` options passed to Findkit. Use only one or the other.",
 		);
 	}
 
