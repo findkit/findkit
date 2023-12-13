@@ -101,7 +101,7 @@ export class Emitter<Events extends {}, Context> {
 		if (typeof window !== "undefined") {
 			const browserEvent = new CustomEvent("findkituievent", {
 				detail: {
-					type: eventName,
+					eventName: eventName,
 					data: event,
 					instance: this.PRIVATE_context,
 				},
@@ -496,12 +496,12 @@ export function lazyValue<T>() {
  *
  * Union of all FindkitUI events tranformed to:
  *
- *  { type: "fetch", data: FetchEvent } | { type: "fetch-done", data: FetchDoneEvent } | ...
+ *  { eventName: "fetch", data: FetchEvent } | { eventName: "fetch-done", data: FetchDoneEvent } | ...
  *
  */
 type FindkitUIEventsUnion = {
 	[K in keyof FindkitUIEvents]: FindkitUIEvents[K] extends infer U
-		? { type: K; data: U; instance: FindkitUI<any, any> }
+		? { eventName: K; data: U; instance: FindkitUI<any, any> }
 		: never;
 }[keyof FindkitUIEvents];
 
