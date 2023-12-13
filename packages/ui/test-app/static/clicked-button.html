@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Search UI Test</title>
+		<script type="module">
+			import * as MOD from "/build/esm/index.js";
+			// Expose the module as global so Playwright tests can access it.
+			Object.assign(window, { MOD });
+		</script>
+	</head>
+
+	<body>
+		<button id="open-button" type="button" onclick="this.dataset.clicked=true">
+			open
+		</button>
+	</body>
+</html>

@@ -1057,6 +1057,11 @@ export class FindkitUI<
 					}),
 				);
 			}
+
+			const clicked = elements.some((el) => el.dataset.clicked);
+			if (clicked) {
+				this.open();
+			}
 		});
 
 		return resources.dispose;
