@@ -306,6 +306,46 @@ export interface LoadingDoneEvent {}
 
 /**
  * @public
+ */
+export interface InitEvent {
+	readonly instanceId: string;
+
+	/**
+	 * Mutable options passed to FindkitUI constructor
+	 */
+	options: FindkitUIOptions<FindkitUIGenerics>;
+
+	/**
+	 * https://docs.findkit.com/ui/slot-overrides/hooks#preact
+	 */
+	preact: PreactFunctions;
+
+	/**
+	 * Utils and hooks
+	 *
+	 * https://docs.findkit.com/ui/api/utils/
+	 * https://docs.findkit.com/ui/slot-overrides/hooks
+	 */
+	utils: {
+		h: (...args: any[]) => any;
+		html: (strings: TemplateStringsArray, ...values: any[]) => any;
+		css: (strings: TemplateStringsArray, ...expr: string[]) => string;
+		useParams: Implementation["useParams"];
+		useGroups: Implementation["useGroups"];
+		useTerms: Implementation["useTerms"];
+		useResults: Implementation["useResults"];
+		useTotal: Implementation["useTotal"];
+		useLang: Implementation["useLang"];
+		useInput: Implementation["useInput"];
+		useTotalHitCount: Implementation["useTotalHitCount"];
+		useLoading: Implementation["useLoading"];
+		useCustomRouterData: Implementation["useCustomRouterData"];
+	};
+	// Explicitly listing everything here to get cleaner generated docs
+}
+
+/**
+ * @public
  *
  * FindkitUI event definitions
  */
@@ -351,42 +391,7 @@ export interface FindkitUIEvents<
 	 * When the FinkitUI is initialized with the options. The options property
 	 * can be mutated.
 	 */
-	init: {
-		readonly instanceId: string;
-
-		/**
-		 * Mutable options passed to FindkitUI constructor
-		 */
-		options: FindkitUIOptions<FindkitUIGenerics>;
-
-		/**
-		 * https://docs.findkit.com/ui/slot-overrides/hooks#preact
-		 */
-		preact: PreactFunctions;
-
-		/**
-		 * Utils and hooks
-		 *
-		 * https://docs.findkit.com/ui/api/utils/
-		 * https://docs.findkit.com/ui/slot-overrides/hooks
-		 */
-		utils: {
-			h: (...args: any[]) => any;
-			html: (strings: TemplateStringsArray, ...values: any[]) => any;
-			css: (strings: TemplateStringsArray, ...expr: string[]) => string;
-			useParams: Implementation["useParams"];
-			useGroups: Implementation["useGroups"];
-			useTerms: Implementation["useTerms"];
-			useResults: Implementation["useResults"];
-			useTotal: Implementation["useTotal"];
-			useLang: Implementation["useLang"];
-			useInput: Implementation["useInput"];
-			useTotalHitCount: Implementation["useTotalHitCount"];
-			useLoading: Implementation["useLoading"];
-			useCustomRouterData: Implementation["useCustomRouterData"];
-		};
-		// Explicitly listing everything here to get cleaner generated docs
-	};
+	init: InitEvent;
 
 	/**
 	 * When the UI discarded with .dispose()
