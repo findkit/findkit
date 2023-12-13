@@ -230,18 +230,67 @@ ui.on("bind-input", (e1) => {
 
 Emitted when the `FindkitUI` instance is discarded with the [`.dispose()`](/ui/api/#dispose) method.
 
----
+### `init`
 
-<Api page="ui.findkituievents" >Full events api</Api>
+_New in v0.17.0_
 
-## DOM Events
+Emitted when a FindkitUI instance is being constructed. Allows full
+customization of the options passed to it. Useful when you need to modify a
+FindkitUI instance when you cannot cannot access the code actually creating the
+instance. For example when the [Findkit WordPress plugin](https://findk.it/wp)
+creates the instance in a Gutenberg block.
+
+Since this event is fired from the constructor it is only usable from the [DOM Event](#dom-events).
+
+Example
+
+```ts
+window.addEventListener("findkituievent", (e) => {
+	if (e.detail.eventName !== "init") {
+		return;
+	}
+
+	if (e.detail.instance.id !== "my") {
+		return;
+	}
+
+	// See API docs for what is available
+	// https://docs.findkit.com/ui-api/ui.initevent/
+	const { css } = e.detail.data.utils;
+	const { useState } = e.detail.data.preact;
+
+	e.detail.data.options.minTerms = 5;
+
+	e.detail.data.options.css = css`
+		.modified {
+			color: red;
+		}
+	`;
+
+	e.detail.data.options.slots = {
+		Header(props) {
+			const [state] = useState("preact state");
+
+			return html`
+				${props.children}
+				<div class="modified">Hello</div>
+			`;
+		},
+	};
+});
+```
+
+<Api page="ui.initevent">Event Object Interface</Api>
+
+## DOM Events {#dom-events}
 
 All events are emitted as DOM events on the `window` object as well. This
 allows for example analytics tools to bind to all FindkitUI instances without
 having access to the code that actually creates the instances. For example
 the ones created by the [Findkit WordPress plugin](https://findk.it/wp).
 
-All events are wrapped into a `findkituievent` [CustomEvent](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent).
+The events are wrapped into a `findkituievent`
+[CustomEvent](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent).
 
 Example
 
