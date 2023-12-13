@@ -45,14 +45,15 @@ old style `<script>` tag with:
 
 ```html
 <script>
-  window.onFindkitUIModule = ({ FindkitUI }) => {
-    const ui = new FindkitUI({ publicToken: "<TOKEN>" });
-  };
+	window.onFindkitUIModule = ({ FindkitUI }) => {
+		const ui = new FindkitUI({ publicToken: "<TOKEN>" });
+	};
 
-  const script = document.createElement("script");
-  script.type = "module";
-  script.innerHTML = 'import("https://cdn.findkit.com/ui/v0.15.0/esm/index.js").then(onFindkitUIModule)';
-  document.head.append(script);
+	const script = document.createElement("script");
+	script.type = "module";
+	script.innerHTML =
+		'import("https://cdn.findkit.com/ui/v0.15.0/esm/index.js").then(onFindkitUIModule)';
+	document.head.append(script);
 </script>
 ```
 
