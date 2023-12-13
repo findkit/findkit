@@ -233,3 +233,39 @@ Emitted when the `FindkitUI` instance is discarded with the [`.dispose()`](/ui/a
 ---
 
 <Api page="ui.findkituievents" >Full events api</Api>
+
+## DOM Events
+
+All events are emitted as DOM events on the `window` object as well. This
+allows for example analytics tools to bind to all FindkitUI instances without
+having access to the code that actually creates the instances. For example
+the ones created by the [Findkit WordPress plugin](https://findk.it/wp).
+
+All events are wrapped into a `findkituievent` [CustomEvent](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent).
+
+Example
+
+```ts
+window.addEventListener("findkituievent", (e) => {
+	// The FindkitUI instance
+	e.detail.instance;
+
+	// This event may come from multiple instances so you should guard using
+	// the instance id.
+	if (e.detail.instance.id !== "my") {
+		// Only interested on events from `new FindkitUI({instanceId: "my"})`
+		return;
+	}
+
+	// The FindkitUI event name
+	if (e.detail.eventName !== "fetch") {
+		return;
+	}
+
+	// The data passed to the event
+	e.detail.data;
+	e.detail.data.terms;
+	e.detail.data.transientUpdateParams();
+	// ...
+});
+```
