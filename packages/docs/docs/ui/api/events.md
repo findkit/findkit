@@ -194,7 +194,7 @@ _New in v0.8.0_
 Emitted when an input is bound using [`.bindInput()`](/ui/api/#bindInput) or [`useInput()`](/ui/slot-overrides/hooks#useInput).
 This is also called for the build-in input.
 
-<Api page="ui.bindinput">Event Object Interface</Api>
+<Api page="ui.bindinputevent">Event Object Interface</Api>
 
 ### `unbind-input`
 
