@@ -11,6 +11,7 @@
 				publicToken: "p68GxRvaA",
 			});
 
+			// https://docs.findkit.com/ui/api/#openFrom
 			ui.openFrom("button.open");
 
 			// Add visual indication when the search UI is requested to open
@@ -28,7 +29,10 @@
 			});
 		</script>
 	</head>
+
 	<body>
-		<button class="open" type="button">open</button>
+		<button class="open" type="button" onclick="this.dataset.clicked=true">
+			Open Search
+		</button>
 	</body>
 </html>
