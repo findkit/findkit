@@ -340,6 +340,19 @@ Open the modal from the given element or elements. Select can be a `Element`
 object or a CSS selector string. A cleanup function is returned which will
 unbind all the event listeners when called.
 
+If the given element contains `data-clicked="true"` the modal will be opened
+immediately. This is useful on slow network situations when the user manages
+to click the open button before the code loads. Use inline JavaScript to
+add the attribute to ensure it is always added.
+
+```html
+<button type="button" onclick="this.dataset.clicked=true">
+	Open Search Modal
+</button>
+```
+
+_The attribute handling was added in v0.17.0_
+
 <Api page="ui.findkitui.openfrom" />
 
 ### `.trapFocus(selector)` {#trapFocus}
