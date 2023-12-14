@@ -11,6 +11,9 @@ const unsubscribe = ui.on("open", () => {
 });
 ```
 
+The events are also emitted as [DOM events](#dom-events) on the `window`
+object.
+
 ## Event Names
 
 The available event names.
@@ -240,7 +243,8 @@ FindkitUI instance when you cannot access the code actually creating the
 instance. For example when the [Findkit WordPress plugin](https://findk.it/wp)
 creates the instance in a Gutenberg block.
 
-Since this event is fired from the constructor it is only usable from the [DOM Event](#dom-events).
+Since this event is fired from the constructor it is only usable from the [DOM
+Event](#dom-events).
 
 Example
 
