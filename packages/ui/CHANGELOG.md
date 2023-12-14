@@ -1,3 +1,14 @@
+## v0.17.0
+
+2023-12-14
+
+- Handle data-clicked in .openFrom()
+- Add ui.search(terms)
+- Emit `findkituievent` DOM events from build-in events
+- Allow constructor options mutation in the `init` event
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.16.0...ui/v0.17.0
+
 ## v0.16.0
 
 2023-11-30
