@@ -341,9 +341,9 @@ object or a CSS selector string. A cleanup function is returned which will
 unbind all the event listeners when called.
 
 If the given element contains `data-clicked="true"` the modal will be opened
-immediately. This is useful on slow network situations when the user manages
-to click the open button before the code loads. Use inline JavaScript to
-add the attribute to ensure it is always added.
+immediately. This is useful on slow network situations when the user manages to
+click the open button before the code loads. Use inline JavaScript to add the
+attribute to ensure it is always added.
 
 ```html
 <button type="button" onclick="this.dataset.clicked=true">
