@@ -884,6 +884,10 @@ export class FindkitUI<
 		});
 	}
 
+	search(terms: string) {
+		this.open(terms);
+	}
+
 	private async PRIVATE_loadImplementation(): Promise<{
 		js: Implementation;
 		css?: string;

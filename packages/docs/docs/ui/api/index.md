@@ -329,6 +329,11 @@ Following methods are available on the `FindkitUI` instance.
 Open the search modal. If search terms are passed in the input will populated
 with it and a search request is made immediately.
 
+### `.search(terms)` {#search}
+
+Make a search with the given search terms. Opens the modal if closed (and not
+using `modal: false`).
+
 ### `.openFrom(selector)` {#openFrom}
 
 Open the modal from the given element or elements. Select can be a `Element`
