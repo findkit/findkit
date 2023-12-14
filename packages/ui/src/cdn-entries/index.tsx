@@ -39,6 +39,7 @@ import {
 	UnbindInputEvent,
 	lazyValue,
 	CustomRouterDataEvent,
+	InitEvent,
 } from "../emitter";
 import type { TranslationStrings } from "../translations";
 import { listen, Resources } from "../resources";
@@ -109,6 +110,7 @@ export {
 	ShowAllLinkProps,
 	HitSlotParts,
 	HitSlotProps,
+	InitEvent,
 };
 
 const doc = () => document;

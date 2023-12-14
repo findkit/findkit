@@ -16,7 +16,7 @@ test("can modify FindkitUI constructor options with a browser event", async ({
 			// @ts-expect-error
 			e.detail.instance.bad;
 
-			if (e.detail.type !== "init") {
+			if (e.detail.eventName !== "init") {
 				return;
 			}
 
@@ -52,7 +52,7 @@ test("can modify FindkitUI constructor options with a browser event", async ({
 		});
 
 		window.addEventListener("findkituievent", (e) => {
-			if (e.detail.type !== "init") {
+			if (e.detail.eventName !== "init") {
 				return;
 			}
 
