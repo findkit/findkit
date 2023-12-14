@@ -236,7 +236,7 @@ _New in v0.17.0_
 
 Emitted when a FindkitUI instance is being constructed. Allows full
 customization of the options passed to it. Useful when you need to modify a
-FindkitUI instance when you cannot cannot access the code actually creating the
+FindkitUI instance when you cannot access the code actually creating the
 instance. For example when the [Findkit WordPress plugin](https://findk.it/wp)
 creates the instance in a Gutenberg block.
 
