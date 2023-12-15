@@ -127,7 +127,7 @@ task("build-test-app", async () => {
 	});
 });
 
-task("styles-js", ["css"], async () => {
+task("implementation-bundle", ["css"], async () => {
 	const styles = await fs.readFile("./styles.css");
 	const code = `
 	// Generated file. Do not edit.
@@ -137,9 +137,22 @@ task("styles-js", ["css"], async () => {
 	}
 	`;
 	await fs.writeFile("./implementation.js", code);
+
+	const esmCode = `
+	// Generated file. Do not edit.
+    export * from "./implementation.js";
+	export const css = ${JSON.stringify(styles.toString())};
+	`;
+	await fs.writeFile("./esm/implementation-with-css.js", esmCode);
 });
 
-task("build-all", ["clean", "css", "styles-js", "esbuild-esm", "build-npm"]);
+task("build-all", [
+	"clean",
+	"css",
+	"esbuild-esm",
+	"build-npm",
+	"implementation-bundle",
+]);
 
 task("watch-js", async () => {
 	const opts = {
