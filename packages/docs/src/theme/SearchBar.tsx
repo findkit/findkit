@@ -10,6 +10,36 @@ import React, { useEffect, useRef } from "react";
 
 // npm installed @findkit/ui https://docs.findkit.com/ui/setup#npm
 import { FindkitUI, html, css, useTerms, HitSlotProps } from "@findkit/ui";
+function observeSize(ui: FindkitUI, selectors: Record<string, string>) {
+	ui.on("open", (event) => {
+		for (const [name, selector] of Object.entries(selectors)) {
+			if (event.container instanceof HTMLElement) {
+				event.container.style.setProperty(`--${name}-height`, `0px`);
+				event.container.style.setProperty(`--${name}-width`, `0px`);
+			}
+
+			const el = document.querySelector(selector);
+			if (!el) {
+				continue;
+			}
+
+			const observer = new ResizeObserver((entries) => {
+				const height = entries[0]?.borderBoxSize[0]?.blockSize ?? 0;
+				const width = entries[0]?.borderBoxSize[0]?.inlineSize ?? 0;
+
+				if (event.container instanceof HTMLElement) {
+					event.container.style.setProperty(`--${name}-height`, `${height}px`);
+					event.container.style.setProperty(`--${name}-width`, `${width}px`);
+				}
+			});
+
+			observer.observe(el);
+			ui.once("close", () => {
+				observer.disconnect();
+			});
+		}
+	});
+}
 
 const ui = new FindkitUI({
 	publicToken: "p68GxRvaA",
@@ -24,12 +54,9 @@ const ui = new FindkitUI({
 			visibility: visible;
 		}
 
-		@media (min-width: 900px) and (min-height: 600px) {
-			.findkit--modal {
-				margin-top: 3rem;
-				margin-bottom: 3rem;
-				max-width: 850px;
-			}
+		.findkit--modal-container {
+			left: var(--sidebar-width);
+			top: calc(var(--navbar-height) + 1px);
 		}
 
 		.blog-created {
@@ -160,6 +187,22 @@ const ui = new FindkitUI({
 			return props.children;
 		},
 	},
+});
+
+if (typeof document !== "undefined") {
+	document.body.addEventListener("click", (e) => {
+		if (
+			e.target instanceof HTMLElement &&
+			!e.target.classList.contains(".findkit")
+		) {
+			ui.close();
+		}
+	});
+}
+
+observeSize(ui, {
+	sidebar: ".theme-doc-sidebar-container",
+	navbar: ".navbar",
 });
 
 // Modify the search request on the fly based on the search terms
