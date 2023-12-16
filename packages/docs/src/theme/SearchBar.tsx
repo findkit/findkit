@@ -10,7 +10,11 @@ import React, { useEffect, useRef } from "react";
 
 // npm installed @findkit/ui https://docs.findkit.com/ui/setup#npm
 import { FindkitUI, html, css, useTerms, HitSlotProps } from "@findkit/ui";
-function observeSize(ui: FindkitUI, selectors: Record<string, string>) {
+
+function observeSize(
+	ui: FindkitUI<any, any>,
+	selectors: Record<string, string>,
+) {
 	ui.on("open", (event) => {
 		for (const [name, selector] of Object.entries(selectors)) {
 			if (event.container instanceof HTMLElement) {
