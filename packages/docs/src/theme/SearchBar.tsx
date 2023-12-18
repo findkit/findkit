@@ -197,7 +197,7 @@ if (typeof document !== "undefined") {
 	document.body.addEventListener("click", (e) => {
 		if (
 			e.target instanceof HTMLElement &&
-			!e.target.classList.contains(".findkit")
+			!e.target.classList.contains("findkit")
 		) {
 			ui.close();
 		}
