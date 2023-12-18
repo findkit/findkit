@@ -11,40 +11,6 @@ import React, { useEffect, useRef } from "react";
 // npm installed @findkit/ui https://docs.findkit.com/ui/setup#npm
 import { FindkitUI, html, css, useTerms, HitSlotProps } from "@findkit/ui";
 
-function observeSize(
-	ui: FindkitUI<any, any>,
-	selectors: Record<string, string>,
-) {
-	ui.on("open", (event) => {
-		for (const [name, selector] of Object.entries(selectors)) {
-			if (event.container instanceof HTMLElement) {
-				event.container.style.setProperty(`--${name}-height`, `0px`);
-				event.container.style.setProperty(`--${name}-width`, `0px`);
-			}
-
-			const el = document.querySelector(selector);
-			if (!el) {
-				continue;
-			}
-
-			const observer = new ResizeObserver((entries) => {
-				const height = entries[0]?.borderBoxSize[0]?.blockSize ?? 0;
-				const width = entries[0]?.borderBoxSize[0]?.inlineSize ?? 0;
-
-				if (event.container instanceof HTMLElement) {
-					event.container.style.setProperty(`--${name}-height`, `${height}px`);
-					event.container.style.setProperty(`--${name}-width`, `${width}px`);
-				}
-			});
-
-			observer.observe(el);
-			ui.once("close", () => {
-				observer.disconnect();
-			});
-		}
-	});
-}
-
 const ui = new FindkitUI({
 	publicToken: "p68GxRvaA",
 	// Show search results even without search terms so we can get the blog
@@ -293,4 +259,38 @@ export function Logo() {
 			/>
 		</svg>
 	);
+}
+
+function observeSize(
+	ui: FindkitUI<any, any>,
+	selectors: Record<string, string>,
+) {
+	ui.on("open", (event) => {
+		for (const [name, selector] of Object.entries(selectors)) {
+			if (event.container instanceof HTMLElement) {
+				event.container.style.setProperty(`--${name}-height`, `0px`);
+				event.container.style.setProperty(`--${name}-width`, `0px`);
+			}
+
+			const el = document.querySelector(selector);
+			if (!el) {
+				continue;
+			}
+
+			const observer = new ResizeObserver((entries) => {
+				const height = entries[0]?.borderBoxSize[0]?.blockSize ?? 0;
+				const width = entries[0]?.borderBoxSize[0]?.inlineSize ?? 0;
+
+				if (event.container instanceof HTMLElement) {
+					event.container.style.setProperty(`--${name}-height`, `${height}px`);
+					event.container.style.setProperty(`--${name}-width`, `${width}px`);
+				}
+			});
+
+			observer.observe(el);
+			ui.once("close", () => {
+				observer.disconnect();
+			});
+		}
+	});
 }
