@@ -51,6 +51,10 @@ const ui = new FindkitUI({
 	// posts
 	minTerms: 0,
 
+	// async load() {
+	// 	return import("@findkit/ui/implementation");
+	// },
+
 	// Add some custom styles into the FindkitUI Shadow DOM
 	// https://docs.findkit.com/ui/styling
 	css: css`
