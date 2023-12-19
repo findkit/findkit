@@ -38,6 +38,26 @@ Inject custom styles to the Shadow Root. See [Styling](/ui/styling).
 
 <Api page="ui.findkituioptions.css" />
 
+### `backdrop: boolean` {#backdrop}
+
+_New in v0.18.0_
+
+Show backdrop shadow when opened as a modal.
+
+Default `false`
+
+<Api page="ui.findkituioptions.backdrop" />
+
+### `closeOnOutsideClick: boolean` {#backdrop}
+
+_New in v0.18.0_
+
+Close the modal when a non-focus traped element is clicked.
+
+Default `false`
+
+<Api page="ui.findkituioptions.closeOnOutsideClick" />
+
 ### `lockScroll: boolean` {#lockScroll}
 
 Lock page scrolling. Only used with `mode: "modal"`. Defaults to `true`. You may
@@ -329,10 +349,20 @@ Following methods are available on the `FindkitUI` instance.
 Open the search modal. If search terms are passed in the input will populated
 with it and a search request is made immediately.
 
+### `.toggle()` {#toggle}
+
+_New in v0.18.0_
+
+Toggle the modal open / closed state.
+
+<Api page="ui.findkitui.toggle" />
+
 ### `.search(terms)` {#search}
 
 Make a search with the given search terms. Opens the modal if closed (and not
 using `modal: false`).
+
+<Api page="ui.findkitui.search" />
 
 ### `.openFrom(selector)` {#openFrom}
 
