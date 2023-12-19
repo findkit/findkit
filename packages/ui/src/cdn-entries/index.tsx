@@ -504,6 +504,7 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	pageScroll?: boolean;
 	styleSheet?: string;
 	closeOnOutsideClick?: boolean;
+	backdrop?: boolean;
 
 	/**
 	 * See {@link Slots}
