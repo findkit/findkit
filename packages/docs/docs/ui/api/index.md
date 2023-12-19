@@ -362,6 +362,8 @@ Toggle the modal open / closed state.
 Make a search with the given search terms. Opens the modal if closed (and not
 using `modal: false`).
 
+<Api page="ui.findkitui.search" />
+
 ### `.openFrom(selector)` {#openFrom}
 
 Open the modal from the given element or elements. Select can be a `Element`
