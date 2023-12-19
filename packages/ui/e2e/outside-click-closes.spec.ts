@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { delayer, staticEntry } from "./helpers";
 
+declare const MOD: typeof import("../src/cdn-entries/index");
+
 test("can use closeOnOutsideClick", async ({ page }) => {
 	const delay = delayer();
 
@@ -41,10 +43,11 @@ test("can use closeOnOutsideClick", async ({ page }) => {
 
 	// Not inside the modal but in the focus trap
 	await input.click();
+	await page.waitForTimeout(220);
+	await expect(container).toBeVisible();
 
 	// The modal container. Should not cause close
 	await container.click();
-
 	await page.waitForTimeout(220);
 	await expect(container).toBeVisible();
 
@@ -79,4 +82,39 @@ test("closeOnOutsideClick can be disabled (and is by default)", async ({
 	await page.waitForTimeout(220);
 
 	await expect(container).toBeVisible();
+});
+
+test("closeOnOutsideClick works with open from toggle with inner element", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		document.body.innerHTML = `
+			<button id="toggle"><span>Toggle</span></button>
+			<p>Just some text</p>
+		`;
+
+		const { FindkitUI, css } = MOD;
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			closeOnOutsideClick: true,
+			css: css`
+				.findkit--container {
+					top: 2rem;
+				}
+			`,
+		});
+
+		ui.openFrom("#toggle");
+	});
+
+	const button = page.locator("#toggle span");
+	const container = page.locator(".findkit--container").first();
+
+	await button.click();
+	await expect(container).toBeVisible();
+
+	await button.click();
+	await expect(container).not.toBeVisible();
 });
