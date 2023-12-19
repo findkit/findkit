@@ -38,15 +38,24 @@ test("can show backdrop", async ({ page }) => {
 
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
-			publicToken: "po8GK3G0r",
-			css: MOD.css`
-				.findkit--modal {
-					position: fixed;
-					width: initial;
-					height: initial;
-					inset: 20px;
-				}
-			`,
+			publicToken: "pW1D0p0Dg",
+			backdrop: true,
+		});
+
+		ui.open();
+	});
+	await page.locator("input").waitFor({ state: "visible" });
+	await expect(page).toHaveScreenshot();
+});
+
+test("no backdrop on small screens", async ({ page }) => {
+	await page.setViewportSize({ width: 400, height: 600 });
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			backdrop: true,
 		});
 
 		ui.open();

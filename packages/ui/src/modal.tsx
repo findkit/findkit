@@ -609,6 +609,7 @@ export function init(_options: {
 	container?: Element;
 	lockScroll?: boolean;
 	infiniteScroll?: boolean;
+	backdrop?: boolean;
 	header?: boolean;
 	router?: SearchEngineOptions["router"];
 	groupOrder?: GroupOrder;
@@ -643,7 +644,7 @@ export function init(_options: {
 		);
 	}
 
-	let scrollLockCSS = "";
+	let dynamicCSS = "";
 
 	if (options.modal === false) {
 		options.pageScroll = true;
@@ -652,13 +653,25 @@ export function init(_options: {
 
 	if (options.pageScroll) {
 		options.lockScroll = false;
-		scrollLockCSS = `
+		dynamicCSS = `
 			.${cn("modal-container")} {
 				inset: initial;
 				position: absolute;
 				top: 0;
 				left: 0;
 				right: 0;
+			}
+		`;
+	}
+
+	if (options.backdrop) {
+		dynamicCSS += `
+			@media (min-width: 900px) and (min-height: 600px) {
+				.${cn("modal")} {
+					margin-top: 3rem;
+					margin-bottom: 3rem;
+					max-width: 850px;
+				}
 			}
 		`;
 	}
@@ -712,7 +725,7 @@ export function init(_options: {
 	const coreStyles = styles.filter((style) => style.layer === "findkit.core");
 	const userStyles = styles.filter((style) => style.layer !== "findkit.core");
 
-	coreStyles.push({ css: scrollLockCSS, layer: "findkit.core" });
+	coreStyles.push({ css: dynamicCSS, layer: "findkit.core" });
 
 	// Generates
 	// --findkit--font-8: 0.5rem;
