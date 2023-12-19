@@ -38,6 +38,26 @@ Inject custom styles to the Shadow Root. See [Styling](/ui/styling).
 
 <Api page="ui.findkituioptions.css" />
 
+### `backdrop: boolean` {#backdrop}
+
+_New in v0.18.0_
+
+Show backdrop shadow when opened as a modal.
+
+Default `false`
+
+<Api page="ui.findkituioptions.backdrop" />
+
+### `closeOnOutsideClick: boolean` {#backdrop}
+
+_New in v0.18.0_
+
+Close the modal when a non-focus traped element is clicked.
+
+Default `false`
+
+<Api page="ui.findkituioptions.closeOnOutsideClick" />
+
 ### `lockScroll: boolean` {#lockScroll}
 
 Lock page scrolling. Only used with `mode: "modal"`. Defaults to `true`. You may
