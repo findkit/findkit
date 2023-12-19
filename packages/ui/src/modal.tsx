@@ -76,7 +76,7 @@ function useFocusTrap(
 			trapRef.current = new FocusTrap({
 				containers: [containerRef.current, ...inputs, ...trapElements],
 				escDisables: true,
-				outsideClickDisables: false,
+				outsideClickDisables: engine.closeOnOutsideClick,
 				onAfterEnable() {
 					for (const input of inputs) {
 						if (containerRef.current?.contains(input)) {

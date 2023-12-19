@@ -348,18 +348,21 @@ export class FocusTrap {
 		}
 	}
 
+	private PRIVATE_isInContainer(el: Element) {
+		for (const container of this.PRIVATE_containers) {
+			if (el === container || container.contains(el)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	/**
 	 * Returns true if the element is valid tabblable in our containers
 	 */
 	private PRIVATE_isValidFocus(el: Element) {
-		let inContainer = false;
-
-		for (const container of this.PRIVATE_containers) {
-			if (el === container || container.contains(el)) {
-				inContainer = true;
-				break;
-			}
-		}
+		const inContainer = this.PRIVATE_isInContainer(el);
 
 		if (!inContainer) {
 			return false;
@@ -413,8 +416,8 @@ export class FocusTrap {
 		this.PRIVATE_state.usingMouse = true;
 
 		if (
-			!this.PRIVATE_isValidFocus(e.target) &&
-			this.PRIVATE_options.outsideClickDisables
+			this.PRIVATE_options.outsideClickDisables &&
+			!this.PRIVATE_isInContainer(e.target)
 		) {
 			this.disable();
 		}
