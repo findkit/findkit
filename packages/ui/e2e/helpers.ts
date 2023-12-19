@@ -62,3 +62,16 @@ export function staticEntry(entry: string) {
 	}
 	return `http://localhost:28104/static/${entry}`;
 }
+
+export function delayer() {
+	let saved: () => void = () => {};
+
+	return {
+		now() {
+			saved();
+		},
+		what(fn: () => void) {
+			saved = fn;
+		},
+	};
+}

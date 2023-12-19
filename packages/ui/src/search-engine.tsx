@@ -542,6 +542,7 @@ export interface SearchEngineOptions {
 	container: Element | ShadowRoot;
 	forceHistoryReplace?: boolean;
 	manageScroll?: boolean;
+	closeOnOutsideClick?: boolean;
 	router?: "memory" | "querystring" | "hash" | RouterBackend<{}>;
 
 	/**
@@ -622,6 +623,7 @@ interface GlobalHistoryState {
 export class SearchEngine {
 	PRIVATE_requestId = 0;
 	PRIVATE_pendingRequestIds: Map<number, AbortController> = new Map();
+	readonly closeOnOutsideClick: boolean;
 
 	private readonly PRIVATE_router: RouterBackend<GlobalHistoryState>;
 	private PRIVATE_fetcher: FindkitFetch;
@@ -655,6 +657,7 @@ export class SearchEngine {
 	constructor(options: SearchEngineOptions) {
 		this.PRIVATE_defaultCustomRouteData = options.defaultCustomRouterData ?? {};
 		this.PRIVATE_manageScroll = options.manageScroll;
+		this.closeOnOutsideClick = options.closeOnOutsideClick ?? false;
 		if (typeof window === "undefined") {
 			this.PRIVATE_router = {
 				listen: () => () => {},
