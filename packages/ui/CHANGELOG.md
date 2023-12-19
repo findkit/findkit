@@ -1,3 +1,15 @@
+## v0.18.0
+
+2023-12-19
+
+- Add [toggle()](https://docs.findkit.com/ui/api/#toggle) method
+- Add openFrom elements to focus trap [4f23ec6](https://github.com/findkit/findkit/commit/4f23ec6) - Esa-Matti Suuronen
+- closes the modal when a 'openFrom' button is clicked again
+- Add [backdrop](https://docs.findkit.com/ui/api/#backdrop) option [0c39e43](https://github.com/findkit/findkit/commit/0c39e43) - Esa-Matti Suuronen
+- Add [closeOnOutsideClick](https://docs.findkit.com/ui/api/#closeOnOutsideClick) [16149a6](https://github.com/findkit/findkit/commit/16149a6) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.17.0...ui/v0.18.0
+
 ## v0.17.0
 
 2023-12-14
