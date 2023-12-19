@@ -885,6 +885,10 @@ export class FindkitUI<
 		});
 	}
 
+	toggle() {
+		this.open(undefined, { toggle: true });
+	}
+
 	search(terms: string) {
 		this.open(terms);
 	}
@@ -999,7 +1003,7 @@ export class FindkitUI<
 		}
 
 		e.preventDefault();
-		void this.open(undefined, { toggle: true });
+		void this.toggle();
 	};
 
 	/**
@@ -1052,7 +1056,7 @@ export class FindkitUI<
 							e.target.role === "button"
 						) {
 							e.preventDefault();
-							this.open(undefined, { toggle: true });
+							this.toggle();
 						}
 					}),
 				);
