@@ -16,6 +16,7 @@ const ui = new FindkitUI({
 	// Show search results even without search terms so we can get the blog
 	// posts
 	minTerms: 0,
+	closeOnOutsideClick: true,
 
 	// async load() {
 	// 	return import("@findkit/ui/implementation");
@@ -29,7 +30,6 @@ const ui = new FindkitUI({
 		}
 
 		.findkit--modal-container {
-			left: var(--sidebar-width);
 			top: calc(var(--navbar-height) + 1px);
 		}
 
@@ -163,19 +163,7 @@ const ui = new FindkitUI({
 	},
 });
 
-if (typeof document !== "undefined") {
-	document.body.addEventListener("click", (e) => {
-		if (
-			e.target instanceof HTMLElement &&
-			!e.target.classList.contains("findkit")
-		) {
-			ui.close();
-		}
-	});
-}
-
 observeSize(ui, {
-	sidebar: ".theme-doc-sidebar-container",
 	navbar: ".navbar",
 });
 
