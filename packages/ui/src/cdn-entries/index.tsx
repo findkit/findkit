@@ -874,14 +874,14 @@ export class FindkitUI<
 		return sheets;
 	}
 
-	open(terms?: string) {
+	open(terms?: string, options?: { toggle?: boolean }) {
 		this.PRIVATE_events.emit("request-open", {
 			preloaded: !!this.PRIVATE_lazyEngine.get(),
 		});
 		preconnect();
 		void this.PRIVATE_initEngine();
 		this.PRIVATE_lazyEngine((engine) => {
-			engine.open(terms);
+			engine.open(terms, options);
 		});
 	}
 
@@ -999,7 +999,7 @@ export class FindkitUI<
 		}
 
 		e.preventDefault();
-		void this.open();
+		void this.open(undefined, { toggle: true });
 	};
 
 	/**
@@ -1052,7 +1052,7 @@ export class FindkitUI<
 							e.target.role === "button"
 						) {
 							e.preventDefault();
-							this.open();
+							this.open(undefined, { toggle: true });
 						}
 					}),
 				);
