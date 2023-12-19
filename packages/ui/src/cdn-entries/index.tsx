@@ -875,15 +875,19 @@ export class FindkitUI<
 		return sheets;
 	}
 
-	open(terms?: string) {
+	open(terms?: string, options?: { toggle?: boolean }) {
 		this.PRIVATE_events.emit("request-open", {
 			preloaded: !!this.PRIVATE_lazyEngine.get(),
 		});
 		preconnect();
 		void this.PRIVATE_initEngine();
 		this.PRIVATE_lazyEngine((engine) => {
-			engine.open(terms);
+			engine.open(terms, options);
 		});
+	}
+
+	toggle() {
+		this.open(undefined, { toggle: true });
 	}
 
 	search(terms: string) {
@@ -1000,7 +1004,7 @@ export class FindkitUI<
 		}
 
 		e.preventDefault();
-		void this.open();
+		void this.toggle();
 	};
 
 	/**
@@ -1053,7 +1057,7 @@ export class FindkitUI<
 							e.target.role === "button"
 						) {
 							e.preventDefault();
-							this.open();
+							this.toggle();
 						}
 					}),
 				);

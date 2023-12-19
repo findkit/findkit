@@ -2073,7 +2073,12 @@ export class SearchEngine {
 		}
 	}
 
-	open = (terms?: string) => {
+	open = (terms?: string, options?: { toggle?: boolean }) => {
+		if (this.state.status !== "closed" && options?.toggle) {
+			this.close();
+			return;
+		}
+
 		this.PRIVATE_started(() => {
 			const findkitParams = this.PRIVATE_getfindkitParams();
 			const nextTerms = terms === undefined ? findkitParams.getTerms() : terms;
