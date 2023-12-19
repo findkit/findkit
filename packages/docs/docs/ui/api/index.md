@@ -349,6 +349,14 @@ Following methods are available on the `FindkitUI` instance.
 Open the search modal. If search terms are passed in the input will populated
 with it and a search request is made immediately.
 
+### `.toggle()` {#toggle}
+
+_New in v0.18.0_
+
+Toggle the modal open / closed state.
+
+<Api page="ui.findkitui.toggle" />
+
 ### `.search(terms)` {#search}
 
 Make a search with the given search terms. Opens the modal if closed (and not
