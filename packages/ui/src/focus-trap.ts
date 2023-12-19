@@ -362,9 +362,7 @@ export class FocusTrap {
 	 * Returns true if the element is valid tabblable in our containers
 	 */
 	private PRIVATE_isValidFocus(el: Element) {
-		const inContainer = this.PRIVATE_isInContainer(el);
-
-		if (!inContainer) {
+		if (!this.PRIVATE_isInContainer(el)) {
 			return false;
 		}
 
@@ -389,18 +387,25 @@ export class FocusTrap {
 	}
 
 	private PRIVATE_isValidTabbable(
-		tabbable: Element,
+		maybeTabbable: Element,
 		container: HTMLElement | undefined,
 	) {
-		if (!this.PRIVATE_options.validateTabbable) {
-			return isTabbable(tabbable);
-		}
-
 		if (!container) {
 			return false;
 		}
 
-		return this.PRIVATE_options.validateTabbable(tabbable, container, this);
+		if (
+			this.PRIVATE_options.validateTabbable &&
+			this.PRIVATE_options.validateTabbable(maybeTabbable, container, this)
+		) {
+			return true;
+		}
+
+		if (isTabbable(maybeTabbable)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	private PRIVATE_getActiveElement() {

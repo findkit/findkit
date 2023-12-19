@@ -1042,6 +1042,7 @@ export class FindkitUI<
 			// bindings are not created if the unbind function is called before
 			// the DOMContentLoaded event.
 			for (const el of elements) {
+				this.trapFocus(el);
 				resources.create(() =>
 					listen(el, "click", this.PRIVATE_handleOpenClick),
 				);
