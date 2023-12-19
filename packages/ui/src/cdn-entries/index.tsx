@@ -856,7 +856,7 @@ export class FindkitUI<
 	/**
 	 * Return css file urls
 	 */
-	PRIVATE_getStyleSheets(): LayeredCSS[] {
+	private PRIVATE_getStyleSheets(): LayeredCSS[] {
 		const sheets: LayeredCSS[] = [];
 
 		// If there is a load option we asume it returns the css too. So we can
