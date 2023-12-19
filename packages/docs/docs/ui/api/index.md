@@ -48,7 +48,7 @@ Default `false`
 
 <Api page="ui.findkituioptions.backdrop" />
 
-### `closeOnOutsideClick: boolean` {#backdrop}
+### `closeOnOutsideClick: boolean` {#closeOnOutsideClick}
 
 _New in v0.18.0_
 
