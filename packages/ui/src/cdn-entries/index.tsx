@@ -591,6 +591,8 @@ export interface FindkitUIGenerics {
 /**
  * The Lazy loading Findkit UI
  *
+ * https://docs.findkit.com/ui/api/
+ *
  * @public
  */
 export class FindkitUI<
@@ -705,6 +707,8 @@ export class FindkitUI<
 
 	/**
 	 * Close the modal
+	 *
+	 * https://docs.findkit.com/ui/api/#close
 	 */
 	close = this.PRIVATE_createShellMethod("close");
 
@@ -715,11 +719,15 @@ export class FindkitUI<
 
 	/**
 	 * Set the current UI language
+	 *
+	 * https://docs.findkit.com/ui/api/#setLang
 	 */
 	setLang = this.PRIVATE_createShellMethod("setLang");
 
 	/**
 	 * Set the UI translations transt for a given language
+	 *
+	 * https://docs.findkit.com/ui/api/#addTranslation
 	 *
 	 * @params lang - language code
 	 * @params translations - translations object
@@ -748,6 +756,9 @@ export class FindkitUI<
 		arg: UpdateParamsArgument<SearchParamsOrDefault<G, O>>,
 	) => void = this.PRIVATE_createShellMethod("updateParams");
 
+	/**
+	 * https://docs.findkit.com/ui/api/#params
+	 */
 	get params(): SearchParamsOrDefault<G, O> {
 		return (this.PRIVATE_lazyEngine.get()?.getParams() ??
 			this.PRIVATE_options.params ?? {
@@ -786,6 +797,9 @@ export class FindkitUI<
 		return this.PRIVATE_lazyEngine.get()?.state.usedTerms ?? "";
 	}
 
+	/**
+	 * https://docs.findkit.com/ui/api/#status
+	 */
 	status(): Status {
 		return this.PRIVATE_lazyEngine.get()?.state.status ?? "waiting";
 	}
@@ -875,6 +889,9 @@ export class FindkitUI<
 		return sheets;
 	}
 
+	/**
+	 * https://docs.findkit.com/ui/api/#open
+	 */
 	open(terms?: string, options?: { toggle?: boolean }) {
 		this.PRIVATE_events.emit("request-open", {
 			preloaded: !!this.PRIVATE_lazyEngine.get(),
@@ -886,10 +903,16 @@ export class FindkitUI<
 		});
 	}
 
+	/**
+	 * https://docs.findkit.com/ui/api/#togggle
+	 */
 	toggle() {
 		this.open(undefined, { toggle: true });
 	}
 
+	/**
+	 * https://docs.findkit.com/ui/api/#search
+	 */
 	search(terms: string) {
 		this.open(terms);
 	}
@@ -1010,6 +1033,8 @@ export class FindkitUI<
 	/**
 	 * Add additional elements to focus trap when modal is open
 	 *
+	 * https://docs.findkit.com/ui/api/#focusTrap
+	 *
 	 * @param selector A CSS selector or an element
 	 * @returns cleanup function
 	 */
@@ -1029,7 +1054,13 @@ export class FindkitUI<
 	 * as a query selector to find the elements after the DOMContentLoaded
 	 * event.
 	 *
-	 * The implementation is preloaded on mouseover.
+	 * Element is not added to the focus trap automatically. If the element is
+	 * visible on the page when the modal is open .focus() should be manually
+	 * called on the element.
+	 *
+	 * The FindkitUI implementation is preloaded on mouseover.
+	 *
+	 * https://docs.findkit.com/ui/api/#openFrom
 	 *
 	 * @param selector
 	 * @returns unbind function
@@ -1042,7 +1073,6 @@ export class FindkitUI<
 			// bindings are not created if the unbind function is called before
 			// the DOMContentLoaded event.
 			for (const el of elements) {
-				this.trapFocus(el);
 				resources.create(() =>
 					listen(el, "click", this.PRIVATE_handleOpenClick),
 				);

@@ -107,6 +107,7 @@ test("closeOnOutsideClick works with open from toggle with inner element", async
 		});
 
 		ui.openFrom("#toggle");
+		ui.trapFocus("#toggle");
 	});
 
 	const button = page.locator("#toggle span");
