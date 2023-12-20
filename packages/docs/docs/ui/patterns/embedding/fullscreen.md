@@ -24,20 +24,15 @@ ui.openFrom("button#open");
 On slow networks it might take a moment for the UI to lazy load. You should add
 a visual indication when the UI opening is requested.
 
-This can be done using the [`FindkitUI` events](/ui/api/events).
+This can be done using the [`loading` events](/ui/api/events#loading).
 
 ```ts
-// fired on open request
-ui.on("request-open", (e) => {
-	// Only needed when it is not preloaded (preload trigger or previous usage).
-	if (!e.preloaded) {
-		document.querySelector("#open").disabled = true;
-	}
+ui.on("loading", () => {
+	document.querySelector("button.open").classList.add("loading");
 });
 
-// "open" event is fired when the search UI is actually loaded and opened
-ui.on("open", () => {
-	document.querySelector("#open").disabled = false;
+ui.on("loading-done", () => {
+	document.querySelector("button.open").classList.remove("loading");
 });
 ```
 
