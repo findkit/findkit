@@ -1029,7 +1029,13 @@ export class FindkitUI<
 	 * as a query selector to find the elements after the DOMContentLoaded
 	 * event.
 	 *
-	 * The implementation is preloaded on mouseover.
+	 * Element is not added to the focus trap automatically. If the element is
+	 * visible on the page when the modal is open .focus() should be manually
+	 * called on the element.
+	 *
+	 * The FindkitUI implementation is preloaded on mouseover.
+	 *
+	 * https://docs.findkit.com/ui/api/#openFrom
 	 *
 	 * @param selector
 	 * @returns unbind function
@@ -1042,7 +1048,6 @@ export class FindkitUI<
 			// bindings are not created if the unbind function is called before
 			// the DOMContentLoaded event.
 			for (const el of elements) {
-				this.trapFocus(el);
 				resources.create(() =>
 					listen(el, "click", this.PRIVATE_handleOpenClick),
 				);

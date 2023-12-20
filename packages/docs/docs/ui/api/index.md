@@ -370,6 +370,10 @@ Open the modal from the given element or elements. Select can be a `Element`
 object or a CSS selector string. A cleanup function is returned which will
 unbind all the event listeners when called.
 
+Element is not added to the focus trap automatically. If the element is
+visible on the page when the modal is open .focus() should be manually called
+on the element.
+
 If the given element contains `data-clicked="true"` the modal will be opened
 immediately. This is useful on slow network situations when the user manages to
 click the open button before the code loads. Use inline JavaScript to add the
