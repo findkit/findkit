@@ -4,6 +4,7 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Static Template</title>
+		<style>.loading { opacity: 0.5; }</style>
 		<script type="module">
 			import { FindkitUI } from "https://cdn.findkit.com/ui/v0.18.0/esm/index.js";
 
@@ -14,18 +15,13 @@
 			// https://docs.findkit.com/ui/api/#openFrom
 			ui.openFrom("button.open");
 
-			// Add visual indication when the search UI is requested to open
-			// on a slow connection when it can take moment to lazy load.
-			ui.on("request-open", (e) => {
-				// Only needed when it is not preloaded (preload trigger or previous usage).
-				if (!e.preloaded) {
-					document.querySelector("button.open").disabled = true;
-				}
+			// https://docs.findkit.com/ui/api/events#loading
+			ui.on("loading", () => {
+				document.querySelector("button.open").classList.add("loading");
 			});
 
-			// "open" event is fired when the search UI is actually opened
-			ui.on("open", () => {
-				document.querySelector("button.open").disabled = false;
+			ui.on("loading-done", () => {
+				document.querySelector("button.open").classList.remove("loading");
 			});
 		</script>
 	</head>
