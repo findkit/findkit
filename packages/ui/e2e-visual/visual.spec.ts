@@ -48,6 +48,107 @@ test("can show backdrop", async ({ page }) => {
 	await expect(page).toHaveScreenshot();
 });
 
+test("content is correctly sized when top is added to .findkit--modal-container", async ({
+	page,
+}) => {
+	await page.setViewportSize({ width: 500, height: 600 });
+
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI, css, html } = MOD;
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			css: css`
+				.findkit--modal {
+					border: 20px dotted cyan;
+				}
+
+				.pilar {
+					height: 1000px;
+					width: 200px;
+					border: 5px solid violet;
+					display: flex;
+					align-items: flex-end;
+				}
+
+				.findkit--modal-container {
+					border: 1px solid red;
+					top: 50px;
+				}
+			`,
+			slots: {
+				Content(props) {
+					return html`
+						${props.children}
+						<div class="pilar">content bottom</div>
+					`;
+				},
+			},
+		});
+
+		ui.open();
+	});
+
+	await page.locator("input").waitFor({ state: "visible" });
+	await expect(page).toHaveScreenshot();
+
+	await page.locator(".findkit--content").click();
+	await page.mouse.wheel(0, 1000);
+	await page.waitForTimeout(500);
+	await expect(page).toHaveScreenshot();
+});
+
+test("content is correctly sized when top is added to .findkit--modal-container with backdrop", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI, css, html } = MOD;
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			backdrop: true,
+			css: css`
+				.findkit--modal {
+					border: 20px dotted cyan;
+				}
+
+				.pilar {
+					height: 1000px;
+					width: 200px;
+					border: 5px solid violet;
+					display: flex;
+					align-items: flex-end;
+				}
+
+				.findkit--modal-container {
+					border: 1px solid red;
+					top: 50px;
+				}
+			`,
+			slots: {
+				Content(props) {
+					return html`
+						${props.children}
+						<div class="pilar">content bottom</div>
+					`;
+				},
+			},
+		});
+
+		ui.open();
+	});
+
+	await page.locator("input").waitFor({ state: "visible" });
+	await expect(page).toHaveScreenshot();
+
+	await page.locator(".findkit--content").click();
+	await page.mouse.wheel(0, 1000);
+	await page.waitForTimeout(500);
+	await expect(page).toHaveScreenshot();
+});
+
 test("no backdrop on small screens", async ({ page }) => {
 	await page.setViewportSize({ width: 400, height: 600 });
 	await page.goto(staticEntry("/dummy"));
