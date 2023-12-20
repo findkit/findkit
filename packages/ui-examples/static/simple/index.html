@@ -12,16 +12,18 @@
 				publicToken: "p68GxRvaA",
 			});
 
+			const button = document.querySelector("button.open");
+
 			// https://docs.findkit.com/ui/api/#openFrom
-			ui.openFrom("button.open");
+			ui.openFrom(button);
 
 			// https://docs.findkit.com/ui/api/events#loading
 			ui.on("loading", () => {
-				document.querySelector("button.open").classList.add("loading");
+				button.classList.add("loading");
 			});
 
 			ui.on("loading-done", () => {
-				document.querySelector("button.open").classList.remove("loading");
+				button.classList.remove("loading");
 			});
 		</script>
 	</head>

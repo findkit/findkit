@@ -27,12 +27,14 @@ a visual indication when the UI opening is requested.
 This can be done using the [`loading` events](/ui/api/events#loading).
 
 ```ts
+const button = document.querySelector("button.open");
+
 ui.on("loading", () => {
-	document.querySelector("button.open").classList.add("loading");
+	button.classList.add("loading");
 });
 
 ui.on("loading-done", () => {
-	document.querySelector("button.open").classList.remove("loading");
+	button.classList.remove("loading");
 });
 ```
 

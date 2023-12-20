@@ -364,7 +364,7 @@ using `modal: false`).
 
 <Api page="ui.findkitui.search" />
 
-### `.openFrom(selector)` {#openFrom}
+### `.openFrom(selectorOrElement)` {#openFrom}
 
 Open the modal from the given element or elements. Select can be a `Element`
 object or a CSS selector string. A cleanup function is returned which will
@@ -389,7 +389,7 @@ _The attribute handling was added in v0.17.0_
 
 <Api page="ui.findkitui.openfrom" />
 
-### `.trapFocus(selector)` {#trapFocus}
+### `.trapFocus(selectorOrElement)` {#trapFocus}
 
 Add additional elements to the focus trap. For example if you want to add close
 button outside of the modal use this to make it keyboard accessible.
@@ -418,7 +418,7 @@ The object values can only be strings. In Typescript terms the `data` type is
 
 <Api page="ui.findkitui.setCustomRouterData" />
 
-### `.bindInput(selector)` {#bindInput}
+### `.bindInput(selectorOrElement)` {#bindInput}
 
 Bind any input to the Search UI. The selector can be CSS string or the raw
 `HTMLInputElement`. An unbind funtion is returned.
