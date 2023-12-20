@@ -1,3 +1,13 @@
+## v0.18.1
+
+2023-12-20
+
+- Revert focus trapping on .openFrom() [255ee20](https://github.com/findkit/findkit/commit/255ee20) - Esa-Matti Suuronen
+  - Which was added in v0.18.0. Mistake. On fullscreen modal the element is hidden and should not be focusable
+  - Use explicit .trapFocus() call if is visible
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.18.0...ui/v0.18.1
+
 ## v0.18.0
 
 2023-12-19
