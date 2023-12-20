@@ -28,7 +28,7 @@ Used to implement loading indicator in a way it does not flash when the
 responses instant. Clear the loading indicator in the
 [`loading-done`](#loading-done) event.
 
-If you need to know excatly when the search requests happen see
+If you need to know exactly when the search requests happen see
 [`fetch`](#fetch) and [`fetch-done`](#fetch-done) events.
 
 Also available as [`useLoading`](/ui/slot-overrides/hooks#useLoading) slot
