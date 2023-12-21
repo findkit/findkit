@@ -1,3 +1,11 @@
+## v0.18.2
+
+2023-12-21
+
+- Fix modal bottom offset when using css 'top' for the modal container [6dfef1a](https://github.com/findkit/findkit/commit/6dfef1a) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.18.1...ui/v0.18.2
+
 ## v0.18.1
 
 2023-12-20
