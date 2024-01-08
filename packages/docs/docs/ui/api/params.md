@@ -55,6 +55,8 @@ language.
 
 ### `tagQuery: string[][]` {#tagQuery}
 
+Legacy filtering method. Prefer the [filter](#filter) option.
+
 Filter results using tags. For more flexible filtering based on your custom
 fields see [`filter`](#filter).
 
