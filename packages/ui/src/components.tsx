@@ -145,7 +145,12 @@ function GroupTitle(props: {
 				props.children
 			) : (
 				<>
-					{props.title} {props.total > 0 ? `(${props.total})` : ""}
+					{props.title}{" "}
+					{props.total > 0 ? (
+						<span className={cn("group-title-total")}>{props.total}</span>
+					) : (
+						""
+					)}
 				</>
 			)}
 		</View>

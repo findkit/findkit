@@ -20,6 +20,7 @@ type ClassNames =
   | "findkit--group-all-results-shown"
   | "findkit--group-header-footer-spacing"
   | "findkit--group-title"
+  | "findkit--group-title-total"
   | "findkit--header"
   | "findkit--header-hidden"
   | "findkit--highlight"
