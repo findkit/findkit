@@ -1668,6 +1668,7 @@ export class SearchEngine {
 		if (tooFewTerms || noGroups) {
 			this.state.resultGroups = {};
 			this.PRIVATE_statusTransition("ready");
+			this.state.usedGroupDefinitions = this.state.nextGroupDefinitions;
 			return;
 		}
 
