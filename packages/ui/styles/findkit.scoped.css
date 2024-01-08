@@ -27,6 +27,7 @@
 .modal-container {
 }
 
+
 .shadow-host {}
 
 .backdrop {
@@ -216,6 +217,7 @@
 }
 
 .group-title {
+	flex-direction: row;
 	margin: 0;
 	margin-left: var(--space-3);
 	margin-bottom: var(--space-6);
@@ -223,6 +225,19 @@
 	border-width: 0px 0px 0.0625rem;
 	border-image: linear-gradient(90deg, rgb(89, 89, 89), transparent) 1 / 1 / 0
 		stretch;
+}
+
+.group-title-total {
+	display: inline;
+	margin-left: 1ch;
+}
+
+.group-title-total::before {
+	content: '(';
+}
+
+.group-title-total::after {
+	content: ')';
 }
 
 .group-header-footer-spacing {
