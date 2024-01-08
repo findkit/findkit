@@ -8,7 +8,7 @@ const ui = new FindkitUI({
 	// highlight-next-line
 	params: {
 		// Limit results to example.com domain
-		tagQuery: [["domain/example.com"]],
+		filter: {tags: "domain/example.com"},
 	},
 });
 ```
