@@ -55,10 +55,9 @@ language.
 
 ### `tagQuery: string[][]` {#tagQuery}
 
-Legacy tags only filtering method.
-Please prefer the [filter](#filter) option which more intuitive and flexible to use.
+Legacy tags only filtering method. Please prefer the [filter](#filter) option which 
+is more intuitive and flexible to use.
 
-Filter results using tags.
 
 Logical AND and OR operators are supported.
 
