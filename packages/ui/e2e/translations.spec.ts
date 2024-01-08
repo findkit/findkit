@@ -268,6 +268,44 @@ test("does not cause extra fetches when setting params on 'lang' event", async (
 	expect(events).toEqual(["lang", "fetch"]);
 });
 
+test("can set groups on initial lang event before first fetch", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+		document.documentElement.lang = "fi";
+
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+		});
+
+		ui.on("lang", (e) => {
+			ui.updateGroups([
+				{
+					title: "First group - " + e.lang,
+				},
+				{
+					title: "Second group - " + e.lang,
+				},
+			]);
+		});
+
+		ui.open();
+	});
+
+	const firstGroup = page.locator(".findkit--group-title").first();
+	await expect(firstGroup).toHaveText("First group - fi");
+
+	const secondGroup = page.locator(".findkit--group-title").last();
+	await expect(secondGroup).toHaveText("Second group - fi");
+
+	const hit = page.locator(".findkit--hit").first();
+	await page.locator("input").fill("leather");
+	await expect(hit).toBeVisible();
+});
+
 test("can limit params lang to based on <html lang>", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
 
