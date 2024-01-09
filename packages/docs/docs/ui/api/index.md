@@ -360,7 +360,7 @@ Toggle the modal open / closed state.
 ### `.search(terms)` {#search}
 
 Make a search with the given search terms. Opens the modal if closed (and not
-using `modal: false`).
+using `modal: false`). Populates all bound inputs with the given search terms.
 
 <Api page="ui.findkitui.search" />
 
