@@ -115,6 +115,44 @@ translations on slot overrides. See [`setLang`](/ui/api/#setLang).
 
 <Api page="ui.uselanguage" />
 
+### `useTranslate()` {#useTranslate}
+
+_New in v0.19.0_
+
+Get the translation function. Can render existing translations but it can also
+render custom translations.
+
+```ts
+import { FindkitUI, useTranslate } from "@findkit/ui";
+
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	slots: {
+		Header(props) {
+			const t = useTranslate();
+			return html`${t("greet", { name: "Matt" })}`;
+		},
+	},
+});
+
+ui.addTranslation(
+	"en",
+	{}, // for internal key overrides
+	{
+		greet: "Hello {{name}}!",
+	},
+);
+```
+
+When using Typescript the translation key is constrained to the internal keys.
+Use type argument to widen it.
+
+```ts
+const t = useTranslate<"greet" | "another">();
+```
+
+<Api page="ui.useTranslate" />
+
 ### `useCustomRouterData()` {#useCustomRouterData}
 
 _New in v0.16.0_

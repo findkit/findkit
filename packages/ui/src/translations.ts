@@ -84,15 +84,16 @@ export function createTranslator(
 	// specific translations
 	const short = lang.trim().toLowerCase().slice(0, 2);
 
-	const translations = {
-		...BASE_TRANSLATIONS,
-		...(TRANSLATIONS[lang] || TRANSLATIONS[short] || {}),
-		...(overrides[lang] || overrides[short] || {}),
-	};
-
 	return (key, data) => {
-		if (translations[key]) {
-			return renderTranslation(translations[key], data);
+		const translation =
+			overrides[lang]?.[key] ||
+			overrides[short]?.[key] ||
+			TRANSLATIONS[lang]?.[key] ||
+			TRANSLATIONS[short]?.[key] ||
+			BASE_TRANSLATIONS[key];
+
+		if (translation) {
+			return renderTranslation(translation, data);
 		}
 
 		return `[${key} not translated]`;

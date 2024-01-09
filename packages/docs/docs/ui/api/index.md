@@ -518,6 +518,12 @@ Set the current UI language. See [`lang`](#lang).
 
 _New in v0.5.0_
 
+Args
+
+- `language: string`
+- `overrides: {[key: string]: string}`: Override the build-in translations
+- `custom: {[key: string]: string}`: Add custom translation keys
+
 Add a new UI translation. Can be used to override existing translation strings
 as well. See <Api
 page="ui.translationstrings">TranslationStrings</Api> for the

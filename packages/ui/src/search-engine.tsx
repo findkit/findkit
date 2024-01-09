@@ -942,8 +942,12 @@ export class SearchEngine {
 		}
 	}
 
-	addTranslation(lang: string, translation: Partial<TranslationStrings>) {
-		this.state.ui.translations[lang] = ref(translation);
+	addTranslation(
+		lang: string,
+		translation: Partial<TranslationStrings>,
+		custom?: Record<string, string>,
+	) {
+		this.state.ui.translations[lang] = ref({ ...translation, ...custom });
 	}
 
 	setLang(lang: string) {

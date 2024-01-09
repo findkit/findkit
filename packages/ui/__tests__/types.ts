@@ -1,4 +1,4 @@
-import { FindkitUI } from "../src/cdn-entries";
+import { FindkitUI, useTranslate } from "../src/cdn-entries";
 import { Filter } from "../src/filter-type";
 
 function t(_desc: string, _test: Function) {
@@ -562,4 +562,53 @@ t("only strings are allowed to custom router data", () => {
 			bad: 1,
 		},
 	});
+});
+
+t("translation types", () => {
+	const ui = new FindkitUI({
+		publicToken: "",
+		slots: {
+			Header() {
+				const t = useTranslate();
+
+				// @ts-expect-error
+				t("bad");
+
+				{
+					const t = useTranslate<string>();
+					t("any is ok");
+				}
+
+				{
+					const t = useTranslate<"ding" | "dong">();
+
+					t("ding");
+					t("dong");
+
+					// Internal keys are still available
+					t("close");
+
+					// @ts-expect-error
+					t("bad");
+				}
+
+				return null;
+			},
+		},
+	});
+
+	// cannot add unkown translations
+	ui.addTranslation("fi", {
+		// @ts-expect-error
+		customTest: "",
+	});
+
+	// can use the second arg for custom translations
+	ui.addTranslation(
+		"fi",
+		{},
+		{
+			customTest: "",
+		},
+	);
 });

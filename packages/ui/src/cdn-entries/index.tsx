@@ -397,6 +397,11 @@ export const useInput = createShellFunction("useInput");
  */
 export const useLang = createShellFunction("useLang");
 
+/**
+ * Get the translate function.
+ */
+export const useTranslate = createShellFunction("useTranslate");
+
 async function preloadStylesheet(style: LayeredCSS) {
 	const href = typeof style === "string" ? style : style.href;
 	if (!href) {
@@ -735,6 +740,7 @@ export class FindkitUI<
 	 *
 	 * @params lang - language code
 	 * @params translations - translations object
+	 * @params custom - Additional custom translations when using the useTranslator in slot overrides
 	 */
 	addTranslation = this.PRIVATE_createShellMethod("addTranslation");
 

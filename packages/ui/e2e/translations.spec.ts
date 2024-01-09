@@ -423,3 +423,57 @@ test("can limit groups lang to based on <html lang>", async ({ page }) => {
 		.poll(async () => hits.allInnerTexts())
 		.toEqual(["fi", "fi", "fi", "fi", "fi", "fi", "fi", "fi", "fi", "fi"]);
 });
+
+test("can add new translations", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		window.document.documentElement.lang = "fi-FI";
+		const { FindkitUI, useTranslate, html } = MOD;
+		const ui = new FindkitUI({
+			publicToken: "po8GK3G0r",
+			slots: {
+				Header(props) {
+					const t = useTranslate<string>();
+
+					return html`
+						<div class="custom-translation">
+							${t("custom", { value: "Ding" })}
+						</div>
+
+						${props.children}
+					`;
+				},
+			},
+		});
+
+		Object.assign(window, { ui });
+
+		ui.addTranslation(
+			"fi",
+			{},
+			{
+				custom: "Mukautettu käännös arvolla {{value}}",
+			},
+		);
+
+		ui.addTranslation(
+			"en",
+			{},
+			{
+				custom: "Custom string translation with {{value}}",
+			},
+		);
+
+		ui.open();
+	});
+
+	const custom = page.locator(".custom-translation");
+	await expect(custom).toHaveText("Mukautettu käännös arvolla Ding");
+
+	await page.evaluate(async () => {
+		ui.setLang("en-xx");
+	});
+
+	await expect(custom).toHaveText("Custom string translation with Ding");
+});
