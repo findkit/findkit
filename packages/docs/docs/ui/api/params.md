@@ -8,7 +8,7 @@ const ui = new FindkitUI({
 	// highlight-next-line
 	params: {
 		// Limit results to example.com domain
-		tagQuery: [["domain/example.com"]],
+		filter: {tags: "domain/example.com"},
 	},
 });
 ```
@@ -55,8 +55,9 @@ language.
 
 ### `tagQuery: string[][]` {#tagQuery}
 
-Filter results using tags. For more flexible filtering based on your custom
-fields see [`filter`](#filter).
+Legacy tags only filtering method. Please prefer the [filter](#filter) option which 
+is more intuitive and flexible to use.
+
 
 Logical AND and OR operators are supported.
 

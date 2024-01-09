@@ -52,7 +52,7 @@ String value is an implicit `$eq`. Eg. this can written as
 
 Checks that value exists or not exists.
 
-Example: Mus have `price` custom field:
+Example: Must have `price` custom field:
 
 ```json
 {
