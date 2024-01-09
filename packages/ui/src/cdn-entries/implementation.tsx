@@ -1,7 +1,12 @@
 // import "preact/devtools";
 import { html } from "htm/preact";
 import { createElement, useCallback, useMemo, useRef } from "react";
-import { useInput, useSearchEngine, useSearchEngineState } from "../core-hooks";
+import {
+	useFindkitContext,
+	useInput,
+	useSearchEngine,
+	useSearchEngineState,
+} from "../core-hooks";
 
 import { init } from "../modal";
 import {
@@ -13,6 +18,7 @@ import {
 } from "../search-engine";
 import { assertNonNullable } from "../utils";
 import { preactFunctions, PreactFunctions } from "./preact-subset";
+import { TranslationStrings } from "../translations";
 
 /**
  * Read and update the search params
@@ -113,6 +119,16 @@ function useLoadingImplementation() {
 /**
  * @public
  */
+function useTranslateImplementation<T = "___">(): (
+	key: T | keyof TranslationStrings,
+	data?: Record<string, string | number>,
+) => string {
+	return useFindkitContext().translator as any;
+}
+
+/**
+ * @public
+ */
 export function useTotalImplementation() {
 	const state = useSearchEngineState();
 
@@ -172,6 +188,7 @@ export interface Implementation {
 	useTotalHitCount: typeof useTotalHitCountImplementation;
 	useLoading: typeof useLoadingImplementation;
 	useCustomRouterData: typeof useCustomRouterDataImplementation;
+	useTranslate: typeof useTranslateImplementation;
 	preact: PreactFunctions;
 	css: (strings: TemplateStringsArray, ...expr: string[]) => string;
 }
@@ -191,6 +208,7 @@ export const js: Implementation = {
 	useLang: useLangImplementation,
 	useLoading: useLoadingImplementation,
 	useCustomRouterData: useCustomRouterDataImplementation,
+	useTranslate: useTranslateImplementation,
 	preact: preactFunctions,
 };
 
