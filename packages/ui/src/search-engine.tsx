@@ -1,4 +1,4 @@
-import { devtools } from "valtio/utils";
+// import { devtools } from "valtio/utils";
 import {
 	assertNonNullable,
 	cleanUndefined,
@@ -748,7 +748,8 @@ export class SearchEngine {
 			usedGroupDefinitions: ref(ensureDefaults(clone(groups))),
 			nextGroupDefinitions: ref(ensureDefaults(clone(groups))),
 		});
-		devtools(this.state);
+
+		// devtools(this.state);
 
 		this.PRIVATE_resources.create(() =>
 			this.PRIVATE_router.listen(this.PRIVATE_handleAddressChange),
