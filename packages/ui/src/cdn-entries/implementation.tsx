@@ -1,4 +1,4 @@
-import "preact/devtools";
+// import "preact/devtools";
 import { html } from "htm/preact";
 import { createElement, useCallback, useMemo, useRef } from "react";
 import { useInput, useSearchEngine, useSearchEngineState } from "../core-hooks";
