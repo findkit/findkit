@@ -54,6 +54,8 @@ import type {
 	HeaderSlotParts,
 	HitSlotParts,
 	GroupSlotParts,
+	ResultSlotProps,
+	ResultSlotParts,
 } from "../slots";
 import type { PreactFunctions } from "./preact-subset";
 import type { Filter, Operator } from "../filter-type";
@@ -111,6 +113,8 @@ export {
 	HitSlotParts,
 	HitSlotProps,
 	InitEvent,
+	ResultSlotProps,
+	ResultSlotParts,
 };
 
 const doc = () => document;

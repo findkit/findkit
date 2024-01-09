@@ -234,6 +234,52 @@ export interface GroupSlotProps {
 
 /**
  * @public
+ */
+export interface ResultSlotProps {
+	children: any;
+
+	/**
+	 * The group id
+	 */
+	id: string;
+
+	/**
+	 * The group title
+	 */
+	title: string | undefined;
+
+	/**
+	 * The total number of hits in the group
+	 */
+	total: number;
+
+	/**
+	 * The number of hits fetched
+	 */
+	fetchedHits: number;
+
+	/**
+	 * The number of defined groups
+	 */
+	groupCount: number;
+
+	hits: ReadonlyArray<SearchResultHit>;
+
+	parts: ResultSlotParts;
+}
+
+/**
+ * @public
+ */
+export interface ResultSlotParts {
+	BackLink(props: { children?: any }): any;
+	Title(props: { children?: any }): any;
+	Hits(props: {}): any;
+	Footer(props: {}): any;
+}
+
+/**
+ * @public
  *
  * All avaivable slots
  */
@@ -262,4 +308,10 @@ export interface Slots {
 	 * Slot for a group of results when using multiple groups
 	 */
 	Group(props: GroupSlotProps): any;
+
+	/**
+	 * The results view view. WHen using multiple groups, this is rendered when
+	 * users naviages to a group.
+	 */
+	Results(props: ResultSlotProps): any;
 }

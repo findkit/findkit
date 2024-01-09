@@ -104,11 +104,20 @@ function SingleGroupLink(props: {
 	);
 }
 
-function AllResultsLink(props: { children: ReactNode }) {
+/**
+ * Link to go back to the multiple groups view
+ */
+function BackLink(props: { children?: ReactNode }) {
 	const kbAttrs = useKeyboardItemAttributes("back-to-all-results");
 	const engine = useSearchEngine();
 	const params = useFindkitURLSearchParams();
+	const t = useTranslator();
 	const nextParams = params.clearGroupId();
+	const slot = useSlotContext("Results");
+
+	if (slot.groupCount === 1) {
+		return null;
+	}
 
 	return (
 		<View
@@ -123,8 +132,12 @@ function AllResultsLink(props: { children: ReactNode }) {
 				engine.updateAddressBar(nextParams, { push: true });
 			}}
 		>
-			<Arrow direction="left" />
-			<View cn="link-text">{props.children}</View>
+			{props.children ?? (
+				<>
+					<Arrow direction="left" />
+					<View cn="link-text">{t("go-back")}</View>
+				</>
+			)}
 			<View cn="hover-bg" />
 		</View>
 	);
@@ -441,11 +454,73 @@ function MultiGroupResults() {
 	);
 }
 
+const ResultsSlot = createSlotComponent("Results", {
+	parts: {
+		BackLink(props) {
+			return <BackLink children={props.children} />;
+		},
+
+		Title(props) {
+			const slot = useSlotContext("Results");
+
+			if (slot.groupCount === 1) {
+				return null;
+			}
+
+			if (!slot.title) {
+				return null;
+			}
+
+			return (
+				<GroupTitle
+					title={slot.title}
+					total={slot.total}
+					children={props.children}
+				/>
+			);
+		},
+
+		Hits() {
+			const slot = useSlotContext("Results");
+
+			return <HitList groupId={slot.id} total={slot.total} hits={slot.hits} />;
+		},
+
+		Footer() {
+			const slot = useSlotContext("Results");
+
+			const allResultsLoaded = slot.fetchedHits === slot.total;
+
+			return (
+				<View cn="footer">
+					<FooterContent
+						groupId={slot.id}
+						allResultsLoaded={allResultsLoaded}
+					/>
+					<View cn="footer-spinner">
+						<Spinner spinning={slot.fetchedHits !== 0} />
+					</View>
+				</View>
+			);
+		},
+	},
+
+	render(props) {
+		return (
+			<>
+				<props.parts.BackLink />
+				<props.parts.Title />
+				<props.parts.Hits />
+				<props.parts.Footer />
+			</>
+		);
+	},
+});
+
 function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	const { focusRef } = useFindkitContext();
 	const state = useSearchEngineState();
 	const engine = useSearchEngine();
-	const t = useTranslator();
 	const groupCount = state.usedGroupDefinitions.length;
 	let group = state.resultGroups[props.groupId];
 	const def = state.usedGroupDefinitions[props.groupIndex];
@@ -457,8 +532,6 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 			duration: 0,
 		};
 	}
-
-	const allResultsLoaded = group.hits.length === group.total;
 
 	useEffect(() => {
 		if (!focusRef.current.groupViewFocusNext) {
@@ -488,25 +561,14 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	]);
 
 	return (
-		<>
-			{groupCount > 1 && <AllResultsLink>{t("go-back")}</AllResultsLink>}
-
-			{groupCount > 1 && def ? (
-				<GroupTitle title={def.title} total={group.total} />
-			) : null}
-
-			<HitList groupId={props.groupId} hits={group.hits} total={group.total} />
-
-			<View cn="footer">
-				<FooterContent
-					groupId={props.groupId}
-					allResultsLoaded={allResultsLoaded}
-				/>
-				<View cn="footer-spinner">
-					<Spinner spinning={group.hits.length !== 0} />
-				</View>
-			</View>
-		</>
+		<ResultsSlot
+			hits={group.hits}
+			groupCount={groupCount}
+			id={props.groupId}
+			total={group.total}
+			fetchedHits={group.hits.length}
+			title={def?.title}
+		/>
 	);
 }
 

@@ -69,6 +69,21 @@ used to customize the element positioning.
 
 The list of hits on the initial view when using multiple [groups](/ui/api/groups).
 
+## `Results`
+
+<Api page="ui.slots.Results" />
+
+#### Props
+
+- `title`: The group title string when using multiple groups
+- `total`: Total hits in the group
+- `fetchedHits`: How many of the hits has been fetched
+- `id`: The group id
+- `parts` <Api page="ui.ResultSlotParts">details</Api>
+- `children`
+
+The list of hits when not using groups and when navigated to a single group view when using multiple groups.
+
 ## `Hit`
 
 <Api page="ui.slots.hit" />

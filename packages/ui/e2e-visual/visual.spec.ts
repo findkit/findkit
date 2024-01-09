@@ -847,6 +847,18 @@ test("slots part props", async ({ page }) => {
 						</${props.parts.ShowAllLink}>
 					`;
 				},
+
+				Results(props) {
+					// prettier-ignore
+					return html`
+						<${props.parts.Title}><h2>Custom Results Title</h2></${props.parts.Title}>
+						<${props.parts.BackLink}>
+							Custom Back Link
+						</${props.parts.BackLink}>
+						<${props.parts.Hits} />
+						<${props.parts.Footer} />
+					`;
+				},
 			},
 		});
 
@@ -865,5 +877,14 @@ test("slots part props", async ({ page }) => {
 	await page.locator("input").fill("nothing not found");
 	await page.waitForTimeout(300);
 	await page.waitForLoadState("networkidle");
+	await expect(page.locator(".findkit--container")).toHaveScreenshot();
+
+	// Something with multiple results so we can navigate to a group
+	await page.locator("input").fill("and");
+	await page.waitForTimeout(300);
+	await page.waitForLoadState("networkidle");
+	await page.locator("text=Custom Show All").first().click();
+	await page.locator(".findkit--view-single").waitFor({ state: "visible" });
+
 	await expect(page.locator(".findkit--container")).toHaveScreenshot();
 });
