@@ -71,6 +71,8 @@ The list of hits on the initial view when using multiple [groups](/ui/api/groups
 
 ## `Results`
 
+_New in v0.19.0_
+
 <Api page="ui.slots.Results" />
 
 #### Props
