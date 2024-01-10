@@ -33,7 +33,6 @@ test("fetch-done event", async ({ page }) => {
 		Object.assign(window, { testEvents });
 
 		ui.on("fetch-done", (e) => {
-			console.log("fetch-done", e);
 			testEvents.push({
 				terms: e.terms,
 				append: e.append,
