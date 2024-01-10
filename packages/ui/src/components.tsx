@@ -486,7 +486,7 @@ const ResultsSlot = createSlotComponent("Results", {
 			return <HitList groupId={slot.id} total={slot.total} hits={slot.hits} />;
 		},
 
-		Footer() {
+		Footer(props) {
 			const slot = useSlotContext("Results");
 
 			const allResultsLoaded = slot.fetchedHits === slot.total;
@@ -496,6 +496,8 @@ const ResultsSlot = createSlotComponent("Results", {
 					<FooterContent
 						groupId={slot.id}
 						allResultsLoaded={allResultsLoaded}
+						loadMore={props.loadMore}
+						allResultsShown={props.allResultsShown}
 					/>
 					<View cn="footer-spinner">
 						<Spinner spinning={slot.fetchedHits !== 0} />
@@ -572,7 +574,12 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	);
 }
 
-function FooterContent(props: { allResultsLoaded: boolean; groupId: string }) {
+function FooterContent(props: {
+	allResultsLoaded: boolean;
+	groupId: string;
+	allResultsShown: any;
+	loadMore: any;
+}) {
 	const state = useSearchEngineState();
 	const t = useTranslator();
 	const engine = useSearchEngine();
@@ -584,7 +591,11 @@ function FooterContent(props: { allResultsLoaded: boolean; groupId: string }) {
 	}
 
 	if (props.allResultsLoaded) {
-		return <View cn="all-results-shown">{t("all-results-shown")}</View>;
+		return (
+			<View cn="all-results-shown">
+				{props.allResultsShown ?? t("all-results-shown")}
+			</View>
+		);
 	}
 
 	return (
@@ -598,7 +609,7 @@ function FooterContent(props: { allResultsLoaded: boolean; groupId: string }) {
 				engine.searchMore({ now: true });
 			}}
 		>
-			{t("load-more")}
+			{props.loadMore ?? t("load-more")}
 			<View cn="hover-bg" />
 		</View>
 	);
