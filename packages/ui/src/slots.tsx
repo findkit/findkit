@@ -275,7 +275,17 @@ export interface ResultSlotParts {
 	BackLink(props: { children?: any }): any;
 	Title(props: { children?: any }): any;
 	Hits(props: {}): any;
-	Footer(props: {}): any;
+	Footer(props: {
+		/**
+		 * Render when there more results to be loaded
+		 */
+		loadMore?: any;
+
+		/**
+		 * Render when all resuls are already shown
+		 */
+		allResultsShown?: any;
+	}): any;
 }
 
 /**
