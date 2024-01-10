@@ -1,3 +1,20 @@
+## v0.19.0
+
+2024-01-10
+
+- Emit open after dom mount [2c69da5](https://github.com/findkit/findkit/commit/2c69da5) - Esa-Matti Suuronen
+- Avoid layout shift when the page scrollbar is hidden on modal open [f87053d](https://github.com/findkit/findkit/commit/f87053d) - Esa-Matti Suuronen
+- Prevent layout shifting when modal scrollbar appears [e86ce6a](https://github.com/findkit/findkit/commit/e86ce6a) - Esa-Matti Suuronen
+- Expose useTranslate hook [aae262a](https://github.com/findkit/findkit/commit/aae262a) - Esa-Matti Suuronen
+  - https://docs.findkit.com/ui/slot-overrides/hooks#useTranslate
+- Add Results slot [a48f95d](https://github.com/findkit/findkit/commit/a48f95d) - Esa-Matti Suuronen
+  - https://docs.findkit.com/ui/slot-overrides/slots#results
+- Remove all devtools, makes things slow [d520e3b](https://github.com/findkit/findkit/commit/d520e3b) - Esa-Matti Suuronen
+- Wrap group title into span [da243af](https://github.com/findkit/findkit/commit/da243af) - Esa-Matti Suuronen
+- Fix groups not updating on "lang" event with less than required terms [eadc48e](https://github.com/findkit/findkit/commit/eadc48e) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.18.2...ui/v0.19.0
+
 ## v0.18.2
 
 2023-12-21
