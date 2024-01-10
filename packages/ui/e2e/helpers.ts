@@ -21,6 +21,17 @@ export async function getHitHosts(page: Page) {
 	return Array.from(hosts);
 }
 
+export async function slowDownSearch(page: Page, ms: number) {
+	await page.route(
+		(url) => url.hostname === "search.findkit.com",
+		// eslint-disable-next-line @typescript-eslint/no-misused-promises
+		async (route) => {
+			await new Promise((f) => setTimeout(f, ms));
+			await route.continue();
+		},
+	);
+}
+
 /**
  * Awaits for an event to be emitted by the Findkit UI and returns the event.
  */

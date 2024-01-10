@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { staticEntry } from "./helpers";
+import { slowDownSearch, staticEntry } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 declare const ui: InstanceType<typeof MOD.FindkitUI>;
@@ -16,14 +16,7 @@ test("emit only one loading/loading-done event when implementation and search is
 		},
 	);
 
-	await page.route(
-		(url) => url.hostname === "search.findkit.com",
-		// eslint-disable-next-line @typescript-eslint/no-misused-promises
-		async (route) => {
-			await new Promise((f) => setTimeout(f, 500));
-			await route.continue();
-		},
-	);
+	await slowDownSearch(page, 500);
 
 	await page.goto(staticEntry("/dummy"));
 
@@ -68,8 +61,8 @@ test("emit only one loading/loading-done event when implementation and search is
 		"request-open",
 		"loading",
 		"loaded",
-		"open",
 		"fetch",
+		"open",
 		"fetch-done",
 		"loading-done",
 	]);
@@ -82,6 +75,7 @@ test("no loading event when the code and search loads fast", async ({
 		(url) => url.hostname === "search.findkit.com",
 		// eslint-disable-next-line @typescript-eslint/no-misused-promises
 		async (route) => {
+			await new Promise((f) => setTimeout(f, 10));
 			await route.fulfill({ json: mockResponse });
 		},
 	);
@@ -128,8 +122,8 @@ test("no loading event when the code and search loads fast", async ({
 	expect(events).toEqual([
 		"request-open",
 		"loaded",
-		"open",
 		"fetch",
+		"open",
 		"fetch-done",
 	]);
 });
@@ -137,14 +131,7 @@ test("no loading event when the code and search loads fast", async ({
 test("multiple sequential searches cause only once loading/loading-done", async ({
 	page,
 }) => {
-	await page.route(
-		(url) => url.hostname === "search.findkit.com",
-		// eslint-disable-next-line @typescript-eslint/no-misused-promises
-		async (route) => {
-			await new Promise((f) => setTimeout(f, 500));
-			await route.continue();
-		},
-	);
+	await slowDownSearch(page, 500);
 
 	await page.goto(staticEntry("/dummy"));
 
@@ -193,14 +180,7 @@ test("multiple sequential searches cause only once loading/loading-done", async 
 });
 
 test("loading event can fire twice", async ({ page }) => {
-	await page.route(
-		(url) => url.hostname === "search.findkit.com",
-		// eslint-disable-next-line @typescript-eslint/no-misused-promises
-		async (route) => {
-			await new Promise((f) => setTimeout(f, 500));
-			await route.continue();
-		},
-	);
+	await slowDownSearch(page, 500);
 
 	await page.goto(staticEntry("/dummy"));
 

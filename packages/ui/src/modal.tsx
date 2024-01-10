@@ -72,6 +72,31 @@ function useScrollLock(lock: boolean) {
 	}, [lock]);
 }
 
+function useOpenCloseEvents(mounted: boolean) {
+	const engine = useSearchEngine();
+
+	useLayoutEffect(() => {
+		if (!mounted) {
+			return;
+		}
+
+		const container =
+			engine.container instanceof ShadowRoot
+				? engine.container.host
+				: engine.container;
+
+		engine.events.emit("open", {
+			container,
+		});
+
+		return () => {
+			engine.events.emit("close", {
+				container,
+			});
+		};
+	}, [engine, mounted]);
+}
+
 function useFocusTrap(
 	containerRef: React.MutableRefObject<HTMLDivElement | null>,
 ) {
@@ -335,6 +360,7 @@ function Modal() {
 	const isScrollingDown = useIsScrollingDown(containerRef, show);
 
 	useScrollLock(!unmount && state.lockScroll);
+	useOpenCloseEvents(!unmount);
 
 	useScrollRestore(containerRef);
 
@@ -460,6 +486,7 @@ export function Plain() {
 	const containerRef = useRef<HTMLDivElement | null>(null);
 
 	useScrollRestore(containerRef);
+	useOpenCloseEvents(true);
 
 	const header = state.header ? (
 		<SlotCatchBoundary

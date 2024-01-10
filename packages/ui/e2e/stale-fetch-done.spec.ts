@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { staticEntry } from "./helpers";
+import { slowDownSearch, staticEntry } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 declare const ui: InstanceType<
@@ -90,14 +90,7 @@ test("slow typer gets only fresh events", async ({ page }) => {
 test("holding backspace does not emit partial non-stale fetch-done terms", async ({
 	page,
 }) => {
-	await page.route(
-		(url) => url.hostname === "search.findkit.com",
-		// eslint-disable-next-line @typescript-eslint/no-misused-promises
-		async (route) => {
-			await new Promise((f) => setTimeout(f, 500));
-			await route.continue();
-		},
-	);
+	await slowDownSearch(page, 500);
 
 	await page.goto(staticEntry("/dummy"));
 	const terms = "diamond ring jewelry features";

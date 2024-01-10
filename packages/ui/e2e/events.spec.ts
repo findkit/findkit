@@ -33,7 +33,6 @@ test("fetch-done event", async ({ page }) => {
 		Object.assign(window, { testEvents });
 
 		ui.on("fetch-done", (e) => {
-			console.log("fetch-done", e);
 			testEvents.push({
 				terms: e.terms,
 				append: e.append,
@@ -196,4 +195,144 @@ test("bind-input is fired for the build-in input", async ({ page }) => {
 	});
 
 	expect(testEvents).toEqual(["input:test"]);
+});
+
+[true, false].forEach((shadowDom) => {
+	test(
+		"the modal dom is readable in the open event" +
+			`(${shadowDom ? "shadow dom" : "light dom"})`,
+		async ({ page }) => {
+			await page.goto(staticEntry("/dummy"));
+
+			await page.evaluate(async (shadowDom) => {
+				const bigElement = document.createElement("div");
+				bigElement.style.height = "200vh";
+				document.body.appendChild(bigElement);
+
+				const ui = new MOD.FindkitUI({
+					publicToken: "pW1D0p0Dg",
+					shadowDom,
+				});
+
+				const testEvents: any[] = [];
+				Object.assign(window, { testEvents, ui });
+
+				ui.on("open", (e) => {
+					if (e.container.shadowRoot) {
+						testEvents.push(
+							e.container.shadowRoot.querySelector("input") ? "ok" : "fail",
+						);
+					} else {
+						testEvents.push(e.container.querySelector("input") ? "ok" : "fail");
+					}
+				});
+
+				ui.open();
+			}, shadowDom);
+
+			await page.locator(".findkit--modal").waitFor({ state: "visible" });
+
+			const testEvents = await page.evaluate(async () => {
+				return (window as any).testEvents as any[];
+			});
+
+			expect(testEvents).toEqual(["ok"]);
+		},
+	);
+});
+
+test("open and close events are fired only once", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "pW1D0p0Dg",
+		});
+
+		const testEvents: any[] = [];
+		Object.assign(window, { testEvents, ui });
+
+		ui.on("open", () => {
+			testEvents.push("open");
+		});
+
+		ui.on("close", () => {
+			testEvents.push("close");
+		});
+
+		ui.open();
+	});
+
+	await page.locator(".findkit--modal").waitFor({ state: "visible" });
+
+	await page.locator(".findkit--close-button").first().click();
+
+	await page.locator(".findkit--modal").waitFor({ state: "hidden" });
+
+	const testEvents = await page.evaluate(async () => {
+		return (window as any).testEvents as any[];
+	});
+
+	expect(testEvents).toEqual(["open", "close"]);
+});
+
+[true, false].forEach((shadowDom) => {
+	test(
+		"open close events fire in non-modal mode too " +
+			`(${shadowDom ? "shadow dom" : "light dom"})`,
+		async ({ page }) => {
+			await page.goto(staticEntry("/dummy"));
+
+			await page.evaluate(async (shadowDom) => {
+				document.body.innerHTML = "";
+				const container = document.createElement("div");
+				document.body.appendChild(container);
+
+				const ui = new MOD.FindkitUI({
+					publicToken: "pW1D0p0Dg",
+					shadowDom,
+					container,
+				});
+
+				const testEvents: any[] = [];
+				Object.assign(window, { testEvents, ui });
+
+				ui.on("open", (e) => {
+					if (e.container.shadowRoot) {
+						testEvents.push(
+							e.container.shadowRoot.querySelector("input") ? "ok" : "fail",
+						);
+					} else {
+						testEvents.push(e.container.querySelector("input") ? "ok" : "fail");
+					}
+				});
+
+				ui.on("close", () => {
+					testEvents.push("close");
+				});
+			}, shadowDom);
+
+			await page.locator(".findkit--container").waitFor({ state: "visible" });
+
+			{
+				const testEvents = await page.evaluate(async () => {
+					return (window as any).testEvents as any[];
+				});
+
+				expect(testEvents).toEqual(["ok"]);
+			}
+
+			await page.evaluate(async () => {
+				ui.dispose();
+			});
+
+			{
+				const testEvents = await page.evaluate(async () => {
+					return (window as any).testEvents as any[];
+				});
+
+				expect(testEvents).toEqual(["ok", "close"]);
+			}
+		},
+	);
 });

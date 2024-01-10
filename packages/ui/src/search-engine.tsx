@@ -1638,21 +1638,8 @@ export class SearchEngine {
 				next: current,
 			});
 
-			const container =
-				this.PRIVATE_container instanceof ShadowRoot
-					? this.PRIVATE_container.host
-					: this.PRIVATE_container;
-
-			// There is no "open" status because there are technically multiple
-			// open states. So to fire the "open" event we need to infer it from
-			// the closed state
-			if (prev === "closed" && current !== "closed") {
-				this.events.emit("open", { container });
-			}
-
 			if (prev !== "closed" && current === "closed") {
 				this.PRIVATE_saveResults();
-				this.events.emit("close", { container });
 			}
 		}
 	}
