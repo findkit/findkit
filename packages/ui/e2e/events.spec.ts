@@ -336,3 +336,53 @@ test("open and close events are fired only once", async ({ page }) => {
 		},
 	);
 });
+
+test("open event is fired just before scroll lock so scrollbar width hack can be implemented manually", async ({
+	page,
+}) => {
+	// The hack to avoid layout shift when opening the modal
+	// ui.on("open", () => {
+	// 	const scrollbarWidth =
+	// 		window.innerWidth - document.documentElement.clientWidth;
+	// 	document.documentElement.style.paddingRight = `${scrollbarWidth}px`;
+	// 	ui.once("close", () => {
+	// 		document.documentElement.style.paddingRight = "";
+	// 	});
+	// });
+
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "pW1D0p0Dg",
+		});
+
+		const testEvents: any[] = [];
+		Object.assign(window, { testEvents, ui });
+
+		ui.on("open", () => {
+			testEvents.push(
+				window.document.documentElement.style.overflow === "hidden"
+					? "locked"
+					: "not locked",
+			);
+			queueMicrotask(() => {
+				testEvents.push(
+					window.document.documentElement.style.overflow === "hidden"
+						? "locked"
+						: "not locked",
+				);
+			});
+		});
+
+		ui.open();
+	});
+
+	await page.locator(".findkit--modal").waitFor({ state: "visible" });
+
+	const testEvents = await page.evaluate(async () => {
+		return (window as any).testEvents as any[];
+	});
+
+	expect(testEvents).toEqual(["not locked", "locked"]);
+});
