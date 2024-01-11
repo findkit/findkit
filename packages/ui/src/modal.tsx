@@ -38,7 +38,7 @@ import { Slots } from "./slots";
 import { SlotCatchBoundary, createSlotComponent } from "./slots-core";
 
 function useScrollLock(lock: boolean) {
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (!lock) {
 			return;
 		}
@@ -48,18 +48,6 @@ function useScrollLock(lock: boolean) {
 
 		const origHeight = html.style.height;
 		const origOverflow = html.style.overflow;
-		const origPaddingRight = html.style.paddingRight;
-
-		// Return zero when the page has no scroll bar so the padding trick is
-		// no-op in that case.
-		const scrollbarWidth = window.innerWidth - html.clientWidth;
-
-		// Add padding to prevent the page from jumping when the scrollbar is
-		// hidden. But do not add if there is already a custom padding by the
-		// site author as it might break things.
-		if (scrollbarWidth && !html.style.paddingRight) {
-			html.style.paddingRight = `${scrollbarWidth}px`;
-		}
 
 		html.style.height = "100%;";
 		html.style.overflow = "hidden";
@@ -67,7 +55,6 @@ function useScrollLock(lock: boolean) {
 		return () => {
 			html.style.height = origHeight;
 			html.style.overflow = origOverflow;
-			html.style.paddingRight = origPaddingRight;
 		};
 	}, [lock]);
 }
@@ -359,8 +346,8 @@ function Modal() {
 	const unmount = !delayed && !show;
 	const isScrollingDown = useIsScrollingDown(containerRef, show);
 
-	useScrollLock(!unmount && state.lockScroll);
 	useOpenCloseEvents(!unmount);
+	useScrollLock(!unmount && state.lockScroll);
 
 	useScrollRestore(containerRef);
 
