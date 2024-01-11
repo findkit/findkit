@@ -337,7 +337,7 @@ test("open and close events are fired only once", async ({ page }) => {
 	);
 });
 
-test("open event is fired just before scroll lock so scrollbar width hack be implemented manually", async ({
+test("open event is fired just before scroll lock so scrollbar width hack can be implemented manually", async ({
 	page,
 }) => {
 	// The hack to avoid layout shift when opening the modal
