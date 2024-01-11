@@ -1,3 +1,23 @@
+## v0.19.1
+
+2024-01-11
+
+- Revert layout shifting fix [4bc3e3d](https://github.com/findkit/findkit/commit/4bc3e3d) - Esa-Matti Suuronen
+  - Causes visual issues on many sites so it cannot be build-in. Implement it manually with the `open` event:
+
+```ts
+ui.on("open", () => {
+	const scrollbarWidth =
+		window.innerWidth - document.documentElement.clientWidth;
+	document.documentElement.style.paddingRight = `${scrollbarWidth}px`;
+	ui.once("close", () => {
+		document.documentElement.style.paddingRight = "";
+	});
+});
+```
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.19.0...ui/v0.19.1
+
 ## v0.19.0
 
 2024-01-10
