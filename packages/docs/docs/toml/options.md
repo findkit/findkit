@@ -106,6 +106,10 @@ Respect `/robots.txt` rules.
 
 Defaults to `true`.
 
+### `sitemap_paths: string[]` {#sitemap_paths}
+
+Use sitemaps only from these paths.
+
 ### `deny_patterns: string[]` {#deny_patterns}
 
 Skip paths matching the given pattern.
