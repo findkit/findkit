@@ -106,9 +106,16 @@ Respect `/robots.txt` rules.
 
 Defaults to `true`.
 
-### `sitemap_paths: string[]` {#sitemap_paths}
+### `sitemaps: string[]` {#sitemaps}
 
-Use sitemaps only from these paths.
+Overwrite default behaviour of fetching sitemaps from robots and use the given sitemaps instead.
+Supports paths only.
+
+Example
+
+```toml
+sitemaps = ["/custom/sitemap.xml", "/another/sitemap.xml"]
+```
 
 ### `deny_patterns: string[]` {#deny_patterns}
 
