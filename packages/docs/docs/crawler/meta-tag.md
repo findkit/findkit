@@ -109,9 +109,10 @@ Set the page's language. See [Languages](/crawler/languages).
 
 ### `customFields: object` {#customFields}
 
-Add custom fields to the indexed document which will be returned within the
-search results. See [Custom Fields in Slot
-Overrides](/ui/slot-overrides/custom-fields/).
+Add custom fields to the indexed document which can be used to customize
+the search result using the [Slot overrides][slots] and to [filter](/ui/filtering/) the results lists.
+
+[slots]: /ui/slot-overrides/custom-fields/
 
 Following types are available:
 
