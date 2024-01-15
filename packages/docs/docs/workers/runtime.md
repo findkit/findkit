@@ -38,9 +38,9 @@ browser style APIs:
 [structuredClone]: https://developer.mozilla.org/en-US/docs/Web/API/structuredClone
 [URLPattern]: https://developer.mozilla.org/en-US/docs/Web/API/URLPattern
 
-## Bundling
+## Using npm modules
 
-If you need to use a library from npm you can use a bundler to include it
+If you need to use a npm module you can use a bundler to include it
 within your code. Just point the `workers = []` to the output bundle. We
 recommend [esbuild][] for bundling. Use the ESM output format.
 
