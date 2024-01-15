@@ -108,8 +108,9 @@ Defaults to `true`.
 
 ### `sitemaps: string[]` {#sitemaps}
 
-Overwrite default behaviour of fetching sitemaps from robots and use the given sitemaps instead.
-Supports paths only.
+Explicitly use sitemaps from these paths. When defined the sitemap entries in robots.txt are ignored. The paths may reference an actual sitemap or a sitemap index. Supports only paths.
+
+If this option is not defined and robots.txt does not contain sitemap entries `/sitemap.xml` is read.
 
 Example
 
