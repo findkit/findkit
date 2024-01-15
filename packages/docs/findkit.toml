@@ -24,6 +24,8 @@ title_selector_regex = '([^\|]+)'
 
 deny_patterns = ["/ui-api/", "/ui-examples/"]
 
+workers = [  "worker.js" ]
+
 [[targets.tags]]
 pathname_regex = '^\/([^\\/]+)'
 on_match = "$1"
