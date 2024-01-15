@@ -14,14 +14,15 @@ In addition to standard Javascript APIs present in V8 the runtime has following
 browser style APIs:
 
 - Partial [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
-  - [fetch()][fetch], [Request][], [Response][], [Headers][], [URL][], [URLSearchParams][]
+  - [fetch()][fetch], [Request][], [Response][], [Headers][]
   - Not all Fetch API features are supported but we are working on adding more
   - If you hit any limitations please [contact us](https://www.findkit.com/contact/) so we known what to prioritize, thanks!
+- [URL][] and [URLSearchParams][]
+- [URLPattern][]
 - [btoa][] and [atob][]
 - [AbortSignal][] and [AbortController][]
 - [TextEncoder][] and [TextDecoder][]
 - [structuredClone][]
-- [URLPattern][]
 
 [fetch]: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
 [Request]: https://developer.mozilla.org/en-US/docs/Web/API/Request
