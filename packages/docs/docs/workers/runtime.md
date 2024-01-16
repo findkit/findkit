@@ -1,6 +1,6 @@
 # Worker Runtime
 
-Findkit Workers is a custom V8 runtime which implements some browser APIs.
+Findkit Workers is a custom V8 runtime which implements few browser APIs.
 
 We use a recent version of V8 meaning most modern Javascript features are
 available but it should be noted that the runtime is not Node.js or a
@@ -11,7 +11,7 @@ provide is executed.
 ## Javascript API
 
 In addition to standard Javascript APIs present in V8 the runtime has following
-browser style APIs:
+browser APIs:
 
 - Partial [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
   - [fetch()][fetch], [Request][], [Response][], [Headers][]
