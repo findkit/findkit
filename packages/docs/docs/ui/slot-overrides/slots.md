@@ -9,7 +9,7 @@
 #### Props
 
 - `children`: The original header content
-- `parts` <Api page="ui.slots.headerslotparts">details</Api>
+- `parts` <Api page="ui.headerslotparts">details</Api>
 
 The search input and close button area which hides on scroll.
 
