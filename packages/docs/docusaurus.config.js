@@ -59,12 +59,12 @@ const config = {
 				items: [
 					{
 						href: "https://hub.findkit.com/",
-						label: "Findkit Hub",
+						label: "Hub",
 						position: "right",
 					},
 					{
-						href: "https://github.com/findkit/findkit",
-						label: "GitHub",
+						href: "https://www.findkit.com/blog",
+						label: "Blog",
 						position: "right",
 					},
 				],
@@ -84,8 +84,8 @@ const config = {
 								href: "https://hub.findkit.com/",
 							},
 							{
-								label: "Findkit.com",
-								href: "https://findkit.com/",
+								label: "Findkit Blog",
+								href: "https://findkit.com/blog",
 							},
 						],
 					},
@@ -103,6 +103,15 @@ const config = {
 							{
 								label: "RSS",
 								href: "https://www.findkit.com/feed/",
+							},
+						],
+					},
+					{
+						title: "Support",
+						items: [
+							{
+								label: "Contact",
+								href: "https://findkit.com/contact",
 							},
 						],
 					},
