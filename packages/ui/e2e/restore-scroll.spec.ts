@@ -496,7 +496,7 @@ test("can restore modified and created dates from sessionStorage on back", async
 	page,
 }) => {
 	await routeMocks(page);
-	await page.goto(staticEntry("/single-group-v3"));
+	await page.goto(staticEntry("/date-props"));
 	await testModal(page);
 	await page.reload();
 	await page.waitForLoadState("domcontentloaded");
