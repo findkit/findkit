@@ -1285,9 +1285,23 @@ export class SearchEngine {
 		}
 
 		const replacer = (key: string, value: any) => {
-			if (value instanceof Date) {
-				return `_FDK_DATE:${value.toISOString()}`;
+			if (
+				value !== null &&
+				!Array.isArray(value) &&
+				typeof value === "object"
+			) {
+				return Object.fromEntries(
+					Object.entries(value).map(([key, value]) => {
+						if (value instanceof Date) {
+							const newValue = "_FDK_DATE:" + value.toISOString();
+							return [key, newValue];
+						}
+
+						return [key, value];
+					}),
+				);
 			}
+
 			return value;
 		};
 
@@ -1317,8 +1331,13 @@ export class SearchEngine {
 
 		try {
 			const reviver = (key: string, value: any) => {
-				if (value.startsWith("_FDK_DATE:")) {
-					return new Date(value.slice("_FDK_DATE:".length));
+				if (
+					value &&
+					typeof value === "string" &&
+					value.startsWith("_FDK_DATE:")
+				) {
+					const revivedDate = new Date(value.slice("_FDK_DATE:".length));
+					return revivedDate;
 				}
 				return value;
 			};
