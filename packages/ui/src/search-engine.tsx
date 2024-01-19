@@ -1308,7 +1308,13 @@ export class SearchEngine {
 		};
 
 		try {
-			savedState = JSON.parse(json);
+			const reviver = (key: string, value: any) => {
+				if (key === "created" || key === "modified") {
+					return new Date(value);
+				}
+				return value;
+			};
+			savedState = JSON.parse(json, reviver);
 		} catch {
 			return false;
 		}
