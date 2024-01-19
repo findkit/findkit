@@ -1284,8 +1284,16 @@ export class SearchEngine {
 			return;
 		}
 
+		const replacer = (key: string, value: any) => {
+			if (value instanceof Date) {
+				return `_FDK_DATE:${value.toISOString()}`;
+			}
+			return value;
+		};
+
 		sessionStorage.setItem(
 			this.PRIVATE_getSessionKey(restoreId),
+
 			JSON.stringify({ resultGroups: this.state.resultGroups }),
 		);
 	}
@@ -1309,8 +1317,8 @@ export class SearchEngine {
 
 		try {
 			const reviver = (key: string, value: any) => {
-				if (key === "created" || key === "modified") {
-					return new Date(value);
+				if (value.startsWith("_FDK_DATE:")) {
+					return new Date(value.slice("_FDK_DATE:".length));
 				}
 				return value;
 			};
