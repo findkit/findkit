@@ -491,3 +491,15 @@ test("can disable scroll restoration with `manageScroll: false`", async ({
 	// No fetches should have been made after the reload
 	expect(await page.evaluate(() => (window as any).uiEvents)).toEqual([]);
 });
+
+test("can restore modified and created dates from sessionStorage on back", async ({
+	page,
+}) => {
+	await routeMocks(page);
+	await page.goto(staticEntry("/date-props"));
+	await testModal(page);
+	await page.reload();
+	await page.waitForLoadState("domcontentloaded");
+	const errors = page.locator(".findkit--error");
+	await expect(errors).not.toBeVisible();
+});

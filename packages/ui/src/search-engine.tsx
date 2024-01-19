@@ -1284,9 +1284,31 @@ export class SearchEngine {
 			return;
 		}
 
+		const replacer = (key: string, value: any) => {
+			if (
+				value !== null &&
+				!Array.isArray(value) &&
+				typeof value === "object"
+			) {
+				return Object.fromEntries(
+					Object.entries(value).map(([key, value]) => {
+						if (value instanceof Date) {
+							const newValue = "_FDK_DATE:" + value.toISOString();
+							return [key, newValue];
+						}
+
+						return [key, value];
+					}),
+				);
+			}
+
+			return value;
+		};
+
 		sessionStorage.setItem(
 			this.PRIVATE_getSessionKey(restoreId),
-			JSON.stringify({ resultGroups: this.state.resultGroups }),
+
+			JSON.stringify({ resultGroups: this.state.resultGroups }, replacer),
 		);
 	}
 
@@ -1308,7 +1330,18 @@ export class SearchEngine {
 		};
 
 		try {
-			savedState = JSON.parse(json);
+			const reviver = (key: string, value: any) => {
+				if (
+					value &&
+					typeof value === "string" &&
+					value.startsWith("_FDK_DATE:")
+				) {
+					const revivedDate = new Date(value.slice("_FDK_DATE:".length));
+					return revivedDate;
+				}
+				return value;
+			};
+			savedState = JSON.parse(json, reviver);
 		} catch {
 			return false;
 		}
