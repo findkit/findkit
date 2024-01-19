@@ -1294,7 +1294,7 @@ export class SearchEngine {
 		sessionStorage.setItem(
 			this.PRIVATE_getSessionKey(restoreId),
 
-			JSON.stringify({ resultGroups: this.state.resultGroups }),
+			JSON.stringify({ resultGroups: this.state.resultGroups }, replacer),
 		);
 	}
 
