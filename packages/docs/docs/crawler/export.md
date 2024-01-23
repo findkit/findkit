@@ -5,7 +5,7 @@ It is possible to export all the indexed data using the Findkit CLI. Just run
 the project id (public token):
 
 ```
-findkit export --project <ID>
+findkit export --project <public token>
 ```
 
 The command will generate a "JSON Lines" file where each line is a JSON
@@ -64,7 +64,7 @@ jq -s '{docs: [.[].docs[0]]}' findkit-export-[ID].jsonl
 or pick only some of the keys
 
 ```
-jq -s '{docs: [.[].docs[0] | {title, url} ]}' findkit-export-[ID].jsonl
+jq -s '{docs: [.[].docs[0] | {title, url}]}' findkit-export-[ID].jsonl
 {
     "docs": [
         {"title": "", url": ""},

@@ -38,6 +38,10 @@ are using Typescript as well.
 The CDN and npm imports are completely interchangeable. In this documentation
 we will be using the npm import but it can be replaced with the CDN import.
 
+## WordPress
+
+If you happen to use WordPress you can include FindkitUI using our [plugin](https://wordpress.org/plugins/findkit).
+
 ## Cannot use module scripts? {#nomodule}
 
 If you cannot create `<script type="module">` directly you can load the module from
@@ -45,15 +49,15 @@ old style `<script>` tag with:
 
 ```html
 <script>
-	window.onFindkitUIModule = ({ FindkitUI }) => {
-		const ui = new FindkitUI({ publicToken: "<TOKEN>" });
-	};
-
 	const script = document.createElement("script");
 	script.type = "module";
 	script.innerHTML =
 		'import("https://cdn.findkit.com/ui/v0.19.1/esm/index.js").then(onFindkitUIModule)';
 	document.head.append(script);
+
+	window.onFindkitUIModule = ({ FindkitUI }) => {
+		const ui = new FindkitUI({ publicToken: "<TOKEN>" });
+	};
 </script>
 ```
 
