@@ -1,3 +1,16 @@
+## v0.19.2
+
+2024-01-23
+
+-   Fix replacer and reviver [819002d](https://github.com/findkit/findkit/commit/819002d) - Joonas Varis
+-   oops [8c0e1ce](https://github.com/findkit/findkit/commit/8c0e1ce) - Joonas Varis
+-   Handle all dates [416de0d](https://github.com/findkit/findkit/commit/416de0d) - Joonas Varis
+-   Rename [a6d4c0f](https://github.com/findkit/findkit/commit/a6d4c0f) - Joonas Varis
+-   Add test.html with modified and created dates [2808b86](https://github.com/findkit/findkit/commit/2808b86) - Joonas Varis
+-   Revive dates from strings when restoring from sessionStorage [c444651](https://github.com/findkit/findkit/commit/c444651) - Joonas Varis
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.19.1...ui/v0.19.2
+
 ## v0.19.1
 
 2024-01-11
