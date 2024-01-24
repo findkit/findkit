@@ -59,7 +59,7 @@ if (process.env.CI && process.platform === "darwin") {
  * See https://playwright.dev/docs/test-configuration.
  */
 const config: PlaywrightTestConfig = {
-	testDir: process.env.VISUAL ? "./e2e-visual" : "./e2e",
+	testDir: process.env.PLAYWRIGHT_VISUAL ? "./e2e-visual" : "./e2e",
 	/* Maximum time one test can run for. */
 	timeout: 30 * 1000,
 	expect: {
