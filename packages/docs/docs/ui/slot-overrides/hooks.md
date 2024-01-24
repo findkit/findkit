@@ -120,7 +120,7 @@ translations on slot overrides. See [`setLang`](/ui/api/#setLang).
 _New in v0.19.0_
 
 Get the translation function. Can render existing translations but it can also
-render custom translations.
+render custom translations. See also [`addTranslation`](/ui/api/#addTranslation)
 
 ```ts
 import { FindkitUI, useTranslate } from "@findkit/ui";
@@ -137,8 +137,8 @@ const ui = new FindkitUI({
 
 ui.addTranslation(
 	"en",
-	{}, // for internal key overrides
-	{
+	{}, // Override build-in translations
+	{   // Custom translations
 		greet: "Hello {{name}}!",
 	},
 );
