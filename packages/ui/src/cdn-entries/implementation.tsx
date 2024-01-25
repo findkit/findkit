@@ -4,6 +4,7 @@ import { createElement, useCallback, useMemo, useRef } from "react";
 import {
 	useFindkitContext,
 	useInput,
+	useResults,
 	useSearchEngine,
 	useSearchEngineState,
 } from "../core-hooks";
@@ -148,29 +149,6 @@ export function useTotalImplementation() {
 /**
  * @public
  */
-export function useResultsImplementation(): SearchResultHitWithGroupId[] {
-	const state = useSearchEngineState();
-
-	return useMemo(() => {
-		const currentGroupId = state.currentGroupId;
-		return Object.entries(state.resultGroups).flatMap(([id, result]) => {
-			if (currentGroupId && currentGroupId !== id) {
-				return [];
-			}
-
-			return result.hits.map((hit) => {
-				return {
-					groupId: id,
-					...hit,
-				};
-			});
-		});
-	}, [state.currentGroupId, state.resultGroups]);
-}
-
-/**
- * @public
- */
 export interface Implementation {
 	/**
 	 * Internal. Do not use.
@@ -181,7 +159,6 @@ export interface Implementation {
 	useParams: typeof useParamsImplementation;
 	useGroups: typeof useGroupsImplementation;
 	useTerms: typeof useTermsImplementation;
-	useResults: typeof useResultsImplementation;
 	useTotal: typeof useTotalImplementation;
 	useLang: typeof useLangImplementation;
 	useInput: typeof useInput;
@@ -189,6 +166,7 @@ export interface Implementation {
 	useLoading: typeof useLoadingImplementation;
 	useCustomRouterData: typeof useCustomRouterDataImplementation;
 	useTranslate: typeof useTranslateImplementation;
+	useResults: typeof useResults;
 	preact: PreactFunctions;
 	css: (strings: TemplateStringsArray, ...expr: string[]) => string;
 }
@@ -202,7 +180,7 @@ export const js: Implementation = {
 	useParams: useParamsImplementation,
 	useTerms: useTermsImplementation,
 	useTotal: useTotalImplementation,
-	useResults: useResultsImplementation,
+	useResults,
 	useInput,
 	useTotalHitCount: useTotalHitCountImplementation,
 	useLang: useLangImplementation,

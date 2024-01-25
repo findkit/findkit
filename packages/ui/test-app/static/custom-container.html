@@ -13,18 +13,15 @@
 			html,
 			useTerms,
 			useTotal,
-			useResults,
 		} from "/build/esm/index.js";
 
 		function TestHooks(props) {
 			const terms = useTerms();
 			const total = useTotal();
-			const results = useResults();
 
 			return html`
 				<div class="test-terms">${terms}</div>
 				<div class="test-total">${total}</div>
-				<div class="test-results">${results.length}</div>
 				${props.children}
 			`;
 		}

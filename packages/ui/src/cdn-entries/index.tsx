@@ -59,6 +59,7 @@ import type {
 } from "../slots";
 import type { PreactFunctions } from "./preact-subset";
 import type { Filter, Operator } from "../filter-type";
+import type { GroupResults } from "../core-hooks";
 
 /**
  * @deprecated legacy alias of SearchParams
@@ -115,6 +116,7 @@ export {
 	InitEvent,
 	ResultSlotProps,
 	ResultSlotParts,
+	GroupResults,
 };
 
 const doc = () => document;

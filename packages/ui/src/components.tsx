@@ -17,13 +17,10 @@ import {
 	useSearchMoreOnReveal,
 	FocusRef,
 	useFindkitContext,
+	useResults,
+	GroupResults,
 } from "./core-hooks";
-import {
-	DEFAULT_PREVIEW_SIZE,
-	SearchEngine,
-	SearchResultHit,
-	SortGroup,
-} from "./search-engine";
+import { SearchEngine, SearchResultHit } from "./search-engine";
 import { Slots } from "./slots";
 import { createSlotComponent, useSlotContext } from "./slots-core";
 import { createTranslator } from "./translations";
@@ -388,19 +385,19 @@ const GroupSlot = createSlotComponent("Group", {
 });
 
 function MultiGroupResults() {
-	const state = useSearchEngineState();
-	const groupOrder = state.groupOrder;
+	const results = useResults();
+	const groupOrder = useSearchEngineState().groupOrder;
 
-	function orderGroups(a: SortGroup, b: SortGroup) {
+	function orderGroups(a: GroupResults, b: GroupResults) {
 		if (groupOrder === "relevancy") {
 			// search results are in relevancy order within groups
 			// so we only need to compare first results from each group
-			const aScore = a.results.hits[0]?.score ?? 0;
-			const aBoost = a.groupDefinition?.relevancyBoost ?? 1;
+			const aScore = a.hits[0]?.score ?? 0;
+			const aBoost = a.relevancyBoost;
 			const aRelevancy = aScore * aBoost;
 
-			const bScore = b.results.hits[0]?.score ?? 0;
-			const bBoost = b.groupDefinition?.relevancyBoost ?? 1;
+			const bScore = b.hits[0]?.score ?? 0;
+			const bBoost = b.relevancyBoost;
 			const bRelevancy = bScore * bBoost;
 
 			// relevancy should descend
@@ -418,38 +415,24 @@ function MultiGroupResults() {
 
 	return (
 		<>
-			{state.usedGroupDefinitions
-				.map((def) => {
-					let group = state.resultGroups[def.id];
-					if (!group) {
-						group = {
-							hits: [],
-							total: 0,
-							duration: 0,
-						};
-					}
-					return {
-						results: group,
-						groupDefinition: def,
-					};
-				})
-				.sort(orderGroups)
-				.map((sortGroup) => {
-					const id = sortGroup.groupDefinition.id;
-
-					return (
-						<View key={id} cn="group" data-group-id={id}>
-							<GroupSlot
-								id={id}
-								title={sortGroup.groupDefinition.title}
-								total={sortGroup.results.total}
-								fetchedHits={sortGroup.results.hits.length}
-								hits={sortGroup.results.hits}
-								previewSize={sortGroup.groupDefinition.previewSize}
-							/>
-						</View>
-					);
-				})}
+			{results.sort(orderGroups).map((groupResults) => {
+				return (
+					<View
+						key={groupResults.id}
+						cn="group"
+						data-group-id={groupResults.id}
+					>
+						<GroupSlot
+							id={groupResults.id}
+							title={groupResults.title}
+							total={groupResults.total}
+							fetchedHits={groupResults.hits.length}
+							hits={groupResults.hits}
+							previewSize={groupResults.previewSize}
+						/>
+					</View>
+				);
+			})}
 		</>
 	);
 }
@@ -524,23 +507,15 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	const state = useSearchEngineState();
 	const engine = useSearchEngine();
 	const groupCount = state.usedGroupDefinitions.length;
-	let group = state.resultGroups[props.groupId];
-	const def = state.usedGroupDefinitions[props.groupIndex];
-
-	if (!group) {
-		group = {
-			hits: [],
-			total: 0,
-			duration: 0,
-		};
-	}
+	const groups = useResults();
+	const group = groups[props.groupIndex] ?? groups[0];
 
 	useEffect(() => {
 		if (!focusRef.current.groupViewFocusNext) {
 			return;
 		}
 
-		const focusIndex = def?.previewSize ?? DEFAULT_PREVIEW_SIZE;
+		const focusIndex = group.previewSize;
 
 		const links = engine.container.querySelectorAll("." + cn("hit-title-link"));
 
@@ -554,8 +529,8 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	}, [
 		engine,
 		props.groupId,
+		group.previewSize,
 		focusRef,
-		def,
 
 		// Not used in the effect but we need to check on every hit change when
 		// the focusable index appears in the results.
@@ -569,7 +544,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 			id={props.groupId}
 			total={group.total}
 			fetchedHits={group.hits.length}
-			title={def?.title}
+			title={group?.title}
 		/>
 	);
 }
