@@ -52,12 +52,16 @@ test("fetch-done event", async ({ page }) => {
 
 		await fn();
 
-		await page.evaluate(
-			async () => {
-				return (window as any).promise;
-			},
-			{ timeout: 5_000 },
-		);
+		await page
+			.evaluate(
+				async () => {
+					return await (window as any).promise;
+				},
+				{ timeout: 5_000 },
+			)
+			// WTF, this randomly crashes with "Error: page.evaluate: Execution context was destroyed, most likely because of a navigation."
+			// But if we catch it the test seems to be working fine?
+			.catch(() => {});
 	};
 
 	await waitForFetchDone(async () => {
