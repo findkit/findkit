@@ -21,8 +21,8 @@ test("fetch-done event", async ({ page }) => {
 					previewSize: 1,
 				},
 				{
-					title: "Group 1",
-					id: "1",
+					title: "Group 2",
+					id: "2",
 					params: {},
 					previewSize: 1,
 				},
