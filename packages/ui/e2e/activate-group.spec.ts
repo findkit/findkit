@@ -61,6 +61,15 @@ test("can use .activateGroup() and .clearGroup()", async ({ page }) => {
 
 	expect(await page.evaluate(() => testEvents.length)).toBe(1);
 
+	await page.waitForTimeout(1000);
+
+	await page.evaluate(async () => {
+		ui.activateGroup(0);
+	});
+
+	await expect(page.locator("text=GroupB")).not.toBeVisible();
+	await expect(page.locator("text=GroupA")).toBeVisible();
+
 	await page.evaluate(async () => {
 		ui.clearGroup();
 	});

@@ -2117,7 +2117,6 @@ export class SearchEngine {
 			this.PRIVATE_started(() => {
 				const findkitParams = this.PRIVATE_getfindkitParams();
 				this.updateAddressBar(findkitParams.setGroupId(groupId), {
-					ignore: true,
 					push: false,
 				});
 			});
