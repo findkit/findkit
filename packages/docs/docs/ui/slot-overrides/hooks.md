@@ -195,6 +195,13 @@ const ui = new FindkitUI({
 
 <Api page="ui.useCustomRouterData" />
 
+### `useResults()` {#useResults}
+
+_New in v0.20.0_
+
+Access the search results by [groups](ui/api/groups). Returns an array of <Api page="ui.GroupResults" >GroupResults</Api> objects. If you are not using groups just use the first item in the array: `const results = useResults()[0]`.
+
+
 ### `preact` {#preact}
 
 Object of commonly used Preact Hooks. See the api docs for details.
