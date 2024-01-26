@@ -32,6 +32,7 @@ import {
 	VERSION,
 } from "./cdn-entries";
 import { GroupResults } from "./core-hooks";
+import { assertNotNil } from "@valu/assert";
 
 export const DEFAULT_HIGHLIGHT_LENGTH = 250;
 export const DEFAULT_PREVIEW_SIZE = 5;
@@ -2110,6 +2111,35 @@ export class SearchEngine {
 			});
 		});
 	};
+
+	activateGroup(groupId: string | number | { id: string | number }) {
+		if (typeof groupId === "string") {
+			this.PRIVATE_started(() => {
+				const findkitParams = this.PRIVATE_getfindkitParams();
+				this.updateAddressBar(findkitParams.setGroupId(groupId), {
+					ignore: true,
+					push: false,
+				});
+			});
+		} else if (typeof groupId === "number") {
+			const groups =
+				this.state.nextGroupDefinitions ?? this.state.usedGroupDefinitions;
+			const id = groups[groupId]?.id;
+			assertNotNil(id, `[findkit] Unknown group index ${id}`);
+			this.activateGroup(id);
+		} else {
+			this.activateGroup(groupId.id);
+		}
+	}
+
+	clearGroup() {
+		this.PRIVATE_started(() => {
+			const findkitParams = this.PRIVATE_getfindkitParams();
+			this.updateAddressBar(findkitParams.clearGroupId(), {
+				push: false,
+			});
+		});
+	}
 
 	dispose = () => {
 		this.events.emit("dispose", {});

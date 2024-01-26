@@ -779,6 +779,17 @@ export class FindkitUI<
 	}
 
 	/**
+	 * Activate group by id, index or group object. Does not open the modal.
+	 *	Use with open() to open the modal as well.
+	 */
+	activateGroup = this.PRIVATE_createShellMethod("activateGroup");
+
+	/**
+	 * Clear possibly active group by returni the multiple groups view
+	 */
+	clearGroup = this.PRIVATE_createShellMethod("clearGroup");
+
+	/**
 	 * Bind an event handler to the emitter
 	 *
 	 * @returns a function to unbind the handler
@@ -841,7 +852,9 @@ export class FindkitUI<
 			| "updateParams"
 			| "addTranslation"
 			| "trapFocus"
-			| "bindInput",
+			| "bindInput"
+			| "activateGroup"
+			| "clearGroup",
 		// Methods<SearchEngine>,
 	>(method: Method): InstanceType<typeof SearchEngine>[Method] {
 		// NOTE: Supports only void returning methods

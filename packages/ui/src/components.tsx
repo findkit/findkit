@@ -9,22 +9,22 @@ import { useSnapshot } from "valtio";
 import {
 	FindkitContext,
 	FindkitContextType,
-	useSearchEngine,
-	useFindkitURLSearchParams,
-	useSearchEngineState,
-	useTranslator,
-	useKeyboardItemAttributes,
-	useSearchMoreOnReveal,
 	FocusRef,
-	useFindkitContext,
-	useResults,
 	GroupResults,
+	useFindkitContext,
+	useFindkitURLSearchParams,
+	useKeyboardItemAttributes,
+	useResults,
+	useSearchEngine,
+	useSearchEngineState,
+	useSearchMoreOnReveal,
+	useTranslator,
 } from "./core-hooks";
 import { SearchEngine, SearchResultHit } from "./search-engine";
 import { Slots } from "./slots";
 import { createSlotComponent, useSlotContext } from "./slots-core";
 import { createTranslator } from "./translations";
-import { cn, isProd, scrollToTop, View } from "./utils";
+import { View, cn, isProd, scrollToTop } from "./utils";
 
 export function FindkitProvider(props: {
 	children: ReactNode;
