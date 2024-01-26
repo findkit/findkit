@@ -443,6 +443,21 @@ Close the search modal.
 
 <Api page="ui.findkitui.close" />
 
+### `.activateGroup(idOrIndex)` {#activateGroup}
+
+_New in v0.20.0_
+
+Activate a [group](/ui/api/groups) by id or index. The ui will be navigated to the group. When in modal mode it does not open the modal. Call [`open`](#open) manually to open it.
+
+
+### `.clearGroup()` {#activateGroup}
+
+_New in v0.20.0_
+
+Clear active group. The ui will be navigated to the multi-group view.
+
+<Api page="ui.findkitui.clearGroup" />
+
 ### `.dispose()` {#dispose}
 
 Close the search modal and discard the `FindkitUI` instance with its resources.
