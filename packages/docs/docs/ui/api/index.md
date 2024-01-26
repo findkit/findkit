@@ -112,7 +112,7 @@ Group search results. See [Groups](/ui/api/groups).
 
 <Api page="ui.findkituioptions.groups" />
 
-### `groupOrder: "relevancy" | "static" | (a,b)=>number` {#groupOrder}
+### `groupOrder: "relevancy" | "static" | (a: GroupResults,b: GroupResults)=>number` {#groupOrder}
 
 Group order logic. Defaults to `"static"` which preserves groups array order.
 
@@ -121,7 +121,7 @@ Relevancy mode can be affected by groups' option
 [`relevancyBoost`](/ui/api/groups#relevancyBoost), which is multiplied with the
 result relevancy
 
-Also supports custom sort functions.
+Also supports custom sort function which receives <Api page="ui.GroupResults" >GroupResults</Api> objects as the arguments.
 
 <Api page="ui.findkituioptions.groupOrder" />
 
