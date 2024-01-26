@@ -205,7 +205,7 @@ export function useContainerKeyboardAttributes() {
 }
 
 /**
- * Type for groupped search results
+ * Type for groupped search results.
  */
 export interface GroupResults {
 	/**
@@ -246,11 +246,15 @@ export interface GroupResults {
 	relevancyBoost: number;
 
 	/**
+	 * DEPRECATED
+	 *
 	 * @deprecated Use fields directly on the containing object
 	 **/
 	results: EngineResultGroup;
 
 	/**
+	 * DEPRECATED
+	 *
 	 * @deprecated Use fields directly on the containing object
 	 **/
 	groupDefinition: GroupDefinition;
