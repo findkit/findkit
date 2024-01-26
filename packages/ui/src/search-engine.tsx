@@ -31,6 +31,7 @@ import {
 	FindkitUIOptions,
 	VERSION,
 } from "./cdn-entries";
+import { GroupResults } from "./core-hooks";
 
 export const DEFAULT_HIGHLIGHT_LENGTH = 250;
 export const DEFAULT_PREVIEW_SIZE = 5;
@@ -213,9 +214,9 @@ export interface GroupDefinitionWithDefaults extends GroupDefinition {
 }
 
 /**
- * @public
+ * Internal search engine state type. See GroupResult for the public type.
  */
-export interface ResultGroup {
+export interface EngineResultGroup {
 	hits: SearchResultHit[];
 	total: number;
 	duration?: number;
@@ -314,7 +315,7 @@ export interface State {
 	error: { source: "fetch" | "other"; message: string } | undefined;
 
 	resultGroups: {
-		[groupId: string]: ResultGroup;
+		[groupId: string]: EngineResultGroup;
 	};
 
 	/**
@@ -574,11 +575,7 @@ export interface SearchEngineOptions {
 export type GroupOrder =
 	| "relevancy"
 	| "static"
-	| ((a: SortGroup, b: SortGroup) => number);
-export interface SortGroup {
-	results: ResultGroup;
-	groupDefinition: GroupDefinition;
-}
+	| ((a: GroupResults, b: GroupResults) => number);
 
 /**
  * State for history.state

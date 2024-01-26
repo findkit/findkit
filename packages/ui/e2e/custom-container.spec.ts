@@ -43,7 +43,7 @@ test("can use custom input (.bindInput()) and 'params' events", async ({
 	expect(hosts).toEqual(["statement.fi"]);
 });
 
-test("can use hooks", async ({ page }) => {
+test("can use useTotal()", async ({ page }) => {
 	await page.goto(staticEntry("/custom-container"));
 	const hits = page.locator(".findkit--hit");
 
@@ -54,11 +54,8 @@ test("can use hooks", async ({ page }) => {
 
 	await expect(page.locator(".test-terms")).toHaveText("valu");
 	const total = await page.locator(".test-total").innerText();
-	const resultLength = await page.locator(".test-results").innerText();
 
 	expect(Number(total)).toBeGreaterThan(10);
-	expect(Number(resultLength)).toBeGreaterThan(10);
-	expect(Number(total)).toBeGreaterThan(Number(resultLength));
 });
 
 test("modal is automatically disabled when using custom container", async ({

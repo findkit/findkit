@@ -1,5 +1,13 @@
 import { createContext, useCallback, useContext, useMemo, useRef } from "react";
-import { FindkitURLSearchParams, SearchEngine, State } from "./search-engine";
+import {
+	DEFAULT_PREVIEW_SIZE,
+	FindkitURLSearchParams,
+	GroupDefinition,
+	EngineResultGroup,
+	SearchEngine,
+	SearchResultHit,
+	State,
+} from "./search-engine";
 import { useSnapshot } from "valtio";
 import { Translator } from "./translations";
 import { Slots } from "./slots";
@@ -194,4 +202,105 @@ export function useContainerKeyboardAttributes() {
 	}
 
 	return attrs;
+}
+
+/**
+ * Type for groupped search results
+ */
+export interface GroupResults {
+	/**
+	 * The group id
+	 */
+	id: string;
+
+	/**
+	 * Group title
+	 */
+	title: string;
+
+	/**
+	 * Total search results for this group
+	 */
+	total: number;
+
+	/**
+	 * Search hits for this group
+	 */
+	hits: ReadonlyArray<SearchResultHit>;
+
+	/**
+	 * How many results are shown on the initial groupped view
+	 */
+	previewSize: number;
+
+	/**
+	 * Whether searches are actively made to this group.
+	 * This is true for all groups in the initial multi group view
+	 * but only for the selected group in the single group view
+	 */
+	active: boolean;
+
+	/**
+	 * The group's relevancyBoost value https://docs.findkit.com/ui/api/groups#relevancyBoost
+	 */
+	relevancyBoost: number;
+
+	/**
+	 * @deprecated Use fields directly on the containing object
+	 **/
+	results: EngineResultGroup;
+
+	/**
+	 * @deprecated Use fields directly on the containing object
+	 **/
+	groupDefinition: GroupDefinition;
+}
+
+export function useResults(): [GroupResults, ...GroupResults[]] {
+	const state = useSearchEngineState();
+
+	return useMemo(() => {
+		let groupDefs = state.usedGroupDefinitions;
+		if (groupDefs.length === 0) {
+			groupDefs = state.nextGroupDefinitions;
+		}
+
+		return groupDefs.map((def) => {
+			let groupResults = state.resultGroups[def.id];
+
+			if (!groupResults) {
+				groupResults = {
+					hits: [],
+					total: 0,
+					duration: 0,
+				};
+			}
+
+			const results: GroupResults = {
+				id: def.id,
+				active:
+					state.currentGroupId === undefined || def.id === state.currentGroupId,
+				title: def.title,
+				hits: groupResults.hits,
+				total: groupResults.total,
+				relevancyBoost: def.relevancyBoost ?? 1,
+				previewSize: def.previewSize ?? DEFAULT_PREVIEW_SIZE,
+
+				results: groupResults,
+				groupDefinition: def,
+			};
+
+			if (!results.active) {
+				results.hits = [];
+				results.total = 0;
+			}
+
+			return results;
+		});
+	}, [
+		state.usedGroupDefinitions,
+		state.nextGroupDefinitions,
+		state.resultGroups,
+		state.currentGroupId,
+	]) as any;
 }
