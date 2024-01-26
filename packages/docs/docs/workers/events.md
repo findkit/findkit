@@ -13,6 +13,8 @@ an error.
 
 **Return**: `Promise<void>`
 
+Example
+
 ```ts
 export default {
 	async start(context) {
@@ -23,7 +25,7 @@ export default {
 
 ## `end(target)` {#start}
 
-Emitted when a target crawl end. Not emitted on test crawls.
+Emitted when a target crawl end.
 
 **Params**
 
