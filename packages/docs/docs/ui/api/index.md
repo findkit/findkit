@@ -121,6 +121,8 @@ Relevancy mode can be affected by groups' option
 [`relevancyBoost`](/ui/api/groups#relevancyBoost), which is multiplied with the
 result relevancy
 
+_New in v0.20.0_
+
 Also supports custom sort function which receives <Api page="ui.GroupResults" >GroupResults</Api> objects as the arguments.
 
 <Api page="ui.findkituioptions.groupOrder" />
