@@ -1,3 +1,12 @@
+## v0.20.0
+
+2024-01-29
+
+- Add [`.activateGroup()`](https://docs.findkit.com/ui/api/#activateGroup) and [`.clearGroup()`](https://docs.findkit.com/ui/api/#clearGroup) methods to the UI instance.
+-   Add [`useResults()`](https://docs.findkit.com/ui/slot-overrides/hooks#useResults)
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.19.2...ui/v0.20.0
+
 ## v0.19.2
 
 2024-01-23
