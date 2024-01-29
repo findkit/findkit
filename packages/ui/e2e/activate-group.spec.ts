@@ -68,10 +68,79 @@ test("can use .activateGroup() and .clearGroup()", async ({ page }) => {
 	await expect(page.locator("text=GroupB")).not.toBeVisible();
 	await expect(page.locator("text=GroupA")).toBeVisible();
 
+	expect(await page.evaluate(() => testEvents.length)).toBe(2);
+
 	await page.evaluate(async () => {
 		ui.clearGroup();
 	});
 
 	await expect(page.locator("text=GroupB")).toBeVisible();
 	await expect(page.locator("text=GroupA")).toBeVisible();
+});
+
+test("can use .activateGroup() from a <a> click event", async ({ page }) => {
+	await page.goto(staticEntry("/dummy?fdk_q=a&fdk_id=group-a"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI, html, useResults } = MOD;
+
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			infiniteScroll: false,
+			minTerms: 1,
+			groups: [
+				{
+					title: "GroupA",
+					id: "group-a",
+				},
+				{
+					title: "GroupB",
+					id: "group-b",
+				},
+			],
+			slots: {
+				Header(props) {
+					const results = useResults();
+
+					return html`
+						${results.map((group) => {
+							const activate = (e: any) => {
+								e.preventDefault();
+								return ui.activateGroup(group.id);
+							};
+							return html`
+								<a class="tab ${group.id}" href="#" onClick=${activate}
+									>${group.title}</a
+								>
+							`;
+						})}
+						${props.children}
+					`;
+				},
+			},
+		});
+
+		const testEvents: any[] = [];
+		Object.assign(window, { ui, testEvents });
+
+		ui.on("fetch", () => {
+			testEvents.push("fetch");
+		});
+	});
+
+	const content = page.locator(".findkit--content");
+
+	await expect(content.locator("text=GroupB")).not.toBeVisible();
+	await expect(content.locator("text=GroupA")).toBeVisible();
+
+	await page.locator(".findkit--hit").first().waitFor({ state: "visible" });
+
+	await page.locator("a.tab.group-b").click();
+
+	await expect(content.locator("text=GroupB")).toBeVisible();
+	await expect(content.locator("text=GroupA")).not.toBeVisible();
+
+	await page.locator(".findkit--hit").first().waitFor({ state: "visible" });
+
+	expect(await page.evaluate(() => testEvents.length)).toBe(2);
 });

@@ -53,6 +53,10 @@ function getLinkElement(el: any): HTMLAnchorElement | null {
 	return null;
 }
 
+function getTotalFromAllGroups(groups: { total: number }[]) {
+	return groups.reduce((total, group) => total + group.total, 0);
+}
+
 export type CustomRouterDataSetter<T extends CustomRouterData> =
 	| T
 	| ((prevData: T) => T | void | undefined);
@@ -1311,7 +1315,14 @@ export class SearchEngine {
 	}
 
 	private PRIVATE_restoreResults(): boolean {
+		// Restore results from the session storage only when we don't any any
+		// results in memory as it might interfere with some search customizations
+		if (getTotalFromAllGroups(Object.values(this.state.resultGroups)) > 0) {
+			return false;
+		}
+
 		const id = this.PRIVATE_getHistoryState()?.restoreId;
+
 		if (!id) {
 			return false;
 		}
@@ -1640,6 +1651,7 @@ export class SearchEngine {
 		if (next === "closed") {
 			// Search can be alway closed
 			this.state.status = "closed";
+			this.state.resultGroups = {};
 		} else if (next === "ready") {
 			// ready state can come only after fetching
 			if (prev === "fetching") {
@@ -1804,9 +1816,7 @@ export class SearchEngine {
 			id: String(requestId),
 			stale: oldResponse || throttleId !== this.PRIVATE_throttleId,
 			append: isAppending,
-			total: response.ok
-				? response.value.groups.reduce((total, group) => total + group.total, 0)
-				: 0,
+			total: response.ok ? getTotalFromAllGroups(response.value.groups) : 0,
 		});
 
 		// Never render old results when we have newer ones
