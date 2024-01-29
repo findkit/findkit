@@ -453,7 +453,7 @@ Activate a [group](/ui/api/groups) by id or index. The ui will be navigated to t
 
 <Api page="ui.findkitui.activateGroup" />
 
-### `.clearGroup()` {#activateGroup}
+### `.clearGroup()` {#clearGroup}
 
 _New in v0.20.0_
 
