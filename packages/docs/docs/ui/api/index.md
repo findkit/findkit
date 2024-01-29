@@ -451,6 +451,7 @@ _New in v0.20.0_
 
 Activate a [group](/ui/api/groups) by id or index. The ui will be navigated to the group. When in modal mode it does not open the modal. Call [`open`](#open) manually to open it.
 
+<Api page="ui.findkitui.activateGroup" />
 
 ### `.clearGroup()` {#activateGroup}
 
