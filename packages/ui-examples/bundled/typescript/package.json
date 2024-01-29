@@ -3,6 +3,6 @@
   "private": true,
   "dependencies": {
     "typescript": "~5.2.2",
-    "@findkit/ui": "0.19.1"
+    "@findkit/ui": "0.20.0"
   }
 }
