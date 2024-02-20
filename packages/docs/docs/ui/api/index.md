@@ -340,6 +340,17 @@ Default values to to emit from the
 
 <Api page="ui.findkituioptions.defaultCustomRouterData" />
 
+### `builtinStyles: boolean` {#builtinStyles}
+
+_New in v0.21.0_
+
+Disable loading of the built-in styles. Useful when you want total control over
+the UI styles or you want to load the styles with your own bundler.
+
+Defaults to `true`
+
+<Api page="ui.findkituioptions.buildinStyles" />
+
 ## Methods {#methods}
 
 Following methods are available on the `FindkitUI` instance.
