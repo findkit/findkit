@@ -168,7 +168,7 @@ test("can add custom language variant", async ({ page }) => {
 	await expect(closeButton).toHaveText("custom");
 });
 
-test("can customize build-in languages", async ({ page }) => {
+test("can customize built-in languages", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
