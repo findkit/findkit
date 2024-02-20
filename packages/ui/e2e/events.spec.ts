@@ -164,7 +164,7 @@ test("can use bind-input event", async ({ page }) => {
 	expect(testEvents).toEqual(["input:test1"]);
 });
 
-test("bind-input is fired for the build-in input", async ({ page }) => {
+test("bind-input is fired for the built-in input", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
