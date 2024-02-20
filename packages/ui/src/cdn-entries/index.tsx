@@ -530,6 +530,7 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	modal?: boolean;
 	forceHistoryReplace?: boolean;
 	manageScroll?: boolean;
+	builtinStyles?: boolean;
 
 	/**
 	 * See {@link GroupOrder}
@@ -900,7 +901,10 @@ export class FindkitUI<
 
 		// If there is a load option we asume it returns the css too. So we can
 		// skip loading the cdn css.
-		if (!this.PRIVATE_options.load) {
+		if (
+			!this.PRIVATE_options.load &&
+			this.PRIVATE_options.builtinStyles !== false
+		) {
 			sheets.push({ href: cdnFile("styles.css"), layer: "findkit.core" });
 		}
 
