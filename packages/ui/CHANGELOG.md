@@ -1,9 +1,17 @@
+## v0.21.0
+
+2024-02-20
+
+- Add [`builtinStyles`](https://docs.findkit.com/ui/api/#builtinStyles) option [8fa01b7](https://github.com/findkit/findkit/commit/8fa01b7) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.20.0...ui/v0.21.0
+
 ## v0.20.0
 
 2024-01-29
 
 - Add [`.activateGroup()`](https://docs.findkit.com/ui/api/#activateGroup) and [`.clearGroup()`](https://docs.findkit.com/ui/api/#clearGroup) methods to the UI instance.
--   Add [`useResults()`](https://docs.findkit.com/ui/slot-overrides/hooks#useResults)
+- Add [`useResults()`](https://docs.findkit.com/ui/slot-overrides/hooks#useResults)
 
 All changes https://github.com/findkit/findkit/compare/ui/v0.19.2...ui/v0.20.0
 
