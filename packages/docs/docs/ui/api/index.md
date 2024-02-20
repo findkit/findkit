@@ -344,8 +344,7 @@ Default values to to emit from the
 
 _New in v0.21.0_
 
-Disable loading of the built-in styles. Useful when you want total control over
-the UI styles or you want to load the styles with your own bundler.
+Enable or disable loading of the built-in styles. Useful when you want total control over the UI styles or you want to load the styles with your own bundler.
 
 Defaults to `true`
 
