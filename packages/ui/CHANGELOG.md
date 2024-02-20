@@ -28,7 +28,7 @@ All changes https://github.com/findkit/findkit/compare/ui/v0.19.1...ui/v0.19.2
 2024-01-11
 
 - Revert layout shifting fix [4bc3e3d](https://github.com/findkit/findkit/commit/4bc3e3d) - Esa-Matti Suuronen
-  - Causes visual issues on many sites so it cannot be build-in. Implement it manually with the `open` event:
+  - Causes visual issues on many sites so it cannot be built-in. Implement it manually with the `open` event:
 
 ```ts
 ui.on("open", () => {
@@ -96,7 +96,7 @@ All changes https://github.com/findkit/findkit/compare/ui/v0.17.0...ui/v0.18.0
 
 - Handle data-clicked in [.openFrom()](https://docs.findkit.com/ui/api/#openFrom)
 - Add ui.search(terms)
-- Emit [`findkituievent` DOM events](https://docs.findkit.com/ui/api/events#dom-events) from the build-in events
+- Emit [`findkituievent` DOM events](https://docs.findkit.com/ui/api/events#dom-events) from the built-in events
 - Allow constructor options mutation in the [`init` event](https://docs.findkit.com/ui/api/events#init)
 
 All changes https://github.com/findkit/findkit/compare/ui/v0.16.0...ui/v0.17.0
@@ -140,7 +140,7 @@ All changes https://github.com/findkit/findkit/compare/ui/v0.13.0...ui/v0.14.0
 
 2023-11-16
 
-- Use [CSS Layers](https://docs.findkit.com/ui/styling#css-layers) in build-in styles [901cb43](https://github.com/findkit/findkit/commit/901cb43) - Esa-Matti Suuronen
+- Use [CSS Layers](https://docs.findkit.com/ui/styling#css-layers) in built-in styles [901cb43](https://github.com/findkit/findkit/commit/901cb43) - Esa-Matti Suuronen
   - Possibly BREAKING if using `shadowDom: false`
   - Set [`cssLayers: false`](https://docs.findkit.com/ui/api/#cssLayers) if you see issues with CSS
 - Allow transient search params and terms update during fetch event [6417aaf](https://github.com/findkit/findkit/commit/6417aaf) - Esa-Matti Suuronen
@@ -213,7 +213,7 @@ All changes https://github.com/findkit/findkit/compare/ui/v0.8.0...ui/v0.9.0
 2023-10-17
 
 - Fix leaking form styles when not using shadow dom [c2a4db4](https://github.com/findkit/findkit/commit/c2a4db4) - Esa-Matti Suuronen
-- Upgrade build-in preact [57cdb08](https://github.com/findkit/findkit/commit/57cdb08) - Esa-Matti Suuronen
+- Upgrade built-in preact [57cdb08](https://github.com/findkit/findkit/commit/57cdb08) - Esa-Matti Suuronen
 - Add language type to SearchResultHit [22014a8](https://github.com/findkit/findkit/commit/22014a8) - Esa-Matti Suuronen
 - Remove proxy tracking from the hit objects [4d57c93](https://github.com/findkit/findkit/commit/4d57c93) - Esa-Matti Suuronen
 - Ensure no side scrolling on small screens [412aa2d](https://github.com/findkit/findkit/commit/412aa2d) - Esa-Matti Suuronen

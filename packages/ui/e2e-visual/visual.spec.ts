@@ -739,7 +739,7 @@ test("no side scroll", async ({ page }) => {
 	await expect(page).toHaveScreenshot();
 });
 
-test("build-in css is in a CSS Layer", async ({ page }) => {
+test("built-in css is in a CSS Layer", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
 
 	await page.evaluate(async () => {
