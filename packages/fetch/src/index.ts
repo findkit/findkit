@@ -254,17 +254,27 @@ function inferSearchEndpoint(options?: FindkitFetchInit) {
  */
 export function createSearchEndpoint(publicToken: string) {
 	let version = "c";
+	let subdomain = "search";
+
+	let region = publicToken.split(":", 2)[1];
+
+	// search.findkit.com is the eu-north-1 so must not set it explicitly
+	if (region && region !== "eu-north-1") {
+		subdomain = `search-${region}`;
+	}
 
 	try {
 		const usp = new URLSearchParams(location.hash.slice(1));
-		version = usp.get("__findkit_version") || "c";
+		version = usp.get("__findkit_version") || version;
+		subdomain = usp.get("__findkit_subdomain") || subdomain;
 	} catch {
 		// May crash for various reasons, no location object on a server, invalid
 		// query string etc. We really don't care why it fails, since this is for
 		// internal use only.
 	}
 
-	return `https://search.findkit.com/${version}/${publicToken}/search?p=${publicToken}`;
+	// prettier-ignore
+	return `https://${subdomain}.findkit.com/${version}/${publicToken}/search?p=${publicToken}`;
 }
 
 /**
