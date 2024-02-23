@@ -1,3 +1,13 @@
+## v0.22.0
+
+2024-02-23
+
+- Support regions in public tokens
+- Send warm up request along with the implementation preload request
+  to speed up the initial search request
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.21.0...ui/v0.22.0
+
 ## v0.21.0
 
 2024-02-20
