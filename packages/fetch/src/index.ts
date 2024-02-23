@@ -2,7 +2,6 @@
  * @public
  */
 export interface FindkitFetchInit {
-	logResponseTimes?: boolean;
 	publicToken?: string;
 	searchEndpoint?: string;
 	getJwtToken?: GetJwtToken;
@@ -83,18 +82,6 @@ export interface PostRequestInit {
 	body: string;
 }
 
-let logResponseTimes = false;
-
-if (typeof window !== "undefined") {
-	try {
-		logResponseTimes =
-			window.localStorage.getItem("findkit-log-response-times") === "true";
-	} catch {
-		// local storage access can throw in some enviroments such a
-		// codesandox.io due to permission issues
-	}
-}
-
 /**
  * Global JWT token fethcer
  */
@@ -103,7 +90,7 @@ declare const FINDKIT_GET_JWT_TOKEN: GetJwtToken | undefined;
 /**
  * @public
  */
-export function createFindkitFetcher(init?: FindkitFetchInit) {
+export function createFindkitFetcher(init: FindkitFetchInit) {
 	let currentJwtTokenPromise: Promise<JwtToken> | null = null;
 
 	/**
@@ -204,26 +191,6 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 		}
 
 		const responses: FindkitSearchResponse = await res.json();
-
-		if (init?.logResponseTimes || logResponseTimes) {
-			const total = Date.now() - started;
-			const backendDuration = responses.duration;
-
-			console.log(
-				`[findkit] Response total ${total}ms, backend ${backendDuration}ms, network ${
-					total - backendDuration
-				}ms`,
-			);
-
-			options.groups?.forEach((group, index) => {
-				const duration = responses.groups[index]?.duration ?? 0;
-				console.log(
-					`[findkit] Group response ${duration}ms for group "${index}"`,
-					group,
-				);
-			});
-		}
-
 		return responses;
 	};
 
@@ -234,18 +201,13 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 	};
 }
 
-function inferSearchEndpoint(options?: FindkitFetchInit) {
-	if (options?.searchEndpoint) {
-		return options?.searchEndpoint;
-	} else if (options?.publicToken) {
+export function inferSearchEndpoint(options: FindkitFetchInit) {
+	if (options.searchEndpoint) {
+		return options.searchEndpoint;
+	} else if (options.publicToken) {
 		return createSearchEndpoint(options.publicToken);
 	} else {
-		const msg = "[findkit] Unable to determine search endpoint";
-		console.error(
-			`${msg}. The options object must contain either a 'publicToken' or a 'searchEndpoint' property`,
-			options,
-		);
-		throw new Error(`${msg}. See logs for details`);
+		throw new Error(`[findkit] publicToken or searchEndpoint is required`);
 	}
 }
 
@@ -254,17 +216,27 @@ function inferSearchEndpoint(options?: FindkitFetchInit) {
  */
 export function createSearchEndpoint(publicToken: string) {
 	let version = "c";
+	let subdomain = "search";
+
+	let region = publicToken.split(":", 2)[1];
+
+	// search.findkit.com is the eu-north-1 so must not set it explicitly
+	if (region && region !== "eu-north-1") {
+		subdomain = `search-${region}`;
+	}
 
 	try {
 		const usp = new URLSearchParams(location.hash.slice(1));
-		version = usp.get("__findkit_version") || "c";
+		version = usp.get("__findkit_version") || version;
+		subdomain = usp.get("__findkit_subdomain") || subdomain;
 	} catch {
 		// May crash for various reasons, no location object on a server, invalid
 		// query string etc. We really don't care why it fails, since this is for
 		// internal use only.
 	}
 
-	return `https://search.findkit.com/${version}/${publicToken}/search?p=${publicToken}`;
+	// prettier-ignore
+	return `https://${subdomain}.findkit.com/${version}/${publicToken}/search?p=${publicToken}`;
 }
 
 /**

@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"target": "es2019",
 		"strict": true,
-		"module": "commonjs",
+		"module": "ESNext",
 		"moduleResolution": "node",
 		"noUncheckedIndexedAccess": true,
 		"declaration": true,

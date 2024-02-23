@@ -22,6 +22,7 @@ import type {
 } from "./implementation";
 import type { LayeredCSS, init } from "../modal";
 import type { CustomFields } from "@findkit/fetch";
+import { inferSearchEndpoint } from "@findkit/fetch";
 import {
 	Emitter,
 	FindkitUIEvents,
@@ -119,7 +120,16 @@ export {
 	GroupResults,
 };
 
-const doc = () => document;
+// just to make minification to work better
+const doc = document;
+
+const throwImplementationNotLoaded = (msg: string): never => {
+	throw new Error(`[findkit] Not loaded. Cannot use ${msg}`);
+};
+
+const logError = (...args: any[]) => {
+	console.error("[findkit]", ...args);
+};
 
 /**
  * Variable created by the esbuild config in jakefile.js
@@ -147,23 +157,6 @@ function cdnFile(path: string) {
 	}
 }
 
-let preconnected = false;
-/**
- * Pre-connect to the search endpoint to make the first search faster
- */
-function preconnect() {
-	if (preconnected) {
-		return;
-	}
-
-	preconnected = true;
-
-	const dnsPreconnect = doc().createElement("link");
-	dnsPreconnect.rel = "preconnect";
-	dnsPreconnect.href = "https://search.findkit.com";
-	doc().head?.appendChild(dnsPreconnect);
-}
-
 /**
  * No-op template tag for css. This only for editor syntax highlighting.
  *
@@ -183,11 +176,11 @@ export function css(strings: TemplateStringsArray, ...expr: string[]) {
  * bound after the actual event
  */
 function onDomContentLoaded(cb: () => any) {
-	if (/interactive|complete/.test(doc().readyState)) {
+	if (doc.readyState !== "loading") {
 		cb();
 	} else {
 		listen(
-			doc(),
+			doc,
 			"DOMContentLoaded" as any,
 			() => {
 				cb();
@@ -243,10 +236,7 @@ export function select<InstanceFilter extends typeof Element>(
 		);
 
 		if (res.length === 0) {
-			console.error(
-				"[findkit] select(): No elements found for selector",
-				elements,
-			);
+			logError("select(): No elements found with", elements);
 		} else {
 			cb(res[0], ...res.slice(1));
 		}
@@ -254,7 +244,7 @@ export function select<InstanceFilter extends typeof Element>(
 
 	if (typeof selector === "string") {
 		onDomContentLoaded(() => {
-			invoke(doc().querySelectorAll(selector));
+			invoke(doc.querySelectorAll(selector));
 		});
 	} else {
 		invoke(selector);
@@ -272,7 +262,7 @@ function createShellFunction<Key extends Methods<Implementation>>(
 	return (...args: any[]): ReturnType<Implementation[Key]> => {
 		const fn = lazyImplementation[name] as any;
 		if (!fn) {
-			throw new Error(`[findkit] Implementation for "${name}" not loaded yet!`);
+			throwImplementationNotLoaded(name);
 		}
 
 		return fn(...args);
@@ -312,12 +302,8 @@ function proxyFunctions<T extends object>(target: T): T {
 			if (!cache[prop]) {
 				cache[prop] = (...args: any[]) => {
 					const actual = (target as any)?.[prop];
-
 					if (!actual) {
-						throw new Error(
-							// prettier-ignore
-							`[findkit] Cannot use '${String(prop)}': Implementation not loaded yet!`,
-						);
+						throwImplementationNotLoaded(String(prop));
 					}
 
 					return actual.apply(target, args);
@@ -410,7 +396,7 @@ async function preloadStylesheet(style: LayeredCSS) {
 		return;
 	}
 
-	const link = doc().createElement("link");
+	const link = doc.createElement("link");
 	link.rel = "preload";
 	link.as = "style";
 	link.href = href;
@@ -425,7 +411,7 @@ async function preloadStylesheet(style: LayeredCSS) {
 			link,
 			"error",
 			() => {
-				console.error(`[findkit] Failed to load stylesheet ${href}`);
+				logError(`Failed to load stylesheet ${href}`);
 				// do not error the promise because it can  work without user css too
 				resolve({});
 			},
@@ -433,7 +419,7 @@ async function preloadStylesheet(style: LayeredCSS) {
 		);
 	});
 
-	doc().head?.appendChild(link);
+	doc.head.appendChild(link);
 
 	await promise;
 
@@ -452,7 +438,7 @@ async function loadScriptFromGlobal<T>(
 	}
 
 	const promise = new Promise<T>((resolve, reject) => {
-		const script = doc().createElement("script");
+		const script = doc.createElement("script");
 		script.type = "module";
 
 		const timer = setTimeout(() => {
@@ -479,7 +465,7 @@ async function loadScriptFromGlobal<T>(
 		});
 
 		script.src = src;
-		doc().head?.appendChild(script);
+		doc.head.appendChild(script);
 	});
 
 	anyWindow[promiseKey] = promise;
@@ -925,7 +911,6 @@ export class FindkitUI<
 		this.PRIVATE_events.emit("request-open", {
 			preloaded: !!this.PRIVATE_lazyEngine.get(),
 		});
-		preconnect();
 		void this.PRIVATE_initEngine();
 		this.PRIVATE_lazyEngine((engine) => {
 			engine.open(terms, options);
@@ -980,17 +965,23 @@ export class FindkitUI<
 			return;
 		}
 
+		const endpoint = inferSearchEndpoint(this.PRIVATE_options) + "&warmup";
+
+		// Run warm up in background. No need to wait for it since it does not matter
+		// if we are faster since the return value is not used anyway.
+		// eslint-disable-next-line @typescript-eslint/no-floating-promises
+		fetch(endpoint, {
+			method: "POST",
+			headers: { "Content-Type": "text/plain" },
+			body: "{}",
+		}).catch(() => {
+			// No need to handle errors here. If the warmup fails the search
+			// will fail too which shows the error
+		});
+
 		this.PRIVATE_loading = true;
 
 		const impl = await this.PRIVATE_loadImplementation();
-
-		if (typeof location !== "undefined") {
-			const usp = new URLSearchParams(location.search);
-			const delay = Number(usp.get("__fdk_simulate_slow_load"));
-			if (delay) {
-				await new Promise((resolve) => setTimeout(resolve, delay));
-			}
-		}
 
 		Object.assign(lazyImplementation, impl.js);
 		Object.assign(preactImplementation, impl.js.preact);
