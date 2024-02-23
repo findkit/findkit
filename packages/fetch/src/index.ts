@@ -2,7 +2,6 @@
  * @public
  */
 export interface FindkitFetchInit {
-	logResponseTimes?: boolean;
 	publicToken?: string;
 	searchEndpoint?: string;
 	getJwtToken?: GetJwtToken;
@@ -81,18 +80,6 @@ export interface PostRequestInit {
 	credentials: "omit";
 	headers: { [k: string]: string };
 	body: string;
-}
-
-let logResponseTimes = false;
-
-if (typeof window !== "undefined") {
-	try {
-		logResponseTimes =
-			window.localStorage.getItem("findkit-log-response-times") === "true";
-	} catch {
-		// local storage access can throw in some enviroments such a
-		// codesandox.io due to permission issues
-	}
 }
 
 /**
@@ -204,26 +191,6 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 		}
 
 		const responses: FindkitSearchResponse = await res.json();
-
-		if (init?.logResponseTimes || logResponseTimes) {
-			const total = Date.now() - started;
-			const backendDuration = responses.duration;
-
-			console.log(
-				`[findkit] Response total ${total}ms, backend ${backendDuration}ms, network ${
-					total - backendDuration
-				}ms`,
-			);
-
-			options.groups?.forEach((group, index) => {
-				const duration = responses.groups[index]?.duration ?? 0;
-				console.log(
-					`[findkit] Group response ${duration}ms for group "${index}"`,
-					group,
-				);
-			});
-		}
-
 		return responses;
 	};
 
