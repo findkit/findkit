@@ -22,6 +22,7 @@ import type {
 } from "./implementation";
 import type { LayeredCSS, init } from "../modal";
 import type { CustomFields } from "@findkit/fetch";
+import { inferSearchEndpoint } from "@findkit/fetch";
 import {
 	Emitter,
 	FindkitUIEvents,
@@ -145,23 +146,6 @@ function cdnFile(path: string) {
 	} else {
 		return `${root}/${path}`;
 	}
-}
-
-let preconnected = false;
-/**
- * Pre-connect to the search endpoint to make the first search faster
- */
-function preconnect() {
-	if (preconnected) {
-		return;
-	}
-
-	preconnected = true;
-
-	const dnsPreconnect = doc().createElement("link");
-	dnsPreconnect.rel = "preconnect";
-	dnsPreconnect.href = "https://search.findkit.com";
-	doc().head?.appendChild(dnsPreconnect);
 }
 
 /**
@@ -925,7 +909,6 @@ export class FindkitUI<
 		this.PRIVATE_events.emit("request-open", {
 			preloaded: !!this.PRIVATE_lazyEngine.get(),
 		});
-		preconnect();
 		void this.PRIVATE_initEngine();
 		this.PRIVATE_lazyEngine((engine) => {
 			engine.open(terms, options);
@@ -979,6 +962,13 @@ export class FindkitUI<
 		if (this.PRIVATE_loading || this.PRIVATE_lazyEngine.get()) {
 			return;
 		}
+
+		const endpoint = inferSearchEndpoint(this.PRIVATE_options);
+		fetch(endpoint, {
+			method: "POST",
+			headers: { "Content-Type": "text/plain" },
+			body: JSON.stringify({ warmup: true }),
+		}).catch(() => {});
 
 		this.PRIVATE_loading = true;
 

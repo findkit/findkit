@@ -234,7 +234,7 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 	};
 }
 
-function inferSearchEndpoint(options?: FindkitFetchInit) {
+export function inferSearchEndpoint(options?: FindkitFetchInit) {
 	if (options?.searchEndpoint) {
 		return options?.searchEndpoint;
 	} else if (options?.publicToken) {
