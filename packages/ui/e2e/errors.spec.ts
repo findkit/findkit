@@ -7,7 +7,8 @@ test("fetch error and retry", async ({ page }) => {
 	let abortOnce = true;
 
 	await page.route(
-		(url) => url.hostname.endsWith(".findkit.com"),
+		(url) =>
+			url.hostname.endsWith(".findkit.com") && !url.search.includes("warmup"),
 		(route) => {
 			if (abortOnce) {
 				abortOnce = false;

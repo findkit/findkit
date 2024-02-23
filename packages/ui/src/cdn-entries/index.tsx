@@ -963,7 +963,7 @@ export class FindkitUI<
 			return;
 		}
 
-		const endpoint = inferSearchEndpoint(this.PRIVATE_options);
+		const endpoint = inferSearchEndpoint(this.PRIVATE_options) + "?warmup";
 
 		// Run warm up in background. No need to wait for it since it does not matter
 		// if we are faster since the return value is not used anyway.
