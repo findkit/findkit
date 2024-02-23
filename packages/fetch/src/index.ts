@@ -90,7 +90,7 @@ declare const FINDKIT_GET_JWT_TOKEN: GetJwtToken | undefined;
 /**
  * @public
  */
-export function createFindkitFetcher(init?: FindkitFetchInit) {
+export function createFindkitFetcher(init: FindkitFetchInit) {
 	let currentJwtTokenPromise: Promise<JwtToken> | null = null;
 
 	/**
@@ -201,18 +201,13 @@ export function createFindkitFetcher(init?: FindkitFetchInit) {
 	};
 }
 
-export function inferSearchEndpoint(options?: FindkitFetchInit) {
-	if (options?.searchEndpoint) {
-		return options?.searchEndpoint;
-	} else if (options?.publicToken) {
+export function inferSearchEndpoint(options: FindkitFetchInit) {
+	if (options.searchEndpoint) {
+		return options.searchEndpoint;
+	} else if (options.publicToken) {
 		return createSearchEndpoint(options.publicToken);
 	} else {
-		const msg = "[findkit] Unable to determine search endpoint";
-		console.error(
-			`${msg}. The options object must contain either a 'publicToken' or a 'searchEndpoint' property`,
-			options,
-		);
-		throw new Error(`${msg}. See logs for details`);
+		throw new Error(`[findkit] publicToken or searchEndpoint is required`);
 	}
 }
 
