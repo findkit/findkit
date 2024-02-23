@@ -247,6 +247,10 @@ export function select<InstanceFilter extends typeof Element>(
 
 const lazyImplementation: Partial<Implementation> = { css };
 
+function throwImplementationNotLoaded(msg: string): never {
+	throw new Error(`[findkit] Implementation not loaded yet. Cannot use ${msg}`);
+}
+
 /**
  * Like the PRIVATE_createShellMethod but for standalone functions
  */
@@ -256,7 +260,7 @@ function createShellFunction<Key extends Methods<Implementation>>(
 	return (...args: any[]): ReturnType<Implementation[Key]> => {
 		const fn = lazyImplementation[name] as any;
 		if (!fn) {
-			throw new Error(`[findkit] Implementation for "${name}" not loaded yet!`);
+			throwImplementationNotLoaded(name);
 		}
 
 		return fn(...args);
@@ -296,12 +300,8 @@ function proxyFunctions<T extends object>(target: T): T {
 			if (!cache[prop]) {
 				cache[prop] = (...args: any[]) => {
 					const actual = (target as any)?.[prop];
-
 					if (!actual) {
-						throw new Error(
-							// prettier-ignore
-							`[findkit] Cannot use '${String(prop)}': Implementation not loaded yet!`,
-						);
+						throwImplementationNotLoaded(String(prop));
 					}
 
 					return actual.apply(target, args);
