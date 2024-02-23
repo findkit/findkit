@@ -120,8 +120,8 @@ export {
 	GroupResults,
 };
 
-// just to make minification to work better
-const doc = document;
+// Just to make minification to work better.
+const doc = globalThis.document;
 
 const throwImplementationNotLoaded = (msg: string): never => {
 	throw new Error(`[findkit] Not loaded. Cannot use ${msg}`);
