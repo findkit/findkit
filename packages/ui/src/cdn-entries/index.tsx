@@ -964,11 +964,18 @@ export class FindkitUI<
 		}
 
 		const endpoint = inferSearchEndpoint(this.PRIVATE_options);
+
+		// Run warm up in background. No need to wait for it since it does not matter
+		// if we are faster since the return value is not used anyway.
+		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		fetch(endpoint, {
 			method: "POST",
 			headers: { "Content-Type": "text/plain" },
 			body: JSON.stringify({ warmup: true }),
-		}).catch(() => {});
+		}).catch(() => {
+			// No need to handle errors here. If the warmup fails the search
+			// will fail too which shows the error
+		});
 
 		this.PRIVATE_loading = true;
 
