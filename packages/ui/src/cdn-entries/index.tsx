@@ -120,7 +120,16 @@ export {
 	GroupResults,
 };
 
-const doc = () => document;
+// just to make minification to work better
+const doc = document;
+
+const throwImplementationNotLoaded = (msg: string): never => {
+	throw new Error(`[findkit] Not loaded. Cannot use ${msg}`);
+};
+
+const logError = (...args: any[]) => {
+	console.error("[findkit]", ...args);
+};
 
 /**
  * Variable created by the esbuild config in jakefile.js
@@ -167,11 +176,11 @@ export function css(strings: TemplateStringsArray, ...expr: string[]) {
  * bound after the actual event
  */
 function onDomContentLoaded(cb: () => any) {
-	if (/interactive|complete/.test(doc().readyState)) {
+	if (doc.readyState !== "loading") {
 		cb();
 	} else {
 		listen(
-			doc(),
+			doc,
 			"DOMContentLoaded" as any,
 			() => {
 				cb();
@@ -227,10 +236,7 @@ export function select<InstanceFilter extends typeof Element>(
 		);
 
 		if (res.length === 0) {
-			console.error(
-				"[findkit] select(): No elements found for selector",
-				elements,
-			);
+			logError("select(): No elements found with", elements);
 		} else {
 			cb(res[0], ...res.slice(1));
 		}
@@ -238,7 +244,7 @@ export function select<InstanceFilter extends typeof Element>(
 
 	if (typeof selector === "string") {
 		onDomContentLoaded(() => {
-			invoke(doc().querySelectorAll(selector));
+			invoke(doc.querySelectorAll(selector));
 		});
 	} else {
 		invoke(selector);
@@ -246,10 +252,6 @@ export function select<InstanceFilter extends typeof Element>(
 }
 
 const lazyImplementation: Partial<Implementation> = { css };
-
-function throwImplementationNotLoaded(msg: string): never {
-	throw new Error(`[findkit] Implementation not loaded yet. Cannot use ${msg}`);
-}
 
 /**
  * Like the PRIVATE_createShellMethod but for standalone functions
@@ -394,7 +396,7 @@ async function preloadStylesheet(style: LayeredCSS) {
 		return;
 	}
 
-	const link = doc().createElement("link");
+	const link = doc.createElement("link");
 	link.rel = "preload";
 	link.as = "style";
 	link.href = href;
@@ -409,7 +411,7 @@ async function preloadStylesheet(style: LayeredCSS) {
 			link,
 			"error",
 			() => {
-				console.error(`[findkit] Failed to load stylesheet ${href}`);
+				logError(`Failed to load stylesheet ${href}`);
 				// do not error the promise because it can  work without user css too
 				resolve({});
 			},
@@ -417,7 +419,7 @@ async function preloadStylesheet(style: LayeredCSS) {
 		);
 	});
 
-	doc().head?.appendChild(link);
+	doc.head.appendChild(link);
 
 	await promise;
 
@@ -436,7 +438,7 @@ async function loadScriptFromGlobal<T>(
 	}
 
 	const promise = new Promise<T>((resolve, reject) => {
-		const script = doc().createElement("script");
+		const script = doc.createElement("script");
 		script.type = "module";
 
 		const timer = setTimeout(() => {
@@ -463,7 +465,7 @@ async function loadScriptFromGlobal<T>(
 		});
 
 		script.src = src;
-		doc().head?.appendChild(script);
+		doc.head.appendChild(script);
 	});
 
 	anyWindow[promiseKey] = promise;
