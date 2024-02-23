@@ -89,7 +89,7 @@
     "@typescript-eslint/parser": "^5.36.0",
     "@valu/assert": "^1.3.1",
     "@valu/npm-tools": "^1.5.0",
-    "esbuild": "^0.15.6",
+    "esbuild": "^0.20.1",
     "esbuild-plugin-alias": "^0.2.1",
     "findkit": "0.0.0-dev.cf0ec780d0",
     "htm": "^3.1.1",
