@@ -10,7 +10,6 @@
 	--background-color: white;
 	--modal-animation-duration: 200ms;
 
-
 	/*
 	* Spacing helpers for unified margins, paddings, etc. inspired by tailwindcss.
 	* Consumers may also use these in their own styles and slot overrides.
@@ -38,7 +37,6 @@
 	--space-96: 384px;
 	/* More from https://tailwindcss.com/docs/width */
 
-
 	/**
 	* Do not inherit any styles outside the shadow root
 	* See https://stackoverflow.com/a/49709787/153718
@@ -59,4 +57,3 @@
 	flex-direction: column;
 	box-sizing: border-box;
 }
-

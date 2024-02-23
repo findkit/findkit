@@ -16,7 +16,8 @@
 	background-color: white;
 	align-items: center;
 	opacity: 0;
-	transition: opacity var(--modal-animation-duration) ease,
+	transition:
+		opacity var(--modal-animation-duration) ease,
 		transform var(--modal-animation-duration) ease;
 }
 
@@ -28,8 +29,8 @@
 .modal-container {
 }
 
-
-.shadow-host {}
+.shadow-host {
+}
 
 .backdrop {
 	z-index: 100000;
@@ -234,11 +235,11 @@
 }
 
 .group-title-total::before {
-	content: '(';
+	content: "(";
 }
 
 .group-title-total::after {
-	content: ')';
+	content: ")";
 }
 
 .group-header-footer-spacing {
