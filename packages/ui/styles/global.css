@@ -5,7 +5,7 @@
 	* The variables are automatically prefixed with "findkit--" in the build.
 	* For example --brand-color actually is --findkit--brand-color
 	*/
-	--brand-color: rgb(184, 97, 150);
+	--brand-color: #c828d2;
 	--input-bg: rgb(249, 248, 248);
 	--background-color: white;
 	--modal-animation-duration: 200ms;

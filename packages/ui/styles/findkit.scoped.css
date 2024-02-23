@@ -168,7 +168,7 @@
 
 .message a {
 	/* Intentional hard coding because user might have custom colors */
-	color: rgb(184, 97, 150);
+	color: #c828d2;
 	text-decoration: none;
 }
 
