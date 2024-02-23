@@ -72,6 +72,14 @@ jobs:
               body: sizes
             });
 
+      - name: Print loader file
+        run: |
+          set -eu
+
+          cd packages/ui
+          # esm is in prettier ignore
+          cp esm/index.js /tmp/index.js
+          ./node_modules/.bin/prettier /tmp/index.js
+
       - name: Check bundle sizes
         run: cd packages/ui && pnpm run size-limit
-
