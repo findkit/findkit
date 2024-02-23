@@ -963,7 +963,7 @@ export class FindkitUI<
 			return;
 		}
 
-		const endpoint = inferSearchEndpoint(this.PRIVATE_options) + "?warmup";
+		const endpoint = inferSearchEndpoint(this.PRIVATE_options) + "&warmup";
 
 		// Run warm up in background. No need to wait for it since it does not matter
 		// if we are faster since the return value is not used anyway.
@@ -971,7 +971,7 @@ export class FindkitUI<
 		fetch(endpoint, {
 			method: "POST",
 			headers: { "Content-Type": "text/plain" },
-			body: JSON.stringify({ warmup: true }),
+			body: "{}",
 		}).catch(() => {
 			// No need to handle errors here. If the warmup fails the search
 			// will fail too which shows the error
