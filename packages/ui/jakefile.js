@@ -42,7 +42,6 @@ async function runEsbuild(options = {}) {
 			outdir: options.outdir,
 			define: {
 				"process.env.NODE_ENV": options.dev ? "'production'" : "'development'",
-				__DEV__: options.dev ?? false,
 				FINDKIT_VERSION: JSON.stringify(version),
 				FINDKIT_MODULE_FORMAT: JSON.stringify(format),
 				FINDKIT_CDN_ROOT: options.dev

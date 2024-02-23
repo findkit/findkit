@@ -1,5 +1,5 @@
 import { test, expect, Page } from "@playwright/test";
-import { staticEntry } from "./helpers";
+import { slowDownSearch, staticEntry } from "./helpers";
 
 async function testNavigationAndFocus(page: Page, browserName: string) {
 	const tab = browserName === "webkit" ? "Alt+Tab" : "Tab";
@@ -79,7 +79,8 @@ test("keyboard navigation scrolls", async ({ page }) => {
 test("works if user manages to write to the input before the implementation loads", async ({
 	page,
 }) => {
-	await page.goto(staticEntry("/overlay-modal?__fdk_simulate_slow_load=500"));
+	await slowDownSearch(page, 500);
+	await page.goto(staticEntry("/overlay-modal"));
 	const input = page.locator("#external-input");
 	const hits = page.locator(".findkit-overlay-container .findkit--hit a");
 
