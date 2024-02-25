@@ -8,7 +8,7 @@ the project id (public token):
 findkit export --project <public token>
 ```
 
-The command will generate a "JSON Lines" file where each line is a JSON
+The command will generate a [JSON Lines](https://jsonlines.org/) file where each line is a JSON
 document representing a crawled page.
 
 ## Format
@@ -44,32 +44,25 @@ interface Doc {
 Note that each page may generate multiple documents to the index but on normal
 setup each page corresponds just to a single document.
 
-## Transforming
+## Parsing JSON Lines
 
-You may simplify the format with [jq](https://jqlang.github.io/jq/):
+JSON Lines is used because it can be streamed directly from the index since index sizes can be very
+large, but not all tool can read JSON Lines natively. Fortunately reading JSON Lines
+is just matter of reading the exported file line by line and parsing each line
+with a standard JSON parser.
+
+## Converting to JSON
+
+If you need a standard JSON file of the export you can use [jq](https://jqlang.github.io/jq/)
+to convert it to a standard JSON:
+
+ `-s`
 
 ```
-jq '.docs[0]' findkit-export-[ID].jsonl
-```
-
-or if you want to convert the JSON Lines to JSON array use `-s`
-
-```
-jq -s '{docs: [.[].docs[0]]}' findkit-export-[ID].jsonl
+jq -s '{pages: [.[]]}' findkit-export-[ID].jsonl
 {
-    "docs": [ {...}, {...}, ... ]
+    "pages": [ {...}, {...}, ... ]
 }
 ```
 
-or pick only some of the keys
-
-```
-jq -s '{docs: [.[].docs[0] | {title, url}]}' findkit-export-[ID].jsonl
-{
-    "docs": [
-        {"title": "", url": ""},
-        {"title": "", url": ""},
-        ...
-    ]
-}
-```
+This will convert the JSON Lines to be in an array in a `pages` key.
