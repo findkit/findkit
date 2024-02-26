@@ -84,15 +84,19 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
-      - name: Start Findkit Crawl
+      - name: Start Findkit EU Crawl
         run: |
           set -eu
-          # eu
-          curl -v --fail-with-body --data '{"mode": "full"}' -H 'content-type: application/json' -H "Authorization: Bearer $FINDKIT_API_KEY"  https://api.findkit.com/v1/projects/p68GxRvaA/crawls
-          # us
-          curl -v --fail-with-body --data '{"mode": "full"}' -H 'content-type: application/json' -H "Authorization: Bearer $FINDKIT_API_KEY"  https://api.findkit.com/v1/projects/pP9OykWDd/crawls
+          curl --fail-with-body --data '{"mode": "full"}' -H 'content-type: application/json' -H "Authorization: Bearer $FINDKIT_API_KEY"  https://api.findkit.com/v1/projects/p68GxRvaA/crawls
         env:
           FINDKIT_API_KEY: ${{ secrets.FINDKIT_API_KEY }}
+
+      - name: Start Findkit US Crawl
+        run: |
+          set -eu
+          curl --fail-with-body --data '{"mode": "full"}' -H 'content-type: application/json' -H "Authorization: Bearer $FINDKIT_API_KEY"  https://api.findkit.com/v1/projects/pP9OykWDd/crawls
+        env:
+          FINDKIT_API_KEY: ${{ secrets.FINDKIT_US_API_KEY }}
 
       - name: Notify build fail
         if: failure()
