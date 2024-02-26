@@ -1,7 +1,7 @@
 id = "p68GxRvaA"
 
 ## Human readable name and description of the project
-name = "docs.findkit.com"
+name = "findkit.com and docs.findkit.com"
 description = "Findkit Developer Documentation site"
 
 ## Crawl schedules. Comment out to disable scheduled crawls.
@@ -24,7 +24,7 @@ title_selector_regex = '([^\|]+)'
 
 deny_patterns = ["/ui-api/", "/ui-examples/"]
 
-workers = [  "worker.js" ]
+workers = ["worker.js"]
 
 [[targets.tags]]
 pathname_regex = '^\/([^\\/]+)'
