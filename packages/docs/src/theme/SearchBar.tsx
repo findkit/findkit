@@ -11,8 +11,13 @@ import React, { useEffect, useRef } from "react";
 // npm installed @findkit/ui https://docs.findkit.com/ui/setup#npm
 import { FindkitUI, html, css, useTerms, HitSlotProps } from "@findkit/ui";
 
+const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 const ui = new FindkitUI({
-	publicToken: "p68GxRvaA",
+	publicToken: tz.startsWith("America/")
+		? "pP9OykWDd:us-west-1"
+		: "p68GxRvaA:eu-north-1",
+
 	// Show search results even without search terms so we can get the blog
 	// posts
 	minTerms: 0,
