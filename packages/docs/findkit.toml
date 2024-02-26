@@ -1,8 +1,10 @@
+# EU North project
 id = "p68GxRvaA"
 
 ## Human readable name and description of the project
 name = "findkit.com and docs.findkit.com"
-description = "Findkit Developer Documentation site"
+
+description = "Deploy US version with findkit deploy -P pP9OykWDd:us-west-1"
 
 ## Crawl schedules. Comment out to disable scheduled crawls.
 #full_crawl_schedule = "weekly"
