@@ -6,12 +6,9 @@ The REST API can be used to start crawls.
 
 Go to your project in the Findkit Hub and generate the API KEY in **_Settings_** -> **_API Keys_**.
 
-## Usage
+## API Endpoints
 
-Substitude with `{{PUBLIC_TOKEN}}` with the project public token found from the
-project page in Hub and `{{API_KEY}}` with the generated api key.
-
-The following examples use the [httpYac](https://httpyac.github.io/) format.
+Check out the generated [OpenAPI docs](https://redocly.github.io/redoc/?url=https://api.findkit.com/v1/openapi.json&nocors). The OpenAPI schema is available [here](https://api.findkit.com/v1/openapi.json)
 
 ### Full Crawl {#full-crawl}
 
@@ -56,10 +53,21 @@ Authorization: Bearer {{API_KEY}}
 }
 ```
 
-## OpenApi
+## Usage
 
-Check out the generated [OpenAPI docs](https://redocly.github.io/redoc/?url=https://api.findkit.com/v1/openapi.json&nocors)
+The above examples use the [httpYac](https://httpyac.github.io/) format.
+To run them using it save the examples to a file with a `.http` extension and run the following command:
 
-The OpenAPI schema is available here:
+```http
+httpyac send example.http --var API_KEY=aJxryVb:sJLe5Crb2op5Bld2hTqdvlj7y --var PUBLIC_TOKEN=p2nGrEaD7:eu-north-1
+```
 
-<https://api.findkit.com/v1/openapi.json>
+using your own `API_KEY` and `PUBLIC_TOKEN`.
+
+Or just manually build the request for your favorite HTTP client replacing `{{API_KEY}}` and `{{PUBLIC_TOKEN}}` with your own values.
+
+Here'a an example in curl:
+
+```sh
+curl --fail-with-body --data '{"mode": "full"}' -H 'content-type: application/json' -H "Authorization: Bearer aJxryVb:sJLe5Crb2op5Bld2hTqdvlj7y"  https://api.findkit.com/v1/projects/p2nGrEaD7:eu-north-1/crawls
+```
