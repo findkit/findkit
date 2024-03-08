@@ -535,21 +535,6 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	translations?: { [lang: string]: Partial<TranslationStrings> };
 
 	/**
-	 * @deprecated use translations constructor option instead
-	 */
-	ui?: {
-		/**
-		 * @deprecated use translations constructor option instead
-		 */
-		lang?: string;
-
-		/**
-		 * @deprecated use translations constructor optio instead
-		 */
-		overrides?: Partial<TranslationStrings>;
-	};
-
-	/**
 	 * Timeout for the `loading` event
 	 */
 	loadingThrottle?: number;

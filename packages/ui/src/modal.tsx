@@ -643,10 +643,6 @@ export function init(_options: {
 	router?: SearchEngineOptions["router"];
 	groupOrder?: GroupOrder;
 	fontDivisor?: number;
-	ui?: {
-		lang?: string;
-		overrides?: Partial<TranslationStrings>;
-	};
 }) {
 	const options = { ..._options };
 	const hasCustomContainer = Boolean(options.container);
@@ -657,12 +653,6 @@ export function init(_options: {
 
 	if (hasCustomContainer && typeof options.forceHistoryReplace !== "boolean") {
 		options.forceHistoryReplace = true;
-	}
-
-	if (options.ui) {
-		deprecationNotice(
-			"Using deprecated `ui` constructor option. Use `translations` and `lang`instead.",
-		);
 	}
 
 	const hasGroups = options.groups && options.groups.length > 0;
