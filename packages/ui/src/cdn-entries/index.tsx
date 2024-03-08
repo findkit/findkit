@@ -498,7 +498,6 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	infiniteScroll?: boolean;
 	fetchCount?: number;
 	header?: boolean;
-	pageScroll?: boolean;
 	styleSheet?: string;
 	closeOnOutsideClick?: boolean;
 	backdrop?: boolean;

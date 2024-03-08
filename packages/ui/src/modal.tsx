@@ -633,7 +633,6 @@ export function init(_options: {
 	params?: SearchParams;
 	forceHistoryReplace?: boolean;
 	groups?: GroupDefinition[];
-	pageScroll?: boolean;
 	modal?: boolean;
 	fetchCount?: number;
 	container?: Element;
@@ -644,7 +643,6 @@ export function init(_options: {
 	router?: SearchEngineOptions["router"];
 	groupOrder?: GroupOrder;
 	fontDivisor?: number;
-	manageScroll?: boolean;
 	ui?: {
 		lang?: string;
 		overrides?: Partial<TranslationStrings>;
@@ -677,21 +675,7 @@ export function init(_options: {
 	let dynamicCSS = "";
 
 	if (options.modal === false) {
-		options.pageScroll = true;
 		options.lockScroll = false;
-	}
-
-	if (options.pageScroll) {
-		options.lockScroll = false;
-		dynamicCSS = `
-			.${cn("modal-container")} {
-				inset: initial;
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-			}
-		`;
 	}
 
 	if (options.backdrop) {
