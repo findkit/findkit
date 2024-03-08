@@ -230,9 +230,6 @@ importers:
       size-limit:
         specifier: ^8.0.1
         version: 8.0.1
-      tabbable:
-        specifier: ^6.0.0
-        version: 6.0.0
       tilg:
         specifier: ^0.1.1
         version: 0.1.1(react@18.2.0)
@@ -2341,7 +2338,7 @@ packages:
     peerDependencies:
       react: '*'
     dependencies:
-      '@types/react': 17.0.69
+      '@types/react': 18.0.21
       prop-types: 15.8.1
       react: 17.0.2
 
@@ -15709,10 +15706,6 @@ packages:
   /symbol-observable@1.2.0:
     resolution: {integrity: sha512-e900nM8RRtGhlV36KGEU9k65K3mPb1WV70OdjfxlG2EAuM1noi/E/BaW/uMhL7bPEssK8QV57vN3esixjUvcXQ==}
     engines: {node: '>=0.10.0'}
-    dev: true
-
-  /tabbable@6.0.0:
-    resolution: {integrity: sha512-SxhZErfHc3Yozz/HLAl/iPOxuIj8AtUw13NRewVOjFW7vbsqT1f3PuiHrPQbUkRcLNEgAedAv2DnjLtzynJXiw==}
     dev: true
 
   /tabtab@3.0.2:
