@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -27,11 +27,14 @@
 				params: {
 					tagQuery: [["domain/valu.fi"]],
 				},
-				pageScroll: true,
+				trap: false,
 				header: false,
 				css: css`
 					.findkit--modal-container {
 						top: var(--top-offset);
+					}
+					.findkit--container {
+						--findkit--brand-color: olive;
 					}
 				`,
 			});

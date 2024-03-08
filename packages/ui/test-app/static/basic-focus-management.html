@@ -7,18 +7,29 @@
 		<link rel="stylesheet" href="/shared.css" />
 
 		<script type="module">
-			import { FindkitUI } from "/build/esm/index.js";
+			import { FindkitUI, css } from "/build/esm/index.js";
+			const qs = new URLSearchParams(location.search);
+
+			console.log("inert", qs.get("inert"));
 
 			const ui = new FindkitUI({
 				publicToken: "po8GK3G0r",
+				shadowDom: !qs.has("no-shadow-dom"),
+				trap: !qs.has("noTrap"),
+				inert: qs.get("inert"),
 				params: {
 					tagQuery: [["domain/valu.fi"]],
 				},
+				css: css`
+					.findkit--container {
+						top: 50px;
+					}
+				`,
 			});
 
 			Object.assign(window, { ui });
 
-			ui.openFrom("button");
+			ui.openFrom("#open-button");
 		</script>
 	</head>
 	<body>

@@ -21,15 +21,18 @@
 		transform var(--modal-animation-duration) ease;
 }
 
+.modal-container {
+}
+
 .modal-visible {
 	transform: translateY(0);
 	opacity: 1;
 }
 
-.modal-container {
+.shadow-host {
 }
 
-.shadow-host {
+.host {
 }
 
 .backdrop {

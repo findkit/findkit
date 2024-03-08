@@ -501,6 +501,7 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	styleSheet?: string;
 	closeOnOutsideClick?: boolean;
 	backdrop?: boolean;
+	inert?: string;
 
 	/**
 	 * See {@link Slots}
@@ -512,6 +513,7 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	monitorDocumentLang?: boolean;
 	router?: "memory" | "querystring" | "hash" | RouterBackend<{}>;
 	lockScroll?: boolean;
+	trap?: boolean;
 	modal?: boolean;
 	forceHistoryReplace?: boolean;
 	manageScroll?: boolean;
@@ -695,11 +697,6 @@ export class FindkitUI<
 	close = this.PRIVATE_createShellMethod("close");
 
 	/**
-	 * @deprecated use addTranslation and setLanguage instead
-	 */
-	setUIStrings = this.PRIVATE_createShellMethod("setUIStrings");
-
-	/**
 	 * Set the current UI language
 	 *
 	 * https://docs.findkit.com/ui/api/#setLang
@@ -817,12 +814,10 @@ export class FindkitUI<
 			| "setLang"
 			| "close"
 			| "dispose"
-			| "setUIStrings"
 			| "updateGroups"
 			| "setCustomRouterData"
 			| "updateParams"
 			| "addTranslation"
-			| "trapFocus"
 			| "bindInput"
 			| "activateGroup"
 			| "clearGroup",
@@ -1033,25 +1028,6 @@ export class FindkitUI<
 		e.preventDefault();
 		void this.toggle();
 	};
-
-	/**
-	 * Add additional elements to focus trap when modal is open
-	 *
-	 * https://docs.findkit.com/ui/api/#focusTrap
-	 *
-	 * @param selector A CSS selector or an element
-	 * @returns cleanup function
-	 */
-	trapFocus(selector: ElementSelector<HTMLElement>) {
-		const resources = this.PRIVATE_resources.child();
-		select(selector, HTMLElement, (...elements) => {
-			this.PRIVATE_lazyEngine((engine) => {
-				resources.create(() => engine.trapFocus(elements));
-			});
-		});
-
-		return resources.dispose;
-	}
 
 	/**
 	 * Open the modal from the given elements. If a string is given it is used

@@ -85,29 +85,6 @@ test("modal is automatically disabled when using custom container", async ({
 	await expect(modal).not.toBeVisible();
 });
 
-test("can force modal to customer container by setting modal:true", async ({
-	page,
-}) => {
-	await page.goto(staticEntry("/dummy"));
-
-	await page.evaluate(async () => {
-		const div = document.createElement("div");
-		document.body.appendChild(div);
-		const ui = new MOD.FindkitUI({
-			publicToken: "pW1D0p0Dg",
-			container: div,
-			modal: true,
-		});
-		ui.open();
-	});
-
-	const modal = page.locator(".findkit--modal");
-	await expect(modal).toBeVisible();
-
-	const plainContainer = page.locator(".findkit--plain");
-	await expect(plainContainer).not.toBeVisible();
-});
-
 test("implementation is loaded immediately with a custom container", async ({
 	page,
 }) => {
@@ -147,5 +124,6 @@ test("can search immediately after creating with custom container", async ({
 	const input = page.locator(".findkit--search-input");
 
 	await expect(hit).toBeVisible();
+	await expect(input).not.toBeFocused();
 	await expect(input).toHaveValue("test");
 });

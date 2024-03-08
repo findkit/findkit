@@ -326,6 +326,7 @@ test("external link in page header saves scroll position", async ({ page }) => {
 			const ui = new FindkitUI({
 				publicToken: "pW1D0p0Dg",
 				minTerms: 0,
+				trap: false,
 				css: `
 					.findkit--modal-container {
 						top: 100px;
@@ -337,8 +338,6 @@ test("external link in page header saves scroll position", async ({ page }) => {
 			ui.on("fetch", () => {
 				uiEvents.push("fetch");
 			});
-
-			ui.trapFocus(header);
 
 			Object.assign(window, { ui, uiEvents });
 		});

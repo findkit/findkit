@@ -1,9 +1,24 @@
-import { Page } from "@playwright/test";
+import test, { Page } from "@playwright/test";
 import type { FindkitUI } from "../src/cdn-entries";
 import type { FindkitUIEvents } from "../src/emitter";
 
 declare const ui: FindkitUI;
 
+export function fixFirefoxTab() {
+	test.use({
+		launchOptions: async ({ launchOptions }, use) => {
+			await use({
+				...launchOptions,
+				// Enable tab focusable links in firefox
+				// Also enable from macos settings:
+				// https://stackoverflow.com/a/74790182/153718
+				firefoxUserPrefs: {
+					"accessibility.tabfocus": 7,
+				},
+			});
+		},
+	});
+}
 export async function getHitHosts(page: Page) {
 	const hits = page.locator(".findkit--hit a");
 	await hits.first().waitFor({ state: "visible" });
@@ -53,7 +68,7 @@ export async function getScrollPosition(page: Page) {
 	return await page.evaluate(() => {
 		return (
 			document
-				.querySelector(".findkit")
+				.querySelector(".findkit--host")
 				?.shadowRoot?.querySelector(".findkit--modal")?.scrollTop ?? -1
 		);
 	});
@@ -127,10 +142,10 @@ export async function pressTab(page: Page, options?: { shift?: boolean }) {
 	const tab = browserName === "webkit" ? "Alt+Tab" : "Tab";
 
 	if (options?.shift) {
-		return await page.keyboard.press(`Shift+${tab}`);
+		await page.keyboard.press(`Shift+${tab}`);
+	} else {
+		await page.keyboard.press(tab);
 	}
-
-	await page.keyboard.press(tab);
 }
 
 export async function mockSearchResponses(page: Page) {

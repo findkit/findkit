@@ -158,7 +158,6 @@ test("modal updates url", async ({ page }) => {
 		const ui = new MOD.FindkitUI({
 			publicToken: "pW1D0p0Dg",
 			minTerms: 1,
-			modal: false,
 			groups: [
 				{
 					title: "All",

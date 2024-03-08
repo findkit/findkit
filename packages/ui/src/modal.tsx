@@ -1,4 +1,3 @@
-import { FocusTrap } from "./focus-trap";
 import React, {
 	StrictMode,
 	useRef,
@@ -31,9 +30,8 @@ import {
 	SearchEngineOptions,
 	GroupOrder,
 } from "./search-engine";
-import { cn, deprecationNotice, getScrollContainer, View } from "./utils";
+import { cn, getScrollContainer, View } from "./utils";
 import type { Emitter, FindkitUIEvents } from "./emitter";
-import { TranslationStrings } from "./translations";
 import { Slots } from "./slots";
 import { SlotCatchBoundary, createSlotComponent } from "./slots-core";
 
@@ -82,53 +80,6 @@ function useOpenCloseEvents(mounted: boolean) {
 			});
 		};
 	}, [engine, mounted]);
-}
-
-function useFocusTrap(
-	containerRef: React.MutableRefObject<HTMLDivElement | null>,
-) {
-	const state = useSearchEngineState();
-	const engine = useSearchEngine();
-	const isOpen = state.status !== "closed";
-	const trapRef = useRef<FocusTrap | null>(null);
-
-	useEffect(() => {
-		if (!isOpen) {
-			return;
-		}
-
-		const inputs = state.inputs.map((input) => input.el);
-		const trapElements = state.trapElements.map((ref) => ref.el);
-
-		if (!trapRef.current && containerRef.current) {
-			trapRef.current = new FocusTrap({
-				containers: [containerRef.current, ...inputs, ...trapElements],
-				escDisables: true,
-				outsideClickDisables: engine.closeOnOutsideClick,
-				onAfterEnable() {
-					for (const input of inputs) {
-						if (containerRef.current?.contains(input)) {
-							input.focus();
-						}
-					}
-				},
-				onAfterDisable() {
-					if (trapRef.current) {
-						engine.close();
-					}
-				},
-			});
-			trapRef.current.enable();
-		}
-
-		return () => {
-			const trap = trapRef.current;
-			trapRef.current = null;
-			trap?.disable();
-		};
-	}, [containerRef, engine, isOpen, state.inputs, state.trapElements]);
-
-	return containerRef;
 }
 
 function useIsScrollingDown(
@@ -266,6 +217,7 @@ function SearchInput(props: { placeholder?: string; icon?: ReactNode }) {
 	const inputRef = useInput();
 	const t = useTranslator();
 	const state = useSearchEngineState();
+	const engine = useSearchEngine();
 
 	return (
 		<View cn="search-input-wrap">
@@ -276,6 +228,7 @@ function SearchInput(props: { placeholder?: string; icon?: ReactNode }) {
 			<View
 				as="input"
 				aria-describedby="search-instructions"
+				autoFocus={engine.modal}
 				placeholder={props.placeholder}
 				cn="search-input"
 				type="text"
@@ -339,7 +292,6 @@ function Modal() {
 	const state = useSearchEngineState();
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const containerKbAttrs = useContainerKeyboardAttributes();
-	useFocusTrap(containerRef);
 
 	const show = state.status !== "closed";
 	const delayed = useDelay(show, containerRef);
@@ -414,6 +366,14 @@ function Modal() {
 		>
 			<ScreenReaderModalMessages />
 			<View
+				// Do not allow focus to the scrolling container.
+				// The focus on on the scrolling container is confusing as it
+				// is not annouced for screen readers and it is not visible.
+				// This makes sure the focus jumps to the first result
+				// after a search when hitting tab key
+				// The container is scrollable from the result element too
+				// so this should be ok.
+				tabIndex={-1}
 				ref={containerRef}
 				{...containerKbAttrs}
 				cn={{
@@ -632,26 +592,29 @@ export function init(_options: {
 	searchEndpoint?: string;
 	params?: SearchParams;
 	forceHistoryReplace?: boolean;
+	closeOnOutsideClick?: boolean;
 	groups?: GroupDefinition[];
-	modal?: boolean;
 	fetchCount?: number;
 	container?: Element;
 	lockScroll?: boolean;
 	infiniteScroll?: boolean;
 	backdrop?: boolean;
+	inert?: string;
+	trap?: boolean;
+	modal?: boolean;
 	header?: boolean;
 	router?: SearchEngineOptions["router"];
 	groupOrder?: GroupOrder;
 	fontDivisor?: number;
 }) {
 	const options = { ..._options };
-	const hasCustomContainer = Boolean(options.container);
 
-	if (hasCustomContainer && typeof options.modal !== "boolean") {
-		options.modal = false;
+	if (typeof options.modal !== "boolean") {
+		options.modal = !options.container;
 	}
 
-	if (hasCustomContainer && typeof options.forceHistoryReplace !== "boolean") {
+	// Default to use history.replaceState when not using modal
+	if (!options.modal && typeof options.forceHistoryReplace !== "boolean") {
 		options.forceHistoryReplace = true;
 	}
 
@@ -664,10 +627,11 @@ export function init(_options: {
 
 	let dynamicCSS = "";
 
-	if (options.modal === false) {
-		options.lockScroll = false;
+	if (options.modal && typeof options.lockScroll !== "boolean") {
+		options.lockScroll = true;
 	}
 
+	// options.backdrop = true;
 	if (options.backdrop) {
 		dynamicCSS += `
 			@media (min-width: 900px) and (min-height: 600px) {
@@ -680,41 +644,7 @@ export function init(_options: {
 		`;
 	}
 
-	let container =
-		options.shadowDom !== false
-			? options.container?.attachShadow({ mode: "open" })
-			: options.container;
-
-	if (!container) {
-		container = document.createElement("div");
-		container.classList.add("findkit");
-		document.body.appendChild(container);
-
-		if (options.shadowDom !== false) {
-			container.classList.add(cn("shadow-host"));
-			container = container.attachShadow({ mode: "open" });
-		}
-	}
-
-	const host = container instanceof ShadowRoot ? container.host : container;
-
-	const engine = new SearchEngine({
-		...options,
-		container: container,
-	});
-
-	options.events.on("dispose", () => {
-		if (container) {
-			ReactDOM.unmountComponentAtNode(container);
-		}
-
-		// Bailout from removing the container if we didn't create it
-		if (hasCustomContainer) {
-			return;
-		}
-
-		host.remove();
-	});
+	const engine = new SearchEngine(options);
 
 	const fontDivisor = options.fontDivisor ?? getHtmlFontSize();
 
@@ -755,12 +685,21 @@ export function init(_options: {
 				})}
 
 				<FindkitProvider engine={engine} slots={options.slots ?? {}}>
-					{options.modal === false ? <Plain /> : <Modal />}
+					{options.modal ? <Modal /> : <Plain />}
 				</FindkitProvider>
 			</>
 		</StrictMode>,
-		container,
+		engine.container,
 	);
+
+	options.events.on("dispose", () => {
+		ReactDOM.unmountComponentAtNode(engine.container);
+	});
+
+	const host =
+		engine.container instanceof ShadowRoot
+			? engine.container.host
+			: engine.container;
 
 	return { engine, host };
 }

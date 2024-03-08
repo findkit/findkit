@@ -1,10 +1,11 @@
 import { test, expect } from "@playwright/test";
-import { staticEntry } from "./helpers";
+import { fixFirefoxTab, pressTab, staticEntry } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 
-test("can use external input with modal", async ({ page, browserName }) => {
-	const tab = browserName === "webkit" ? "Alt+Tab" : "Tab";
+fixFirefoxTab();
+
+test("can use external input with modal", async ({ page }) => {
 	await page.goto(staticEntry("/external-input"));
 
 	const input = page.locator("#external-input");
@@ -15,7 +16,8 @@ test("can use external input with modal", async ({ page, browserName }) => {
 	await expect(hits.first()).toBeVisible();
 	await expect(input).toBeFocused();
 
-	await page.keyboard.press(tab);
+	await pressTab(page);
+
 	// Jumps over the random button to the first hit
 	await expect(hits.first()).toBeFocused();
 
@@ -24,7 +26,7 @@ test("can use external input with modal", async ({ page, browserName }) => {
 	await expect(input).toBeFocused();
 	await expect(hits.first()).not.toBeVisible();
 
-	await page.keyboard.press(tab);
+	await pressTab(page);
 	// Random button is can be focused when the modal is closed
 	await expect(randomButton).toBeFocused();
 
@@ -43,6 +45,8 @@ test("can lazily bind input", async ({ page, browserName }) => {
 
 		const ui = new FindkitUI({
 			publicToken: "po8GK3G0r",
+			trap: false,
+			inert: "#random",
 			params: {
 				tagQuery: [["domain/valu.fi"]],
 			},

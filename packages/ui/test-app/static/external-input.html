@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -16,7 +16,9 @@
 	</head>
 	<body>
 		<header>
-			<input id="external-input" /><button type="button">Random button</button>
+			<input id="external-input" /><button type="button" id="random">
+				Random button
+			</button>
 		</header>
 		<script type="module">
 			import {
@@ -30,6 +32,8 @@
 
 			const ui = new FindkitUI({
 				publicToken: "po8GK3G0r",
+				trap: false,
+				inert: "#random",
 				params: {
 					tagQuery: [["domain/valu.fi"]],
 				},

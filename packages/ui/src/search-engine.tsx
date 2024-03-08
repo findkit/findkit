@@ -2,7 +2,7 @@
 import {
 	assertNonNullable,
 	cleanUndefined,
-	deprecationNotice,
+	cn,
 	getScrollContainer,
 	scrollIntoViewIfNeeded,
 } from "./utils";
@@ -291,15 +291,6 @@ export interface State {
 		unbindEvents: () => void;
 	}[];
 
-	/**
-	 * Additional elements to include in the focus trap
-	 *
-	 * The {el} wrapping looks weird but it is because we need to use the ref()
-	 * from valtio to avoid tracking DOM element internals and still be able to
-	 * referential equality check in removeFromFocusTrap() .
-	 */
-	trapElements: { el: HTMLElement }[];
-
 	ui: {
 		/**
 		 * Language of the UI
@@ -545,7 +536,11 @@ export interface SearchEngineOptions {
 	groups?: GroupDefinition[];
 	params?: SearchParams;
 	infiniteScroll?: boolean;
-	container: Element | ShadowRoot;
+	container?: Element;
+	trap?: boolean;
+	modal?: boolean;
+	inert?: string;
+	shadowDom?: boolean;
 	forceHistoryReplace?: boolean;
 	manageScroll?: boolean;
 	closeOnOutsideClick?: boolean;
@@ -555,21 +550,6 @@ export interface SearchEngineOptions {
 	 * Monitor <html lang> changes
 	 */
 	monitorDocumentLang?: boolean;
-
-	/**
-	 * @deprecated
-	 */
-	ui?: {
-		/**
-		 * @deprecated
-		 */
-		lang?: string;
-
-		/**
-		 * @deprecated
-		 */
-		overrides?: Partial<TranslationStrings>;
-	};
 
 	lang?: string;
 	translations?: { [lang: string]: Partial<TranslationStrings> };
@@ -647,6 +627,10 @@ export class SearchEngine {
 
 	private PRIVATE_resources = new Resources();
 	private PRIVATE_container: Element | ShadowRoot;
+	private PRIVATE_trap: boolean | undefined;
+	readonly modal: boolean | undefined;
+	private PRIVATE_shadowDom: boolean | undefined;
+	private PRIVATE_inert: string | undefined;
 	private PRIVATE_monitorDocumentLangActive: boolean | undefined;
 	private PRIVATE_manageScroll: boolean | undefined;
 
@@ -659,7 +643,12 @@ export class SearchEngine {
 	constructor(options: SearchEngineOptions) {
 		this.PRIVATE_defaultCustomRouteData = options.defaultCustomRouterData ?? {};
 		this.PRIVATE_manageScroll = options.manageScroll;
+		this.PRIVATE_trap = options.trap;
+		this.modal = options.modal;
+		this.PRIVATE_shadowDom = options.shadowDom ?? true;
+		this.PRIVATE_inert = options.inert;
 		this.closeOnOutsideClick = options.closeOnOutsideClick ?? false;
+
 		if (typeof window === "undefined") {
 			this.PRIVATE_router = {
 				listen: () => () => {},
@@ -679,7 +668,16 @@ export class SearchEngine {
 		this.instanceId = options.instanceId ?? "fdk";
 		this.publicToken = options.publicToken;
 		this.events = options.events;
-		this.PRIVATE_container = options.container;
+
+		this.PRIVATE_handleInert();
+		this.PRIVATE_fixDialogFocus();
+
+		if (!options.container) {
+			this.PRIVATE_handleOutsideClick();
+		}
+
+		this.PRIVATE_container = this.PRIVATE_createContainer(options.container);
+
 		this.PRIVATE_monitorDocumentLangActive = options.monitorDocumentLang;
 		this.PRIVATE_forceHistoryReplace = options.forceHistoryReplace ?? false;
 
@@ -707,11 +705,10 @@ export class SearchEngine {
 			];
 		}
 
-		const lang =
-			options.lang ?? options.ui?.lang ?? this.PRIVATE_getDocumentLang();
+		const lang = options.lang ?? this.PRIVATE_getDocumentLang();
 
 		const translations: State["ui"]["translations"] = {
-			[lang]: ref(options.ui?.overrides ?? {}),
+			[lang]: ref({}) as {},
 		};
 
 		for (const [lang, translation] of Object.entries(
@@ -739,7 +736,6 @@ export class SearchEngine {
 				translations,
 			},
 
-			trapElements: [],
 			inputs: [],
 
 			messages: [],
@@ -768,6 +764,238 @@ export class SearchEngine {
 		this.PRIVATE_fetchThrottle = options.fetchThrottle ?? 200;
 		this.PRIVATE_fetchCount = options.fetchCount ?? 20;
 		this.PRIVATE_minTerms = options.minTerms ?? 2;
+	}
+
+	private PRIVATE_handleOutsideClick() {
+		if (this.closeOnOutsideClick !== true) {
+			return;
+		}
+
+		this.events.on("open", () => {
+			const unbind = listen(document, "click", (e) => {
+				if (!(e.target instanceof Element)) {
+					return;
+				}
+
+				const container =
+					this.container instanceof ShadowRoot
+						? this.container.host
+						: this.container;
+
+				if (
+					container === e.target ||
+					this.PRIVATE_isBoundInput(e.target) ||
+					this.container.contains(e.target)
+				) {
+					return;
+				}
+
+				this.close();
+			});
+
+			this.events.once("close", unbind);
+			this.events.once("dispose", unbind);
+		});
+	}
+
+	PRIVATE_isBoundInput(el: Element | null | undefined) {
+		if (!el) {
+			return false;
+		}
+
+		return this.PRIVATE_inputs.some((input) => input.el === el);
+	}
+
+	PRIVATE_fixDialogFocus() {
+		if (this.PRIVATE_trap) {
+			return;
+		}
+
+		let previouslyFocusedElement: HTMLElement | null = null;
+
+		this.events.on("open", () => {
+			// only HTMLInputElement can be focused
+			if (document.activeElement instanceof HTMLElement) {
+				previouslyFocusedElement = document.activeElement;
+			}
+
+			const openedFromBoundInput = this.PRIVATE_isBoundInput(
+				previouslyFocusedElement,
+			);
+
+			// Even when the <dialog> is in non-modal mode it will receive the
+			// focus on open. Since we use the non-modal mode for offset
+			// modals where the input is outside the dialog, we need to manually
+			// keep to focus on the input on open
+			if (openedFromBoundInput) {
+				const unbind = listen(
+					document,
+					"focusin",
+					(e) => {
+						if (e.target instanceof HTMLDialogElement) {
+							previouslyFocusedElement?.focus();
+						}
+					},
+					{ once: true },
+				);
+
+				this.events.once("close", unbind);
+			}
+		});
+
+		this.events.on("close", () => {
+			previouslyFocusedElement?.focus();
+			previouslyFocusedElement = null;
+		});
+	}
+
+	PRIVATE_handleInert() {
+		if (!this.PRIVATE_inert || this.PRIVATE_trap) {
+			return;
+		}
+
+		const inertSelector = this.PRIVATE_inert;
+
+		const inerts = new Set<HTMLElement>();
+
+		this.events.on("open", () => {
+			for (const element of document.querySelectorAll(inertSelector)) {
+				if (!(element instanceof HTMLElement)) {
+					continue;
+				}
+
+				// Do not add user managed inert elements to the set so they
+				// can be made non-inert on the close event
+				if (element.inert) {
+					continue;
+				}
+
+				if (inerts.has(element)) {
+					continue;
+				}
+
+				inerts.add(element);
+				element.inert = true;
+			}
+		});
+
+		this.events.on("close", () => {
+			for (const el of inerts.values()) {
+				el.inert = false;
+			}
+			inerts.clear();
+		});
+	}
+
+	PRIVATE_attachShadowDom(el: Element) {
+		el.classList.add(cn("shadow-host"));
+		return el.attachShadow({ mode: "open" });
+	}
+
+	PRIVATE_createContainer(customContainer: Element | undefined) {
+		if (!this.modal && customContainer) {
+			if (this.PRIVATE_shadowDom) {
+				return this.PRIVATE_attachShadowDom(customContainer);
+			}
+			return customContainer;
+		}
+
+		const dialog = document.createElement("dialog");
+
+		// Only firefox moves focus to the dialog element. We actually never
+		// want the dialog to be focused but the first focusable element inside it.
+		dialog.tabIndex = -1;
+
+		dialog.classList.add("findkit");
+		dialog.id = `findkit-${this.instanceId}`;
+
+		const style = document.createElement("style");
+		style.textContent = `
+		    dialog#${dialog.id}::backdrop {
+				display: none;
+			}
+
+    		dialog#${dialog.id} {
+    			padding: 0;
+                width: 100%;
+    			max-width: none;
+    			max-height: none;
+    			border: none;
+    			outline: none;
+    			z-index: 1000;
+    		}
+		`;
+
+		const container = document.createElement("div");
+		container.classList.add(cn("host"));
+
+		// <body>
+		//   <dialog>
+		//     <style />
+		//     <div class=container />
+		//   </dialog>
+		// </body>
+		dialog.appendChild(style);
+		dialog.appendChild(container);
+
+		if (customContainer) {
+			customContainer.appendChild(dialog);
+		} else {
+			document.body.appendChild(dialog);
+		}
+
+		// Firefox and Safari do not handle focusing the dialog properly
+		const ensureCorrectFocus = () => {
+			const el = this.container.querySelector("[autofocus]");
+			if (el instanceof HTMLElement) {
+				el.focus();
+			} else {
+				this.PRIVATE_inputs[0]?.el.focus();
+			}
+		};
+
+		this.events.on("open", () => {
+			// Safari incorrectly focuses the first focusable element
+			// in the dialog eg. the close button
+			const unbindFocusFixer = listen(this.elementHost, "focusin", () => {
+				ensureCorrectFocus();
+			});
+
+			const unbindEscListener = listen(document, "keydown", (e) => {
+				if (e.key === "Escape" && this.state.status !== "closed") {
+					e.preventDefault();
+					this.close();
+				}
+			});
+
+			this.events.once("close", () => {
+				unbindFocusFixer();
+				unbindEscListener();
+			});
+
+			if (this.PRIVATE_trap !== false) {
+				dialog.showModal();
+			} else {
+				dialog.show();
+			}
+
+			// Firefox moves to focus to the <dialog> element but does not
+			// fire the focusin event. We need to manually set the focus here
+			ensureCorrectFocus();
+
+			// Clear the safari fixer so focus can move normally again
+			setTimeout(unbindFocusFixer, 0);
+		});
+
+		this.events.on("close", () => {
+			dialog.close();
+		});
+
+		if (this.PRIVATE_shadowDom) {
+			return this.PRIVATE_attachShadowDom(container);
+		}
+
+		return container;
 	}
 
 	private PRIVATE_started = lazyValue<true>();
@@ -929,19 +1157,6 @@ export class SearchEngine {
 
 	getGroups(): GroupDefinition[] {
 		return this.state.nextGroupDefinitions;
-	}
-
-	/**
-	 * @deprecated use addTranslation and setLanguage instead
-	 */
-	setUIStrings(lang: string, overrides?: Partial<TranslationStrings>) {
-		deprecationNotice(
-			"Using deprecated .setUIStrings() method. See https://findk.it/translations",
-		);
-		this.state.ui.lang = lang;
-		if (overrides) {
-			this.state.ui.translations[lang] = ref(overrides);
-		}
 	}
 
 	addTranslation(
@@ -2071,19 +2286,6 @@ export class SearchEngine {
 		}
 
 		this.events.emit("unbind-input", { input: rmInput });
-	};
-
-	trapFocus = (elements: HTMLElement[]) => {
-		this.state.trapElements.push(...elements.map((el) => ref({ el })));
-		return () => {
-			return this.PRIVATE_removeFromFocusTrap(elements);
-		};
-	};
-
-	private PRIVATE_removeFromFocusTrap = (elements: HTMLElement[]) => {
-		this.state.trapElements = this.state.trapElements.filter((ref) => {
-			return !elements.includes(ref.el);
-		});
 	};
 
 	private PRIVATE_addAllResults(res: State["resultGroups"]) {

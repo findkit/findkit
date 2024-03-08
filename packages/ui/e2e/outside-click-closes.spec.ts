@@ -80,6 +80,7 @@ test("closeOnOutsideClick works with open from toggle with inner element", async
 		const ui = new FindkitUI({
 			publicToken: "pW1D0p0Dg",
 			closeOnOutsideClick: true,
+			trap: false,
 			css: css`
 				.findkit--container {
 					top: 2rem;
@@ -88,7 +89,6 @@ test("closeOnOutsideClick works with open from toggle with inner element", async
 		});
 
 		ui.openFrom("#toggle");
-		ui.trapFocus("#toggle");
 	});
 
 	const button = page.locator("#toggle span");

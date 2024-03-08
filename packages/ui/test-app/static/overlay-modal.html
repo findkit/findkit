@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -43,6 +43,7 @@
 
 			.findkit-ui-open .findkit-overlay-container {
 				position: absolute;
+				display: flex;
 				inset: 0;
 			}
 		</style>
@@ -53,6 +54,8 @@
 				publicToken: "po8GK3G0r",
 				container: document.querySelector(".findkit-overlay-container"),
 				modal: true,
+				trap: false,
+				inert: "#random-button,.content",
 				shadowDom: !/no-shadow/.test(location.search),
 				lockScroll: false,
 				slots: {
@@ -78,7 +81,6 @@
 			});
 
 			select("#close", HTMLButtonElement, (button) => {
-				ui.trapFocus(button);
 				button.addEventListener("click", () => {
 					ui.close();
 				});

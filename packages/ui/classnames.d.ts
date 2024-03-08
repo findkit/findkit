@@ -28,6 +28,7 @@ type ClassNames =
   | "findkit--hit-title"
   | "findkit--hit-title-link"
   | "findkit--hit-url"
+  | "findkit--host"
   | "findkit--hover-bg"
   | "findkit--link"
   | "findkit--link-text"
