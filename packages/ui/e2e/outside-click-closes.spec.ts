@@ -1,39 +1,20 @@
 import { expect, test } from "@playwright/test";
-import { delayer, staticEntry } from "./helpers";
+import { gotoWithEarlyHook, staticEntry } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 
 test("can use closeOnOutsideClick", async ({ page }) => {
-	const delay = delayer();
+	await gotoWithEarlyHook(page, "/resize-observer", async () => {
+		await page.evaluate(async () => {
+			window.addEventListener("findkituievent", (e) => {
+				if (e.detail.eventName !== "init") {
+					return;
+				}
 
-	// Prevent findkit js from loading so we can inject test js before it
-	await page.route(
-		(url) => url.pathname.endsWith("index.js"),
-		(route) => {
-			delay.what(() => {
-				void route.continue();
+				e.detail.data.options.closeOnOutsideClick = true;
 			});
-		},
-	);
-
-	await page.goto(staticEntry("/resize-observer"), {
-		waitUntil: "commit",
-	});
-
-	await page.evaluate(async () => {
-		window.addEventListener("findkituievent", (e) => {
-			if (e.detail.eventName !== "init") {
-				return;
-			}
-
-			e.detail.data.options.closeOnOutsideClick = true;
 		});
 	});
-
-	// Allow findkit js to load once our test js has been injected
-	delay.now();
-
-	await page.waitForLoadState("load");
 
 	const input = page.locator("#external-input");
 
