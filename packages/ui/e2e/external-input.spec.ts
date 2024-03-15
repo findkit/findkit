@@ -7,8 +7,6 @@ test("can use external input with modal", async ({ page, browserName }) => {
 	const tab = browserName === "webkit" ? "Alt+Tab" : "Tab";
 	await page.goto(staticEntry("/external-input"));
 
-	await page.evaluate(async () => {});
-
 	const input = page.locator("#external-input");
 	const hits = page.locator(".findkit--hit a");
 	const randomButton = page.locator("text=Random button");
@@ -75,4 +73,13 @@ test("can lazily bind input", async ({ page, browserName }) => {
 	await page.keyboard.press(tab);
 	// Jumps over the random button to the first hit
 	await expect(hits.first()).toBeFocused();
+});
+
+test("external input gets focus on load if the url contains search terms", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/external-input?fdk_q=test"));
+	const input = page.locator("#external-input");
+	await expect(input).toBeFocused();
+	await expect(input).toHaveValue("test");
 });
