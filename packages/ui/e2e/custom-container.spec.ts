@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { getHitHosts, oneEvent, staticEntry } from "./helpers";
+import {
+	getHitHosts,
+	mockSearchResponses,
+	oneEvent,
+	staticEntry,
+} from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 
@@ -119,4 +124,28 @@ test("implementation is loaded immediately with a custom container", async ({
 
 	const plainContainer = page.locator(".findkit--plain");
 	await expect(plainContainer).toBeVisible();
+});
+
+test("can search immediately after creating with custom container", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy"));
+	await mockSearchResponses(page);
+
+	await page.evaluate(async () => {
+		const div = document.createElement("div");
+		document.body.appendChild(div);
+		const ui = new MOD.FindkitUI({
+			publicToken: "test",
+			container: div,
+		});
+
+		ui.open("test");
+	});
+
+	const hit = page.locator(".findkit--hit a").first();
+	const input = page.locator(".findkit--search-input");
+
+	await expect(hit).toBeVisible();
+	await expect(input).toHaveValue("test");
 });
