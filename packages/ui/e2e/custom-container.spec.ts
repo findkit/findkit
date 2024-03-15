@@ -120,3 +120,21 @@ test("implementation is loaded immediately with a custom container", async ({
 	const plainContainer = page.locator(".findkit--plain");
 	await expect(plainContainer).toBeVisible();
 });
+
+test("can search immediately after creating with custom container", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const div = document.createElement("div");
+		document.body.appendChild(div);
+		const ui = new MOD.FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			container: div,
+		});
+	});
+
+	const plainContainer = page.locator(".findkit--plain");
+	await expect(plainContainer).toBeVisible();
+});
