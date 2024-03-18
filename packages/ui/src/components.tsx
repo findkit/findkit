@@ -285,6 +285,10 @@ function Hit(props: {
 		<View
 			ref={props.containerRef}
 			key={props.hit.url}
+			// Results can be in a different language from the containing
+			// page or even be in different languages
+			lang={props.hit.language}
+			as="article"
 			cn={{ hit: true, "superwords-match": props.hit.superwordsMatch }}
 			data-fdk-score={props.hit.score}
 			{...kbAttrs}
@@ -420,6 +424,7 @@ function MultiGroupResults() {
 					<View
 						key={groupResults.id}
 						cn="group"
+						as="section"
 						data-group-id={groupResults.id}
 					>
 						<GroupSlot

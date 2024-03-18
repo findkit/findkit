@@ -272,6 +272,42 @@ const mockResponse = {
 						},
 					},
 				},
+				{
+					score: 22.833023,
+					superwordsMatch: false,
+					title: "Kumikengät",
+					language: "fi",
+					url: "https://shop.findkit.invalid/fi/vaatteet/kumikenkat",
+					highlight:
+						"Kumiset <em>kengät</em> pitävät jalat kuivina myös rankkasateessa",
+					domain: "shop.findkit.invalid",
+					tags: [
+						"category/clothing",
+						"language/fi",
+						"product",
+						"domain/shop.findkit.invalid",
+					],
+					created: "2022-10-20T00:00:00.000Z",
+					modified: "2023-10-12T15:29:11.818Z",
+					customFields: {
+						category: {
+							type: "keyword",
+							value: "Clothing",
+						},
+						weight: {
+							type: "number",
+							value: 1,
+						},
+						price: {
+							type: "number",
+							value: 30,
+						},
+						quantity: {
+							type: "number",
+							value: 34,
+						},
+					},
+				},
 			],
 		},
 	],
