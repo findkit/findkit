@@ -568,7 +568,7 @@ Args
 - `eventName: string`
 - `callback: (event) => void`
 
-Bind event handled to an event. Returns an unbind function. See
+Bind event handler to an event. Returns an unbind function. See
 [Events](/ui/api/events/).
 
 <Api page="ui.findkitui.on" />
