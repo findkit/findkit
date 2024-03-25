@@ -84,7 +84,6 @@ async function testModal(page: Page) {
 }
 
 async function testContainer(page: Page) {
-	await page.locator("text=open").first().click();
 	await page.locator("input").fill("a");
 
 	const hits = page.locator(".findkit--hit");
