@@ -34,6 +34,7 @@ import { cn, getScrollContainer, View } from "./utils";
 import type { Emitter, FindkitUIEvents } from "./emitter";
 import { Slots } from "./slots";
 import { SlotCatchBoundary, createSlotComponent } from "./slots-core";
+import { listen } from "./resources";
 
 function useScrollLock(lock: boolean) {
 	useLayoutEffect(() => {
@@ -507,6 +508,63 @@ function ScreenReaderModalMessages() {
 	);
 }
 
+/*
+ * CSS must be fully loaded before we can show the modal
+ * for the scroll restoration to work as css affects element
+ * sizes and positions and thus scroll positions
+ *
+ * This component waits for the CSS to be loaded and then renders
+ * the children.
+ */
+function CSSLoadWaiter(props: { children: React.ReactNode; skip: boolean }) {
+	const [loaded, setLoaded] = useState(props.skip ?? false);
+	const ref = useRef<HTMLDivElement>(null);
+
+	useLayoutEffect(() => {
+		if (!ref.current) {
+			return;
+		}
+
+		if (loaded) {
+			return;
+		}
+
+		const isLoaded = getComputedStyle(ref.current).getPropertyValue(
+			"--findkit--loaded",
+		);
+
+		if (isLoaded) {
+			setLoaded(true);
+			return;
+		}
+
+		// Just using a dummy animation which is provided by the css we load
+		// on a hidden element to detect when the CSS is loaded. Because we
+		// use css layers and the css @import statement the standard onload
+		// event on the link element does not work.
+		return listen(ref.current, "animationstart", () => {
+			setLoaded(true);
+		});
+	}, [loaded]);
+
+	return (
+		<>
+			{loaded ? (
+				props.children
+			) : (
+				<View
+					style={{
+						opacity: 0,
+						pointerEvents: "none",
+					}}
+					cn="css-load-detection"
+					ref={ref}
+				/>
+			)}
+		</>
+	);
+}
+
 function getHtmlFontSize() {
 	return (
 		Number(
@@ -597,6 +655,7 @@ export function init(_options: {
 	fetchCount?: number;
 	container?: Element;
 	lockScroll?: boolean;
+	builtinStyles?: boolean;
 	infiniteScroll?: boolean;
 	backdrop?: boolean;
 	inert?: string;
@@ -685,7 +744,21 @@ export function init(_options: {
 				})}
 
 				<FindkitProvider engine={engine} slots={options.slots ?? {}}>
-					{options.modal ? <Modal /> : <Plain />}
+					<CSSLoadWaiter skip={options.builtinStyles === false}>
+						{options.modal ? (
+							<View
+								as="dialog"
+								cn="dialog"
+								// Only firefox moves focus to the dialog element. We actually never
+								// want the dialog to be focused but the first focusable element inside it.
+								tabIndex={-1}
+							>
+								<Modal />
+							</View>
+						) : (
+							<Plain />
+						)}
+					</CSSLoadWaiter>
 				</FindkitProvider>
 			</>
 		</StrictMode>,

@@ -328,7 +328,7 @@ test("overlay modal", async ({ page }) => {
 	await expect(hits.first()).toBeVisible();
 
 	const hasShadow = await page.evaluate(() => {
-		return !!document.querySelector(".findkit--host")?.shadowRoot;
+		return !!document.querySelector(".findkit-overlay-container")?.shadowRoot;
 	});
 
 	expect(hasShadow).toBe(true);

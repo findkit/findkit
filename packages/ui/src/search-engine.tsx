@@ -887,62 +887,32 @@ export class SearchEngine {
 		});
 	}
 
-	PRIVATE_attachShadowDom(el: Element) {
-		el.classList.add(cn("shadow-host"));
-		return el.attachShadow({ mode: "open" });
+	PRIVATE_getDialog() {
+		const dialog = this.container.querySelector("." + cn("dialog"));
+		if (dialog instanceof HTMLDialogElement) {
+			return dialog;
+		}
 	}
 
 	PRIVATE_createContainer(customContainer: Element | undefined) {
 		if (!this.modal && customContainer) {
 			if (this.PRIVATE_shadowDom) {
-				return this.PRIVATE_attachShadowDom(customContainer);
+				return customContainer.attachShadow({ mode: "open" });
 			}
 			return customContainer;
 		}
 
-		const dialog = document.createElement("dialog");
-
-		// Only firefox moves focus to the dialog element. We actually never
-		// want the dialog to be focused but the first focusable element inside it.
-		dialog.tabIndex = -1;
-
-		dialog.classList.add("findkit");
-		dialog.id = `findkit-${this.instanceId}`;
-
-		const style = document.createElement("style");
-		style.textContent = `
-		    dialog#${dialog.id}::backdrop {
-				display: none;
-			}
-
-    		dialog#${dialog.id} {
-    			padding: 0;
-                width: 100%;
-    			max-width: none;
-    			max-height: none;
-    			border: none;
-    			outline: none;
-    			z-index: 1000;
-    		}
-		`;
-
-		const container = document.createElement("div");
-		container.classList.add(cn("host"));
-
-		// <body>
-		//   <dialog>
-		//     <style />
-		//     <div class=container />
-		//   </dialog>
-		// </body>
-		dialog.appendChild(style);
-		dialog.appendChild(container);
-
-		if (customContainer) {
-			customContainer.appendChild(dialog);
-		} else {
-			document.body.appendChild(dialog);
+		let hostElement = customContainer;
+		if (!hostElement) {
+			hostElement = document.createElement("div");
+			hostElement.classList.add(cn("host"));
+			(hostElement as HTMLDivElement).style.position = "absolute";
+			document.body.appendChild(hostElement);
 		}
+
+		const shadowRoot = this.PRIVATE_shadowDom
+			? hostElement.attachShadow({ mode: "open" })
+			: hostElement;
 
 		// Firefox and Safari do not handle focusing the dialog properly
 		const ensureCorrectFocus = () => {
@@ -974,9 +944,9 @@ export class SearchEngine {
 			});
 
 			if (this.PRIVATE_trap !== false) {
-				dialog.showModal();
+				this.PRIVATE_getDialog()?.showModal();
 			} else {
-				dialog.show();
+				this.PRIVATE_getDialog()?.show();
 			}
 
 			// Firefox moves to focus to the <dialog> element but does not
@@ -988,14 +958,10 @@ export class SearchEngine {
 		});
 
 		this.events.on("close", () => {
-			dialog.close();
+			this.PRIVATE_getDialog()?.close();
 		});
 
-		if (this.PRIVATE_shadowDom) {
-			return this.PRIVATE_attachShadowDom(container);
-		}
-
-		return container;
+		return shadowRoot;
 	}
 
 	private PRIVATE_started = lazyValue<true>();
