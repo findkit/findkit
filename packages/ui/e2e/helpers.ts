@@ -1,4 +1,4 @@
-import test, { Page } from "@playwright/test";
+import test, { Page, expect } from "@playwright/test";
 import type { FindkitUI } from "../src/cdn-entries";
 import type { FindkitUIEvents } from "../src/emitter";
 
@@ -314,3 +314,54 @@ const mockResponse = {
 	duration: 31,
 	messages: [],
 };
+
+export async function routeMocks(page: Page) {
+	await page.route(
+		(url) => url.hostname === "shop.findkit.invalid",
+		(route) => {
+			void route.fulfill({
+				status: 200,
+				contentType: "text/html",
+				body: "<html><body><h1>Shop</h1></body></html>",
+			});
+		},
+	);
+
+	await page.route(
+		(url) => url.hostname === "other.invalid",
+		(route) => {
+			void route.fulfill({
+				status: 200,
+				contentType: "text/html",
+				body: "<html><body><h1>Other</h1></body></html>",
+			});
+		},
+	);
+}
+
+export async function scrollToHit(page: Page, text: string) {
+	return await test.step(`finds hit "${text}" by scrolling`, async () => {
+		const hits = page.locator(".findkit--hit");
+		await hits.first().waitFor({ state: "visible" });
+
+		// Ensure mouse is over the first hit so the scroll wheel works
+		await hits.first().hover();
+
+		const theHit = hits.filter({ hasText: text }).first();
+
+		let i = 20;
+
+		while (i--) {
+			await page.mouse.wheel(0, 800);
+			await page.waitForTimeout(200);
+			if (await theHit.isVisible()) {
+				break;
+			}
+		}
+
+		expect(await theHit.isVisible()).toBe(true);
+
+		await theHit.scrollIntoViewIfNeeded();
+		return theHit;
+	});
+}

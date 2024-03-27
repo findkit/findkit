@@ -572,6 +572,7 @@ export type GroupOrder =
 interface ScopedHistoryState {
 	restoreId?: string;
 	scrollTop?: number;
+	visitedHitId?: string;
 }
 
 interface GlobalHistoryState {
@@ -904,8 +905,53 @@ export class SearchEngine {
 		}
 	}
 
-	getUniqId(id: "form" | "error" | "results-heading") {
+	getUniqId(
+		id: "form" | "error" | "results-heading" | `hit-${string}-${number}`,
+	) {
 		return this.instanceId + "-" + id;
+	}
+
+	saveVisitedHitId(hitId: string) {
+		this.PRIVATE_setHistoryState({ visitedHitId: hitId });
+	}
+
+	/**
+	 * Set the initial focus when the dialog is opened or when
+	 * back button is pressed from a search result page
+	 */
+	private PRIVATE_setInitialFocus() {
+		const active = this.PRIVATE_getActiveElement();
+		if (
+			active instanceof HTMLAnchorElement &&
+			active.closest("." + cn("hit"))
+		) {
+			// No need to modify the focus if it is already inside a <a> element
+			// inside a hit container
+			return;
+		}
+
+		const hitId = this.PRIVATE_getHistoryState()?.visitedHitId;
+		if (hitId) {
+			// Hit id is in the title link but when using the Hit
+			// slot override it might be missing. In that case we
+			// look for the hit id in the data attribute of the hit
+			// container and capture the first link
+			const hit = this.elementHost.querySelector(
+				`#${hitId},[data-hit-id=${hitId}] a`,
+			);
+			if (hit instanceof HTMLAnchorElement) {
+				hit.focus();
+				this.PRIVATE_setHistoryState({ visitedHitId: undefined });
+				return;
+			}
+		}
+
+		const el = this.container.querySelector("[autofocus]");
+		if (el instanceof HTMLElement) {
+			el.focus();
+		} else {
+			this.PRIVATE_inputs[0]?.el.focus();
+		}
 	}
 
 	PRIVATE_createContainer(customContainer: Element | undefined) {
@@ -928,21 +974,9 @@ export class SearchEngine {
 			? hostElement.attachShadow({ mode: "open" })
 			: hostElement;
 
-		// Firefox and Safari do not handle focusing the dialog properly
-		const ensureCorrectFocus = () => {
-			const el = this.container.querySelector("[autofocus]");
-			if (el instanceof HTMLElement) {
-				el.focus();
-			} else {
-				this.PRIVATE_inputs[0]?.el.focus();
-			}
-		};
-
 		this.events.on("open", () => {
-			// Safari incorrectly focuses the first focusable element
-			// in the dialog eg. the close button
-			const unbindFocusFixer = listen(this.elementHost, "focusin", () => {
-				ensureCorrectFocus();
+			const undindFocusSetting = listen(this.elementHost, "focusin", () => {
+				this.PRIVATE_setInitialFocus();
 			});
 
 			const unbindEscListener = listen(document, "keydown", (e) => {
@@ -953,7 +987,7 @@ export class SearchEngine {
 			});
 
 			this.events.once("close", () => {
-				unbindFocusFixer();
+				undindFocusSetting();
 				unbindEscListener();
 			});
 
@@ -965,10 +999,10 @@ export class SearchEngine {
 
 			// Firefox moves to focus to the <dialog> element but does not
 			// fire the focusin event. We need to manually set the focus here
-			ensureCorrectFocus();
+			this.PRIVATE_setInitialFocus();
 
 			// Clear the safari fixer so focus can move normally again
-			setTimeout(unbindFocusFixer, 0);
+			setTimeout(undindFocusSetting, 0);
 		});
 
 		this.events.on("close", () => {

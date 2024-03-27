@@ -1,6 +1,7 @@
 import React, {
 	MouseEventHandler,
 	ReactNode,
+	useCallback,
 	useEffect,
 	useMemo,
 	useRef,
@@ -242,6 +243,7 @@ const HitSlot = createSlotComponent("Hit", {
 						) : null}
 						<View
 							as="a"
+							id={context.hitId}
 							lang={context.hit.language}
 							cn={["hit-title-link", "link"]}
 							href={href}
@@ -307,9 +309,21 @@ function Hit(props: {
 	containerRef: ReturnType<typeof useSearchMoreOnReveal> | undefined;
 }) {
 	const engine = useSearchEngine();
+	const ref = useRef<HTMLElement>();
 
 	const kbAttrs = useKeyboardItemAttributes(
 		`hit-${props.groupId}-${props.hit.index}`,
+	);
+
+	const hitId = engine.getUniqId(`hit-${props.groupId}-${props.hit.index}`);
+
+	const { containerRef } = props;
+	const refCallback = useCallback(
+		(el: HTMLElement | null) => {
+			ref.current = el ?? undefined;
+			containerRef?.(el);
+		},
+		[containerRef],
 	);
 
 	const handleLinkClick: MouseEventHandler<HTMLDivElement> = (e) => {
@@ -320,6 +334,8 @@ function Hit(props: {
 		if (e.target.href !== props.hit.url) {
 			return;
 		}
+
+		engine.saveVisitedHitId(hitId);
 
 		engine.events.emit("hit-click", {
 			hit: props.hit,
@@ -333,17 +349,19 @@ function Hit(props: {
 
 	return (
 		<View
-			ref={props.containerRef}
+			ref={refCallback}
+			// ref={props.containerRef}
 			key={props.hit.url}
 			role="group"
 			// TODO translate
 			aria-label={`Search result ${props.hit.index + 1}`}
 			cn={{ hit: true, "superwords-match": props.hit.superwordsMatch }}
 			data-fdk-score={props.hit.score}
+			data-hit-id={hitId}
 			{...kbAttrs}
 			onClick={handleLinkClick}
 		>
-			<HitSlot hit={props.hit} groupId={props.groupId} />
+			<HitSlot hit={props.hit} groupId={props.groupId} hitId={hitId} />
 		</View>
 	);
 }

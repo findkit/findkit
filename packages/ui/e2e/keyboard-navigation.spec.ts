@@ -91,6 +91,10 @@ test("can navigate to group", async ({ page }) => {
 
 	await page.goBack();
 
+	// The hit is focused, so move the focus manually to the input
+	// to activate the keyboard navigation
+	await page.locator("input").focus();
+
 	await hits.first().waitFor({ state: "visible" });
 
 	// Go back link

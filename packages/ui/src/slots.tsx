@@ -105,6 +105,12 @@ export interface HitSlotProps {
 	hit: SearchResultHit;
 
 	/**
+	 * Unique hit id for the dom. By default this is used in the
+	 * TitleLink slot part component id
+	 */
+	hitId: string;
+
+	/**
 	 * Group id
 	 */
 	groupId: string;
