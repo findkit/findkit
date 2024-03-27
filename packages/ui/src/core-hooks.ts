@@ -308,3 +308,10 @@ export function useResults(): [GroupResults, ...GroupResults[]] {
 		state.currentGroupId,
 	]) as any;
 }
+
+/**
+ * @public
+ */
+export function useLang() {
+	return useSearchEngineState().ui.lang;
+}

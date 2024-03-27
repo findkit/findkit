@@ -69,6 +69,7 @@ export type CustomRouterDataSetter<T extends CustomRouterData> =
 export interface SearchResultHit {
 	created: Date;
 	modified: Date;
+	index: number;
 	score: number;
 	title: string;
 	url: string;
@@ -262,6 +263,10 @@ export interface State {
 
 	loading: boolean;
 
+	canAnnounceResults: boolean;
+
+	announceResultsMessage: { key: number; text: string };
+
 	currentGroupId: string | undefined;
 
 	infiniteScroll: boolean;
@@ -389,7 +394,6 @@ function clone<T>(obj: T): T {
 }
 
 const SINGLE_GROUP_NAME = Object.freeze({
-	id: "default",
 	title: "Default",
 });
 
@@ -722,6 +726,8 @@ export class SearchEngine {
 			currentGroupId: undefined,
 			searchParams: this.PRIVATE_router.getSearchParamsString(),
 			lang: undefined,
+			canAnnounceResults: false,
+			announceResultsMessage: { key: 1, text: "" },
 			lockScroll: options.lockScroll ?? true,
 			status: "closed",
 			loading: false,
@@ -784,7 +790,7 @@ export class SearchEngine {
 
 				if (
 					container === e.target ||
-					this.PRIVATE_isBoundInput(e.target) ||
+					this.PRIVATE_getBoundInput(e.target) ||
 					this.container.contains(e.target)
 				) {
 					return;
@@ -798,12 +804,12 @@ export class SearchEngine {
 		});
 	}
 
-	PRIVATE_isBoundInput(el: Element | null | undefined) {
+	PRIVATE_getBoundInput(el: Element | null | undefined) {
 		if (!el) {
 			return false;
 		}
 
-		return this.PRIVATE_inputs.some((input) => input.el === el);
+		return this.PRIVATE_inputs.find((input) => input.el === el);
 	}
 
 	PRIVATE_fixDialogFocus() {
@@ -814,12 +820,16 @@ export class SearchEngine {
 		let previouslyFocusedElement: HTMLElement | null = null;
 
 		this.events.on("open", () => {
+			// Intentionally not using this.PRIVATE_getActiveElement() here since we
+			// specifically want the element outside the dialog and shadow dom
+			const activeElement = document.activeElement;
+
 			// only HTMLInputElement can be focused
-			if (document.activeElement instanceof HTMLElement) {
-				previouslyFocusedElement = document.activeElement;
+			if (activeElement instanceof HTMLElement) {
+				previouslyFocusedElement = activeElement;
 			}
 
-			const openedFromBoundInput = this.PRIVATE_isBoundInput(
+			const openedFromBoundInput = this.PRIVATE_getBoundInput(
 				previouslyFocusedElement,
 			);
 
@@ -892,6 +902,10 @@ export class SearchEngine {
 		if (dialog instanceof HTMLDialogElement) {
 			return dialog;
 		}
+	}
+
+	getUniqId(id: "form" | "error" | "results-heading") {
+		return this.instanceId + "-" + id;
 	}
 
 	PRIVATE_createContainer(customContainer: Element | undefined) {
@@ -995,7 +1009,7 @@ export class SearchEngine {
 			// like when pressing the back button on FinkditUI Modal, the
 			// history has been already changed but we still need to save the
 			// results to session storage with correct restore id. With this
-			// property it is possible to save is even after the history
+			// property it is possible to save it even after the history
 			// change.
 			this.PRIVATE_previousRestoreId = restoreId;
 
@@ -1570,10 +1584,18 @@ export class SearchEngine {
 		});
 	};
 
-	private PRIVATE_handleInputChange(
-		terms: string,
-		options?: { force?: boolean },
-	) {
+	/**
+	 * Make search immedialtely by flushing the throttling terms
+	 */
+	private PRIVATE_searchNow() {
+		const terms = this.PRIVATE_throttlingTerms;
+
+		if (terms) {
+			this.setTerms(terms);
+		}
+	}
+
+	private PRIVATE_handleInputChange(terms: string) {
 		if (this.PRIVATE_throttlingTerms === terms.trim()) {
 			return;
 		}
@@ -1581,11 +1603,6 @@ export class SearchEngine {
 		this.PRIVATE_throttleId++;
 
 		this.PRIVATE_throttlingTerms = terms.trim();
-
-		if (options?.force === true) {
-			this.setTerms(this.PRIVATE_throttlingTerms);
-			return;
-		}
 
 		if (this.PRIVATE_termsThrottleTimer) {
 			return;
@@ -2046,23 +2063,15 @@ export class SearchEngine {
 		// Combine responses with the search groups and re-assign the ids for them
 		const resWithIds: State["resultGroups"] = {};
 
-		fullParams.groups?.forEach((_group, index) => {
+		fullParams.groups?.forEach((group, index) => {
 			const res = response.value.groups[index];
 			if (!res) {
 				return;
 			}
 
-			const hits = res.hits.map((hit) => {
-				const { created, modified, ...rest } = hit;
-				return ref({
-					...rest,
-					created: new Date(created),
-					modified: new Date(modified),
-				});
-			});
+			const indexGroup = groups[index];
 
 			let groupId;
-			const indexGroup = groups[index];
 
 			if (appendGroup) {
 				groupId = appendGroup.id;
@@ -2071,6 +2080,18 @@ export class SearchEngine {
 			} else {
 				throw new Error("[findkit] Bug? Unknown group index: " + index);
 			}
+
+			const startIndex = group.from ?? 0;
+
+			const hits = res.hits.map((hit, index) => {
+				const { created, modified, ...rest } = hit;
+				return ref({
+					...rest,
+					index: startIndex + index,
+					created: new Date(created),
+					modified: new Date(modified),
+				});
+			});
 
 			resWithIds[groupId] = {
 				hits,
@@ -2124,17 +2145,130 @@ export class SearchEngine {
 		return this.state.inputs;
 	}
 
+	private PRIVATE_getActiveElement(): Element | null {
+		if (document.activeElement?.classList.contains(cn("host"))) {
+			return this.elementHost.activeElement;
+		}
+
+		return document.activeElement;
+	}
+
 	private PRIVATE_syncInputs = (terms: string) => {
+		const activeElement = this.PRIVATE_getActiveElement();
+
 		for (const input of this.PRIVATE_inputs) {
 			// only change input value if it does not have focus
-			const activeElement =
-				document.activeElement?.shadowRoot?.activeElement ??
-				document.activeElement;
 			if (input && input.el !== activeElement) {
 				input.el.value = terms;
 			}
 		}
 	};
+
+	private PRIVATE_checkBouncingTimer?: ReturnType<typeof setTimeout>;
+
+	private PRIVATE_checkIfCanAnnounceResults(options?: { now?: boolean }) {
+		const check = () => {
+			const activeElement = this.PRIVATE_getActiveElement();
+			const read = Boolean(
+				activeElement?.classList.contains(cn("submit-search-button")) ||
+					this.PRIVATE_getBoundInput(activeElement),
+			);
+
+			if (!read) {
+				this.state.announceResultsMessage.text = "";
+			}
+
+			this.state.canAnnounceResults = read;
+		};
+
+		if (options?.now) {
+			clearTimeout(this.PRIVATE_checkBouncingTimer);
+			check();
+			return;
+		}
+
+		clearTimeout(this.PRIVATE_checkBouncingTimer);
+
+		// Will toggle to false temporarily when jumping from valid element another
+		// valid element. This is to avoid flickering of the announcement
+		this.PRIVATE_checkBouncingTimer = setTimeout(check, 5);
+	}
+
+	private PRIVATE_announceResults() {
+		// TODO translate messages
+		this.PRIVATE_checkIfCanAnnounceResults({ now: true });
+		if (!this.state.canAnnounceResults) {
+			return;
+		}
+
+		const terms = (this.PRIVATE_throttlingTerms || this.state.usedTerms) ?? "";
+
+		// TODO test
+		if (this.state.status === "fetching") {
+			this.PRIVATE_announce("Loading results...");
+			this.events.once("fetch-done", () => {
+				// fetch-done fires while still in fetching state.
+				// Fire after a timeout to avoid infinite loop
+				setTimeout(() => {
+					this.PRIVATE_announceResults();
+				});
+			});
+			return;
+		}
+
+		if (terms.length < this.PRIVATE_minTerms) {
+			this.PRIVATE_announce(
+				`Too few search terms. Minimum ${this.PRIVATE_minTerms} characters.`,
+			);
+			return;
+		}
+
+		const allTotal = getTotalFromAllGroups(
+			Object.values(this.state.resultGroups),
+		);
+
+		if (
+			this.state.usedGroupDefinitions.length === 1 ||
+			this.state.currentGroupId !== undefined
+		) {
+			const groupTotal = this.state.currentGroupId
+				? this.state.resultGroups[this.state.currentGroupId]?.total
+				: undefined;
+			const total = groupTotal ?? allTotal;
+
+			this.PRIVATE_announce(`${total} results found.`);
+			if (total > 0) {
+				this.PRIVATE_announce(`Focus first result with shift enter`);
+			}
+		} else {
+			const groupCount = this.state.usedGroupDefinitions.length;
+			this.PRIVATE_announce(
+				`${allTotal} results found in ${groupCount} groups.`,
+			);
+			if (allTotal > 0) {
+				this.PRIVATE_announce(`Focus first result with shift enter`);
+			}
+		}
+	}
+
+	PRIVATE_announceMessages: string[] = [];
+	PRIVATE_announcePending = false;
+	private PRIVATE_announce(message: string) {
+		this.PRIVATE_announceMessages.push(message);
+		if (this.PRIVATE_announcePending) {
+			return;
+		}
+
+		this.PRIVATE_announcePending = true;
+
+		queueMicrotask(() => {
+			this.PRIVATE_announcePending = false;
+			this.state.announceResultsMessage.key++;
+			this.state.announceResultsMessage.text =
+				this.PRIVATE_announceMessages.join(" ");
+			this.PRIVATE_announceMessages = [];
+		});
+	}
 
 	/**
 	 * Bind input to search. Returns unbind function.
@@ -2143,7 +2277,7 @@ export class SearchEngine {
 		const unbind = () => {
 			this.removeInput(input);
 		};
-		const prev = this.PRIVATE_inputs.find((o) => o.el === input);
+		const prev = this.PRIVATE_getBoundInput(input);
 
 		if (prev) {
 			return unbind;
@@ -2156,7 +2290,10 @@ export class SearchEngine {
 				// Enable search results linking by copying the terms to the input
 				// from url bar but skip if if the input is active so we wont mess
 				// with the user too much
-				if (input.value.trim() === "" || input !== document.activeElement) {
+				if (
+					input.value.trim() === "" ||
+					input !== this.PRIVATE_getActiveElement()
+				) {
 					input.value = currentTerms;
 				}
 			} else if (input.value.trim()) {
@@ -2185,13 +2322,33 @@ export class SearchEngine {
 
 			listeners.create(() =>
 				listen(
+					this.container,
+					"focusin",
+					() => {
+						this.PRIVATE_checkIfCanAnnounceResults();
+					},
+					{ passive: true, capture: true },
+				),
+			);
+
+			listeners.create(() =>
+				listen(
 					input,
 					"blur",
 					() => {
+						this.PRIVATE_checkIfCanAnnounceResults();
 						this.state.keyboardCursor = undefined;
 					},
 					{ passive: true },
 				),
+			);
+
+			listeners.create(() =>
+				listen(this.container, "submit", (e) => {
+					e.preventDefault();
+					this.PRIVATE_searchNow();
+					this.PRIVATE_announceResults();
+				}),
 			);
 
 			listeners.create(() =>
@@ -2217,13 +2374,18 @@ export class SearchEngine {
 					} else if (e.key === "Enter") {
 						assertInputEvent(e);
 
+						if (e.shiftKey) {
+							// TODO test
+							this.focusFirstHit();
+						}
+
 						if (this.state.keyboardCursor) {
 							e.preventDefault();
 							this.PRIVATE_selectKeyboardCursor();
 							return;
 						}
 
-						this.PRIVATE_handleInputChange(e.target.value, { force: true });
+						this.PRIVATE_handleInputChange(e.target.value);
 					}
 				}),
 			);
@@ -2238,8 +2400,15 @@ export class SearchEngine {
 		return unbind;
 	};
 
+	focusFirstHit() {
+		const hit = this.elementHost.querySelector(`.${cn("hit")} a`);
+		if (hit instanceof HTMLElement) {
+			hit.focus();
+		}
+	}
+
 	removeInput = (rmInput: HTMLInputElement) => {
-		const input = this.PRIVATE_inputs.find((input) => input?.el === rmInput);
+		const input = this.PRIVATE_getBoundInput(rmInput);
 		if (!input) {
 			return;
 		}

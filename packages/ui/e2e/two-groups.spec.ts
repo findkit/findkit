@@ -219,13 +219,11 @@ test("can show 'All results shown' and 'No results' on group view", async ({
 	await page.goto(staticEntry("/two-groups"));
 	const hits = page.locator(".findkit--hit");
 	const input = page.locator("input:visible");
+	const group1 = page.locator(".findkit--group").nth(0);
+	const group2 = page.locator(".findkit--group").nth(1);
 
-	const firstGroupsHits = page.locator(
-		".findkit--group:nth-child(1) .findkit--hit",
-	);
-	const secondGroupHits = page.locator(
-		".findkit--group:nth-child(2) .findkit--hit",
-	);
+	const firstGroupsHits = group1.locator(".findkit--hit");
+	const secondGroupHits = group2.locator(".findkit--hit");
 
 	await page.locator("text=open").click();
 	await input.fill("esa-matti");
@@ -240,17 +238,13 @@ test("can show 'All results shown' and 'No results' on group view", async ({
 	await expect(secondGroupHits).toHaveCount(0);
 
 	// Actual assertions
-	await expect(
-		page.locator(
-			".findkit--group:nth-child(1) .findkit--group-all-results-shown",
-		),
-	).toHaveText("All results shown");
+	await expect(group1.locator(".findkit--group-all-results-shown")).toHaveText(
+		"All results shown",
+	);
 
-	await expect(
-		page.locator(
-			".findkit--group:nth-child(2) .findkit--group-all-results-shown",
-		),
-	).toHaveText("No results");
+	await expect(group2.locator(".findkit--group-all-results-shown")).toHaveText(
+		"No results",
+	);
 
 	await expect(page.locator(".findkit--content")).not.toHaveText(
 		"Show more search results",

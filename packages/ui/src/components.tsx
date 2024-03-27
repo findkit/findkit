@@ -19,10 +19,15 @@ import {
 	useSearchEngineState,
 	useSearchMoreOnReveal,
 	useTranslator,
+	useView,
 } from "./core-hooks";
 import { SearchEngine, SearchResultHit } from "./search-engine";
 import { Slots } from "./slots";
-import { createSlotComponent, useSlotContext } from "./slots-core";
+import {
+	SlotCatchBoundary,
+	createSlotComponent,
+	useSlotContext,
+} from "./slots-core";
 import { createTranslator } from "./translations";
 import { View, cn, isProd, scrollToTop } from "./utils";
 
@@ -57,8 +62,10 @@ function SingleGroupLink(props: {
 	children: ReactNode;
 	groupId: string;
 	groupTitle: string;
+	total: number;
 }) {
 	const t = useTranslator();
+	const ref = useRef<HTMLAnchorElement>(null);
 	const { focusRef } = useFindkitContext();
 	const engine = useSearchEngine();
 	const params = useFindkitURLSearchParams();
@@ -72,9 +79,13 @@ function SingleGroupLink(props: {
 			as="a"
 			cn={["single-group-link", "group-header-footer-spacing"]}
 			{...kbAttrs}
+			ref={ref}
 			data-kb-action
 			data-internal
-			aria-label={t("aria-show-all", { group: props.groupTitle })}
+			aria-label={t("aria-show-all", {
+				group: props.groupTitle,
+				total: props.total,
+			})}
 			href={engine.formatHref(nextParams)}
 			onClick={(e) => {
 				e.preventDefault();
@@ -82,11 +93,16 @@ function SingleGroupLink(props: {
 					return;
 				}
 
-				if (engine.elementHost.activeElement === e.target) {
+				const activeElement = engine.elementHost.activeElement;
+				if (
+					activeElement &&
+					ref.current &&
+					(activeElement === ref.current || ref.current.contains(activeElement))
+				) {
 					focusRef.current.groupViewFocusNext = true;
+				} else {
+					scrollToTop(e.target);
 				}
-
-				scrollToTop(e.target);
 				engine.updateAddressBar(nextParams, { push: true });
 			}}
 		>
@@ -117,25 +133,28 @@ function BackLink(props: { children?: ReactNode }) {
 	}
 
 	return (
-		<View
-			as="a"
-			{...kbAttrs}
-			data-kb-action
-			data-internal
-			cn={["back-link", "group-header-footer-spacing"]}
-			href={engine.formatHref(nextParams)}
-			onClick={(e) => {
-				e.preventDefault();
-				engine.updateAddressBar(nextParams, { push: true });
-			}}
-		>
-			{props.children ?? (
-				<>
-					<Arrow direction="left" />
-					<View cn="link-text">{t("go-back")}</View>
-				</>
-			)}
-			<View cn="hover-bg" />
+		// TODO: translate
+		<View as="nav" cn="nav" aria-label="Search Group">
+			<View
+				as="a"
+				{...kbAttrs}
+				data-kb-action
+				data-internal
+				cn={["back-link", "group-header-footer-spacing"]}
+				href={engine.formatHref(nextParams)}
+				onClick={(e) => {
+					e.preventDefault();
+					engine.updateAddressBar(nextParams, { push: true });
+				}}
+			>
+				{props.children ?? (
+					<>
+						<Arrow direction="left" />
+						<View cn="link-text">{t("go-back")}</View>
+					</>
+				)}
+				<View cn="hover-bg" />
+			</View>
 		</View>
 	);
 }
@@ -150,20 +169,29 @@ function GroupTitle(props: {
 	}
 
 	return (
-		<View as="h2" cn="group-title" aria-label={props.title}>
-			{props.children ? (
-				props.children
-			) : (
-				<>
-					{props.title}{" "}
-					{props.total > 0 ? (
-						<span className={cn("group-title-total")}>{props.total}</span>
-					) : (
-						""
-					)}
-				</>
-			)}
-		</View>
+		<>
+			<View as="h2" cn="group-title" aria-label={props.title}>
+				{props.children ? (
+					props.children
+				) : (
+					<>
+						{props.title}{" "}
+						{props.total > 0 ? (
+							<span
+								aria-hidden
+								// TODO Translate
+								title="Total results in the group"
+								className={cn("group-title-total")}
+							>
+								{props.total}
+							</span>
+						) : (
+							""
+						)}
+					</>
+				)}
+			</View>
+		</>
 	);
 }
 
@@ -199,24 +227,30 @@ const HitSlot = createSlotComponent("Hit", {
 	parts: {
 		TitleLink(props) {
 			const context = useSlotContext("Hit");
+
 			const href = props.href ?? context.hit.url;
 			const superwordsMatch =
 				props.superwordsMatch ?? context.hit.superwordsMatch;
 
 			const t = useTranslator();
-			return (
-				<View as="h3" cn="hit-title">
-					{superwordsMatch ? <StarIcon title={t("superwords-match")} /> : null}
 
-					<View
-						as="a"
-						cn={["hit-title-link", "link"]}
-						href={href}
-						data-kb-action
-					>
-						{props.children ?? context.hit.title}
+			return (
+				<>
+					<View as="h3" cn="hit-title">
+						{superwordsMatch ? (
+							<StarIcon title={t("superwords-match")} />
+						) : null}
+						<View
+							as="a"
+							lang={context.hit.language}
+							cn={["hit-title-link", "link"]}
+							href={href}
+							data-kb-action
+						>
+							{props.children ?? context.hit.title}
+						</View>
 					</View>
-				</View>
+				</>
 			);
 		},
 		Highlight(props) {
@@ -226,15 +260,31 @@ const HitSlot = createSlotComponent("Hit", {
 			return (
 				<View
 					cn="highlight"
-					dangerouslySetInnerHTML={{ __html: highlight }}
-				></View>
+					// TODO translate
+					aria-label="Search hit highlights"
+				>
+					<View
+						lang={context.hit.language}
+						dangerouslySetInnerHTML={{ __html: highlight }}
+					/>
+				</View>
 			);
 		},
 		URLLink(props) {
 			const context = useSlotContext("Hit");
 			const href = props.href ?? context.hit.url;
 			return (
-				<View as="a" cn={["hit-url", "link"]} href={href} tabIndex={-1}>
+				<View
+					as="a"
+					cn={["hit-url", "link"]}
+					// TODO translate
+					aria-label={`Search hit URL: ${href}`}
+					href={href}
+					// Duplicated link. Skip from tab order for cleaner tab navigation
+					// but keep for screen readers so it can announce the URL.
+					// This is also reachable by using the "links navigation" in screen readers.
+					tabIndex={-1}
+				>
 					{props.children ?? href}
 				</View>
 			);
@@ -254,12 +304,12 @@ const HitSlot = createSlotComponent("Hit", {
 function Hit(props: {
 	hit: SearchResultHit;
 	groupId: string;
-	hitIndex: number;
 	containerRef: ReturnType<typeof useSearchMoreOnReveal> | undefined;
 }) {
 	const engine = useSearchEngine();
+
 	const kbAttrs = useKeyboardItemAttributes(
-		`hit-${props.groupId}-${props.hitIndex}`,
+		`hit-${props.groupId}-${props.hit.index}`,
 	);
 
 	const handleLinkClick: MouseEventHandler<HTMLDivElement> = (e) => {
@@ -285,10 +335,9 @@ function Hit(props: {
 		<View
 			ref={props.containerRef}
 			key={props.hit.url}
-			// Results can be in a different language from the containing
-			// page or even be in different languages
-			lang={props.hit.language}
-			as="article"
+			role="group"
+			// TODO translate
+			aria-label={`Search result ${props.hit.index + 1}`}
 			cn={{ hit: true, "superwords-match": props.hit.superwordsMatch }}
 			data-fdk-score={props.hit.score}
 			{...kbAttrs}
@@ -305,6 +354,11 @@ function HitList(props: {
 	hits: ReadonlyArray<SearchResultHit>;
 }) {
 	const hitRef = useSearchMoreOnReveal();
+	const t = useTranslator();
+
+	if (props.total === 0) {
+		return <View cn="sr-only">{t("no-results")}</View>;
+	}
 
 	return (
 		<>
@@ -314,7 +368,6 @@ function HitList(props: {
 					<Hit
 						key={hit.url}
 						hit={hit}
-						hitIndex={index}
 						groupId={props.groupId}
 						containerRef={last ? hitRef : undefined}
 					/>
@@ -357,7 +410,12 @@ const GroupSlot = createSlotComponent("Group", {
 			const title = props.title ?? context.title;
 
 			return (
-				<>
+				<View
+					as="nav"
+					cn="nav"
+					// TODO translate
+					aria-label="Search group"
+				>
 					{context.total === context.fetchedHits ? (
 						<View
 							cn={["group-all-results-shown", "group-header-footer-spacing"]}
@@ -368,12 +426,13 @@ const GroupSlot = createSlotComponent("Group", {
 						</View>
 					) : (
 						<SingleGroupLink
+							total={context.total}
 							groupId={context.id}
 							groupTitle={title}
 							children={props.children}
 						/>
 					)}
-				</>
+				</View>
 			);
 		},
 	},
@@ -425,6 +484,8 @@ function MultiGroupResults() {
 						key={groupResults.id}
 						cn="group"
 						as="section"
+						// TODO translate
+						aria-label={`Search result group with ${groupResults.total} hits`}
 						data-group-id={groupResults.id}
 					>
 						<GroupSlot
@@ -480,7 +541,12 @@ const ResultsSlot = createSlotComponent("Results", {
 			const allResultsLoaded = slot.fetchedHits === slot.total;
 
 			return (
-				<View cn="footer">
+				<View
+					as="nav"
+					cn="footer"
+					// TODO translate
+					aria-label="Search more"
+				>
 					<FooterContent
 						groupId={slot.id}
 						allResultsLoaded={allResultsLoaded}
@@ -527,6 +593,10 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 		for (const [index, el] of Object.entries(links)) {
 			if (focusIndex.toString() === index && el instanceof HTMLAnchorElement) {
 				el.focus();
+				el.scrollIntoView({
+					behavior: "smooth",
+					block: "center",
+				});
 				focusRef.current.groupViewFocusNext = false;
 				break;
 			}
@@ -554,6 +624,9 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	);
 }
 
+/**
+ * Search footer in the single group view.
+ */
 function FooterContent(props: {
 	allResultsLoaded: boolean;
 	groupId: string;
@@ -595,24 +668,94 @@ function FooterContent(props: {
 	);
 }
 
-export function Results() {
+export function ResultsContent() {
 	const state = useSearchEngineState();
+	const engine = useSearchEngine();
+	const view = useView();
+	const groupCount = state.usedGroupDefinitions.length;
+	const labelId = engine.getUniqId("results-heading");
+
+	let label;
+
+	// TODO translate
+	if (groupCount === 1) {
+		label = "Search results";
+	} else {
+		label =
+			view === "groups"
+				? `Search results for ${groupCount} groups.`
+				: `Search results for the selected group`;
+	}
 
 	return (
 		<>
-			{state.messages.length > 0 && (
-				<div>
-					{state.messages.map((m) => (
-						<View
-							cn="message"
-							key={m.id}
-							dangerouslySetInnerHTML={{ __html: m.message }}
-						/>
-					))}
-				</div>
-			)}
-			<SingleOrGroupResults />
+			<View as="section" aria-labelledby={labelId} cn="content">
+				<View
+					as="h1"
+					id={labelId}
+					cn="sr-only"
+					aria-label={label}
+					// Announce groups heading only when there are more than one group
+					// to have then announced when the user navigates to a group or back.
+					// With single group there is no navigating and no need to announce it.
+					aria-live={groupCount > 1 ? "polite" : "off"}
+				></View>
+
+				<FetchError />
+				<SlotCatchBoundary name="Content" props={{}}>
+					{state.messages.length > 0 && (
+						<section
+							// TODO translate
+							aria-label="Findkit messages"
+						>
+							{state.messages.map((m) => (
+								<View
+									cn="message"
+									key={m.id}
+									dangerouslySetInnerHTML={{ __html: m.message }}
+								/>
+							))}
+						</section>
+					)}
+					<SingleOrGroupResults />
+				</SlotCatchBoundary>
+
+				{Boolean(
+					state.canAnnounceResults && state.announceResultsMessage.text,
+				) ? (
+					<View
+						key={state.announceResultsMessage.key}
+						cn="sr-only"
+						aria-live="assertive"
+					>
+						{state.announceResultsMessage.text}
+					</View>
+				) : null}
+			</View>
 		</>
+	);
+}
+
+function FetchError() {
+	const state = useSearchEngineState();
+	const engine = useSearchEngine();
+	const t = useTranslator();
+
+	if (!state.error) {
+		return null;
+	}
+
+	return (
+		<ErrorContainer title={t("error-title")} error={state.error?.message ?? ""}>
+			<View
+				as="button"
+				cn="retry-button"
+				type="button"
+				onClick={() => engine.retry()}
+			>
+				{t("try-again")}
+			</View>
+		</ErrorContainer>
 	);
 }
 
@@ -697,6 +840,7 @@ export function Spinner(props: { spinning?: boolean }) {
 	const state = useSearchEngineState();
 	return (
 		<View
+			aria-hidden
 			cn={{
 				spinner: true,
 				spinning: props.spinning !== false && state.loading,
@@ -711,14 +855,17 @@ export function ErrorContainer(props: {
 	props?: any;
 	error: string | null;
 }) {
+	const engine = useSearchEngine();
+	const labelId = engine.getUniqId("error");
+
 	let propsString = null;
 	try {
 		propsString = JSON.stringify(props.props, null, 2);
 	} catch {}
 
 	return (
-		<View cn="error">
-			<View as="h2" cn="error-title">
+		<View as="section" cn="error" arial-aria-labelledby={labelId}>
+			<View as="h2" cn="error-title" id={labelId}>
 				{props.title}
 			</View>
 
@@ -727,6 +874,7 @@ export function ErrorContainer(props: {
 			<View as="pre" cn="error-message">
 				{props.error}
 			</View>
+
 			{propsString && propsString !== "{}" && !isProd() ? (
 				<View as="pre" cn="error-props">
 					{propsString}

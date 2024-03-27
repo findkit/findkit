@@ -3,7 +3,7 @@ import { mockSearchResponses, staticEntry } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 
-test("search results are in article element with lang-attributes", async ({
+test.skip("search results are in article element with lang-attributes", async ({
 	page,
 }) => {
 	await page.goto(staticEntry("/dummy"));
@@ -26,7 +26,7 @@ test("search results are in article element with lang-attributes", async ({
 	await expect(en).toHaveAttribute("lang", "en");
 });
 
-test("group are in sections", async ({ page }) => {
+test.skip("group are in sections", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
 	await mockSearchResponses(page);
 

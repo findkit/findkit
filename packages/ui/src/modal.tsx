@@ -7,13 +7,7 @@ import React, {
 	ReactNode,
 } from "react";
 import ReactDOM from "react-dom";
-import {
-	Results,
-	FindkitProvider,
-	Logo,
-	Spinner,
-	ErrorContainer,
-} from "./components";
+import { ResultsContent, FindkitProvider, Logo, Spinner } from "./components";
 import {
 	useSearchEngineState,
 	useSearchEngine,
@@ -35,6 +29,17 @@ import type { Emitter, FindkitUIEvents } from "./emitter";
 import { Slots } from "./slots";
 import { SlotCatchBoundary, createSlotComponent } from "./slots-core";
 import { listen } from "./resources";
+
+function useFormProps() {
+	const engine = useSearchEngine();
+
+	return {
+		role: "search",
+		id: engine.getUniqId("form"),
+		// TODO translate
+		["aria-label"]: "Search form",
+	};
+}
 
 function useScrollLock(lock: boolean) {
 	useLayoutEffect(() => {
@@ -188,32 +193,6 @@ function Cross() {
 	);
 }
 
-function FetchError() {
-	const state = useSearchEngineState();
-	const engine = useSearchEngine();
-	const t = useTranslator();
-
-	if (!state.error) {
-		return null;
-	}
-
-	return (
-		<ErrorContainer title={t("error-title")} error={state.error?.message ?? ""}>
-			<div>
-				Fetch errored
-				<View
-					as="button"
-					cn="retry-button"
-					type="button"
-					onClick={() => engine.retry()}
-				>
-					{t("try-again")}
-				</View>
-			</div>
-		</ErrorContainer>
-	);
-}
-
 function SearchInput(props: { placeholder?: string; icon?: ReactNode }) {
 	const inputRef = useInput();
 	const t = useTranslator();
@@ -222,22 +201,34 @@ function SearchInput(props: { placeholder?: string; icon?: ReactNode }) {
 
 	return (
 		<View cn="search-input-wrap">
-			{/* XXX add instance-id */}
-			<View cn="sr-only" id="search-instructions">
-				{t("sr-search-instructions")}
-			</View>
 			<View
 				as="input"
-				aria-describedby="search-instructions"
 				autoFocus={engine.modal}
 				placeholder={props.placeholder}
+				aria-description={t("sr-search-instructions")}
 				cn="search-input"
-				type="text"
+				type="search"
 				ref={inputRef}
 				aria-label={t("aria-label-search-input")}
 			/>
+			<View
+				tabIndex={-1}
+				as="button"
+				cn={["visible-when-focused", "submit-search-button"]}
+				onKeyDown={(e) => {
+					if (e.key === "Enter" && e.shiftKey) {
+						e.preventDefault();
+						// TODO test
+						engine.focusFirstHit();
+					}
+				}}
+			>
+				{/* TODO translate */}
+				Submit search
+			</View>
 			<Spinner />
 			<View
+				aria-hidden
 				cn={{
 					["search-input-icon-container"]: true,
 					["search-input-icon-container-hide"]: state.loading,
@@ -293,6 +284,7 @@ function Modal() {
 	const state = useSearchEngineState();
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const containerKbAttrs = useContainerKeyboardAttributes();
+	const formProps = useFormProps();
 
 	const show = state.status !== "closed";
 	const delayed = useDelay(show, containerRef);
@@ -329,6 +321,9 @@ function Modal() {
 
 	const header = state.header ? (
 		<View
+			as="section"
+			// TODO translate
+			aria-label="Search controls"
 			cn={{
 				header: true,
 				"header-hidden": isScrollingDown,
@@ -338,18 +333,13 @@ function Modal() {
 		</View>
 	) : null;
 
-	const content = (
-		<View cn="content">
-			<FetchError />
-			<SlotCatchBoundary name="Content" props={{}}>
-				<Results />
-			</SlotCatchBoundary>
-		</View>
-	);
+	const content = <ResultsContent />;
 
 	return (
 		<View
 			data-id={engine.instanceId}
+			as="form"
+			{...formProps}
 			cn={{
 				backdrop: true,
 				container: true,
@@ -365,7 +355,6 @@ function Modal() {
 				}
 			}}
 		>
-			<ScreenReaderModalMessages />
 			<View
 				// Do not allow focus to the scrolling container.
 				// The focus on on the scrolling container is confusing as it
@@ -402,6 +391,7 @@ function Modal() {
 
 function useScrollRestore(containerRef: React.RefObject<Element | null>) {
 	const engine = useSearchEngine();
+
 	useLayoutEffect(() => {
 		let el = containerRef.current;
 
@@ -431,7 +421,8 @@ export function Plain() {
 	const state = useSearchEngineState();
 	const containerKbAttrs = useContainerKeyboardAttributes();
 	const view = useView();
-	const containerRef = useRef<HTMLDivElement | null>(null);
+	const containerRef = useRef<HTMLFormElement | null>(null);
+	const formProps = useFormProps();
 
 	useScrollRestore(containerRef);
 	useOpenCloseEvents(true);
@@ -441,21 +432,23 @@ export function Plain() {
 			name="Header"
 			props={{ Input: SearchInput, CloseButton: CloseButton }}
 		>
-			<SearchInput />
+			<View
+				as="section"
+				// TODO translate
+				aria-label="Search controls"
+			>
+				<SearchInput />
+			</View>
 		</SlotCatchBoundary>
 	) : null;
 
-	const content = (
-		<View cn="content">
-			<FetchError />
-			<SlotCatchBoundary name="Content" props={{}}>
-				<Results />
-			</SlotCatchBoundary>
-		</View>
-	);
+	const content = <ResultsContent />;
 
 	return (
 		<View
+			as="form"
+			// TODO translate and proper text
+			{...formProps}
 			{...containerKbAttrs}
 			ref={containerRef}
 			cn={{
@@ -474,37 +467,44 @@ export function Plain() {
 	);
 }
 
-function ScreenReaderModalMessages() {
-	const state = useSearchEngineState();
-	const t = useTranslator();
+function getHtmlFontSize() {
+	return (
+		Number(
+			window
+				.getComputedStyle(document.documentElement)
+				.getPropertyValue("font-size")
+				.replace("px", ""),
+		) || 16
+	);
+}
 
-	const terms = state.usedTerms ?? "";
-	const count = Object.values(state.resultGroups).reduce((acc, group) => {
-		return acc + group.total;
-	}, 0);
+function Style(props: { css?: string; layer?: string; href?: string }) {
+	let css = "";
 
-	const [message, setMessage] = useState("");
+	if (props.href) {
+		// css import
+		css = `@import url("${props.href}")`;
+		if (props.layer) {
+			css += ` layer(${props.layer})`;
+		}
+		css += ";";
+	} else if (props.css) {
+		css = props.css;
+		if (props.layer) {
+			css = `@layer ${props.layer} {\n${css}\n}`;
+		}
+	}
 
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			if (terms.trim()) {
-				setMessage(t("sr-result-count", { count, terms }));
-			} else {
-				setMessage("");
-			}
-		}, 2000);
-
-		return () => {
-			clearTimeout(timer);
-		};
-	}, [count, t, terms]);
+	if (!css) {
+		return null;
+	}
 
 	return (
-		<>
-			<View cn="sr-only" aria-live="polite">
-				{message}
-			</View>
-		</>
+		<style
+			dangerouslySetInnerHTML={{
+				__html: css,
+			}}
+		/>
 	);
 }
 
@@ -565,47 +565,6 @@ function CSSLoadWaiter(props: { children: React.ReactNode; skip: boolean }) {
 	);
 }
 
-function getHtmlFontSize() {
-	return (
-		Number(
-			window
-				.getComputedStyle(document.documentElement)
-				.getPropertyValue("font-size")
-				.replace("px", ""),
-		) || 16
-	);
-}
-
-function Style(props: { css?: string; layer?: string; href?: string }) {
-	let css = "";
-
-	if (props.href) {
-		// css import
-		css = `@import url("${props.href}")`;
-		if (props.layer) {
-			css += ` layer(${props.layer})`;
-		}
-		css += ";";
-	} else if (props.css) {
-		css = props.css;
-		if (props.layer) {
-			css = `@layer ${props.layer} {\n${css}\n}`;
-		}
-	}
-
-	if (!css) {
-		return null;
-	}
-
-	return (
-		<style
-			dangerouslySetInnerHTML={{
-				__html: css,
-			}}
-		/>
-	);
-}
-
 export type LayeredCSS = {
 	css?: string;
 	href?: string;
@@ -616,12 +575,12 @@ function supportsCSSLayers() {
 	const style = document.createElement("style");
 	style.id = "findkit-test";
 	style.textContent = `
-        @layer findkit-test {
-			#findkit-test {
-				--findkit--test: 1
+            @layer findkit-test {
+                #findkit-test {
+                --findkit--test: 1
 			}
         }
-	`;
+            `;
 
 	document.head.appendChild(style);
 

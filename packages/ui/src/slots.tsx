@@ -216,8 +216,14 @@ export interface GroupSlotProps {
 
 	title: string;
 
+	/**
+	 * The total number of hits in the group
+	 */
 	total: number;
 
+	/**
+	 * How many of the total hits have been fetched
+	 */
 	fetchedHits: number;
 
 	hits: ReadonlyArray<SearchResultHit>;

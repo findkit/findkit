@@ -143,6 +143,10 @@
 	transition: opacity 200ms ease;
 }
 
+.hit:has(:focus) {
+	outline: 2px dashed rgba(56, 175, 255, 0.5);
+}
+
 .superwords-match {
 }
 
@@ -276,7 +280,12 @@
 	border: none;
 }
 
+.nav {
+	width: fit-content;
+}
+
 .footer {
+	width: fit-content;
 	flex-direction: row;
 	justify-content: flex-start;
 	align-items: center;
@@ -398,13 +407,21 @@
 }
 
 /* Only for screen readers */
-.sr-only {
+
+.sr-only,
+.visible-when-focused:not(:focus):not(:active) {
 	position: absolute;
-	left: -10000;
-	top: auto;
 	width: 1px;
 	height: 1px;
-	overflow: hidden;
+	margin: -1px;
+	border: 0;
+	padding: 0;
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.submit-search-button {
 }
 
 .error {

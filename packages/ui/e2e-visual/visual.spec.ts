@@ -492,6 +492,9 @@ test("can horizonally position groups", async ({ page }) => {
 
 	await expect(backLink).toBeVisible();
 
+	// wait for the scroll animation to pass
+	await page.waitForTimeout(500);
+
 	await page.mouse.wheel(0, -1000);
 
 	await expect(page).toHaveScreenshot({ mask: [hits] });
@@ -902,6 +905,10 @@ test("slots part props", async ({ page }) => {
 	await page.waitForLoadState("networkidle");
 	await page.locator("text=Custom Show All").first().click();
 	await page.locator(".findkit--view-single").waitFor({ state: "visible" });
+
+	// wait for scroll animation
+	await page.waitForTimeout(500);
+	await page.mouse.wheel(0, -1000);
 
 	await expect(page.locator(".findkit--container")).toHaveScreenshot();
 });

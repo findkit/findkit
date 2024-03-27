@@ -13,7 +13,6 @@ export interface TranslationStrings {
 	"aria-label-close-search": string;
 	"aria-label-search-input": string;
 	"no-results": string;
-	"sr-result-count": string;
 	"sr-search-instructions": string;
 	"superwords-match": string;
 	"error-title": string;
@@ -23,14 +22,13 @@ export interface TranslationStrings {
 export const BASE_TRANSLATIONS: TranslationStrings = {
 	close: "Close",
 	"show-all": "Show more search results",
-	"aria-show-all": "Show all search results in the group {{group}}",
+	"aria-show-all": "Show all search {{total}} results in the group {{group}}",
 	"all-results-shown": "All results shown",
 	"load-more": "Load more",
 	"go-back": "Back",
 	"aria-label-close-search": "Close search",
 	"aria-label-search-input": "Search input",
 	"no-results": "No results",
-	"sr-result-count": "Got {{count}} search results for terms {{terms}}",
 	"sr-search-instructions":
 		"Search shows search results automatically as you type. Search results can be browsed with tabulator. Search searches for results in different groups and displays group's search results from best to worst. Search opens to its own window which can be closed with the ESC key.",
 	"superwords-match": "Pinned search result",
@@ -53,13 +51,11 @@ export const TRANSLATIONS: Record<string, TranslationStrings> = {
 		close: "Sulje",
 		"go-back": "Takaisin",
 		"show-all": "Näytä kaikki",
-		"aria-show-all": "Näytä kaikki hakutulokset ryhmässä {{group}}",
+		"aria-show-all": "Näytä kaikki {{total}} hakutulosta ryhmässä {{group}}",
 		"load-more": "Lataa lisää",
 		"aria-label-close-search": "Sulje haku",
 		"all-results-shown": "Kaikki tulokset näytetty",
 		"aria-label-search-input": "Hakukenttä",
-		"sr-result-count":
-			"Hakutuloksia {{count}} kappaletta hakusanalla {{terms}}",
 		"no-results": "Ei hakutuloksia",
 		"sr-search-instructions":
 			"Hakutoiminto esittää hakutulokset automaattisesti kirjoittaessasi hakusanaa. Hakutuloksia on mahdollista selata tab-näppäimellä. Haku etsii hakutuloksia useista ryhmistä, ja esittää ryhmän hakutulokset paremmuusjärjestyksessä. Haku aukeaa omaan näkymään, jonka käyttäjä voi sulkea esc-näppäimellä.",

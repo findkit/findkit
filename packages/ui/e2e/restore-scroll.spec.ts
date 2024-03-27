@@ -403,7 +403,6 @@ test("modal: reload makes a new search", async ({ page }) => {
 test("container: reload makes a new search", async ({ page }) => {
 	await page.goto(staticEntry("/slowly-loading"));
 
-	await page.locator("text=open").first().click();
 	await page.locator("input").fill("a");
 
 	const theHit = await scrollToHit(page, "Running Shoes");

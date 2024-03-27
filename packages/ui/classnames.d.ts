@@ -41,6 +41,7 @@ type ClassNames =
   | "findkit--modal"
   | "findkit--modal-container"
   | "findkit--modal-visible"
+  | "findkit--nav"
   | "findkit--plain"
   | "findkit--retry-button"
   | "findkit--search-input"
@@ -51,7 +52,9 @@ type ClassNames =
   | "findkit--spinner"
   | "findkit--spinning"
   | "findkit--sr-only"
+  | "findkit--submit-search-button"
   | "findkit--superwords-match"
   | "findkit--superwords-match-icon"
   | "findkit--view-groups"
-  | "findkit--view-single";
+  | "findkit--view-single"
+  | "findkit--visible-when-focused";
