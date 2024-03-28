@@ -675,7 +675,7 @@ export class SearchEngine {
 		this.events = options.events;
 
 		this.PRIVATE_handleInert();
-		this.PRIVATE_fixDialogFocus();
+		this.PRIVATE_restoreFocus();
 
 		if (!options.container) {
 			this.PRIVATE_handleOutsideClick();
@@ -813,7 +813,10 @@ export class SearchEngine {
 		return this.PRIVATE_inputs.find((input) => input.el === el);
 	}
 
-	PRIVATE_fixDialogFocus() {
+	/**
+	 * Restore focus to the previously active element when the modal is closed
+	 */
+	PRIVATE_restoreFocus() {
 		if (this.PRIVATE_trap) {
 			return;
 		}
