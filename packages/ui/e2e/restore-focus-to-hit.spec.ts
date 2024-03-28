@@ -2,24 +2,6 @@ import { expect, test } from "@playwright/test";
 import { routeMocks, scrollToHit, staticEntry } from "./helpers";
 declare const MOD: typeof import("../src/cdn-entries/index");
 
-// async function expectFocused2(locator: Locator) {
-// 	// WTF: playwright bug? This does not work on chromium but works on firefox and safari
-// 	// await expect(locator).toBeFocused();
-
-// 	// Workaround:
-// 	await expect
-// 		.poll(async () => {
-// 			return await locator.evaluate(async (el) => {
-// 				const focusedElement =
-// 					document.activeElement?.shadowRoot?.activeElement ??
-// 					document.activeElement;
-
-// 				return el === focusedElement;
-// 			});
-// 		})
-// 		.toBe(true);
-// }
-
 test.describe("focuses the input when coming back to search results", () => {
 	test("in single group", async ({ page }) => {
 		await routeMocks(page);
