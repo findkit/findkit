@@ -43,6 +43,7 @@ type ClassNames =
   | "findkit--modal-visible"
   | "findkit--nav"
   | "findkit--plain"
+  | "findkit--results-aria-live-message"
   | "findkit--retry-button"
   | "findkit--search-input"
   | "findkit--search-input-icon-container"

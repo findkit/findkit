@@ -743,7 +743,7 @@ export function ResultsContent() {
 				) ? (
 					<View
 						key={state.announceResultsMessage.key}
-						cn="sr-only"
+						cn={["sr-only", "results-aria-live-message"]}
 						aria-live="assertive"
 					>
 						{state.announceResultsMessage.text}

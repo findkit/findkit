@@ -484,3 +484,6 @@
 .dialog::backdrop {
 	display: none;
 }
+
+.results-aria-live-message {
+}
