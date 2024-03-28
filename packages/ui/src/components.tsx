@@ -265,9 +265,10 @@ const HitSlot = createSlotComponent("Hit", {
 					// TODO translate
 					aria-label="Search hit highlights"
 				>
-					<View
+					<ClickableHighlights
+						higlights={highlight}
+						href={context.hit.url}
 						lang={context.hit.language}
-						dangerouslySetInnerHTML={{ __html: highlight }}
 					/>
 				</View>
 			);
@@ -302,6 +303,110 @@ const HitSlot = createSlotComponent("Hit", {
 		);
 	},
 });
+
+/**
+ * Get {contextSize} words around the highlighted node. Handles
+ * partial words at the beginning and end of the initial node.
+ */
+function getHighlightContext(node: ChildNode, contextSize: number) {
+	contextSize++;
+	let trailingNode = node.nextSibling;
+	let leadingNode = node.previousSibling;
+
+	// Convert DOM nodes to plain string around the highlighted node
+	let leading = "";
+	let trailing = "";
+	while (trailingNode || leadingNode) {
+		trailing += trailingNode?.textContent ?? "";
+		leading = (leadingNode?.textContent ?? "") + leading;
+
+		trailingNode = trailingNode?.nextSibling ?? null;
+		leadingNode = leadingNode?.previousSibling ?? null;
+	}
+
+	// The highlighted node might be a partial word inside some special characters
+	// Eg. .<em>updateParams</em>() which means the actual word is .updateParams()
+	// and not just updateParams.
+
+	let prefix = "";
+	// capture last partial word
+	leading = leading.replace(/([^ ]+)$/, (match) => {
+		prefix = match;
+		return "";
+	});
+
+	let suffix = "";
+	// capture first partial word
+	trailing = trailing.replace(/^([^ ]+)/, (match) => {
+		suffix = match;
+		return "";
+	});
+
+	return (
+		leading.split(" ").slice(-contextSize).join(" ") +
+		prefix +
+		node.textContent +
+		suffix +
+		trailing.split(" ").slice(0, contextSize).join(" ")
+	);
+}
+
+/**
+ * Parse <em> highlighted string to clickable links
+ */
+function ClickableHighlights(props: {
+	higlights: string;
+	lang: string | undefined;
+	href: string;
+}) {
+	const links = useMemo(() => {
+		const dom = new DOMParser().parseFromString(props.higlights, "text/html");
+		const vdom: ReactNode[] = [];
+
+		let current: ChildNode | null = dom.body.firstChild;
+
+		while (current) {
+			if (current instanceof HTMLElement && current.tagName === "EM") {
+				const words = getHighlightContext(current, 1);
+				const url = new URL(props.href);
+
+				// https://wicg.github.io/scroll-to-text-fragment/
+				url.hash = `#:~:text=${encodeURIComponent(words)}`;
+
+				vdom.push(
+					<View
+						// TODO translate
+						title={`Highlight page content around "${words}"`}
+						aria-label={`Highlight page content around "${words}"`}
+						lang={props.lang}
+						as="a"
+						cn="em"
+						href={url.toString()}
+						//
+						// We want tab to just to go between search hits. This would make it
+						// cumbersome to navigate the results with the keyboard tab key
+						// as there can be many highlights in a single hit.
+						//
+						// Also this is visual only feature, so it is not so important to
+						// be reachable by keyboard. That being said this is still reachable
+						// with screen readers by using normal "next" operation or the "links
+						// navigation" feature.
+						tabIndex={-1}
+					>
+						{current.textContent}
+					</View>,
+				);
+			} else {
+				vdom.push(current.textContent);
+			}
+			current = current.nextSibling;
+		}
+
+		return vdom;
+	}, [props.higlights, props.href, props.lang]);
+
+	return <View lang={props.lang}>{links}</View>;
+}
 
 function Hit(props: {
 	hit: SearchResultHit;

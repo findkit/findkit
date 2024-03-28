@@ -148,15 +148,28 @@ export async function pressTab(page: Page, options?: { shift?: boolean }) {
 	}
 }
 
-export async function mockSearchResponses(page: Page, slowDown?: number) {
+export async function mockSearchResponses(
+	page: Page,
+	options?: {
+		slowDown?: number;
+		customizeResponse?: (res: typeof mockResponse) => typeof mockResponse;
+	},
+) {
 	await page.route(
 		(url) => url.hostname === "search.findkit.com",
 		// eslint-disable-next-line @typescript-eslint/no-misused-promises
 		async (route) => {
-			if (slowDown) {
-				await new Promise((r) => setTimeout(r, slowDown));
+			if (options?.slowDown) {
+				await new Promise((r) => setTimeout(r, options.slowDown));
 			}
-			await route.fulfill({ json: mockResponse });
+
+			let json = mockResponse;
+
+			if (options?.customizeResponse) {
+				json = options.customizeResponse(structuredClone(mockResponse));
+			}
+
+			await route.fulfill({ json });
 		},
 	);
 }

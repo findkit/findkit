@@ -11,6 +11,7 @@ type ClassNames =
   | "findkit--cross"
   | "findkit--css-load-detection"
   | "findkit--dialog"
+  | "findkit--em"
   | "findkit--error"
   | "findkit--error-details"
   | "findkit--error-message"
