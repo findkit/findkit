@@ -821,9 +821,7 @@ export class SearchEngine {
 		let previouslyFocusedElement: HTMLElement | null = null;
 
 		this.events.on("open", () => {
-			// Intentionally not using this.PRIVATE_getActiveElement() here since we
-			// specifically want the element outside the dialog and shadow dom
-			const activeElement = document.activeElement;
+			const activeElement = this.PRIVATE_getActiveElement();
 
 			// only HTMLInputElement can be focused
 			if (activeElement instanceof HTMLElement) {
@@ -2179,12 +2177,14 @@ export class SearchEngine {
 		return this.state.inputs;
 	}
 
+	/**
+	 * Get the active element, unwrapping shadow DOM if needed
+	 */
 	private PRIVATE_getActiveElement(): Element | null {
-		if (document.activeElement?.classList.contains(cn("host"))) {
-			return this.elementHost.activeElement;
-		}
-
-		return document.activeElement;
+		return (
+			document.activeElement?.shadowRoot?.activeElement ??
+			document.activeElement
+		);
 	}
 
 	private PRIVATE_syncInputs = (terms: string) => {
