@@ -96,7 +96,7 @@ export function delayer() {
 		now() {
 			saved();
 		},
-		what(fn: () => void) {
+		exec(fn: () => void) {
 			saved = fn;
 		},
 	};
@@ -116,7 +116,7 @@ export async function gotoWithEarlyHook<T>(
 	await page.route(
 		(url) => url.pathname.endsWith("index.js"),
 		(route) => {
-			delay.what(() => {
+			delay.exec(() => {
 				void route.continue();
 			});
 		},
