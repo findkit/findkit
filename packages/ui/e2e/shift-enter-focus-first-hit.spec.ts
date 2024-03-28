@@ -1,10 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { mockSearchResponses, routeMocks, staticEntry } from "./helpers";
+import { mockSearchResponses, staticEntry } from "./helpers";
 declare const MOD: typeof import("../src/cdn-entries/index");
 
 test.describe("shift+enter focuses the first search hit", () => {
 	test("in single group", async ({ page }) => {
-		await routeMocks(page);
 		await mockSearchResponses(page);
 		await page.goto(staticEntry("/single-group-v2"));
 
@@ -21,7 +20,6 @@ test.describe("shift+enter focuses the first search hit", () => {
 	});
 
 	test("in a selected group", async ({ page }) => {
-		await routeMocks(page);
 		await mockSearchResponses(page);
 
 		await page.goto(staticEntry("/two-groups-v2?minTerms=1"));
@@ -45,7 +43,6 @@ test.describe("shift+enter focuses the first search hit", () => {
 	});
 
 	test("custom link is also handled", async ({ page }) => {
-		await routeMocks(page);
 		await mockSearchResponses(page);
 		await page.goto(staticEntry("/dummy"));
 
