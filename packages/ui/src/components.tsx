@@ -712,12 +712,13 @@ export function ResultsContent() {
 					as="h1"
 					id={labelId}
 					cn="sr-only"
-					aria-label={label}
 					// Announce groups heading only when there are more than one group
 					// to have then announced when the user navigates to a group or back.
 					// With single group there is no navigating and no need to announce it.
 					aria-live={groupCount > 1 ? "polite" : "off"}
-				></View>
+				>
+					{label}
+				</View>
 
 				<FetchError />
 				<SlotCatchBoundary name="Content" props={{}}>
