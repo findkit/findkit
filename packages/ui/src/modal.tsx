@@ -218,7 +218,6 @@ function SearchInput(props: { placeholder?: string; icon?: ReactNode }) {
 				onKeyDown={(e) => {
 					if (e.key === "Enter" && e.shiftKey) {
 						e.preventDefault();
-						// TODO test
 						engine.focusFirstHit();
 					}
 				}}
