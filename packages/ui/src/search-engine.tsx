@@ -2240,7 +2240,6 @@ export class SearchEngine {
 
 		const terms = (this.PRIVATE_throttlingTerms || this.state.usedTerms) ?? "";
 
-		// TODO test
 		if (this.state.status === "fetching") {
 			this.PRIVATE_announce("Loading results...");
 			this.events.once("fetch-done", () => {
@@ -2412,7 +2411,6 @@ export class SearchEngine {
 						assertInputEvent(e);
 
 						if (e.shiftKey) {
-							// TODO test
 							this.focusFirstHit();
 						}
 
