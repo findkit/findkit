@@ -32,7 +32,7 @@ test("read results on enter press and clear the aria-live element when unfocusin
 });
 
 test("reads loading message", async ({ page }) => {
-	await mockSearchResponses(page, 500);
+	await mockSearchResponses(page, { slowDown: 500 });
 
 	await page.goto(staticEntry("/single-group-v2"));
 
