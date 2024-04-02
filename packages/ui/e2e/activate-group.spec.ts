@@ -56,8 +56,11 @@ test("can use .activateGroup() and .clearGroup()", async ({ page }) => {
 
 	await page.locator(".findkit--hit").first().waitFor({ state: "visible" });
 
-	await expect(page.locator("text=GroupB")).toBeVisible();
-	await expect(page.locator("text=GroupA")).not.toBeVisible();
+	const groupA = page.locator(".findkit--group-title", { hasText: "GroupA" });
+	const groupB = page.locator(".findkit--group-title", { hasText: "GroupB" });
+
+	await expect(groupB).toBeVisible();
+	await expect(groupA).not.toBeVisible();
 
 	expect(await page.evaluate(() => testEvents.length)).toBe(1);
 
@@ -65,8 +68,8 @@ test("can use .activateGroup() and .clearGroup()", async ({ page }) => {
 		ui.activateGroup(0);
 	});
 
-	await expect(page.locator("text=GroupB")).not.toBeVisible();
-	await expect(page.locator("text=GroupA")).toBeVisible();
+	await expect(groupB).not.toBeVisible();
+	await expect(groupA).toBeVisible();
 
 	expect(await page.evaluate(() => testEvents.length)).toBe(2);
 
@@ -74,8 +77,8 @@ test("can use .activateGroup() and .clearGroup()", async ({ page }) => {
 		ui.clearGroup();
 	});
 
-	await expect(page.locator("text=GroupB")).toBeVisible();
-	await expect(page.locator("text=GroupA")).toBeVisible();
+	await expect(groupB).toBeVisible();
+	await expect(groupA).toBeVisible();
 });
 
 test("can use .activateGroup() from a <a> click event", async ({ page }) => {
@@ -128,17 +131,18 @@ test("can use .activateGroup() from a <a> click event", async ({ page }) => {
 		});
 	});
 
-	const content = page.locator(".findkit--content");
+	const groupA = page.locator(".findkit--group-title", { hasText: "GroupA" });
+	const groupB = page.locator(".findkit--group-title", { hasText: "GroupB" });
 
-	await expect(content.locator("text=GroupB")).not.toBeVisible();
-	await expect(content.locator("text=GroupA")).toBeVisible();
+	await expect(groupB).not.toBeVisible();
+	await expect(groupA).toBeVisible();
 
 	await page.locator(".findkit--hit").first().waitFor({ state: "visible" });
 
 	await page.locator("a.tab.group-b").click();
 
-	await expect(content.locator("text=GroupB")).toBeVisible();
-	await expect(content.locator("text=GroupA")).not.toBeVisible();
+	await expect(groupB).toBeVisible();
+	await expect(groupA).not.toBeVisible();
 
 	await page.locator(".findkit--hit").first().waitFor({ state: "visible" });
 
