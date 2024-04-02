@@ -29,7 +29,6 @@ import {
 	createSlotComponent,
 	useSlotContext,
 } from "./slots-core";
-import { createTranslator } from "./translations";
 import { View, cn, isProd, scrollToTop } from "./utils";
 
 export function FindkitProvider(props: {
@@ -37,20 +36,22 @@ export function FindkitProvider(props: {
 	engine: SearchEngine;
 	slots?: Partial<Slots>;
 }) {
-	const state = useSnapshot(props.engine.state);
-	const translations = state.ui.translations;
+	const { engine } = props;
+	const { lang, translations } = useSnapshot(engine.state).ui;
 	const focusRef = useRef<FocusRef>({});
 
 	const context = useMemo(() => {
 		const value: FindkitContextType = {
-			engine: props.engine,
-			translator: createTranslator(state.ui.lang, translations),
+			engine,
+			// Always create new translator function identity when the lang or translations change.
+			// New identity is needed to trigger re-render of the components that use the translator.
+			translator: engine.createTranslator({ lang, translations }),
 			slots: props.slots ?? {},
 			focusRef,
 		};
 
 		return value;
-	}, [props.engine, props.slots, state.ui.lang, translations]);
+	}, [engine, props.slots, lang, translations]);
 
 	return (
 		<FindkitContext.Provider value={context}>
@@ -134,8 +135,7 @@ function BackLink(props: { children?: ReactNode }) {
 	}
 
 	return (
-		// TODO: translate
-		<View as="nav" cn="nav" aria-label="Search Group">
+		<View as="nav" cn="nav" aria-label={t("aria-label-search-group-nav")}>
 			<View
 				as="a"
 				{...kbAttrs}
@@ -165,6 +165,7 @@ function GroupTitle(props: {
 	total: number;
 	children?: ReactNode;
 }) {
+	const t = useTranslator();
 	if (!props.children && !props.title) {
 		return null;
 	}
@@ -180,8 +181,7 @@ function GroupTitle(props: {
 						{props.total > 0 ? (
 							<span
 								aria-hidden
-								// TODO Translate
-								title="Total results in the group"
+								title={t("total-search-results-in-group")}
 								className={cn("group-title-total")}
 							>
 								{props.total}
@@ -256,15 +256,12 @@ const HitSlot = createSlotComponent("Hit", {
 			);
 		},
 		Highlight(props) {
+			const t = useTranslator();
 			const context = useSlotContext("Hit");
 			const highlight = props.highlight ?? context.hit.highlight;
 
 			return (
-				<View
-					cn="highlight"
-					// TODO translate
-					aria-label="Search hit highlights"
-				>
+				<View cn="highlight" aria-label={t("aria-label-highlights")}>
 					<ClickableHighlights
 						higlights={highlight}
 						href={context.hit.url}
@@ -274,14 +271,15 @@ const HitSlot = createSlotComponent("Hit", {
 			);
 		},
 		URLLink(props) {
+			const t = useTranslator();
 			const context = useSlotContext("Hit");
 			const href = props.href ?? context.hit.url;
+
 			return (
 				<View
 					as="a"
 					cn={["hit-url", "link"]}
-					// TODO translate
-					aria-label={`Search hit URL: ${href}`}
+					aria-label={t("aria-label-hit-url", { href })}
 					href={href}
 					// Duplicated link. Skip from tab order for cleaner tab navigation
 					// but keep for screen readers so it can announce the URL.
@@ -359,6 +357,7 @@ function ClickableHighlights(props: {
 	lang: string | undefined;
 	href: string;
 }) {
+	const t = useTranslator();
 	const links = useMemo(() => {
 		const dom = new DOMParser().parseFromString(props.higlights, "text/html");
 		const vdom: ReactNode[] = [];
@@ -375,9 +374,8 @@ function ClickableHighlights(props: {
 
 				vdom.push(
 					<View
-						// TODO translate
-						title={`Highlight page content around "${words}"`}
-						aria-label={`Highlight page content around "${words}"`}
+						title={t("aria-label-highlight-link", { words })}
+						aria-label={t("aria-label-highlight-link", { words })}
 						lang={props.lang}
 						as="a"
 						cn="em"
@@ -403,7 +401,7 @@ function ClickableHighlights(props: {
 		}
 
 		return vdom;
-	}, [props.higlights, props.href, props.lang]);
+	}, [props.higlights, props.href, props.lang, t]);
 
 	return <View lang={props.lang}>{links}</View>;
 }
@@ -413,6 +411,7 @@ function Hit(props: {
 	groupId: string;
 	containerRef: ReturnType<typeof useSearchMoreOnReveal> | undefined;
 }) {
+	const t = useTranslator();
 	const engine = useSearchEngine();
 	const ref = useRef<HTMLElement>();
 
@@ -455,11 +454,9 @@ function Hit(props: {
 	return (
 		<View
 			ref={refCallback}
-			// ref={props.containerRef}
 			key={props.hit.url}
 			role="group"
-			// TODO translate
-			aria-label={`Search result ${props.hit.index + 1}`}
+			aria-label={t("aria-label-hit", { number: props.hit.index + 1 })}
 			cn={{ hit: true, "superwords-match": props.hit.superwordsMatch }}
 			data-fdk-score={props.hit.score}
 			data-hit-id={hitId}
@@ -533,12 +530,7 @@ const GroupSlot = createSlotComponent("Group", {
 			const title = props.title ?? context.title;
 
 			return (
-				<View
-					as="nav"
-					cn="nav"
-					// TODO translate
-					aria-label="Search group"
-				>
+				<View as="nav" cn="nav" aria-label={t("aria-label-search-group-nav")}>
 					{context.total === context.fetchedHits ? (
 						<View
 							cn={["group-all-results-shown", "group-header-footer-spacing"]}
@@ -571,6 +563,7 @@ const GroupSlot = createSlotComponent("Group", {
 });
 
 function MultiGroupResults() {
+	const t = useTranslator();
 	const results = useResults();
 	const groupOrder = useSearchEngineState().groupOrder;
 
@@ -607,8 +600,9 @@ function MultiGroupResults() {
 						key={groupResults.id}
 						cn="group"
 						as="section"
-						// TODO translate
-						aria-label={`Search result group with ${groupResults.total} hits`}
+						aria-label={t("aria-label-group-hit-total", {
+							total: groupResults.total,
+						})}
 						data-group-id={groupResults.id}
 					>
 						<GroupSlot
@@ -659,17 +653,13 @@ const ResultsSlot = createSlotComponent("Results", {
 		},
 
 		Footer(props) {
+			const t = useTranslator();
 			const slot = useSlotContext("Results");
 
 			const allResultsLoaded = slot.fetchedHits === slot.total;
 
 			return (
-				<View
-					as="nav"
-					cn="footer"
-					// TODO translate
-					aria-label="Search more"
-				>
+				<View as="nav" cn="footer" aria-label={t("load-more")}>
 					<FooterContent
 						groupId={slot.id}
 						allResultsLoaded={allResultsLoaded}
@@ -792,6 +782,7 @@ function FooterContent(props: {
 }
 
 export function ResultsContent() {
+	const t = useTranslator();
 	const state = useSearchEngineState();
 	const engine = useSearchEngine();
 	const view = useView();
@@ -800,14 +791,13 @@ export function ResultsContent() {
 
 	let label;
 
-	// TODO translate
 	if (groupCount === 1) {
-		label = "Search results";
+		label = t("single-search-results-heading");
 	} else {
 		label =
 			view === "groups"
-				? `Search results for ${groupCount} groups.`
-				: `Search results for the selected group`;
+				? t("aria-live-group-navigation-search-multiple-groups", { groupCount })
+				: t("aria-live-group-navigation-search-selected-group");
 	}
 
 	return (
@@ -828,10 +818,7 @@ export function ResultsContent() {
 				<FetchError />
 				<SlotCatchBoundary name="Content" props={{}}>
 					{state.messages.length > 0 && (
-						<section
-							// TODO translate
-							aria-label="Findkit messages"
-						>
+						<section aria-label={t("aria-label-findkit-messages")}>
 							{state.messages.map((m) => (
 								<View
 									cn="message"

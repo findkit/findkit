@@ -32,12 +32,12 @@ import { listen } from "./resources";
 
 function useFormProps() {
 	const engine = useSearchEngine();
+	const t = useTranslator();
 
 	return {
 		role: "search",
 		id: engine.getUniqId("form"),
-		// TODO translate
-		["aria-label"]: "Search form",
+		["aria-label"]: t("aria-label-search-form"),
 	};
 }
 
@@ -198,6 +198,10 @@ function SearchInput(props: { placeholder?: string; icon?: ReactNode }) {
 	const t = useTranslator();
 	const state = useSearchEngineState();
 	const engine = useSearchEngine();
+	let description = t("sr-search-instructions");
+	if (engine.modal) {
+		description = t("sr-search-instructions-modal");
+	}
 
 	return (
 		<View cn="search-input-wrap">
@@ -205,7 +209,7 @@ function SearchInput(props: { placeholder?: string; icon?: ReactNode }) {
 				as="input"
 				autoFocus={engine.modal}
 				placeholder={props.placeholder}
-				aria-description={t("sr-search-instructions")}
+				aria-description={description}
 				cn="search-input"
 				type="search"
 				ref={inputRef}
@@ -222,8 +226,7 @@ function SearchInput(props: { placeholder?: string; icon?: ReactNode }) {
 					}
 				}}
 			>
-				{/* TODO translate */}
-				Submit search
+				{t("submit-search")}
 			</View>
 			<Spinner />
 			<View
@@ -283,6 +286,7 @@ function Modal() {
 	const state = useSearchEngineState();
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const containerKbAttrs = useContainerKeyboardAttributes();
+	const t = useTranslator();
 	const formProps = useFormProps();
 
 	const show = state.status !== "closed";
@@ -321,8 +325,7 @@ function Modal() {
 	const header = state.header ? (
 		<View
 			as="section"
-			// TODO translate
-			aria-label="Search controls"
+			aria-label={t("aria-label-search-controls")}
 			cn={{
 				header: true,
 				"header-hidden": isScrollingDown,
@@ -416,6 +419,7 @@ function useScrollRestore(containerRef: React.RefObject<Element | null>) {
 }
 
 export function Plain() {
+	const t = useTranslator();
 	const engine = useSearchEngine();
 	const state = useSearchEngineState();
 	const containerKbAttrs = useContainerKeyboardAttributes();
@@ -431,11 +435,7 @@ export function Plain() {
 			name="Header"
 			props={{ Input: SearchInput, CloseButton: CloseButton }}
 		>
-			<View
-				as="section"
-				// TODO translate
-				aria-label="Search controls"
-			>
+			<View as="section" aria-label={t("aria-label-search-controls")}>
 				<SearchInput />
 			</View>
 		</SlotCatchBoundary>
@@ -446,7 +446,6 @@ export function Plain() {
 	return (
 		<View
 			as="form"
-			// TODO translate and proper text
 			{...formProps}
 			{...containerKbAttrs}
 			ref={containerRef}
