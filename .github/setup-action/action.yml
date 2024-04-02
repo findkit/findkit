@@ -1,5 +1,5 @@
 name: "Monorepo setup"
-descriptions: "Setup pnpm and caches"
+description: "Setup pnpm and caches"
 inputs:
   cache-key:
     description: "Key to cache"
