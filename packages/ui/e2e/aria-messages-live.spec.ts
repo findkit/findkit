@@ -47,7 +47,7 @@ test("reads loading message", async ({ page }) => {
 
 	await page.keyboard.press("Enter");
 
-	await expect(ariaLive).toHaveText("Loading results...");
+	await expect(ariaLive).toHaveText("Loading search results...");
 
 	await expect(ariaLive).toHaveText(
 		"3 results found. Focus first result with shift enter",

@@ -22,7 +22,12 @@ import {
 	createMemoryBackend,
 } from "./router";
 import { Emitter, FindkitUIEvents, lazyValue } from "./emitter";
-import { TranslationStrings } from "./translations";
+import {
+	BASE_TRANSLATIONS,
+	TRANSLATIONS,
+	TranslationStrings,
+	Translator,
+} from "./translations";
 import { listen, Resources } from "./resources";
 import { Filter } from "./filter-type";
 import {
@@ -36,6 +41,15 @@ import { assertNotNil } from "@valu/assert";
 
 export const DEFAULT_HIGHLIGHT_LENGTH = 250;
 export const DEFAULT_PREVIEW_SIZE = 5;
+
+function renderTranslation(
+	msg: string,
+	data?: Record<string, string | number>,
+) {
+	return msg.replace(/{{([^\}]+)}}/g, (_, key) => {
+		return data?.[key]?.toString() ?? "[MISSING]";
+	});
+}
 
 /**
  * Get the parent link element. Used to detect what link was clicked when
@@ -1247,6 +1261,31 @@ export class SearchEngine {
 		}
 	}
 
+	createTranslator(options: {
+		lang: string;
+		translations: { [lang: string]: Partial<TranslationStrings> };
+	}): Translator {
+		const { lang, translations } = options;
+		// prefer locale like "en-US" but fallback to "en" if there is not US
+		// specific translations
+		const short = lang.trim().toLowerCase().slice(0, 2);
+
+		return (key, data) => {
+			const translation =
+				translations[lang]?.[key] ||
+				translations[short]?.[key] ||
+				TRANSLATIONS[lang]?.[key] ||
+				TRANSLATIONS[short]?.[key] ||
+				BASE_TRANSLATIONS[key];
+
+			if (translation) {
+				return renderTranslation(translation, data);
+			}
+
+			return `[${key} not translated]`;
+		};
+	}
+
 	private PRIVATE_selectKeyboardCursor() {
 		// Find the currently selected item
 		const item = this.PRIVATE_container.querySelector(`[data-kb-current]`);
@@ -2232,7 +2271,8 @@ export class SearchEngine {
 	}
 
 	private PRIVATE_announceResults() {
-		// TODO translate messages
+		const t = this.createTranslator(this.state.ui);
+
 		this.PRIVATE_checkIfCanAnnounceResults({ now: true });
 		if (!this.state.canAnnounceResults) {
 			return;
@@ -2241,7 +2281,7 @@ export class SearchEngine {
 		const terms = (this.PRIVATE_throttlingTerms || this.state.usedTerms) ?? "";
 
 		if (this.state.status === "fetching") {
-			this.PRIVATE_announce("Loading results...");
+			this.PRIVATE_announce(t("aria-live-loading-results"));
 			this.events.once("fetch-done", () => {
 				// fetch-done fires while still in fetching state.
 				// Fire after a timeout to avoid infinite loop
@@ -2254,7 +2294,9 @@ export class SearchEngine {
 
 		if (terms.length < this.PRIVATE_minTerms) {
 			this.PRIVATE_announce(
-				`Too few search terms. Minimum ${this.PRIVATE_minTerms} characters.`,
+				t("aria-live-too-few-search-terms", {
+					minTerms: this.PRIVATE_minTerms,
+				}),
 			);
 			return;
 		}
@@ -2272,17 +2314,24 @@ export class SearchEngine {
 				: undefined;
 			const total = groupTotal ?? allTotal;
 
-			this.PRIVATE_announce(`${total} results found.`);
+			this.PRIVATE_announce(t("aria-live-total-results", { total }));
 			if (total > 0) {
-				this.PRIVATE_announce(`Focus first result with shift enter`);
+				this.PRIVATE_announce(
+					t("aria-live-focus-search-results-with-shift-enter"),
+				);
 			}
 		} else {
 			const groupCount = this.state.usedGroupDefinitions.length;
 			this.PRIVATE_announce(
-				`${allTotal} results found in ${groupCount} groups.`,
+				t("aria-live-group-result-details", {
+					groupCount,
+					allTotal,
+				}),
 			);
 			if (allTotal > 0) {
-				this.PRIVATE_announce(`Focus first result with shift enter`);
+				this.PRIVATE_announce(
+					t("aria-live-focus-search-results-with-shift-enter"),
+				);
 			}
 		}
 	}
