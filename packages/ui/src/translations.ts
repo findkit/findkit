@@ -156,7 +156,7 @@ export interface TranslationStrings {
 	"aria-label-group-hit-total": string;
 
 	/**
-	 *Title for message box from the server which shows the
+	 * Title for the message box from the server which shows the
 	 * "Powered by Findkit" for free plans
 	 */
 	"aria-label-findkit-messages": string;
