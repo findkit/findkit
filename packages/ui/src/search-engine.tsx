@@ -411,11 +411,27 @@ export class FindkitURLSearchParams {
 	private PRIVATE_params: URLSearchParams;
 	private PRIVATE_instanceId: string;
 	private PRIVATE_customDataPrefix: string;
+	private PRIVATE_separator: string;
 
-	constructor(instanceId: string, search: string) {
-		this.PRIVATE_instanceId = instanceId;
-		this.PRIVATE_params = new URLSearchParams(search);
-		this.PRIVATE_customDataPrefix = instanceId + ".c.";
+	constructor(options: {
+		instanceId: string;
+		search: string;
+		separator: string;
+	}) {
+		this.PRIVATE_instanceId = options.instanceId;
+		this.PRIVATE_params = new URLSearchParams(options.search);
+		this.PRIVATE_separator = options.separator;
+
+		// ex. fdk.c.
+		this.PRIVATE_customDataPrefix =
+			this.PRIVATE_instanceId +
+			this.PRIVATE_separator +
+			"c" +
+			this.PRIVATE_separator;
+	}
+
+	private PRIVATE_key(key: "id" | "q") {
+		return this.PRIVATE_instanceId + this.PRIVATE_separator + key;
 	}
 
 	setCustomData(data: CustomRouterData) {
@@ -460,24 +476,22 @@ export class FindkitURLSearchParams {
 	}
 
 	getGroupId() {
-		return (
-			this.PRIVATE_params.get(this.PRIVATE_instanceId + "_id")?.trim() ||
-			undefined
-		);
+		return this.PRIVATE_params.get(this.PRIVATE_key("id"))?.trim() || undefined;
 	}
 
 	next(fn: (params: FindkitURLSearchParams) => void) {
-		const next = new FindkitURLSearchParams(
-			this.PRIVATE_instanceId,
-			this.PRIVATE_params.toString(),
-		);
+		const next = new FindkitURLSearchParams({
+			instanceId: this.PRIVATE_instanceId,
+			search: this.PRIVATE_params.toString(),
+			separator: this.PRIVATE_separator,
+		});
 		fn(next);
 		return next;
 	}
 
 	clearGroupId() {
 		return this.next((next) => {
-			next.PRIVATE_params.delete(next.PRIVATE_instanceId + "_id");
+			next.PRIVATE_params.delete(next.PRIVATE_key("id"));
 		});
 	}
 
@@ -486,7 +500,7 @@ export class FindkitURLSearchParams {
 			for (const key of this.PRIVATE_params.keys()) {
 				if (
 					key.startsWith(this.PRIVATE_customDataPrefix) ||
-					key.startsWith(this.PRIVATE_instanceId + "_")
+					key.startsWith(this.PRIVATE_instanceId + this.PRIVATE_separator)
 				) {
 					next.PRIVATE_params.delete(key);
 				}
@@ -496,22 +510,22 @@ export class FindkitURLSearchParams {
 
 	setGroupId(id: string) {
 		return this.next((next) => {
-			next.PRIVATE_params.set(next.PRIVATE_instanceId + "_id", id);
+			next.PRIVATE_params.set(next.PRIVATE_key("id"), id);
 		});
 	}
 
 	setTerms(terms: string) {
 		return this.next((next) => {
-			next.PRIVATE_params.set(next.PRIVATE_instanceId + "_q", terms.trim());
+			next.PRIVATE_params.set(next.PRIVATE_key("q"), terms.trim());
 		});
 	}
 
 	isActive() {
-		return this.PRIVATE_params.has(this.PRIVATE_instanceId + "_q");
+		return this.PRIVATE_params.has(this.PRIVATE_key("q"));
 	}
 
 	getTerms(): string | undefined {
-		return this.PRIVATE_params.get(this.PRIVATE_instanceId + "_q")?.trim();
+		return this.PRIVATE_params.get(this.PRIVATE_key("q"))?.trim();
 	}
 
 	toString() {
@@ -549,6 +563,7 @@ export interface SearchEngineOptions {
 	manageScroll?: boolean;
 	closeOnOutsideClick?: boolean;
 	router?: "memory" | "querystring" | "hash" | RouterBackend<{}>;
+	separator?: string;
 
 	/**
 	 * Monitor <html lang> changes
@@ -596,7 +611,7 @@ interface GlobalHistoryState {
  * The data flow is as follows:
  *   - User types in the input
  *   - The input events are throttled and the search term is copied to the query
- *    string (fdk_q by default)
+ *    string (fdk.q by default)
  *   - A query string change is deteted and the search is triggered
  *   - Once the search completes the results are put into the Valtio state with
  *     the used search terms
@@ -638,6 +653,7 @@ export class SearchEngine {
 	private PRIVATE_inert: string | undefined;
 	private PRIVATE_monitorDocumentLangActive: boolean | undefined;
 	private PRIVATE_manageScroll: boolean | undefined;
+	readonly separator: string;
 
 	private PRIVATE_defaultCustomRouteData: CustomRouterData;
 
@@ -653,6 +669,7 @@ export class SearchEngine {
 		this.PRIVATE_shadowDom = options.shadowDom ?? true;
 		this.PRIVATE_inert = options.inert;
 		this.closeOnOutsideClick = options.closeOnOutsideClick ?? false;
+		this.separator = options.separator ?? ".";
 
 		if (typeof window === "undefined") {
 			this.PRIVATE_router = {
@@ -1130,10 +1147,11 @@ export class SearchEngine {
 			);
 		}
 
-		const initialSearchParams = new FindkitURLSearchParams(
-			this.instanceId,
-			this.PRIVATE_router.getSearchParamsString(),
-		);
+		const initialSearchParams = new FindkitURLSearchParams({
+			instanceId: this.instanceId,
+			search: this.PRIVATE_router.getSearchParamsString(),
+			separator: this.separator,
+		});
 
 		this.state.currentGroupId = initialSearchParams.getGroupId();
 
@@ -1319,10 +1337,11 @@ export class SearchEngine {
 			return this.PRIVATE_findkitParamsCache.value;
 		}
 
-		const value = new FindkitURLSearchParams(
-			this.instanceId,
-			this.state.searchParams,
-		);
+		const value = new FindkitURLSearchParams({
+			instanceId: this.instanceId,
+			search: this.state.searchParams,
+			separator: this.separator,
+		});
 
 		this.PRIVATE_findkitParamsCache = {
 			str: this.state.searchParams,

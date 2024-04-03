@@ -105,18 +105,18 @@ test("can bind .open(terms) to a button", async ({ page }) => {
 	await hits.first().waitFor({ state: "visible" });
 
 	await expect(input).toHaveValue("valu");
-	await expect(page).toHaveURL(/fdk_q=valu/);
+	await expect(page).toHaveURL(/fdk.q=valu/);
 
 	await page.keyboard.press("Escape");
 
-	await expect(page).not.toHaveURL(/fdk_q=valu/);
+	await expect(page).not.toHaveURL(/fdk.q=valu/);
 	await expect(input).not.toBeVisible();
 
 	await button.click();
 	await hits.first().waitFor({ state: "visible" });
 
 	await expect(input).toHaveValue("valu");
-	await expect(page).toHaveURL(/fdk_q=valu/);
+	await expect(page).toHaveURL(/fdk.q=valu/);
 });
 
 test("can customize fetch count", async ({ page }) => {

@@ -22,14 +22,14 @@ test("can use memory routing", async ({ page }) => {
 	const input = page.locator('[aria-label="Search input"]');
 
 	await hits.first().waitFor({ state: "visible" });
-	await expect(page).not.toHaveURL(/fdk_q/);
+	await expect(page).not.toHaveURL(/fdk\.q/);
 
 	const firstResults = await hits.first().textContent();
 
 	await input.fill("wordpress");
 
 	await expect(hits.first()).not.toHaveText(firstResults!);
-	await expect(page).not.toHaveURL(/fdk_q/);
+	await expect(page).not.toHaveURL(/fdk\.q/);
 });
 
 test("can open modal from link", async ({ page }) => {
@@ -127,7 +127,7 @@ test("updates from history.pushState()", async ({ page, browserName }) => {
 	await page.keyboard.press(tab);
 
 	await page.evaluate(async () => {
-		history.pushState(undefined, "", "?fdk_q=wordpress");
+		history.pushState(undefined, "", "?fdk.q=wordpress");
 	});
 
 	await expect
@@ -179,18 +179,18 @@ test("modal updates url", async ({ page }) => {
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
-	await expect.poll(() => new URL(page.url()).search).toEqual("?fdk_q=a");
+	await expect.poll(() => new URL(page.url()).search).toEqual("?fdk.q=a");
 
 	const allLink = page.locator("text=Show more search results");
 	await allLink.first().click();
 
 	await expect
 		.poll(() => new URL(page.url()).search)
-		.toEqual("?fdk_q=a&fdk_id=group-1");
+		.toEqual("?fdk.q=a&fdk.id=group-1");
 
 	await page.goBack();
 
-	await expect.poll(() => new URL(page.url()).search).toEqual("?fdk_q=a");
+	await expect.poll(() => new URL(page.url()).search).toEqual("?fdk.q=a");
 
 	await page.goBack();
 
@@ -249,14 +249,14 @@ test("container only replaces the url", async ({ page }) => {
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
-	await expect.poll(() => new URL(page.url()).search).toEqual("?fdk_q=a");
+	await expect.poll(() => new URL(page.url()).search).toEqual("?fdk.q=a");
 
 	const allLink = page.locator("text=Show more search results");
 	await allLink.first().click();
 
 	await expect
 		.poll(() => new URL(page.url()).search)
-		.toEqual("?fdk_q=a&fdk_id=group-1");
+		.toEqual("?fdk.q=a&fdk.id=group-1");
 
 	// No history updates. Back button moves used to back the initial /start page
 	await page.goBack();

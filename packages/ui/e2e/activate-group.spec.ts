@@ -82,7 +82,7 @@ test("can use .activateGroup() and .clearGroup()", async ({ page }) => {
 });
 
 test("can use .activateGroup() from a <a> click event", async ({ page }) => {
-	await page.goto(staticEntry("/dummy?fdk_q=a&fdk_id=group-a"));
+	await page.goto(staticEntry("/dummy?fdk.q=a&fdk.id=group-a"));
 
 	await page.evaluate(async () => {
 		const { FindkitUI, html, useResults } = MOD;

@@ -57,7 +57,7 @@ test("refresh restores search results", async ({ page }) => {
 });
 
 test("can navigate directly to a group results", async ({ page }) => {
-	await page.goto(staticEntry("/two-groups?fdk_q=mikko&fdk_id=valu"));
+	await page.goto(staticEntry("/two-groups?fdk.q=mikko&fdk.id=valu"));
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
@@ -66,7 +66,7 @@ test("can navigate directly to a group results", async ({ page }) => {
 });
 
 test("can navigate directly to the second group results", async ({ page }) => {
-	await page.goto(staticEntry("/two-groups?fdk_q=valu&fdk_id=statement"));
+	await page.goto(staticEntry("/two-groups?fdk.q=valu&fdk.id=statement"));
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
@@ -196,7 +196,7 @@ test("fetches only once when navigating directly to results", async ({
 
 		await ui.preload();
 
-		history.replaceState(null, "", "?fdk_q=valu&fdk_id=valu");
+		history.replaceState(null, "", "?fdk.q=valu&fdk.id=valu");
 	});
 
 	async function getCount() {
