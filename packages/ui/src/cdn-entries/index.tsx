@@ -502,6 +502,7 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	closeOnOutsideClick?: boolean;
 	backdrop?: boolean;
 	inert?: string;
+	separator?: string;
 
 	/**
 	 * See {@link Slots}
@@ -848,7 +849,7 @@ export class FindkitUI<
 		}
 
 		const params = new URLSearchParams(search);
-		return params.has(this.id + "_q");
+		return params.has(this.id + ".q");
 	}
 
 	preload = async () => {

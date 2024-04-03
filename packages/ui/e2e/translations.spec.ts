@@ -257,7 +257,7 @@ test("emits language events", async ({ page }) => {
 test("does not cause extra fetches when setting params on 'lang' event", async ({
 	page,
 }) => {
-	await page.goto(staticEntry("/language-event?fdk_q=test"));
+	await page.goto(staticEntry("/language-event?fdk.q=test"));
 	const hits = page.locator(".findkit--hit");
 	await expect(hits.first()).toBeVisible();
 

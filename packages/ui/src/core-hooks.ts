@@ -77,8 +77,13 @@ export function useFindkitURLSearchParams(): FindkitURLSearchParams {
 	const state = useSearchEngineState();
 	const engine = useSearchEngine();
 	return useMemo(
-		() => new FindkitURLSearchParams(engine.instanceId, state.searchParams),
-		[engine.instanceId, state.searchParams],
+		() =>
+			new FindkitURLSearchParams({
+				instanceId: engine.instanceId,
+				search: state.searchParams,
+				separator: engine.separator,
+			}),
+		[engine.instanceId, state.searchParams, engine.separator],
 	);
 }
 

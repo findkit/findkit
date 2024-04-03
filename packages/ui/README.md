@@ -35,7 +35,7 @@ pnpm dev
 
 This will serve the files from the [e2e](e2e) directory.
 
-Try <http://localhost:28104/static/single-group?fdk_q=wordpress> for example.
+Try <http://localhost:28104/static/single-group?fdk.q=wordpress> for example.
 
 ### E2E Tests with Playwright
 

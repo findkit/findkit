@@ -326,7 +326,7 @@ test("emits custom-router-data on history object replaceState", async ({
 	await hits.first().waitFor({ state: "visible" });
 
 	await page.evaluate(async () => {
-		history.replaceState({}, "", "?fdk.c.ding=dong&fdk_q=boots");
+		history.replaceState({}, "", "?fdk.c.ding=dong&fdk.q=boots");
 	});
 
 	const events = await page.evaluate(async () => (window as any).uiEvents);
@@ -357,8 +357,8 @@ test("emits custom-router-data on history object pushState and back navigation",
 	await hits.first().waitFor({ state: "visible" });
 
 	await page.evaluate(async () => {
-		history.pushState({}, "", "?fdk.c.ding=dong&fdk_q=boots");
-		history.pushState({}, "", "?fdk.c.ding=dang&fdk_q=boots");
+		history.pushState({}, "", "?fdk.c.ding=dong&fdk.q=boots");
+		history.pushState({}, "", "?fdk.c.ding=dang&fdk.q=boots");
 	});
 
 	await page.goBack();

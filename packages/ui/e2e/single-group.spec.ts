@@ -180,7 +180,7 @@ test("can navigate to hit and come back retaining url and input value", async ({
 
 	await page.goBack();
 
-	await expect(page).toHaveURL(/fdk_q=wordpress/);
+	await expect(page).toHaveURL(/fdk.q=wordpress/);
 	await expect.poll(async () => input.inputValue()).toBe("wordpress");
 });
 
