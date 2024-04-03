@@ -65,7 +65,7 @@ test("modal: can restore the scroll position when using back button", async ({
 	await routeMocks(page);
 	await page.goto(staticEntry("/single-group-v2"));
 	await testModal(page);
-	expect(page.url()).toContain("?fdk.q=a");
+	expect(page.url()).toContain("?fdk_q=a");
 });
 
 test("slowly loading css does not break modal scroll restoration", async ({
@@ -82,7 +82,7 @@ test("slowly loading css does not break modal scroll restoration", async ({
 	await routeMocks(page);
 	await page.goto(staticEntry("/single-group-v2"));
 	await testModal(page);
-	expect(page.url()).toContain("?fdk.q=a");
+	expect(page.url()).toContain("?fdk_q=a");
 });
 
 test("custom container: can restore the scroll position when using back button", async ({
@@ -91,7 +91,7 @@ test("custom container: can restore the scroll position when using back button",
 	await routeMocks(page);
 	await page.goto(staticEntry("/slowly-loading"));
 	await testContainer(page);
-	expect(page.url()).toContain("?fdk.q=a");
+	expect(page.url()).toContain("?fdk_q=a");
 });
 
 test("modal with hash router: can restore the scroll position when using back button", async ({
@@ -100,7 +100,7 @@ test("modal with hash router: can restore the scroll position when using back bu
 	await routeMocks(page);
 	await page.goto(staticEntry("/single-group-v2?router=hash"));
 	await testModal(page);
-	expect(page.url()).toContain("#fdk.q=a");
+	expect(page.url()).toContain("#fdk_q=a");
 });
 
 test("custom container with hash router: can restore the scroll position when using back button", async ({
@@ -109,7 +109,7 @@ test("custom container with hash router: can restore the scroll position when us
 	await routeMocks(page);
 	await page.goto(staticEntry("/slowly-loading?router=hash"));
 	await testContainer(page);
-	expect(page.url()).toContain("#fdk.q=a");
+	expect(page.url()).toContain("#fdk_q=a");
 });
 
 test("restore scroll when going back from single group view with the browser back button", async ({
@@ -124,7 +124,7 @@ test("restore scroll when going back from single group view with the browser bac
 	const showMore = page.locator("text=Show more search results").first();
 
 	await page.goto(
-		staticEntry("/two-groups-v2?fdk.q=&minTerms=0&noShadowDom=1"),
+		staticEntry("/two-groups-v2?fdk_q=&minTerms=0&noShadowDom=1"),
 	);
 
 	await hits.first().waitFor({ state: "visible" });
@@ -139,7 +139,7 @@ test("restore scroll when going back from single group view with the browser bac
 
 	await showMore.click();
 
-	await expect.poll(() => page.url()).toContain("fdk.id=");
+	await expect.poll(() => page.url()).toContain("fdk_id=");
 
 	await page.goBack();
 

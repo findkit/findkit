@@ -849,7 +849,7 @@ export class FindkitUI<
 		}
 
 		const params = new URLSearchParams(search);
-		return params.has(this.id + ".q");
+		return params.has(this.id + "_q");
 	}
 
 	preload = async () => {

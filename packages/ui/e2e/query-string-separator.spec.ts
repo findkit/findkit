@@ -12,7 +12,7 @@ test("can customize query string name space separator", async ({ page }) => {
 
 		const ui = new FindkitUI({
 			publicToken: "test",
-			separator: "___",
+			separator: ".",
 			groups: [
 				{
 					title: "GroupA",
@@ -33,7 +33,7 @@ test("can customize query string name space separator", async ({ page }) => {
 
 	{
 		const url = new URL(page.url());
-		expect(url.search).toEqual("?fdk___q=test");
+		expect(url.search).toEqual("?fdk.q=test");
 	}
 
 	await page.locator('text="Show more search results"').first().click();
@@ -45,6 +45,6 @@ test("can customize query string name space separator", async ({ page }) => {
 
 	{
 		const url = new URL(page.url());
-		expect(url.search).toEqual("?fdk___q=test&fdk___id=group-a");
+		expect(url.search).toEqual("?fdk.q=test&fdk.id=group-a");
 	}
 });

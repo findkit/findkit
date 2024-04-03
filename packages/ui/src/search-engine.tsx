@@ -436,7 +436,7 @@ export class FindkitURLSearchParams {
 		this.PRIVATE_params = new URLSearchParams(options.search);
 		this.PRIVATE_separator = options.separator;
 
-		// ex. fdk.c.
+		// ex. fdk_c_
 		this.PRIVATE_customDataPrefix =
 			this.PRIVATE_instanceId +
 			this.PRIVATE_separator +
@@ -625,7 +625,7 @@ interface GlobalHistoryState {
  * The data flow is as follows:
  *   - User types in the input
  *   - The input events are throttled and the search term is copied to the query
- *    string (fdk.q by default)
+ *    string (fdk_q by default)
  *   - A query string change is deteted and the search is triggered
  *   - Once the search completes the results are put into the Valtio state with
  *     the used search terms
@@ -683,7 +683,13 @@ export class SearchEngine {
 		this.PRIVATE_shadowDom = options.shadowDom ?? true;
 		this.PRIVATE_inert = options.inert;
 		this.closeOnOutsideClick = options.closeOnOutsideClick ?? false;
-		this.separator = options.separator ?? ".";
+
+		// Default to "_" because it works with WordPress.
+		// For example Wordpress converts dots to underscores in query strings
+		// using a redirect.which break opening a page with existing search terms.
+		// Ex. https://wordpress.org/?what.the.fak
+		// WordPress is so popular that we must choose the defaults to work with it.
+		this.separator = options.separator ?? "_";
 
 		if (typeof window === "undefined") {
 			this.PRIVATE_router = {

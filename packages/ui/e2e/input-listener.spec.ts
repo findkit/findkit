@@ -34,7 +34,7 @@ test("can clear text with Cmd/Control+A and Backspace", async ({ page }) => {
 test("can clear input with Cmd/Control+A after opening predefined search from a link", async ({
 	page,
 }) => {
-	await page.goto(staticEntry("/dummy?fdk.q=boots"));
+	await page.goto(staticEntry("/dummy?fdk_q=boots"));
 
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({ publicToken: "pW1D0p0Dg" });
