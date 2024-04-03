@@ -298,17 +298,14 @@ function Modal() {
 	// Use delayed to keep the open body class until the animation is done
 	useEffect(() => {
 		const classList = document.body.classList;
-
-		// Just to be cleaner use the instance id only when not using the default one
-		const prefix =
-			engine.instanceId === "fdk" ? "findkit-ui" : `${engine.instanceId}`;
-
-		const open = `${prefix}-open`;
+		const prefixedClass = `${engine.instanceId}-open`;
 
 		if (delayed) {
-			classList.add(open);
+			classList.add(prefixedClass);
+			classList.add("findkit-ui-open");
 		} else {
-			classList.remove(open);
+			classList.remove(prefixedClass);
+			classList.remove("findkit-ui-open");
 		}
 	}, [delayed, engine.instanceId, show]);
 
