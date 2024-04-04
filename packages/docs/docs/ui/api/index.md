@@ -230,14 +230,12 @@ Automatically sets [`modal: false`](#modal) if not explicitly defined.
 
 ### `modal: boolean` {#modal}
 
+Open the search in a `<dialog>` overlaying the page. This is the default mode.
+
 Set to `false` to disable the modal mode. This makes sense only when used with
 a custom container with the [`container`](#container) option.
 
-This disables following:
-
-- Focus trapping
-- Open/close modes. It is always "open".
-- Scrolling in the container
+See the [`inert`](#inert) option for modal focus trapping behaviour customization.
 
 <Api page="ui.findkituioptions.mode" />
 
@@ -350,6 +348,35 @@ Defaults to `true`
 
 <Api page="ui.findkituioptions.buildinStyles" />
 
+### `separator: string` {#inert}
+
+_New in v1.0.0_
+
+Set namespacing separator for the query string. Eg. the `_` in `?fdk_q=`. Defaults to `"_"`. Used in the custom router keys as well.
+
+### `inert: string | boolean` {#inert}
+
+_New in v1.0.0_
+
+Control how the elements outside the modal are made [inert](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inert) when using [`modal: true`](#modal). An inert element is a element which cannot focused or accessed using a screen reader. This is used to trap the focus and screen readers inside the modal when it is open.
+
+- `inert: true`: Make all element outside the modal insert using the [`<dialog>.showModal()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) method.
+- `inert: string`: CSS selector to make the matching elements inert. The `<dialog>` is opened with the [`.open()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/open) method. Use when you want to put the search input outside the modal. See the [Offset modal pattern](/ui/patterns/embedding/offset).
+- `inert: false`: Do not make any elements inert.
+
+Defaults to `true`
+
+Example:
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<token>",
+	inert: ".content",
+});
+```
+
+<Api page="ui.findkituioptions.inert" />
+
 ## Methods {#methods}
 
 Following methods are available on the `FindkitUI` instance.
@@ -382,10 +409,6 @@ Open the modal from the given element or elements. Select can be a `Element`
 object or a CSS selector string. A cleanup function is returned which will
 unbind all the event listeners when called.
 
-Element is not added to the focus trap automatically. If the element is
-visible on the page when the modal is open [`.trapFocus()`](#trapFocus)
-should be manually called on the element.
-
 If the given element contains `data-clicked="true"` the modal will be opened
 immediately. This is useful on slow network situations when the user manages to
 click the open button before the code loads. Use inline JavaScript to add the
@@ -403,13 +426,14 @@ _The attribute handling was added in v0.17.0_
 
 ### `.trapFocus(selectorOrElement)` {#trapFocus}
 
-Add additional elements to the focus trap. For example if you want to add close
-button outside of the modal use this to make it keyboard accessible.
+** 🚨 Removed in v1.0.0!**
 
-A function is returned which will remove the element from the focus trap when
-invoked.
+Use the [`inert`](#inert) option instead.
 
-<Api page="ui.findkitui.trapFocus" />
+<strike>Add additional elements to the focus trap. For example if you want to add close
+button outside of the modal use this to make it keyboard accessible.</strike>
+
+<strike>A function is returned which will remove the element from the focus trap when invoked.</strike>
 
 ### `.setCustomRouterData(data)` {#setCustomRouterData}
 
