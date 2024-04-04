@@ -82,7 +82,7 @@ test("can lazily bind input", async ({ page, browserName }) => {
 test("external input gets focus on load if the url contains search terms", async ({
 	page,
 }) => {
-	await page.goto(staticEntry("/external-input?fdk.q=test"));
+	await page.goto(staticEntry("/external-input?fdk_q=test"));
 	const input = page.locator("#external-input");
 	await expect(input).toBeFocused();
 	await expect(input).toHaveValue("test");
