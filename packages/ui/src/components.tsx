@@ -406,6 +406,16 @@ function ClickableHighlights(props: {
 	return <View lang={props.lang}>{links}</View>;
 }
 
+function isEqualWithoutHash(a: string, b: string) {
+	const urlA = new URL(a);
+	const urlB = new URL(b);
+
+	urlA.hash = "";
+	urlB.hash = "";
+
+	return urlA.toString() === urlB.toString();
+}
+
 function Hit(props: {
 	hit: SearchResultHit;
 	groupId: string;
@@ -436,6 +446,10 @@ function Hit(props: {
 		}
 
 		engine.saveVisitedHitId(hitId);
+
+		if (!isEqualWithoutHash(e.target.href, props.hit.url)) {
+			return;
+		}
 
 		engine.events.emit("hit-click", {
 			hit: props.hit,
