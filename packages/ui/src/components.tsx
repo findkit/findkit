@@ -435,10 +435,6 @@ function Hit(props: {
 			return;
 		}
 
-		if (e.target.href !== props.hit.url) {
-			return;
-		}
-
 		engine.saveVisitedHitId(hitId);
 
 		engine.events.emit("hit-click", {
