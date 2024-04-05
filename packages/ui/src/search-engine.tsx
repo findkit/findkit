@@ -711,9 +711,7 @@ export class SearchEngine {
 		this.PRIVATE_handleCustomInert();
 		this.PRIVATE_restoreFocusOnModalClose();
 
-		if (!options.container) {
-			this.PRIVATE_handleOutsideClick();
-		}
+		this.PRIVATE_handleOutsideClick();
 
 		this.PRIVATE_container = this.PRIVATE_createContainer(options.container);
 
@@ -808,34 +806,44 @@ export class SearchEngine {
 	}
 
 	private PRIVATE_handleOutsideClick() {
+		if (!this.modal) {
+			return;
+		}
+
 		if (this.closeOnOutsideClick !== true) {
+			console.log("no close on outside click");
 			return;
 		}
 
 		this.events.on("open", () => {
-			const unbind = listen(document, "click", (e) => {
-				if (!(e.target instanceof Element)) {
-					return;
-				}
+			setTimeout(() => {
+				// The open event is emitted during the the click event that opens the
+				// modal. So if we immediately bind click listener to Document element
+				// it will capture the ongoing click event and close the modal immediately.
+				// To work around this we wait for the next event loop tick to bind the click listener.
+				const unbind = listen(document, "click", (e) => {
+					if (!(e.target instanceof Element)) {
+						return;
+					}
 
-				const container =
-					this.container instanceof ShadowRoot
-						? this.container.host
-						: this.container;
+					const container =
+						this.container instanceof ShadowRoot
+							? this.container.host
+							: this.container;
 
-				if (
-					container === e.target ||
-					this.PRIVATE_getBoundInput(e.target) ||
-					this.container.contains(e.target)
-				) {
-					return;
-				}
+					if (
+						container === e.target ||
+						this.PRIVATE_getBoundInput(e.target) ||
+						this.container.contains(e.target)
+					) {
+						return;
+					}
 
-				this.close();
+					this.close();
+				});
+
+				this.events.once("close", unbind);
 			});
-
-			this.events.once("close", unbind);
-			this.events.once("dispose", unbind);
 		});
 	}
 

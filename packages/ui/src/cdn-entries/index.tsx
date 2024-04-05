@@ -848,7 +848,8 @@ export class FindkitUI<
 		}
 
 		const params = new URLSearchParams(search);
-		return params.has(this.id + "_q");
+		const sep = this.PRIVATE_options.separator ?? "_";
+		return params.has(this.id + sep + "q");
 	}
 
 	preload = async () => {
