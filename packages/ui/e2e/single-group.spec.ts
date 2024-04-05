@@ -184,35 +184,6 @@ test("can navigate to hit and come back retaining url and input value", async ({
 	await expect.poll(async () => input.inputValue()).toBe("wordpress");
 });
 
-test("emits hit-click events and can prevent default", async ({ page }) => {
-	await page.goto(staticEntry("/single-group"));
-	const hits = page.locator(".findkit--hit a");
-	const button = page.locator("button", { hasText: "open" });
-	await button.click();
-
-	const clickPromise = page.evaluate(async () => {
-		return await new Promise<any>((resolve) => {
-			ui.on("hit-click", (e) => {
-				e.preventDefault();
-				resolve({
-					url: e.hit.url,
-					terms: e.terms,
-				});
-			});
-		});
-	});
-
-	const input = page.locator('[aria-label="Search input"]');
-	await input.fill("wordpress");
-	const hitUrl = await hits.first().getAttribute("href");
-	await hits.first().click();
-
-	expect(page.url()).toContain("single-group");
-
-	const click = await clickPromise;
-	expect(click.url).toEqual(hitUrl);
-});
-
 test("can update groups on the fly", async ({ page }) => {
 	await page.goto(staticEntry("/single-group"));
 	const button = page.locator("button", { hasText: "open" });

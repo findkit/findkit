@@ -139,4 +139,33 @@ test.describe("focuses the input when coming back to search results", () => {
 
 		await expect(input).toBeFocused();
 	});
+
+	test("highlight link restores too", async ({ page }) => {
+		await routeMocks(page);
+		await page.goto(staticEntry("/single-group-v2"));
+
+		const input = page.locator("input");
+
+		await page.locator("button").click();
+		await input.fill("a");
+
+		const hitContainer = await scrollToHit(page, "Running Shoes");
+
+		const titleLink = hitContainer.locator("a").first();
+		const emLink = hitContainer.locator(".findkit--em").first();
+
+		await emLink.click();
+
+		await page.waitForLoadState("domcontentloaded");
+
+		await page.goBack();
+
+		await page.waitForLoadState("domcontentloaded");
+
+		await expect(titleLink).toBeFocused();
+
+		await page.reload();
+
+		await expect(input).toBeFocused();
+	});
 });
