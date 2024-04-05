@@ -95,8 +95,10 @@ test("closeOnOutsideClick works with open from toggle with inner element", async
 	const container = page.locator(".findkit--container").first();
 
 	await button.click();
+	await page.waitForTimeout(320);
 	await expect(container).toBeVisible();
 
 	await button.click();
+	await page.waitForTimeout(320);
 	await expect(container).not.toBeVisible();
 });
