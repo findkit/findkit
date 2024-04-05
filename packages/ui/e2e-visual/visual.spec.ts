@@ -13,7 +13,7 @@ async function gotoWithoutTrap(page: Page, path: string) {
 					return;
 				}
 
-				e.detail.data.options.trap = false;
+				e.detail.data.options.inert = false;
 			});
 		});
 	});

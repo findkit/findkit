@@ -569,9 +569,8 @@ export interface SearchEngineOptions {
 	params?: SearchParams;
 	infiniteScroll?: boolean;
 	container?: Element;
-	trap?: boolean;
 	modal?: boolean;
-	inert?: string;
+	inert?: string | boolean;
 	shadowDom?: boolean;
 	forceHistoryReplace?: boolean;
 	manageScroll?: boolean;
@@ -661,10 +660,9 @@ export class SearchEngine {
 
 	private PRIVATE_resources = new Resources();
 	private PRIVATE_container: Element | ShadowRoot;
-	private PRIVATE_trap: boolean | undefined;
-	readonly modal: boolean | undefined;
+	readonly modal: boolean;
 	private PRIVATE_shadowDom: boolean | undefined;
-	private PRIVATE_inert: string | undefined;
+	private PRIVATE_inert: string | boolean;
 	private PRIVATE_monitorDocumentLangActive: boolean | undefined;
 	private PRIVATE_manageScroll: boolean | undefined;
 	readonly separator: string;
@@ -678,10 +676,9 @@ export class SearchEngine {
 	constructor(options: SearchEngineOptions) {
 		this.PRIVATE_defaultCustomRouteData = options.defaultCustomRouterData ?? {};
 		this.PRIVATE_manageScroll = options.manageScroll;
-		this.PRIVATE_trap = options.trap;
-		this.modal = options.modal;
+		this.modal = options.modal ?? true;
 		this.PRIVATE_shadowDom = options.shadowDom ?? true;
-		this.PRIVATE_inert = options.inert;
+		this.PRIVATE_inert = options.inert ?? true;
 		this.closeOnOutsideClick = options.closeOnOutsideClick ?? false;
 
 		// Default to "_" because it works with WordPress.
@@ -711,8 +708,8 @@ export class SearchEngine {
 		this.publicToken = options.publicToken;
 		this.events = options.events;
 
-		this.PRIVATE_handleInert();
-		this.PRIVATE_restoreFocus();
+		this.PRIVATE_handleCustomInert();
+		this.PRIVATE_restoreFocusOnModalClose();
 
 		if (!options.container) {
 			this.PRIVATE_handleOutsideClick();
@@ -853,8 +850,8 @@ export class SearchEngine {
 	/**
 	 * Restore focus to the previously active element when the modal is closed
 	 */
-	PRIVATE_restoreFocus() {
-		if (this.PRIVATE_trap) {
+	PRIVATE_restoreFocusOnModalClose() {
+		if (!this.modal) {
 			return;
 		}
 
@@ -898,12 +895,18 @@ export class SearchEngine {
 		});
 	}
 
-	PRIVATE_handleInert() {
-		if (!this.PRIVATE_inert || this.PRIVATE_trap) {
+	/**
+	 * Handle setting custom inert elements
+	 */
+	PRIVATE_handleCustomInert() {
+		if (
+			typeof this.PRIVATE_inert !== "string" ||
+			this.PRIVATE_inert.trim() === ""
+		) {
 			return;
 		}
 
-		const inertSelector = this.PRIVATE_inert;
+		const inertSelector: string = this.PRIVATE_inert;
 
 		const inerts = new Set<HTMLElement>();
 
@@ -1029,7 +1032,7 @@ export class SearchEngine {
 				unbindEscListener();
 			});
 
-			if (this.PRIVATE_trap !== false) {
+			if (typeof this.PRIVATE_inert === "boolean" && this.PRIVATE_inert) {
 				this.PRIVATE_getDialog()?.showModal();
 			} else {
 				this.PRIVATE_getDialog()?.show();

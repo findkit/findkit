@@ -612,8 +612,7 @@ export function init(_options: {
 	builtinStyles?: boolean;
 	infiniteScroll?: boolean;
 	backdrop?: boolean;
-	inert?: string;
-	trap?: boolean;
+	inert?: string | boolean;
 	modal?: boolean;
 	header?: boolean;
 	router?: SearchEngineOptions["router"];
