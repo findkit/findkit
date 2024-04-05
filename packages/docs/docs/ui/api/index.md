@@ -358,7 +358,7 @@ Set namespacing separator for the query string. Eg. the `_` in `?fdk_q=`. Defaul
 
 _New in v1.0.0_
 
-Control how the elements outside the modal are made [inert](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inert) when using [`modal: true`](#modal). An inert element is a element which cannot focused or accessed using a screen reader. This is used to trap the focus and screen readers inside the modal when it is open.
+Control how the elements outside the modal are made [inert](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inert) when using [`modal: true`](#modal). An inert element is an element which cannot be focused or accessed using a screen reader. This is used to trap the focus and screen readers inside the modal when it is open.
 
 - `inert: true`: Make all element outside the modal inert using the [`<dialog>.showModal()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) method.
 - `inert: string`: CSS selector to make the matching elements inert. The `<dialog>` is opened with the [`.open()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/open) method. Use when you want to put the search input outside the modal. See the [Offset modal pattern](/ui/patterns/embedding/offset).
