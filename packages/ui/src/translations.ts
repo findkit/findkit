@@ -212,8 +212,7 @@ export const BASE_TRANSLATIONS: TranslationStrings = {
 	"aria-label-highlights": "Search hit highlights",
 	"aria-label-hit-url": "Search hit URL: {{href}}",
 	"aria-label-hit": "Search result {{number}}",
-	"aria-label-group-hit-total":
-		"Search result group with {{groupResults.total}} hits",
+	"aria-label-group-hit-total": "Search result group with {{total}} hits",
 	"aria-label-findkit-messages": "Findkit messages",
 	"single-search-results-heading": "Search results",
 	"aria-live-group-navigation-search-selected-group":
