@@ -11,7 +11,6 @@ fixFirefoxTab();
 async function gotoTestPage(
 	page: Page,
 	options?: {
-		noTrap?: "true";
 		inert?: string;
 		noShadow?: "true";
 	},
@@ -82,13 +81,12 @@ test.describe("basic focus management", () => {
 	});
 
 	test("with manual inert", async ({ page }) => {
-		await gotoTestPage(page, { noTrap: "true", inert: "#open-button" });
+		await gotoTestPage(page, { inert: "#open-button" });
 		await testFocusManagement(page);
 	});
 	test("without shadown dom with manual inert", async ({ page }) => {
 		await gotoTestPage(page, {
 			noShadow: "true",
-			noTrap: "true",
 			inert: "#open-button",
 		});
 		await testFocusManagement(page);

@@ -45,7 +45,6 @@ test("can lazily bind input", async ({ page, browserName }) => {
 
 		const ui = new FindkitUI({
 			publicToken: "po8GK3G0r",
-			trap: false,
 			inert: "#random",
 			params: {
 				tagQuery: [["domain/valu.fi"]],

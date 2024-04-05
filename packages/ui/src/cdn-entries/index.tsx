@@ -501,7 +501,7 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	styleSheet?: string;
 	closeOnOutsideClick?: boolean;
 	backdrop?: boolean;
-	inert?: string;
+	inert?: string | boolean;
 	separator?: string;
 
 	/**
@@ -514,7 +514,6 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	monitorDocumentLang?: boolean;
 	router?: "memory" | "querystring" | "hash" | RouterBackend<{}>;
 	lockScroll?: boolean;
-	trap?: boolean;
 	modal?: boolean;
 	forceHistoryReplace?: boolean;
 	manageScroll?: boolean;
