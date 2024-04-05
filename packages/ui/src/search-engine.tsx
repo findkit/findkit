@@ -811,7 +811,6 @@ export class SearchEngine {
 		}
 
 		if (this.closeOnOutsideClick !== true) {
-			console.log("no close on outside click");
 			return;
 		}
 
