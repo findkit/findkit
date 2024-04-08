@@ -7,29 +7,34 @@ test("can customize query string name space separator", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
 	await mockSearchResponses(page);
 
-	await page.evaluate(async () => {
-		const { FindkitUI } = MOD;
+	const init = async () => {
+		await page.evaluate(async () => {
+			const { FindkitUI } = MOD;
 
-		const ui = new FindkitUI({
-			publicToken: "test",
-			separator: ".",
-			groups: [
-				{
-					title: "GroupA",
-					id: "group-a",
-				},
-				{
-					title: "GroupB",
-					id: "group-b",
-				},
-			],
+			const ui = new FindkitUI({
+				publicToken: "test",
+				separator: ".",
+				groups: [
+					{
+						title: "GroupA",
+						id: "group-a",
+					},
+					{
+						title: "GroupB",
+						id: "group-b",
+					},
+				],
+			});
+
+			ui.openFrom("#open-button");
 		});
+	};
+	await init();
 
-		ui.open();
-	});
-
+	await page.locator("#open-button").click();
 	await page.locator("input").fill("test");
-	await page.locator(".findkit--hit").first().waitFor({ state: "visible" });
+	const hit = page.locator(".findkit--hit").first();
+	await hit.waitFor({ state: "visible" });
 
 	{
 		const url = new URL(page.url());
@@ -47,4 +52,10 @@ test("can customize query string name space separator", async ({ page }) => {
 		const url = new URL(page.url());
 		expect(url.search).toEqual("?fdk.q=test&fdk.id=group-a");
 	}
+
+	await page.reload({ waitUntil: "domcontentloaded" });
+
+	await init();
+
+	await expect(hit).toBeVisible();
 });
