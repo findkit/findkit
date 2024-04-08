@@ -14,6 +14,7 @@ import { FindkitUI, html, css, useTerms, HitSlotProps } from "@findkit/ui";
 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const ui = new FindkitUI({
+	inert: ".main-wrapper,footer",
 	publicToken: tz.startsWith("America/")
 		? "pP9OykWDd:us-west-1"
 		: "p68GxRvaA:eu-north-1",
