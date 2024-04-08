@@ -81,9 +81,16 @@
 				<button type="button" class="close">X</button>
 				<div class="loading">Loading...</div>
 
-				<!-- A link which is skipped from tab navigation when the search UI
-			is open because it is not in the focus trap -->
-				<a href="#">Header link</a>
+				<!--
+				Links are skipped from tab navigation when the search UI
+				is open because they are selected with the `inert` option
+				-->
+				<nav>
+					<a href="#">Header link1</a>
+					<a href="#">Header link2</a>
+					<a href="#">Header link3</a>
+					<a href="#">Header link4</a>
+				</nav>
 			</div>
 			<div class="header-text">
 				Some content in the header which makes the header height change when the
@@ -94,8 +101,13 @@
 		</header>
 
 		<main class="content">
-			<h2>The Content</h2>
-			<p>This is the website content.</p>
+			<article>
+				<h2>The Content</h2>
+				<p>
+					This is the website content. It can contain <a href="#">links</a> that
+					are not focusable when the search is open.
+				</p>
+			</article>
 
 			<div class="findkit-overlay-container"></div>
 		</main>
@@ -113,7 +125,7 @@
 				modal: true,
 				// We use the site header so no need for the build-in one
 				header: false,
-				lockScroll: false,
+				inert: ".content article, header nav",
 				css: `
 					.findkit--modal-container {
 						position: sticky;
@@ -129,9 +141,6 @@
 
 			// Bind the external input
 			ui.bindInput("input.search");
-
-			// Include the close button in the focus trap when the modal is open
-			ui.trapFocus("button.close");
 
 			// Close the modal when the close button is clicked
 			document.querySelector("button.close").addEventListener("click", () => {
