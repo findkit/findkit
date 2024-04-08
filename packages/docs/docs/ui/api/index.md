@@ -348,7 +348,7 @@ Defaults to `true`
 
 <Api page="ui.findkituioptions.buildinStyles" />
 
-### `separator: string` {#inert}
+### `separator: string` {#separator}
 
 _New in v1.0.0_
 
