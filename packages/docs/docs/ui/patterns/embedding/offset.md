@@ -12,6 +12,11 @@ const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
 	// We use the site header so no need for the build-in one
 	header: false,
+
+	// Allow focus to the header but not to the main content
+	// and footer when the modal is open
+	inert: "main, footer",
+
 	css: `
 		.findkit--modal-container {
 			top: 100px;
@@ -24,11 +29,12 @@ ui.bindInput("header input.search");
 
 ## Considerations
 
-Since we are now hiding some of the build-in default behaviour we must ensure
+Since we are now removing some of the built-in default behaviour we must ensure
 the following is properly implemented:
 
 - There's a close button
-- The close button can be focused using keyboard
+- Focus is managed properly with the [`inert`](/ui/api/#inert) option
+  - The input in the header should be focusable but the focus should not go behind the modal
 - Search fetch status is indicated
 - Lazy loading status is not actually that important because it can load in the
   background while the user types search terms
@@ -55,6 +61,7 @@ below](#resizeobserver-demo).
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
 	header: false,
+	inert: "main, footer",
 	css: `
 		.findkit--modal-container {
 			/* dynamically updating header height */

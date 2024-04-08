@@ -14,6 +14,7 @@ import { FindkitUI, html, css, useTerms, HitSlotProps } from "@findkit/ui";
 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const ui = new FindkitUI({
+	inert: ".main-wrapper,footer",
 	publicToken: tz.startsWith("America/")
 		? "pP9OykWDd:us-west-1"
 		: "p68GxRvaA:eu-north-1",
@@ -222,12 +223,7 @@ export default function SearchBarWrapper() {
 			// Bind to the button and return the unbind function as the effect
 			// cleanup to remove click handler when the component unmounts
 			// https://docs.findkit.com/ui/api/#openFrom
-			const clean1 = ui.openFrom(ref.current);
-			const clean2 = ui.trapFocus(ref.current);
-			return () => {
-				clean1();
-				clean2();
-			};
+			return ui.openFrom(ref.current);
 		}
 	}, []);
 

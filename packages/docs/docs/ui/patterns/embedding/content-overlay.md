@@ -29,12 +29,15 @@ body element when the UI is open. See the demo below for full details.
 ```ts
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
-	header: false,
 	// highlight-start
-	container: ".findkit-overlay-container",
-	// Force modal in to the custom container as it defaults to
+	header: false,
+	// Force modal into a custom container as it defaults to
 	// false with explicit container
 	modal: true,
+	container: ".findkit-overlay-container",
+	// Allow focus to the header but not to the main content
+	// and footer when the modal is open
+	inert: "main, footer",
 	// highlight-end
 	css: `
 		.findkit--modal-container {
