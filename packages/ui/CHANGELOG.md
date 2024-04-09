@@ -1,3 +1,32 @@
+## v1.0.0
+
+2024-04-09
+
+- Wrap modal in `<dialog>` with `.showModal()` for proper screen reader trapping
+- Remove `.trapFocus()` replace it with [`inert`](https://docs.findkit.com/ui/api/#inert) option for setting elements as inert when the modal is open
+  - BREAKING: If you use the the method
+  - BREAKING: If you use [offset](https://docs.findkit.com/ui/patterns/embedding/offset/) or [overlay modal](https://docs.findkit.com/ui/patterns/embedding/content-overlay) patterns. You need to add `inert` option to allow focus outside the modal
+- Use semantic elements for landmarks
+  - BREAKING: Possibly if you have lot of custom css since this changes the DOM structure
+- Read results counts on form submit with aria-live
+- Announce multi group navigations with aria-live=polite
+- Focus the search hit when returning to the search using the back button
+- Focus first search hit using shift+enter when a search input is focused
+- Add `lang` attributes to search hits to ensure they are read with the correct speech synth
+- Turn `<em>` highlights into clickable links
+  - the `<em>`s are converted to `<a>`
+  - BREAKING: If you styled the `<em>` element elements using `em` selector
+- Add [`separator`](https://docs.findkit.com/ui/api/#separator) option for defining the query string separator
+  - eg. the `_` in `fdk_q`
+- Use `_` as the default separator for custom router fields used to be `.`
+  - This was a bad default since WordPress does not allow dots in query string keys. It converts them to underscores using a redirect.
+  - BREAKING: If you have manually added custom router links with dots somewhere
+- Do not emit hit-click events for external links in Hit slots [154effb](https://github.com/findkit/findkit/commit/154effb)
+- Consistently use instance id based body class with the modal [161edf3](https://github.com/findkit/findkit/commit/161edf3)
+- remove deprecated ui option [dffff7e](https://github.com/findkit/findkit/commit/dffff7e) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v0.22.0...ui/v1.0.0
+
 ## v0.22.0
 
 2024-02-23
