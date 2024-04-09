@@ -378,6 +378,10 @@ function ClickableHighlights(props: {
 						aria-label={t("aria-label-highlight-link", { words })}
 						lang={props.lang}
 						as="a"
+						// Required according to MDN but seems to
+						//  work without it too? No harm adding it.
+						// https://developer.mozilla.org/en-US/docs/Web/Text_fragments#usage_notes
+						rel="noopener"
 						cn="em"
 						href={url.toString()}
 						//
