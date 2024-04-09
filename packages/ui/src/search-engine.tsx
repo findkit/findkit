@@ -994,6 +994,12 @@ export class SearchEngine {
 			}
 		}
 
+		// Do not focus the input when the search is embedded in a page with
+		// custom container as the user might have other priorities for focusing
+		if (!this.modal) {
+			return;
+		}
+
 		const el = this.container.querySelector("[autofocus]");
 		if (el instanceof HTMLElement) {
 			el.focus();
@@ -1004,6 +1010,9 @@ export class SearchEngine {
 
 	PRIVATE_createContainer(customContainer: Element | undefined) {
 		if (!this.modal && customContainer) {
+			this.events.once("open", () => {
+				this.PRIVATE_setInitialFocus();
+			});
 			if (this.PRIVATE_shadowDom) {
 				return customContainer.attachShadow({ mode: "open" });
 			}
