@@ -1,6 +1,7 @@
 import React, {
 	MouseEventHandler,
 	ReactNode,
+	useCallback,
 	useEffect,
 	useMemo,
 	useRef,
@@ -19,11 +20,15 @@ import {
 	useSearchEngineState,
 	useSearchMoreOnReveal,
 	useTranslator,
+	useView,
 } from "./core-hooks";
 import { SearchEngine, SearchResultHit } from "./search-engine";
 import { Slots } from "./slots";
-import { createSlotComponent, useSlotContext } from "./slots-core";
-import { createTranslator } from "./translations";
+import {
+	SlotCatchBoundary,
+	createSlotComponent,
+	useSlotContext,
+} from "./slots-core";
 import { View, cn, isProd, scrollToTop } from "./utils";
 
 export function FindkitProvider(props: {
@@ -31,20 +36,22 @@ export function FindkitProvider(props: {
 	engine: SearchEngine;
 	slots?: Partial<Slots>;
 }) {
-	const state = useSnapshot(props.engine.state);
-	const translations = state.ui.translations;
+	const { engine } = props;
+	const { lang, translations } = useSnapshot(engine.state).ui;
 	const focusRef = useRef<FocusRef>({});
 
 	const context = useMemo(() => {
 		const value: FindkitContextType = {
-			engine: props.engine,
-			translator: createTranslator(state.ui.lang, translations),
+			engine,
+			// Always create new translator function identity when the lang or translations change.
+			// New identity is needed to trigger re-render of the components that use the translator.
+			translator: engine.createTranslator({ lang, translations }),
 			slots: props.slots ?? {},
 			focusRef,
 		};
 
 		return value;
-	}, [props.engine, props.slots, state.ui.lang, translations]);
+	}, [engine, props.slots, lang, translations]);
 
 	return (
 		<FindkitContext.Provider value={context}>
@@ -57,8 +64,10 @@ function SingleGroupLink(props: {
 	children: ReactNode;
 	groupId: string;
 	groupTitle: string;
+	total: number;
 }) {
 	const t = useTranslator();
+	const ref = useRef<HTMLAnchorElement>(null);
 	const { focusRef } = useFindkitContext();
 	const engine = useSearchEngine();
 	const params = useFindkitURLSearchParams();
@@ -72,9 +81,13 @@ function SingleGroupLink(props: {
 			as="a"
 			cn={["single-group-link", "group-header-footer-spacing"]}
 			{...kbAttrs}
+			ref={ref}
 			data-kb-action
 			data-internal
-			aria-label={t("aria-show-all", { group: props.groupTitle })}
+			aria-label={t("aria-show-all", {
+				group: props.groupTitle,
+				total: props.total,
+			})}
 			href={engine.formatHref(nextParams)}
 			onClick={(e) => {
 				e.preventDefault();
@@ -82,11 +95,16 @@ function SingleGroupLink(props: {
 					return;
 				}
 
-				if (engine.elementHost.activeElement === e.target) {
+				const activeElement = engine.elementHost.activeElement;
+				if (
+					activeElement &&
+					ref.current &&
+					(activeElement === ref.current || ref.current.contains(activeElement))
+				) {
 					focusRef.current.groupViewFocusNext = true;
+				} else {
+					scrollToTop(e.target);
 				}
-
-				scrollToTop(e.target);
 				engine.updateAddressBar(nextParams, { push: true });
 			}}
 		>
@@ -117,25 +135,27 @@ function BackLink(props: { children?: ReactNode }) {
 	}
 
 	return (
-		<View
-			as="a"
-			{...kbAttrs}
-			data-kb-action
-			data-internal
-			cn={["back-link", "group-header-footer-spacing"]}
-			href={engine.formatHref(nextParams)}
-			onClick={(e) => {
-				e.preventDefault();
-				engine.updateAddressBar(nextParams, { push: true });
-			}}
-		>
-			{props.children ?? (
-				<>
-					<Arrow direction="left" />
-					<View cn="link-text">{t("go-back")}</View>
-				</>
-			)}
-			<View cn="hover-bg" />
+		<View as="nav" cn="nav" aria-label={t("aria-label-search-group-nav")}>
+			<View
+				as="a"
+				{...kbAttrs}
+				data-kb-action
+				data-internal
+				cn={["back-link", "group-header-footer-spacing"]}
+				href={engine.formatHref(nextParams)}
+				onClick={(e) => {
+					e.preventDefault();
+					engine.updateAddressBar(nextParams, { push: true });
+				}}
+			>
+				{props.children ?? (
+					<>
+						<Arrow direction="left" />
+						<View cn="link-text">{t("go-back")}</View>
+					</>
+				)}
+				<View cn="hover-bg" />
+			</View>
 		</View>
 	);
 }
@@ -145,25 +165,34 @@ function GroupTitle(props: {
 	total: number;
 	children?: ReactNode;
 }) {
+	const t = useTranslator();
 	if (!props.children && !props.title) {
 		return null;
 	}
 
 	return (
-		<View as="h2" cn="group-title" aria-label={props.title}>
-			{props.children ? (
-				props.children
-			) : (
-				<>
-					{props.title}{" "}
-					{props.total > 0 ? (
-						<span className={cn("group-title-total")}>{props.total}</span>
-					) : (
-						""
-					)}
-				</>
-			)}
-		</View>
+		<>
+			<View as="h2" cn="group-title" aria-label={props.title}>
+				{props.children ? (
+					props.children
+				) : (
+					<>
+						{props.title}{" "}
+						{props.total > 0 ? (
+							<span
+								aria-hidden
+								title={t("total-search-results-in-group")}
+								className={cn("group-title-total")}
+							>
+								{props.total}
+							</span>
+						) : (
+							""
+						)}
+					</>
+				)}
+			</View>
+		</>
 	);
 }
 
@@ -199,42 +228,64 @@ const HitSlot = createSlotComponent("Hit", {
 	parts: {
 		TitleLink(props) {
 			const context = useSlotContext("Hit");
+
 			const href = props.href ?? context.hit.url;
 			const superwordsMatch =
 				props.superwordsMatch ?? context.hit.superwordsMatch;
 
 			const t = useTranslator();
-			return (
-				<View as="h3" cn="hit-title">
-					{superwordsMatch ? <StarIcon title={t("superwords-match")} /> : null}
 
-					<View
-						as="a"
-						cn={["hit-title-link", "link"]}
-						href={href}
-						data-kb-action
-					>
-						{props.children ?? context.hit.title}
+			return (
+				<>
+					<View as="h3" cn="hit-title">
+						{superwordsMatch ? (
+							<StarIcon title={t("superwords-match")} />
+						) : null}
+						<View
+							as="a"
+							id={context.hitId}
+							lang={context.hit.language}
+							cn={["hit-title-link", "link"]}
+							href={href}
+							data-kb-action
+						>
+							{props.children ?? context.hit.title}
+						</View>
 					</View>
-				</View>
+				</>
 			);
 		},
 		Highlight(props) {
+			const t = useTranslator();
 			const context = useSlotContext("Hit");
 			const highlight = props.highlight ?? context.hit.highlight;
 
 			return (
-				<View
-					cn="highlight"
-					dangerouslySetInnerHTML={{ __html: highlight }}
-				></View>
+				<View cn="highlight" aria-label={t("aria-label-highlights")}>
+					<ClickableHighlights
+						higlights={highlight}
+						href={context.hit.url}
+						lang={context.hit.language}
+					/>
+				</View>
 			);
 		},
 		URLLink(props) {
+			const t = useTranslator();
 			const context = useSlotContext("Hit");
 			const href = props.href ?? context.hit.url;
+
 			return (
-				<View as="a" cn={["hit-url", "link"]} href={href} tabIndex={-1}>
+				<View
+					as="a"
+					cn={["hit-url", "link"]}
+					aria-label={t("aria-label-hit-url", { href })}
+					href={href}
+					// Duplicated link. Skip from tab order for cleaner tab navigation
+					// but keep for screen readers so it can announce the URL.
+					// This is also reachable by using the "links navigation" in screen readers.
+					tabIndex={-1}
+				>
 					{props.children ?? href}
 				</View>
 			);
@@ -251,15 +302,146 @@ const HitSlot = createSlotComponent("Hit", {
 	},
 });
 
+/**
+ * Get {contextSize} words around the highlighted node. Handles
+ * partial words at the beginning and end of the initial node.
+ */
+function getHighlightContext(node: ChildNode, contextSize: number) {
+	contextSize++;
+	let trailingNode = node.nextSibling;
+	let leadingNode = node.previousSibling;
+
+	// Convert DOM nodes to plain string around the highlighted node
+	let leading = "";
+	let trailing = "";
+	while (trailingNode || leadingNode) {
+		trailing += trailingNode?.textContent ?? "";
+		leading = (leadingNode?.textContent ?? "") + leading;
+
+		trailingNode = trailingNode?.nextSibling ?? null;
+		leadingNode = leadingNode?.previousSibling ?? null;
+	}
+
+	// The highlighted node might be a partial word inside some special characters
+	// Eg. .<em>updateParams</em>() which means the actual word is .updateParams()
+	// and not just updateParams.
+
+	let prefix = "";
+	// capture last partial word
+	leading = leading.replace(/([^ ]+)$/, (match) => {
+		prefix = match;
+		return "";
+	});
+
+	let suffix = "";
+	// capture first partial word
+	trailing = trailing.replace(/^([^ ]+)/, (match) => {
+		suffix = match;
+		return "";
+	});
+
+	return (
+		leading.split(" ").slice(-contextSize).join(" ") +
+		prefix +
+		node.textContent +
+		suffix +
+		trailing.split(" ").slice(0, contextSize).join(" ")
+	);
+}
+
+/**
+ * Parse <em> highlighted string to clickable links
+ */
+function ClickableHighlights(props: {
+	higlights: string;
+	lang: string | undefined;
+	href: string;
+}) {
+	const t = useTranslator();
+	const links = useMemo(() => {
+		const dom = new DOMParser().parseFromString(props.higlights, "text/html");
+		const vdom: ReactNode[] = [];
+
+		let current: ChildNode | null = dom.body.firstChild;
+
+		while (current) {
+			if (current instanceof HTMLElement && current.tagName === "EM") {
+				const words = getHighlightContext(current, 1);
+				const url = new URL(props.href);
+
+				// https://wicg.github.io/scroll-to-text-fragment/
+				url.hash = `#:~:text=${encodeURIComponent(words)}`;
+
+				vdom.push(
+					<View
+						title={t("aria-label-highlight-link", { words })}
+						aria-label={t("aria-label-highlight-link", { words })}
+						lang={props.lang}
+						as="a"
+						// Required according to MDN but seems to
+						//  work without it too? No harm adding it.
+						// https://developer.mozilla.org/en-US/docs/Web/Text_fragments#usage_notes
+						rel="noopener"
+						cn="em"
+						href={url.toString()}
+						//
+						// We want tab to just to go between search hits. This would make it
+						// cumbersome to navigate the results with the keyboard tab key
+						// as there can be many highlights in a single hit.
+						//
+						// Also this is visual only feature, so it is not so important to
+						// be reachable by keyboard. That being said this is still reachable
+						// with screen readers by using normal "next" operation or the "links
+						// navigation" feature.
+						tabIndex={-1}
+					>
+						{current.textContent}
+					</View>,
+				);
+			} else {
+				vdom.push(current.textContent);
+			}
+			current = current.nextSibling;
+		}
+
+		return vdom;
+	}, [props.higlights, props.href, props.lang, t]);
+
+	return <View lang={props.lang}>{links}</View>;
+}
+
+function isEqualWithoutHash(a: string, b: string) {
+	const urlA = new URL(a);
+	const urlB = new URL(b);
+
+	urlA.hash = "";
+	urlB.hash = "";
+
+	return urlA.toString() === urlB.toString();
+}
+
 function Hit(props: {
 	hit: SearchResultHit;
 	groupId: string;
-	hitIndex: number;
 	containerRef: ReturnType<typeof useSearchMoreOnReveal> | undefined;
 }) {
+	const t = useTranslator();
 	const engine = useSearchEngine();
+	const ref = useRef<HTMLElement>();
+
 	const kbAttrs = useKeyboardItemAttributes(
-		`hit-${props.groupId}-${props.hitIndex}`,
+		`hit-${props.groupId}-${props.hit.index}`,
+	);
+
+	const hitId = engine.getUniqId(`hit-${props.groupId}-${props.hit.index}`);
+
+	const { containerRef } = props;
+	const refCallback = useCallback(
+		(el: HTMLElement | null) => {
+			ref.current = el ?? undefined;
+			containerRef?.(el);
+		},
+		[containerRef],
 	);
 
 	const handleLinkClick: MouseEventHandler<HTMLDivElement> = (e) => {
@@ -267,7 +449,9 @@ function Hit(props: {
 			return;
 		}
 
-		if (e.target.href !== props.hit.url) {
+		engine.saveVisitedHitId(hitId);
+
+		if (!isEqualWithoutHash(e.target.href, props.hit.url)) {
 			return;
 		}
 
@@ -283,14 +467,17 @@ function Hit(props: {
 
 	return (
 		<View
-			ref={props.containerRef}
+			ref={refCallback}
 			key={props.hit.url}
+			role="group"
+			aria-label={t("aria-label-hit", { number: props.hit.index + 1 })}
 			cn={{ hit: true, "superwords-match": props.hit.superwordsMatch }}
 			data-fdk-score={props.hit.score}
+			data-hit-id={hitId}
 			{...kbAttrs}
 			onClick={handleLinkClick}
 		>
-			<HitSlot hit={props.hit} groupId={props.groupId} />
+			<HitSlot hit={props.hit} groupId={props.groupId} hitId={hitId} />
 		</View>
 	);
 }
@@ -301,6 +488,11 @@ function HitList(props: {
 	hits: ReadonlyArray<SearchResultHit>;
 }) {
 	const hitRef = useSearchMoreOnReveal();
+	const t = useTranslator();
+
+	if (props.total === 0) {
+		return <View cn="sr-only">{t("no-results")}</View>;
+	}
 
 	return (
 		<>
@@ -310,7 +502,6 @@ function HitList(props: {
 					<Hit
 						key={hit.url}
 						hit={hit}
-						hitIndex={index}
 						groupId={props.groupId}
 						containerRef={last ? hitRef : undefined}
 					/>
@@ -353,7 +544,7 @@ const GroupSlot = createSlotComponent("Group", {
 			const title = props.title ?? context.title;
 
 			return (
-				<>
+				<View as="nav" cn="nav" aria-label={t("aria-label-search-group-nav")}>
 					{context.total === context.fetchedHits ? (
 						<View
 							cn={["group-all-results-shown", "group-header-footer-spacing"]}
@@ -364,12 +555,13 @@ const GroupSlot = createSlotComponent("Group", {
 						</View>
 					) : (
 						<SingleGroupLink
+							total={context.total}
 							groupId={context.id}
 							groupTitle={title}
 							children={props.children}
 						/>
 					)}
-				</>
+				</View>
 			);
 		},
 	},
@@ -385,6 +577,7 @@ const GroupSlot = createSlotComponent("Group", {
 });
 
 function MultiGroupResults() {
+	const t = useTranslator();
 	const results = useResults();
 	const groupOrder = useSearchEngineState().groupOrder;
 
@@ -420,6 +613,10 @@ function MultiGroupResults() {
 					<View
 						key={groupResults.id}
 						cn="group"
+						as="section"
+						aria-label={t("aria-label-group-hit-total", {
+							total: groupResults.total,
+						})}
 						data-group-id={groupResults.id}
 					>
 						<GroupSlot
@@ -470,12 +667,13 @@ const ResultsSlot = createSlotComponent("Results", {
 		},
 
 		Footer(props) {
+			const t = useTranslator();
 			const slot = useSlotContext("Results");
 
 			const allResultsLoaded = slot.fetchedHits === slot.total;
 
 			return (
-				<View cn="footer">
+				<View as="nav" cn="footer" aria-label={t("load-more")}>
 					<FooterContent
 						groupId={slot.id}
 						allResultsLoaded={allResultsLoaded}
@@ -522,6 +720,10 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 		for (const [index, el] of Object.entries(links)) {
 			if (focusIndex.toString() === index && el instanceof HTMLAnchorElement) {
 				el.focus();
+				el.scrollIntoView({
+					behavior: "smooth",
+					block: "center",
+				});
 				focusRef.current.groupViewFocusNext = false;
 				break;
 			}
@@ -549,6 +751,9 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 	);
 }
 
+/**
+ * Search footer in the single group view.
+ */
 function FooterContent(props: {
 	allResultsLoaded: boolean;
 	groupId: string;
@@ -590,24 +795,92 @@ function FooterContent(props: {
 	);
 }
 
-export function Results() {
+export function ResultsContent() {
+	const t = useTranslator();
 	const state = useSearchEngineState();
+	const engine = useSearchEngine();
+	const view = useView();
+	const groupCount = state.usedGroupDefinitions.length;
+	const labelId = engine.getUniqId("results-heading");
+
+	let label;
+
+	if (groupCount === 1) {
+		label = t("single-search-results-heading");
+	} else {
+		label =
+			view === "groups"
+				? t("aria-live-group-navigation-search-multiple-groups", { groupCount })
+				: t("aria-live-group-navigation-search-selected-group");
+	}
 
 	return (
 		<>
-			{state.messages.length > 0 && (
-				<div>
-					{state.messages.map((m) => (
-						<View
-							cn="message"
-							key={m.id}
-							dangerouslySetInnerHTML={{ __html: m.message }}
-						/>
-					))}
-				</div>
-			)}
-			<SingleOrGroupResults />
+			<View as="section" aria-labelledby={labelId} cn="content">
+				<View
+					as="h1"
+					id={labelId}
+					cn="sr-only"
+					// Announce groups heading only when there are more than one group
+					// to have then announced when the user navigates to a group or back.
+					// With single group there is no navigating and no need to announce it.
+					aria-live={groupCount > 1 ? "polite" : "off"}
+				>
+					{label}
+				</View>
+
+				<FetchError />
+				<SlotCatchBoundary name="Content" props={{}}>
+					{state.messages.length > 0 && (
+						<section aria-label={t("aria-label-findkit-messages")}>
+							{state.messages.map((m) => (
+								<View
+									cn="message"
+									key={m.id}
+									dangerouslySetInnerHTML={{ __html: m.message }}
+								/>
+							))}
+						</section>
+					)}
+					<SingleOrGroupResults />
+				</SlotCatchBoundary>
+
+				{Boolean(
+					state.canAnnounceResults && state.announceResultsMessage.text,
+				) ? (
+					<View
+						key={state.announceResultsMessage.key}
+						cn={["sr-only", "results-aria-live-message"]}
+						aria-live="assertive"
+					>
+						{state.announceResultsMessage.text}
+					</View>
+				) : null}
+			</View>
 		</>
+	);
+}
+
+function FetchError() {
+	const state = useSearchEngineState();
+	const engine = useSearchEngine();
+	const t = useTranslator();
+
+	if (!state.error) {
+		return null;
+	}
+
+	return (
+		<ErrorContainer title={t("error-title")} error={state.error?.message ?? ""}>
+			<View
+				as="button"
+				cn="retry-button"
+				type="button"
+				onClick={() => engine.retry()}
+			>
+				{t("try-again")}
+			</View>
+		</ErrorContainer>
 	);
 }
 
@@ -692,6 +965,7 @@ export function Spinner(props: { spinning?: boolean }) {
 	const state = useSearchEngineState();
 	return (
 		<View
+			aria-hidden
 			cn={{
 				spinner: true,
 				spinning: props.spinning !== false && state.loading,
@@ -706,14 +980,17 @@ export function ErrorContainer(props: {
 	props?: any;
 	error: string | null;
 }) {
+	const engine = useSearchEngine();
+	const labelId = engine.getUniqId("error");
+
 	let propsString = null;
 	try {
 		propsString = JSON.stringify(props.props, null, 2);
 	} catch {}
 
 	return (
-		<View cn="error">
-			<View as="h2" cn="error-title">
+		<View as="section" cn="error" arial-aria-labelledby={labelId}>
+			<View as="h2" cn="error-title" id={labelId}>
 				{props.title}
 			</View>
 
@@ -722,6 +999,7 @@ export function ErrorContainer(props: {
 			<View as="pre" cn="error-message">
 				{props.error}
 			</View>
+
 			{propsString && propsString !== "{}" && !isProd() ? (
 				<View as="pre" cn="error-props">
 					{propsString}

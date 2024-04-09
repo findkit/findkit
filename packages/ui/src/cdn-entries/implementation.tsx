@@ -4,6 +4,7 @@ import { createElement, useCallback, useMemo, useRef } from "react";
 import {
 	useFindkitContext,
 	useInput,
+	useLang,
 	useResults,
 	useSearchEngine,
 	useSearchEngineState,
@@ -91,13 +92,6 @@ function useTotalHitCountImplementation() {
 /**
  * @public
  */
-export function useLangImplementation() {
-	return useSearchEngineState().ui.lang;
-}
-
-/**
- * @public
- */
 export interface SearchResultHitWithGroupId extends SearchResultHit {
 	groupId: string;
 }
@@ -160,7 +154,7 @@ export interface Implementation {
 	useGroups: typeof useGroupsImplementation;
 	useTerms: typeof useTermsImplementation;
 	useTotal: typeof useTotalImplementation;
-	useLang: typeof useLangImplementation;
+	useLang: typeof useLang;
 	useInput: typeof useInput;
 	useTotalHitCount: typeof useTotalHitCountImplementation;
 	useLoading: typeof useLoadingImplementation;
@@ -183,7 +177,7 @@ export const js: Implementation = {
 	useResults,
 	useInput,
 	useTotalHitCount: useTotalHitCountImplementation,
-	useLang: useLangImplementation,
+	useLang,
 	useLoading: useLoadingImplementation,
 	useCustomRouterData: useCustomRouterDataImplementation,
 	useTranslate: useTranslateImplementation,

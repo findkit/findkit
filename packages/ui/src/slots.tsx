@@ -105,6 +105,12 @@ export interface HitSlotProps {
 	hit: SearchResultHit;
 
 	/**
+	 * Unique hit id for the dom. By default this is used in the
+	 * TitleLink slot part component id
+	 */
+	hitId: string;
+
+	/**
 	 * Group id
 	 */
 	groupId: string;
@@ -216,8 +222,14 @@ export interface GroupSlotProps {
 
 	title: string;
 
+	/**
+	 * The total number of hits in the group
+	 */
 	total: number;
 
+	/**
+	 * How many of the total hits have been fetched
+	 */
 	fetchedHits: number;
 
 	hits: ReadonlyArray<SearchResultHit>;

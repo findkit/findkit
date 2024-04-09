@@ -56,7 +56,7 @@ test("can serialize data from params event to customRouteData", async ({
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
-	await expect.poll(async () => page.url()).toContain("fdk.c.price=999");
+	await expect.poll(async () => page.url()).toContain("fdk_c_price=999");
 
 	await page.evaluate(async () => {
 		ui.updateParams((params) => {
@@ -64,12 +64,12 @@ test("can serialize data from params event to customRouteData", async ({
 		});
 	});
 
-	await expect.poll(async () => page.url()).toContain("fdk.c.price=100");
+	await expect.poll(async () => page.url()).toContain("fdk_c_price=100");
 
 	await page.reload();
 	await page.waitForLoadState("domcontentloaded");
 
-	await expect.poll(async () => page.url()).toContain("fdk.c.price=100");
+	await expect.poll(async () => page.url()).toContain("fdk_c_price=100");
 });
 
 test("can change back to previous custom router data", async ({ page }) => {
@@ -97,7 +97,7 @@ test("can change back to previous custom router data", async ({ page }) => {
 	});
 
 	// data can be updated
-	await expect.poll(async () => page.url()).toContain("fdk.c.ding=b");
+	await expect.poll(async () => page.url()).toContain("fdk_c_ding=b");
 
 	await page.evaluate(async () => {
 		ui.setCustomRouterData({ ding: "a" });
@@ -105,7 +105,7 @@ test("can change back to previous custom router data", async ({ page }) => {
 	});
 
 	// Must restore the previous state
-	await expect.poll(async () => page.url()).toContain("fdk.c.ding=a");
+	await expect.poll(async () => page.url()).toContain("fdk_c_ding=a");
 });
 
 test("defaultCustomRouterData is emitted with custom-router-data on load", async ({
@@ -144,7 +144,7 @@ test("defaultCustomRouterData is emitted with custom-router-data on load", async
 test("defaultCustomRouterData can be overridden with custom-router-data on load", async ({
 	page,
 }) => {
-	await page.goto(staticEntry("/dummy?fdk.c.ding=b"));
+	await page.goto(staticEntry("/dummy?fdk_c_ding=b"));
 
 	await page.evaluate(async () => {
 		const { FindkitUI } = MOD;
@@ -173,7 +173,7 @@ test("defaultCustomRouterData can be overridden with custom-router-data on load"
 		},
 	]);
 
-	await expect.poll(async () => page.url()).not.toContain("fdk.c.ding=a");
+	await expect.poll(async () => page.url()).not.toContain("fdk_c_ding=a");
 });
 
 test("can remove query string with undefined", async ({ page }) => {
@@ -191,7 +191,7 @@ test("can remove query string with undefined", async ({ page }) => {
 		ui.open("diamond");
 	});
 
-	await expect.poll(async () => page.url()).toContain("fdk.c.ding=a");
+	await expect.poll(async () => page.url()).toContain("fdk_c_ding=a");
 
 	await page.evaluate(async () => {
 		ui.setCustomRouterData({ ding: undefined });
@@ -199,13 +199,13 @@ test("can remove query string with undefined", async ({ page }) => {
 	});
 
 	// qs is removed
-	await expect.poll(async () => page.url()).not.toContain("fdk.c.ding=a");
+	await expect.poll(async () => page.url()).not.toContain("fdk_c_ding=a");
 });
 
 test("defaultCustomRouterData is not set automatically to url", async ({
 	page,
 }) => {
-	await page.goto(staticEntry("/dummy?fdk.c.ding=b"));
+	await page.goto(staticEntry("/dummy?fdk_c_ding=b"));
 
 	await page.evaluate(async () => {
 		const { FindkitUI } = MOD;
@@ -223,7 +223,7 @@ test("defaultCustomRouterData is not set automatically to url", async ({
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
-	expect(page.url()).not.toContain("fdk.c.ding=a");
+	expect(page.url()).not.toContain("fdk_c_ding=a");
 });
 
 test("can remove query string by removing the key", async ({ page }) => {
@@ -241,7 +241,7 @@ test("can remove query string by removing the key", async ({ page }) => {
 		ui.open("diamond");
 	});
 
-	await expect.poll(async () => page.url()).toContain("fdk.c.ding=a");
+	await expect.poll(async () => page.url()).toContain("fdk_c_ding=a");
 
 	await page.evaluate(async () => {
 		ui.setCustomRouterData({});
@@ -249,7 +249,7 @@ test("can remove query string by removing the key", async ({ page }) => {
 	});
 
 	// qs is removed
-	await expect.poll(async () => page.url()).not.toContain("fdk.c.ding=a");
+	await expect.poll(async () => page.url()).not.toContain("fdk_c_ding=a");
 });
 
 test("setCustomRouterData is flushed on searches", async ({ page }) => {
@@ -273,13 +273,13 @@ test("setCustomRouterData is flushed on searches", async ({ page }) => {
 
 	await page.waitForTimeout(500);
 
-	expect(page.url()).not.toContain("fdk.c.ding=a");
+	expect(page.url()).not.toContain("fdk_c_ding=a");
 
 	await page.evaluate(async () => {
 		ui.open("boots");
 	});
 
-	await expect.poll(async () => page.url()).toContain("fdk.c.ding=a");
+	await expect.poll(async () => page.url()).toContain("fdk_c_ding=a");
 });
 
 test("can use setCustomRouterData in fetch event", async ({ page }) => {
@@ -300,7 +300,7 @@ test("can use setCustomRouterData in fetch event", async ({ page }) => {
 	const hits = page.locator(".findkit--hit");
 	await hits.first().waitFor({ state: "visible" });
 
-	expect(page.url()).toContain("fdk.c.ding=a");
+	expect(page.url()).toContain("fdk_c_ding=a");
 });
 
 test("emits custom-router-data on history object replaceState", async ({
@@ -326,7 +326,7 @@ test("emits custom-router-data on history object replaceState", async ({
 	await hits.first().waitFor({ state: "visible" });
 
 	await page.evaluate(async () => {
-		history.replaceState({}, "", "?fdk.c.ding=dong&fdk_q=boots");
+		history.replaceState({}, "", "?fdk_c_ding=dong&fdk_q=boots");
 	});
 
 	const events = await page.evaluate(async () => (window as any).uiEvents);
@@ -357,8 +357,8 @@ test("emits custom-router-data on history object pushState and back navigation",
 	await hits.first().waitFor({ state: "visible" });
 
 	await page.evaluate(async () => {
-		history.pushState({}, "", "?fdk.c.ding=dong&fdk_q=boots");
-		history.pushState({}, "", "?fdk.c.ding=dang&fdk_q=boots");
+		history.pushState({}, "", "?fdk_c_ding=dong&fdk_q=boots");
+		history.pushState({}, "", "?fdk_c_ding=dang&fdk_q=boots");
 	});
 
 	await page.goBack();
@@ -437,11 +437,11 @@ test("can use useCustomRouterData() hook", async ({ page }) => {
 
 	// wait for the throttle to pass
 	await page.waitForTimeout(300);
-	expect(page.url()).not.toContain("fdk.c.counter");
+	expect(page.url()).not.toContain("fdk_c_counter");
 
 	await input.fill("boots");
 
-	await expect.poll(() => page.url()).toContain("fdk.c.counter=2");
+	await expect.poll(() => page.url()).toContain("fdk_c_counter=2");
 
 	await page.reload();
 	await init();
@@ -497,11 +497,11 @@ test("useCustomRouterData() inits with default data", async ({ page }) => {
 
 	// wait for the throttle to pass
 	await page.waitForTimeout(300);
-	expect(page.url()).not.toContain("fdk.c.counter");
+	expect(page.url()).not.toContain("fdk_c_counter");
 
 	await input.fill("boots");
 
-	await expect.poll(() => page.url()).toContain("fdk.c.counter=6");
+	await expect.poll(() => page.url()).toContain("fdk_c_counter=6");
 
 	await page.reload();
 	await init();

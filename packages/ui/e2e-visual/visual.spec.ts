@@ -1,10 +1,26 @@
-import { test, expect } from "@playwright/test";
-import { staticEntry } from "../e2e/helpers";
+import { test, expect, Page } from "@playwright/test";
+import { gotoWithEarlyHook } from "../e2e/helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 
+// Workaround for playwright not supporting <dialog> with .showModal()
+// https://github.com/microsoft/playwright/issues/29878
+async function gotoWithoutTrap(page: Page, path: string) {
+	await gotoWithEarlyHook(page, path, async () => {
+		await page.evaluate(async () => {
+			window.addEventListener("findkituievent", (e) => {
+				if (e.detail.eventName !== "init") {
+					return;
+				}
+
+				e.detail.data.options.inert = false;
+			});
+		});
+	});
+}
+
 test("input is visually correct", async ({ page }) => {
-	await page.goto(staticEntry("/single-group"));
+	await gotoWithoutTrap(page, "/single-group");
 
 	const input = page.locator('[aria-label="Search input"]');
 	const button = page.locator("text=open");
@@ -20,7 +36,7 @@ test("input is visually correct", async ({ page }) => {
 test("input is visually correct with custom font-size on <html>", async ({
 	page,
 }) => {
-	await page.goto(staticEntry("/custom-html-font-size"));
+	await gotoWithoutTrap(page, "/custom-html-font-size");
 
 	const input = page.locator('[aria-label="Search input"]');
 	const button = page.locator("text=open");
@@ -34,7 +50,7 @@ test("input is visually correct with custom font-size on <html>", async ({
 });
 
 test("can show backdrop", async ({ page }) => {
-	await page.goto(staticEntry("/dummy"));
+	await gotoWithoutTrap(page, "/dummy");
 
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
@@ -53,7 +69,7 @@ test("content is correctly sized when top is added to .findkit--modal-container"
 }) => {
 	await page.setViewportSize({ width: 500, height: 600 });
 
-	await page.goto(staticEntry("/dummy"));
+	await gotoWithoutTrap(page, "/dummy");
 
 	await page.evaluate(async () => {
 		const { FindkitUI, css, html } = MOD;
@@ -102,7 +118,7 @@ test("content is correctly sized when top is added to .findkit--modal-container"
 test("content is correctly sized when top is added to .findkit--modal-container with backdrop", async ({
 	page,
 }) => {
-	await page.goto(staticEntry("/dummy"));
+	await gotoWithoutTrap(page, "/dummy");
 
 	await page.evaluate(async () => {
 		const { FindkitUI, css, html } = MOD;
@@ -151,7 +167,7 @@ test("content is correctly sized when top is added to .findkit--modal-container 
 
 test("no backdrop on small screens", async ({ page }) => {
 	await page.setViewportSize({ width: 400, height: 600 });
-	await page.goto(staticEntry("/dummy"));
+	await gotoWithoutTrap(page, "/dummy");
 
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
@@ -166,7 +182,7 @@ test("no backdrop on small screens", async ({ page }) => {
 });
 
 test("centers the content with width css", async ({ page }) => {
-	await page.goto(staticEntry("/dummy"));
+	await gotoWithoutTrap(page, "/dummy");
 
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
@@ -187,7 +203,7 @@ test("centers the content with width css", async ({ page }) => {
 });
 
 test("can set modal top", async ({ page }) => {
-	await page.goto(staticEntry("/external-input-dummy"));
+	await gotoWithoutTrap(page, "/external-input-dummy");
 
 	await page.evaluate(async () => {
 		const { FindkitUI, css, html } = MOD;
@@ -225,7 +241,7 @@ test("can set modal top", async ({ page }) => {
 });
 
 test("modal slides under the backdrop container", async ({ page }) => {
-	await page.goto(staticEntry("/external-input-dummy"));
+	await gotoWithoutTrap(page, "/external-input-dummy");
 
 	await page.evaluate(async () => {
 		const { FindkitUI, css, html } = MOD;
@@ -268,7 +284,7 @@ test("modal slides under the backdrop container", async ({ page }) => {
 });
 
 test("can use load() with styles", async ({ page }) => {
-	await page.goto(staticEntry("/manual-load"));
+	await gotoWithoutTrap(page, "/manual-load");
 
 	const input = page.locator('[aria-label="Search input"]');
 	const button = page.locator("text=open");
@@ -280,7 +296,7 @@ test("can use load() with styles", async ({ page }) => {
 });
 
 test("can remove the close button", async ({ page }) => {
-	await page.goto(staticEntry("/dummy"));
+	await gotoWithoutTrap(page, "/dummy");
 
 	await page.evaluate(async () => {
 		const { FindkitUI, html } = MOD;
@@ -303,7 +319,8 @@ test("can remove the close button", async ({ page }) => {
 });
 
 test("overlay modal", async ({ page }) => {
-	await page.goto(staticEntry("/overlay-modal"));
+	await gotoWithoutTrap(page, "/overlay-modal");
+
 	const input = page.locator("#external-input");
 	const hits = page.locator(".findkit-overlay-container .findkit--hit");
 	await input.fill("valu");
@@ -322,7 +339,7 @@ test("overlay modal", async ({ page }) => {
 });
 
 test("overlay modal without shadow dom", async ({ page }) => {
-	await page.goto(staticEntry("/overlay-modal?no-shadow"));
+	await gotoWithoutTrap(page, "/overlay-modal?no-shadow");
 	const input = page.locator("#external-input");
 	const hits = page.locator(".findkit-overlay-container .findkit--hit");
 	await input.fill("valu");
@@ -341,7 +358,7 @@ test("overlay modal without shadow dom", async ({ page }) => {
 });
 
 test("ResizeObserver offset", async ({ page }) => {
-	await page.goto(staticEntry("/resize-observer"));
+	await gotoWithoutTrap(page, "/resize-observer");
 	const input = page.locator("#external-input");
 	const hits = page.locator(".findkit--hit");
 
@@ -362,7 +379,7 @@ test("ResizeObserver offset", async ({ page }) => {
 });
 
 test("header is shown when scrolled up a bit", async ({ page }) => {
-	await page.goto(staticEntry("/dummy"));
+	await gotoWithoutTrap(page, "/dummy");
 	await page.setViewportSize({ width: 600, height: 600 });
 
 	const input = page.locator('[aria-label="Search input"]');
@@ -396,7 +413,7 @@ test("header is shown when scrolled up a bit", async ({ page }) => {
 });
 
 test("can render custom fields", async ({ page }) => {
-	await page.goto(staticEntry("/custom-fields"));
+	await gotoWithoutTrap(page, "/custom-fields");
 
 	const button = page.locator("text=open");
 	const input = page.locator('[aria-label="Search input"]');
@@ -416,7 +433,7 @@ test("can render custom fields", async ({ page }) => {
 });
 
 test("group header and footer margins", async ({ page }) => {
-	await page.goto(staticEntry("two-groups"));
+	await gotoWithoutTrap(page, "two-groups");
 	const hits = page.locator(".findkit--hit");
 
 	const button = page.locator("button", { hasText: "open" });
@@ -459,7 +476,7 @@ test("group header and footer margins", async ({ page }) => {
 });
 
 test("can horizonally position groups", async ({ page }) => {
-	await page.goto(staticEntry("horizontal-groups"));
+	await gotoWithoutTrap(page, "horizontal-groups");
 
 	const input = page.locator('[aria-label="Search input"]');
 	const hits = page.locator(".findkit--hit");
@@ -475,6 +492,9 @@ test("can horizonally position groups", async ({ page }) => {
 
 	await expect(backLink).toBeVisible();
 
+	// wait for the scroll animation to pass
+	await page.waitForTimeout(500);
+
 	await page.mouse.wheel(0, -1000);
 
 	await expect(page).toHaveScreenshot({ mask: [hits] });
@@ -483,7 +503,7 @@ test("can horizonally position groups", async ({ page }) => {
 test("superword matches are marked with class name and an icon", async ({
 	page,
 }) => {
-	await page.goto(staticEntry("superwords-match"));
+	await gotoWithoutTrap(page, "superwords-match");
 
 	const input = page.locator('[aria-label="Search input"]');
 	const hits = page.locator(".findkit--hit");
@@ -501,7 +521,7 @@ test("superword matches are marked with class name and an icon", async ({
 });
 
 test("hit error boundary", async ({ page }) => {
-	await page.goto(staticEntry("/dummy"));
+	await gotoWithoutTrap(page, "/dummy");
 
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
@@ -529,7 +549,7 @@ test("hit error boundary", async ({ page }) => {
 });
 
 test("can restore findkit icon branding", async ({ page }) => {
-	await page.goto(staticEntry("/dummy"));
+	await gotoWithoutTrap(page, "/dummy");
 
 	await page.evaluate(async () => {
 		const { FindkitUI } = MOD;
@@ -554,7 +574,7 @@ test("can restore findkit icon branding", async ({ page }) => {
 test("form controls (button, input) inherit parent font-family in modal", async ({
 	page,
 }) => {
-	await page.goto(staticEntry("/dummy"));
+	await gotoWithoutTrap(page, "/dummy");
 
 	await page.evaluate(async () => {
 		const { FindkitUI, html } = MOD;
@@ -605,7 +625,7 @@ test("form controls (button, input) inherit parent font-family in modal", async 
 test("form controls (button, input) inherit parent font-family in a custom container", async ({
 	page,
 }) => {
-	await page.goto(staticEntry("/dummy"));
+	await gotoWithoutTrap(page, "/dummy");
 
 	await page.evaluate(async () => {
 		const { FindkitUI, html } = MOD;
@@ -665,7 +685,7 @@ test("form controls (button, input) inherit parent font-family in a custom conta
 });
 
 test("hover background is defived from --brand-color", async ({ page }) => {
-	await page.goto(staticEntry("/dummy"));
+	await gotoWithoutTrap(page, "/dummy");
 
 	await page.evaluate(async () => {
 		const { FindkitUI } = MOD;
@@ -721,7 +741,7 @@ test("hover background is defived from --brand-color", async ({ page }) => {
 test("no side scroll", async ({ page }) => {
 	await page.setViewportSize({ width: 300, height: 600 });
 
-	await page.goto(staticEntry("/dummy"));
+	await gotoWithoutTrap(page, "/dummy");
 
 	await page.evaluate(async () => {
 		const { FindkitUI } = MOD;
@@ -740,7 +760,7 @@ test("no side scroll", async ({ page }) => {
 });
 
 test("built-in css is in a CSS Layer", async ({ page }) => {
-	await page.goto(staticEntry("/dummy"));
+	await gotoWithoutTrap(page, "/dummy");
 
 	await page.evaluate(async () => {
 		const { FindkitUI } = MOD;
@@ -770,7 +790,7 @@ test("built-in css is in a CSS Layer", async ({ page }) => {
 });
 
 test("can disable CSS Layers", async ({ page }) => {
-	await page.goto(staticEntry("/dummy"));
+	await gotoWithoutTrap(page, "/dummy");
 
 	await page.evaluate(async () => {
 		const { FindkitUI } = MOD;
@@ -798,7 +818,7 @@ test("can disable CSS Layers", async ({ page }) => {
 });
 
 test("slots part props", async ({ page }) => {
-	await page.goto(staticEntry("/dummy"));
+	await gotoWithoutTrap(page, "/dummy");
 
 	await page.evaluate(async () => {
 		const { FindkitUI, html } = MOD;
@@ -885,6 +905,10 @@ test("slots part props", async ({ page }) => {
 	await page.waitForLoadState("networkidle");
 	await page.locator("text=Custom Show All").first().click();
 	await page.locator(".findkit--view-single").waitFor({ state: "visible" });
+
+	// wait for scroll animation
+	await page.waitForTimeout(500);
+	await page.mouse.wheel(0, -1000);
 
 	await expect(page.locator(".findkit--container")).toHaveScreenshot();
 });

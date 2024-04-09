@@ -27,8 +27,8 @@ test("fetch error and retry", async ({ page }) => {
 		ui.open("diamond");
 	});
 
-	const error = page.locator(".findkit--error");
-	await expect(error).toContainText("Fetch errored");
+	const error = page.locator(".findkit--error h2");
+	await expect(error).toContainText("Unexpected error");
 
 	const retryButton = page.locator("text=Try again");
 	await retryButton.click();

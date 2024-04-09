@@ -2,7 +2,7 @@
 import {
 	assertNonNullable,
 	cleanUndefined,
-	deprecationNotice,
+	cn,
 	getScrollContainer,
 	scrollIntoViewIfNeeded,
 } from "./utils";
@@ -22,7 +22,12 @@ import {
 	createMemoryBackend,
 } from "./router";
 import { Emitter, FindkitUIEvents, lazyValue } from "./emitter";
-import { TranslationStrings } from "./translations";
+import {
+	BASE_TRANSLATIONS,
+	TRANSLATIONS,
+	TranslationStrings,
+	Translator,
+} from "./translations";
 import { listen, Resources } from "./resources";
 import { Filter } from "./filter-type";
 import {
@@ -36,6 +41,15 @@ import { assertNotNil } from "@valu/assert";
 
 export const DEFAULT_HIGHLIGHT_LENGTH = 250;
 export const DEFAULT_PREVIEW_SIZE = 5;
+
+function renderTranslation(
+	msg: string,
+	data?: Record<string, string | number>,
+) {
+	return msg.replace(/{{([^\}]+)}}/g, (_, key) => {
+		return data?.[key]?.toString() ?? "[MISSING]";
+	});
+}
 
 /**
  * Get the parent link element. Used to detect what link was clicked when
@@ -69,6 +83,7 @@ export type CustomRouterDataSetter<T extends CustomRouterData> =
 export interface SearchResultHit {
 	created: Date;
 	modified: Date;
+	index: number;
 	score: number;
 	title: string;
 	url: string;
@@ -262,6 +277,10 @@ export interface State {
 
 	loading: boolean;
 
+	canAnnounceResults: boolean;
+
+	announceResultsMessage: { key: number; text: string };
+
 	currentGroupId: string | undefined;
 
 	infiniteScroll: boolean;
@@ -290,15 +309,6 @@ export interface State {
 		el: HTMLInputElement;
 		unbindEvents: () => void;
 	}[];
-
-	/**
-	 * Additional elements to include in the focus trap
-	 *
-	 * The {el} wrapping looks weird but it is because we need to use the ref()
-	 * from valtio to avoid tracking DOM element internals and still be able to
-	 * referential equality check in removeFromFocusTrap() .
-	 */
-	trapElements: { el: HTMLElement }[];
 
 	ui: {
 		/**
@@ -398,7 +408,6 @@ function clone<T>(obj: T): T {
 }
 
 const SINGLE_GROUP_NAME = Object.freeze({
-	id: "default",
 	title: "Default",
 });
 
@@ -416,11 +425,27 @@ export class FindkitURLSearchParams {
 	private PRIVATE_params: URLSearchParams;
 	private PRIVATE_instanceId: string;
 	private PRIVATE_customDataPrefix: string;
+	private PRIVATE_separator: string;
 
-	constructor(instanceId: string, search: string) {
-		this.PRIVATE_instanceId = instanceId;
-		this.PRIVATE_params = new URLSearchParams(search);
-		this.PRIVATE_customDataPrefix = instanceId + ".c.";
+	constructor(options: {
+		instanceId: string;
+		search: string;
+		separator: string;
+	}) {
+		this.PRIVATE_instanceId = options.instanceId;
+		this.PRIVATE_params = new URLSearchParams(options.search);
+		this.PRIVATE_separator = options.separator;
+
+		// ex. fdk_c_
+		this.PRIVATE_customDataPrefix =
+			this.PRIVATE_instanceId +
+			this.PRIVATE_separator +
+			"c" +
+			this.PRIVATE_separator;
+	}
+
+	private PRIVATE_key(key: "id" | "q") {
+		return this.PRIVATE_instanceId + this.PRIVATE_separator + key;
 	}
 
 	setCustomData(data: CustomRouterData) {
@@ -465,24 +490,22 @@ export class FindkitURLSearchParams {
 	}
 
 	getGroupId() {
-		return (
-			this.PRIVATE_params.get(this.PRIVATE_instanceId + "_id")?.trim() ||
-			undefined
-		);
+		return this.PRIVATE_params.get(this.PRIVATE_key("id"))?.trim() || undefined;
 	}
 
 	next(fn: (params: FindkitURLSearchParams) => void) {
-		const next = new FindkitURLSearchParams(
-			this.PRIVATE_instanceId,
-			this.PRIVATE_params.toString(),
-		);
+		const next = new FindkitURLSearchParams({
+			instanceId: this.PRIVATE_instanceId,
+			search: this.PRIVATE_params.toString(),
+			separator: this.PRIVATE_separator,
+		});
 		fn(next);
 		return next;
 	}
 
 	clearGroupId() {
 		return this.next((next) => {
-			next.PRIVATE_params.delete(next.PRIVATE_instanceId + "_id");
+			next.PRIVATE_params.delete(next.PRIVATE_key("id"));
 		});
 	}
 
@@ -491,7 +514,7 @@ export class FindkitURLSearchParams {
 			for (const key of this.PRIVATE_params.keys()) {
 				if (
 					key.startsWith(this.PRIVATE_customDataPrefix) ||
-					key.startsWith(this.PRIVATE_instanceId + "_")
+					key.startsWith(this.PRIVATE_instanceId + this.PRIVATE_separator)
 				) {
 					next.PRIVATE_params.delete(key);
 				}
@@ -501,22 +524,22 @@ export class FindkitURLSearchParams {
 
 	setGroupId(id: string) {
 		return this.next((next) => {
-			next.PRIVATE_params.set(next.PRIVATE_instanceId + "_id", id);
+			next.PRIVATE_params.set(next.PRIVATE_key("id"), id);
 		});
 	}
 
 	setTerms(terms: string) {
 		return this.next((next) => {
-			next.PRIVATE_params.set(next.PRIVATE_instanceId + "_q", terms.trim());
+			next.PRIVATE_params.set(next.PRIVATE_key("q"), terms.trim());
 		});
 	}
 
 	isActive() {
-		return this.PRIVATE_params.has(this.PRIVATE_instanceId + "_q");
+		return this.PRIVATE_params.has(this.PRIVATE_key("q"));
 	}
 
 	getTerms(): string | undefined {
-		return this.PRIVATE_params.get(this.PRIVATE_instanceId + "_q")?.trim();
+		return this.PRIVATE_params.get(this.PRIVATE_key("q"))?.trim();
 	}
 
 	toString() {
@@ -545,31 +568,20 @@ export interface SearchEngineOptions {
 	groups?: GroupDefinition[];
 	params?: SearchParams;
 	infiniteScroll?: boolean;
-	container: Element | ShadowRoot;
+	container?: Element;
+	modal?: boolean;
+	inert?: string | boolean;
+	shadowDom?: boolean;
 	forceHistoryReplace?: boolean;
 	manageScroll?: boolean;
 	closeOnOutsideClick?: boolean;
 	router?: "memory" | "querystring" | "hash" | RouterBackend<{}>;
+	separator?: string;
 
 	/**
 	 * Monitor <html lang> changes
 	 */
 	monitorDocumentLang?: boolean;
-
-	/**
-	 * @deprecated
-	 */
-	ui?: {
-		/**
-		 * @deprecated
-		 */
-		lang?: string;
-
-		/**
-		 * @deprecated
-		 */
-		overrides?: Partial<TranslationStrings>;
-	};
 
 	lang?: string;
 	translations?: { [lang: string]: Partial<TranslationStrings> };
@@ -588,6 +600,7 @@ export type GroupOrder =
 interface ScopedHistoryState {
 	restoreId?: string;
 	scrollTop?: number;
+	visitedHitId?: string;
 }
 
 interface GlobalHistoryState {
@@ -647,8 +660,12 @@ export class SearchEngine {
 
 	private PRIVATE_resources = new Resources();
 	private PRIVATE_container: Element | ShadowRoot;
+	readonly modal: boolean;
+	private PRIVATE_shadowDom: boolean | undefined;
+	private PRIVATE_inert: string | boolean;
 	private PRIVATE_monitorDocumentLangActive: boolean | undefined;
 	private PRIVATE_manageScroll: boolean | undefined;
+	readonly separator: string;
 
 	private PRIVATE_defaultCustomRouteData: CustomRouterData;
 
@@ -659,7 +676,18 @@ export class SearchEngine {
 	constructor(options: SearchEngineOptions) {
 		this.PRIVATE_defaultCustomRouteData = options.defaultCustomRouterData ?? {};
 		this.PRIVATE_manageScroll = options.manageScroll;
+		this.modal = options.modal ?? true;
+		this.PRIVATE_shadowDom = options.shadowDom ?? true;
+		this.PRIVATE_inert = options.inert ?? true;
 		this.closeOnOutsideClick = options.closeOnOutsideClick ?? false;
+
+		// Default to "_" because it works with WordPress.
+		// For example Wordpress converts dots to underscores in query strings
+		// using a redirect.which break opening a page with existing search terms.
+		// Ex. https://wordpress.org/?what.the.fak
+		// WordPress is so popular that we must choose the defaults to work with it.
+		this.separator = options.separator ?? "_";
+
 		if (typeof window === "undefined") {
 			this.PRIVATE_router = {
 				listen: () => () => {},
@@ -679,7 +707,14 @@ export class SearchEngine {
 		this.instanceId = options.instanceId ?? "fdk";
 		this.publicToken = options.publicToken;
 		this.events = options.events;
-		this.PRIVATE_container = options.container;
+
+		this.PRIVATE_handleCustomInert();
+		this.PRIVATE_restoreFocusOnModalClose();
+
+		this.PRIVATE_handleOutsideClick();
+
+		this.PRIVATE_container = this.PRIVATE_createContainer(options.container);
+
 		this.PRIVATE_monitorDocumentLangActive = options.monitorDocumentLang;
 		this.PRIVATE_forceHistoryReplace = options.forceHistoryReplace ?? false;
 
@@ -707,11 +742,10 @@ export class SearchEngine {
 			];
 		}
 
-		const lang =
-			options.lang ?? options.ui?.lang ?? this.PRIVATE_getDocumentLang();
+		const lang = options.lang ?? this.PRIVATE_getDocumentLang();
 
 		const translations: State["ui"]["translations"] = {
-			[lang]: ref(options.ui?.overrides ?? {}),
+			[lang]: ref({}) as {},
 		};
 
 		for (const [lang, translation] of Object.entries(
@@ -725,6 +759,8 @@ export class SearchEngine {
 			currentGroupId: undefined,
 			searchParams: this.PRIVATE_router.getSearchParamsString(),
 			lang: undefined,
+			canAnnounceResults: false,
+			announceResultsMessage: { key: 1, text: "" },
 			lockScroll: options.lockScroll ?? true,
 			status: "closed",
 			loading: false,
@@ -739,7 +775,6 @@ export class SearchEngine {
 				translations,
 			},
 
-			trapElements: [],
 			inputs: [],
 
 			messages: [],
@@ -768,6 +803,261 @@ export class SearchEngine {
 		this.PRIVATE_fetchThrottle = options.fetchThrottle ?? 200;
 		this.PRIVATE_fetchCount = options.fetchCount ?? 20;
 		this.PRIVATE_minTerms = options.minTerms ?? 2;
+	}
+
+	private PRIVATE_handleOutsideClick() {
+		if (!this.modal) {
+			return;
+		}
+
+		if (this.closeOnOutsideClick !== true) {
+			return;
+		}
+
+		this.events.on("open", () => {
+			setTimeout(() => {
+				// The open event is emitted during the the click event that opens the
+				// modal. So if we immediately bind click listener to Document element
+				// it will capture the ongoing click event and close the modal immediately.
+				// To work around this we wait for the next event loop tick to bind the click listener.
+				const unbind = listen(document, "click", (e) => {
+					if (!(e.target instanceof Element)) {
+						return;
+					}
+
+					const container =
+						this.container instanceof ShadowRoot
+							? this.container.host
+							: this.container;
+
+					if (
+						container === e.target ||
+						this.PRIVATE_getBoundInput(e.target) ||
+						this.container.contains(e.target)
+					) {
+						return;
+					}
+
+					this.close();
+				});
+
+				this.events.once("close", unbind);
+			});
+		});
+	}
+
+	PRIVATE_getBoundInput(el: Element | null | undefined) {
+		if (!el) {
+			return false;
+		}
+
+		return this.PRIVATE_inputs.find((input) => input.el === el);
+	}
+
+	/**
+	 * Restore focus to the previously active element when the modal is closed
+	 */
+	PRIVATE_restoreFocusOnModalClose() {
+		if (!this.modal) {
+			return;
+		}
+
+		let previouslyFocusedElement: HTMLElement | null = null;
+
+		this.events.on("open", () => {
+			const activeElement = this.PRIVATE_getActiveElement();
+
+			// only HTMLInputElement can be focused
+			if (activeElement instanceof HTMLElement) {
+				previouslyFocusedElement = activeElement;
+			}
+
+			const openedFromBoundInput = this.PRIVATE_getBoundInput(
+				previouslyFocusedElement,
+			);
+
+			// Even when the <dialog> is in non-modal mode it will receive the
+			// focus on open. Since we use the non-modal mode for offset
+			// modals where the input is outside the dialog, we need to manually
+			// keep to focus on the input on open
+			if (openedFromBoundInput) {
+				const unbind = listen(
+					document,
+					"focusin",
+					(e) => {
+						if (e.target instanceof HTMLDialogElement) {
+							previouslyFocusedElement?.focus();
+						}
+					},
+					{ once: true },
+				);
+
+				this.events.once("close", unbind);
+			}
+		});
+
+		this.events.on("close", () => {
+			previouslyFocusedElement?.focus();
+			previouslyFocusedElement = null;
+		});
+	}
+
+	/**
+	 * Handle setting custom inert elements
+	 */
+	PRIVATE_handleCustomInert() {
+		if (
+			typeof this.PRIVATE_inert !== "string" ||
+			this.PRIVATE_inert.trim() === ""
+		) {
+			return;
+		}
+
+		const inertSelector: string = this.PRIVATE_inert;
+
+		const inerts = new Set<HTMLElement>();
+
+		this.events.on("open", () => {
+			for (const element of document.querySelectorAll(inertSelector)) {
+				if (!(element instanceof HTMLElement)) {
+					continue;
+				}
+
+				// Do not add user managed inert elements to the set so they
+				// can be made non-inert on the close event
+				if (element.inert) {
+					continue;
+				}
+
+				if (inerts.has(element)) {
+					continue;
+				}
+
+				inerts.add(element);
+				element.inert = true;
+			}
+		});
+
+		this.events.on("close", () => {
+			for (const el of inerts.values()) {
+				el.inert = false;
+			}
+			inerts.clear();
+		});
+	}
+
+	PRIVATE_getDialog() {
+		const dialog = this.container.querySelector("." + cn("dialog"));
+		if (dialog instanceof HTMLDialogElement) {
+			return dialog;
+		}
+	}
+
+	getUniqId(
+		id: "form" | "error" | "results-heading" | `hit-${string}-${number}`,
+	) {
+		return this.instanceId + "-" + id;
+	}
+
+	saveVisitedHitId(hitId: string) {
+		this.PRIVATE_setHistoryState({ visitedHitId: hitId });
+	}
+
+	/**
+	 * Set the initial focus when the dialog is opened or when
+	 * back button is pressed from a search result page
+	 */
+	private PRIVATE_setInitialFocus() {
+		const active = this.PRIVATE_getActiveElement();
+		if (
+			active instanceof HTMLAnchorElement &&
+			active.closest("." + cn("hit"))
+		) {
+			// No need to modify the focus if it is already inside a <a> element
+			// inside a hit container
+			return;
+		}
+
+		const hitId = this.PRIVATE_getHistoryState()?.visitedHitId;
+		if (hitId) {
+			// Hit id is in the title link but when using the Hit
+			// slot override it might be missing. In that case we
+			// look for the hit id in the data attribute of the hit
+			// container and capture the first link
+			const hit = this.elementHost.querySelector(
+				`#${hitId},[data-hit-id=${hitId}] a`,
+			);
+			if (hit instanceof HTMLAnchorElement) {
+				hit.focus();
+				this.PRIVATE_setHistoryState({ visitedHitId: undefined });
+				return;
+			}
+		}
+
+		const el = this.container.querySelector("[autofocus]");
+		if (el instanceof HTMLElement) {
+			el.focus();
+		} else {
+			this.PRIVATE_inputs[0]?.el.focus();
+		}
+	}
+
+	PRIVATE_createContainer(customContainer: Element | undefined) {
+		if (!this.modal && customContainer) {
+			if (this.PRIVATE_shadowDom) {
+				return customContainer.attachShadow({ mode: "open" });
+			}
+			return customContainer;
+		}
+
+		let hostElement = customContainer;
+		if (!hostElement) {
+			hostElement = document.createElement("div");
+			hostElement.classList.add(cn("host"));
+			(hostElement as HTMLDivElement).style.position = "absolute";
+			document.body.appendChild(hostElement);
+		}
+
+		const shadowRoot = this.PRIVATE_shadowDom
+			? hostElement.attachShadow({ mode: "open" })
+			: hostElement;
+
+		this.events.on("open", () => {
+			const undindFocusSetting = listen(this.elementHost, "focusin", () => {
+				this.PRIVATE_setInitialFocus();
+			});
+
+			const unbindEscListener = listen(document, "keydown", (e) => {
+				if (e.key === "Escape" && this.state.status !== "closed") {
+					e.preventDefault();
+					this.close();
+				}
+			});
+
+			this.events.once("close", () => {
+				undindFocusSetting();
+				unbindEscListener();
+			});
+
+			if (typeof this.PRIVATE_inert === "boolean" && this.PRIVATE_inert) {
+				this.PRIVATE_getDialog()?.showModal();
+			} else {
+				this.PRIVATE_getDialog()?.show();
+			}
+
+			// Firefox moves to focus to the <dialog> element but does not
+			// fire the focusin event. We need to manually set the focus here
+			this.PRIVATE_setInitialFocus();
+
+			// Clear the safari fixer so focus can move normally again
+			setTimeout(undindFocusSetting, 0);
+		});
+
+		this.events.on("close", () => {
+			this.PRIVATE_getDialog()?.close();
+		});
+
+		return shadowRoot;
 	}
 
 	private PRIVATE_started = lazyValue<true>();
@@ -801,7 +1091,7 @@ export class SearchEngine {
 			// like when pressing the back button on FinkditUI Modal, the
 			// history has been already changed but we still need to save the
 			// results to session storage with correct restore id. With this
-			// property it is possible to save is even after the history
+			// property it is possible to save it even after the history
 			// change.
 			this.PRIVATE_previousRestoreId = restoreId;
 
@@ -887,10 +1177,11 @@ export class SearchEngine {
 			);
 		}
 
-		const initialSearchParams = new FindkitURLSearchParams(
-			this.instanceId,
-			this.PRIVATE_router.getSearchParamsString(),
-		);
+		const initialSearchParams = new FindkitURLSearchParams({
+			instanceId: this.instanceId,
+			search: this.PRIVATE_router.getSearchParamsString(),
+			separator: this.separator,
+		});
 
 		this.state.currentGroupId = initialSearchParams.getGroupId();
 
@@ -929,19 +1220,6 @@ export class SearchEngine {
 
 	getGroups(): GroupDefinition[] {
 		return this.state.nextGroupDefinitions;
-	}
-
-	/**
-	 * @deprecated use addTranslation and setLanguage instead
-	 */
-	setUIStrings(lang: string, overrides?: Partial<TranslationStrings>) {
-		deprecationNotice(
-			"Using deprecated .setUIStrings() method. See https://findk.it/translations",
-		);
-		this.state.ui.lang = lang;
-		if (overrides) {
-			this.state.ui.translations[lang] = ref(overrides);
-		}
 	}
 
 	addTranslation(
@@ -1017,6 +1295,31 @@ export class SearchEngine {
 		}
 	}
 
+	createTranslator(options: {
+		lang: string;
+		translations: { [lang: string]: Partial<TranslationStrings> };
+	}): Translator {
+		const { lang, translations } = options;
+		// prefer locale like "en-US" but fallback to "en" if there is not US
+		// specific translations
+		const short = lang.trim().toLowerCase().slice(0, 2);
+
+		return (key, data) => {
+			const translation =
+				translations[lang]?.[key] ||
+				translations[short]?.[key] ||
+				TRANSLATIONS[lang]?.[key] ||
+				TRANSLATIONS[short]?.[key] ||
+				BASE_TRANSLATIONS[key];
+
+			if (translation) {
+				return renderTranslation(translation, data);
+			}
+
+			return `[${key} not translated]`;
+		};
+	}
+
 	private PRIVATE_selectKeyboardCursor() {
 		// Find the currently selected item
 		const item = this.PRIVATE_container.querySelector(`[data-kb-current]`);
@@ -1089,10 +1392,11 @@ export class SearchEngine {
 			return this.PRIVATE_findkitParamsCache.value;
 		}
 
-		const value = new FindkitURLSearchParams(
-			this.instanceId,
-			this.state.searchParams,
-		);
+		const value = new FindkitURLSearchParams({
+			instanceId: this.instanceId,
+			search: this.state.searchParams,
+			separator: this.separator,
+		});
 
 		this.PRIVATE_findkitParamsCache = {
 			str: this.state.searchParams,
@@ -1389,10 +1693,18 @@ export class SearchEngine {
 		});
 	};
 
-	private PRIVATE_handleInputChange(
-		terms: string,
-		options?: { force?: boolean },
-	) {
+	/**
+	 * Make search immedialtely by flushing the throttling terms
+	 */
+	private PRIVATE_searchNow() {
+		const terms = this.PRIVATE_throttlingTerms;
+
+		if (terms) {
+			this.setTerms(terms);
+		}
+	}
+
+	private PRIVATE_handleInputChange(terms: string) {
 		if (this.PRIVATE_throttlingTerms === terms.trim()) {
 			return;
 		}
@@ -1400,11 +1712,6 @@ export class SearchEngine {
 		this.PRIVATE_throttleId++;
 
 		this.PRIVATE_throttlingTerms = terms.trim();
-
-		if (options?.force === true) {
-			this.setTerms(this.PRIVATE_throttlingTerms);
-			return;
-		}
 
 		if (this.PRIVATE_termsThrottleTimer) {
 			return;
@@ -1865,23 +2172,15 @@ export class SearchEngine {
 		// Combine responses with the search groups and re-assign the ids for them
 		const resWithIds: State["resultGroups"] = {};
 
-		fullParams.groups?.forEach((_group, index) => {
+		fullParams.groups?.forEach((group, index) => {
 			const res = response.value.groups[index];
 			if (!res) {
 				return;
 			}
 
-			const hits = res.hits.map((hit) => {
-				const { created, modified, ...rest } = hit;
-				return ref({
-					...rest,
-					created: new Date(created),
-					modified: new Date(modified),
-				});
-			});
+			const indexGroup = groups[index];
 
 			let groupId;
-			const indexGroup = groups[index];
 
 			if (appendGroup) {
 				groupId = appendGroup.id;
@@ -1890,6 +2189,18 @@ export class SearchEngine {
 			} else {
 				throw new Error("[findkit] Bug? Unknown group index: " + index);
 			}
+
+			const startIndex = group.from ?? 0;
+
+			const hits = res.hits.map((hit, index) => {
+				const { created, modified, ...rest } = hit;
+				return ref({
+					...rest,
+					index: startIndex + index,
+					created: new Date(created),
+					modified: new Date(modified),
+				});
+			});
 
 			resWithIds[groupId] = {
 				hits,
@@ -1943,17 +2254,141 @@ export class SearchEngine {
 		return this.state.inputs;
 	}
 
+	/**
+	 * Get the active element, unwrapping shadow DOM if needed
+	 */
+	private PRIVATE_getActiveElement(): Element | null {
+		return (
+			document.activeElement?.shadowRoot?.activeElement ??
+			document.activeElement
+		);
+	}
+
 	private PRIVATE_syncInputs = (terms: string) => {
+		const activeElement = this.PRIVATE_getActiveElement();
+
 		for (const input of this.PRIVATE_inputs) {
 			// only change input value if it does not have focus
-			const activeElement =
-				document.activeElement?.shadowRoot?.activeElement ??
-				document.activeElement;
 			if (input && input.el !== activeElement) {
 				input.el.value = terms;
 			}
 		}
 	};
+
+	private PRIVATE_checkBouncingTimer?: ReturnType<typeof setTimeout>;
+
+	private PRIVATE_checkIfCanAnnounceResults(options?: { now?: boolean }) {
+		const check = () => {
+			const activeElement = this.PRIVATE_getActiveElement();
+			const read = Boolean(
+				activeElement?.classList.contains(cn("submit-search-button")) ||
+					this.PRIVATE_getBoundInput(activeElement),
+			);
+
+			if (!read) {
+				this.state.announceResultsMessage.text = "";
+			}
+
+			this.state.canAnnounceResults = read;
+		};
+
+		if (options?.now) {
+			clearTimeout(this.PRIVATE_checkBouncingTimer);
+			check();
+			return;
+		}
+
+		clearTimeout(this.PRIVATE_checkBouncingTimer);
+
+		// Will toggle to false temporarily when jumping from valid element another
+		// valid element. This is to avoid flickering of the announcement
+		this.PRIVATE_checkBouncingTimer = setTimeout(check, 5);
+	}
+
+	private PRIVATE_announceResults() {
+		const t = this.createTranslator(this.state.ui);
+
+		this.PRIVATE_checkIfCanAnnounceResults({ now: true });
+		if (!this.state.canAnnounceResults) {
+			return;
+		}
+
+		const terms = (this.PRIVATE_throttlingTerms || this.state.usedTerms) ?? "";
+
+		if (this.state.status === "fetching") {
+			this.PRIVATE_announce(t("aria-live-loading-results"));
+			this.events.once("fetch-done", () => {
+				// fetch-done fires while still in fetching state.
+				// Fire after a timeout to avoid infinite loop
+				setTimeout(() => {
+					this.PRIVATE_announceResults();
+				});
+			});
+			return;
+		}
+
+		if (terms.length < this.PRIVATE_minTerms) {
+			this.PRIVATE_announce(
+				t("aria-live-too-few-search-terms", {
+					minTerms: this.PRIVATE_minTerms,
+				}),
+			);
+			return;
+		}
+
+		const allTotal = getTotalFromAllGroups(
+			Object.values(this.state.resultGroups),
+		);
+
+		if (
+			this.state.usedGroupDefinitions.length === 1 ||
+			this.state.currentGroupId !== undefined
+		) {
+			const groupTotal = this.state.currentGroupId
+				? this.state.resultGroups[this.state.currentGroupId]?.total
+				: undefined;
+			const total = groupTotal ?? allTotal;
+
+			this.PRIVATE_announce(t("aria-live-total-results", { total }));
+			if (total > 0) {
+				this.PRIVATE_announce(
+					t("aria-live-focus-search-results-with-shift-enter"),
+				);
+			}
+		} else {
+			const groupCount = this.state.usedGroupDefinitions.length;
+			this.PRIVATE_announce(
+				t("aria-live-group-result-details", {
+					groupCount,
+					allTotal,
+				}),
+			);
+			if (allTotal > 0) {
+				this.PRIVATE_announce(
+					t("aria-live-focus-search-results-with-shift-enter"),
+				);
+			}
+		}
+	}
+
+	PRIVATE_announceMessages: string[] = [];
+	PRIVATE_announcePending = false;
+	private PRIVATE_announce(message: string) {
+		this.PRIVATE_announceMessages.push(message);
+		if (this.PRIVATE_announcePending) {
+			return;
+		}
+
+		this.PRIVATE_announcePending = true;
+
+		queueMicrotask(() => {
+			this.PRIVATE_announcePending = false;
+			this.state.announceResultsMessage.key++;
+			this.state.announceResultsMessage.text =
+				this.PRIVATE_announceMessages.join(" ");
+			this.PRIVATE_announceMessages = [];
+		});
+	}
 
 	/**
 	 * Bind input to search. Returns unbind function.
@@ -1962,7 +2397,7 @@ export class SearchEngine {
 		const unbind = () => {
 			this.removeInput(input);
 		};
-		const prev = this.PRIVATE_inputs.find((o) => o.el === input);
+		const prev = this.PRIVATE_getBoundInput(input);
 
 		if (prev) {
 			return unbind;
@@ -1975,7 +2410,10 @@ export class SearchEngine {
 				// Enable search results linking by copying the terms to the input
 				// from url bar but skip if if the input is active so we wont mess
 				// with the user too much
-				if (input.value.trim() === "" || input !== document.activeElement) {
+				if (
+					input.value.trim() === "" ||
+					input !== this.PRIVATE_getActiveElement()
+				) {
 					input.value = currentTerms;
 				}
 			} else if (input.value.trim()) {
@@ -2004,13 +2442,33 @@ export class SearchEngine {
 
 			listeners.create(() =>
 				listen(
+					this.container,
+					"focusin",
+					() => {
+						this.PRIVATE_checkIfCanAnnounceResults();
+					},
+					{ passive: true, capture: true },
+				),
+			);
+
+			listeners.create(() =>
+				listen(
 					input,
 					"blur",
 					() => {
+						this.PRIVATE_checkIfCanAnnounceResults();
 						this.state.keyboardCursor = undefined;
 					},
 					{ passive: true },
 				),
+			);
+
+			listeners.create(() =>
+				listen(this.container, "submit", (e) => {
+					e.preventDefault();
+					this.PRIVATE_searchNow();
+					this.PRIVATE_announceResults();
+				}),
 			);
 
 			listeners.create(() =>
@@ -2036,13 +2494,17 @@ export class SearchEngine {
 					} else if (e.key === "Enter") {
 						assertInputEvent(e);
 
+						if (e.shiftKey) {
+							this.focusFirstHit();
+						}
+
 						if (this.state.keyboardCursor) {
 							e.preventDefault();
 							this.PRIVATE_selectKeyboardCursor();
 							return;
 						}
 
-						this.PRIVATE_handleInputChange(e.target.value, { force: true });
+						this.PRIVATE_handleInputChange(e.target.value);
 					}
 				}),
 			);
@@ -2057,8 +2519,15 @@ export class SearchEngine {
 		return unbind;
 	};
 
+	focusFirstHit() {
+		const hit = this.elementHost.querySelector(`.${cn("hit")} a`);
+		if (hit instanceof HTMLElement) {
+			hit.focus();
+		}
+	}
+
 	removeInput = (rmInput: HTMLInputElement) => {
-		const input = this.PRIVATE_inputs.find((input) => input?.el === rmInput);
+		const input = this.PRIVATE_getBoundInput(rmInput);
 		if (!input) {
 			return;
 		}
@@ -2071,19 +2540,6 @@ export class SearchEngine {
 		}
 
 		this.events.emit("unbind-input", { input: rmInput });
-	};
-
-	trapFocus = (elements: HTMLElement[]) => {
-		this.state.trapElements.push(...elements.map((el) => ref({ el })));
-		return () => {
-			return this.PRIVATE_removeFromFocusTrap(elements);
-		};
-	};
-
-	private PRIVATE_removeFromFocusTrap = (elements: HTMLElement[]) => {
-		this.state.trapElements = this.state.trapElements.filter((ref) => {
-			return !elements.includes(ref.el);
-		});
 	};
 
 	private PRIVATE_addAllResults(res: State["resultGroups"]) {

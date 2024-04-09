@@ -1,9 +1,24 @@
-import { Page } from "@playwright/test";
+import test, { Page, expect } from "@playwright/test";
 import type { FindkitUI } from "../src/cdn-entries";
 import type { FindkitUIEvents } from "../src/emitter";
 
 declare const ui: FindkitUI;
 
+export function fixFirefoxTab() {
+	test.use({
+		launchOptions: async ({ launchOptions }, use) => {
+			await use({
+				...launchOptions,
+				// Enable tab focusable links in firefox
+				// Also enable from macos settings:
+				// https://stackoverflow.com/a/74790182/153718
+				firefoxUserPrefs: {
+					"accessibility.tabfocus": 7,
+				},
+			});
+		},
+	});
+}
 export async function getHitHosts(page: Page) {
 	const hits = page.locator(".findkit--hit a");
 	await hits.first().waitFor({ state: "visible" });
@@ -53,7 +68,7 @@ export async function getScrollPosition(page: Page) {
 	return await page.evaluate(() => {
 		return (
 			document
-				.querySelector(".findkit")
+				.querySelector(".findkit--host")
 				?.shadowRoot?.querySelector(".findkit--modal")?.scrollTop ?? -1
 		);
 	});
@@ -81,7 +96,7 @@ export function delayer() {
 		now() {
 			saved();
 		},
-		what(fn: () => void) {
+		exec(fn: () => void) {
 			saved = fn;
 		},
 	};
@@ -101,7 +116,7 @@ export async function gotoWithEarlyHook<T>(
 	await page.route(
 		(url) => url.pathname.endsWith("index.js"),
 		(route) => {
-			delay.what(() => {
+			delay.exec(() => {
 				void route.continue();
 			});
 		},
@@ -127,18 +142,34 @@ export async function pressTab(page: Page, options?: { shift?: boolean }) {
 	const tab = browserName === "webkit" ? "Alt+Tab" : "Tab";
 
 	if (options?.shift) {
-		return await page.keyboard.press(`Shift+${tab}`);
+		await page.keyboard.press(`Shift+${tab}`);
+	} else {
+		await page.keyboard.press(tab);
 	}
-
-	await page.keyboard.press(tab);
 }
 
-export async function mockSearchResponses(page: Page) {
+export async function mockSearchResponses(
+	page: Page,
+	options?: {
+		slowDown?: number;
+		customizeResponse?: (res: typeof mockResponse) => typeof mockResponse;
+	},
+) {
 	await page.route(
 		(url) => url.hostname === "search.findkit.com",
 		// eslint-disable-next-line @typescript-eslint/no-misused-promises
 		async (route) => {
-			await route.fulfill({ json: mockResponse });
+			if (options?.slowDown) {
+				await new Promise((r) => setTimeout(r, options.slowDown));
+			}
+
+			let json = mockResponse;
+
+			if (options?.customizeResponse) {
+				json = options.customizeResponse(structuredClone(mockResponse));
+			}
+
+			await route.fulfill({ json });
 		},
 	);
 }
@@ -257,9 +288,96 @@ const mockResponse = {
 						},
 					},
 				},
+				{
+					score: 22.833023,
+					superwordsMatch: false,
+					title: "Kumikengät",
+					language: "fi",
+					url: "https://shop.findkit.invalid/fi/vaatteet/kumikenkat",
+					highlight:
+						"Kumiset <em>kengät</em> pitävät jalat kuivina myös rankkasateessa",
+					domain: "shop.findkit.invalid",
+					tags: [
+						"category/clothing",
+						"language/fi",
+						"product",
+						"domain/shop.findkit.invalid",
+					],
+					created: "2022-10-20T00:00:00.000Z",
+					modified: "2023-10-12T15:29:11.818Z",
+					customFields: {
+						category: {
+							type: "keyword",
+							value: "Clothing",
+						},
+						weight: {
+							type: "number",
+							value: 1,
+						},
+						price: {
+							type: "number",
+							value: 30,
+						},
+						quantity: {
+							type: "number",
+							value: 34,
+						},
+					},
+				},
 			],
 		},
 	],
 	duration: 31,
 	messages: [],
 };
+
+export async function routeMocks(page: Page) {
+	await page.route(
+		(url) => url.hostname === "shop.findkit.invalid",
+		(route) => {
+			void route.fulfill({
+				status: 200,
+				contentType: "text/html",
+				body: "<html><body><h1>Shop</h1></body></html>",
+			});
+		},
+	);
+
+	await page.route(
+		(url) => url.hostname === "other.invalid",
+		(route) => {
+			void route.fulfill({
+				status: 200,
+				contentType: "text/html",
+				body: "<html><body><h1>Other</h1></body></html>",
+			});
+		},
+	);
+}
+
+export async function scrollToHit(page: Page, text: string) {
+	return await test.step(`finds hit "${text}" by scrolling`, async () => {
+		const hits = page.locator(".findkit--hit");
+		await hits.first().waitFor({ state: "visible" });
+
+		// Ensure mouse is over the first hit so the scroll wheel works
+		await hits.first().hover();
+
+		const theHit = hits.filter({ hasText: text }).first();
+
+		let i = 20;
+
+		while (i--) {
+			await page.mouse.wheel(0, 800);
+			await page.waitForTimeout(200);
+			if (await theHit.isVisible()) {
+				break;
+			}
+		}
+
+		expect(await theHit.isVisible()).toBe(true);
+
+		await theHit.scrollIntoViewIfNeeded();
+		return theHit;
+	});
+}

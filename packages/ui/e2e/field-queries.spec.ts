@@ -206,12 +206,12 @@ test("can save filters to url and restore them on reload", async ({ page }) => {
 	await page.getByLabel("Most expensive first").check();
 	await expect.poll(getPrices).toEqual(["220", "100", "30"]);
 	expect(await getFetches()).toEqual(["", "boots", "boots"]);
-	expect(page.url()).toContain("fdk.c.sort=price_desc");
+	expect(page.url()).toContain("fdk_c_sort=price_desc");
 
 	await page.getByLabel("Cheapest first").check();
 	await expect.poll(getPrices).toEqual(["30", "100", "220"]);
 	expect(await getFetches()).toEqual(["", "boots", "boots", "boots"]);
-	expect(page.url()).toContain("fdk.c.sort=price_asc");
+	expect(page.url()).toContain("fdk_c_sort=price_asc");
 
 	// Can restore the form state and return the same results
 	await page.reload();

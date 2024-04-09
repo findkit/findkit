@@ -1,4 +1,3 @@
-import { FocusTrap } from "./focus-trap";
 import React, {
 	StrictMode,
 	useRef,
@@ -8,13 +7,7 @@ import React, {
 	ReactNode,
 } from "react";
 import ReactDOM from "react-dom";
-import {
-	Results,
-	FindkitProvider,
-	Logo,
-	Spinner,
-	ErrorContainer,
-} from "./components";
+import { ResultsContent, FindkitProvider, Logo, Spinner } from "./components";
 import {
 	useSearchEngineState,
 	useSearchEngine,
@@ -31,11 +24,22 @@ import {
 	SearchEngineOptions,
 	GroupOrder,
 } from "./search-engine";
-import { cn, deprecationNotice, getScrollContainer, View } from "./utils";
+import { cn, getScrollContainer, View } from "./utils";
 import type { Emitter, FindkitUIEvents } from "./emitter";
-import { TranslationStrings } from "./translations";
 import { Slots } from "./slots";
 import { SlotCatchBoundary, createSlotComponent } from "./slots-core";
+import { listen } from "./resources";
+
+function useFormProps() {
+	const engine = useSearchEngine();
+	const t = useTranslator();
+
+	return {
+		role: "search",
+		id: engine.getUniqId("form"),
+		["aria-label"]: t("aria-label-search-form"),
+	};
+}
 
 function useScrollLock(lock: boolean) {
 	useLayoutEffect(() => {
@@ -82,53 +86,6 @@ function useOpenCloseEvents(mounted: boolean) {
 			});
 		};
 	}, [engine, mounted]);
-}
-
-function useFocusTrap(
-	containerRef: React.MutableRefObject<HTMLDivElement | null>,
-) {
-	const state = useSearchEngineState();
-	const engine = useSearchEngine();
-	const isOpen = state.status !== "closed";
-	const trapRef = useRef<FocusTrap | null>(null);
-
-	useEffect(() => {
-		if (!isOpen) {
-			return;
-		}
-
-		const inputs = state.inputs.map((input) => input.el);
-		const trapElements = state.trapElements.map((ref) => ref.el);
-
-		if (!trapRef.current && containerRef.current) {
-			trapRef.current = new FocusTrap({
-				containers: [containerRef.current, ...inputs, ...trapElements],
-				escDisables: true,
-				outsideClickDisables: engine.closeOnOutsideClick,
-				onAfterEnable() {
-					for (const input of inputs) {
-						if (containerRef.current?.contains(input)) {
-							input.focus();
-						}
-					}
-				},
-				onAfterDisable() {
-					if (trapRef.current) {
-						engine.close();
-					}
-				},
-			});
-			trapRef.current.enable();
-		}
-
-		return () => {
-			const trap = trapRef.current;
-			trapRef.current = null;
-			trap?.disable();
-		};
-	}, [containerRef, engine, isOpen, state.inputs, state.trapElements]);
-
-	return containerRef;
 }
 
 function useIsScrollingDown(
@@ -236,54 +193,44 @@ function Cross() {
 	);
 }
 
-function FetchError() {
-	const state = useSearchEngineState();
-	const engine = useSearchEngine();
-	const t = useTranslator();
-
-	if (!state.error) {
-		return null;
-	}
-
-	return (
-		<ErrorContainer title={t("error-title")} error={state.error?.message ?? ""}>
-			<div>
-				Fetch errored
-				<View
-					as="button"
-					cn="retry-button"
-					type="button"
-					onClick={() => engine.retry()}
-				>
-					{t("try-again")}
-				</View>
-			</div>
-		</ErrorContainer>
-	);
-}
-
 function SearchInput(props: { placeholder?: string; icon?: ReactNode }) {
 	const inputRef = useInput();
 	const t = useTranslator();
 	const state = useSearchEngineState();
+	const engine = useSearchEngine();
+	let description = t("sr-search-instructions");
+	if (engine.modal) {
+		description = t("sr-search-instructions-modal");
+	}
 
 	return (
 		<View cn="search-input-wrap">
-			{/* XXX add instance-id */}
-			<View cn="sr-only" id="search-instructions">
-				{t("sr-search-instructions")}
-			</View>
 			<View
 				as="input"
-				aria-describedby="search-instructions"
+				autoFocus={engine.modal}
 				placeholder={props.placeholder}
+				aria-description={description}
 				cn="search-input"
-				type="text"
+				type="search"
 				ref={inputRef}
 				aria-label={t("aria-label-search-input")}
 			/>
+			<View
+				tabIndex={-1}
+				as="button"
+				cn={["visible-when-focused", "submit-search-button"]}
+				onKeyDown={(e) => {
+					if (e.key === "Enter" && e.shiftKey) {
+						e.preventDefault();
+						engine.focusFirstHit();
+					}
+				}}
+			>
+				{t("submit-search")}
+			</View>
 			<Spinner />
 			<View
+				aria-hidden
 				cn={{
 					["search-input-icon-container"]: true,
 					["search-input-icon-container-hide"]: state.loading,
@@ -339,7 +286,8 @@ function Modal() {
 	const state = useSearchEngineState();
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const containerKbAttrs = useContainerKeyboardAttributes();
-	useFocusTrap(containerRef);
+	const t = useTranslator();
+	const formProps = useFormProps();
 
 	const show = state.status !== "closed";
 	const delayed = useDelay(show, containerRef);
@@ -354,17 +302,14 @@ function Modal() {
 	// Use delayed to keep the open body class until the animation is done
 	useEffect(() => {
 		const classList = document.body.classList;
-
-		// Just to be cleaner use the instance id only when not using the default one
-		const prefix =
-			engine.instanceId === "fdk" ? "findkit-ui" : `${engine.instanceId}`;
-
-		const open = `${prefix}-open`;
+		const prefixedClass = `${engine.instanceId}-open`;
 
 		if (delayed) {
-			classList.add(open);
+			classList.add(prefixedClass);
+			classList.add("findkit-ui-open");
 		} else {
-			classList.remove(open);
+			classList.remove(prefixedClass);
+			classList.remove("findkit-ui-open");
 		}
 	}, [delayed, engine.instanceId, show]);
 
@@ -376,6 +321,8 @@ function Modal() {
 
 	const header = state.header ? (
 		<View
+			as="section"
+			aria-label={t("aria-label-search-controls")}
 			cn={{
 				header: true,
 				"header-hidden": isScrollingDown,
@@ -385,18 +332,13 @@ function Modal() {
 		</View>
 	) : null;
 
-	const content = (
-		<View cn="content">
-			<FetchError />
-			<SlotCatchBoundary name="Content" props={{}}>
-				<Results />
-			</SlotCatchBoundary>
-		</View>
-	);
+	const content = <ResultsContent />;
 
 	return (
 		<View
 			data-id={engine.instanceId}
+			as="form"
+			{...formProps}
 			cn={{
 				backdrop: true,
 				container: true,
@@ -412,8 +354,15 @@ function Modal() {
 				}
 			}}
 		>
-			<ScreenReaderModalMessages />
 			<View
+				// Do not allow focus to the scrolling container.
+				// The focus on on the scrolling container is confusing as it
+				// is not annouced for screen readers and it is not visible.
+				// This makes sure the focus jumps to the first result
+				// after a search when hitting tab key
+				// The container is scrollable from the result element too
+				// so this should be ok.
+				tabIndex={-1}
 				ref={containerRef}
 				{...containerKbAttrs}
 				cn={{
@@ -441,6 +390,7 @@ function Modal() {
 
 function useScrollRestore(containerRef: React.RefObject<Element | null>) {
 	const engine = useSearchEngine();
+
 	useLayoutEffect(() => {
 		let el = containerRef.current;
 
@@ -466,11 +416,13 @@ function useScrollRestore(containerRef: React.RefObject<Element | null>) {
 }
 
 export function Plain() {
+	const t = useTranslator();
 	const engine = useSearchEngine();
 	const state = useSearchEngineState();
 	const containerKbAttrs = useContainerKeyboardAttributes();
 	const view = useView();
-	const containerRef = useRef<HTMLDivElement | null>(null);
+	const containerRef = useRef<HTMLFormElement | null>(null);
+	const formProps = useFormProps();
 
 	useScrollRestore(containerRef);
 	useOpenCloseEvents(true);
@@ -480,21 +432,18 @@ export function Plain() {
 			name="Header"
 			props={{ Input: SearchInput, CloseButton: CloseButton }}
 		>
-			<SearchInput />
+			<View as="section" aria-label={t("aria-label-search-controls")}>
+				<SearchInput />
+			</View>
 		</SlotCatchBoundary>
 	) : null;
 
-	const content = (
-		<View cn="content">
-			<FetchError />
-			<SlotCatchBoundary name="Content" props={{}}>
-				<Results />
-			</SlotCatchBoundary>
-		</View>
-	);
+	const content = <ResultsContent />;
 
 	return (
 		<View
+			as="form"
+			{...formProps}
 			{...containerKbAttrs}
 			ref={containerRef}
 			cn={{
@@ -510,40 +459,6 @@ export function Plain() {
 				{content}
 			</SlotCatchBoundary>
 		</View>
-	);
-}
-
-function ScreenReaderModalMessages() {
-	const state = useSearchEngineState();
-	const t = useTranslator();
-
-	const terms = state.usedTerms ?? "";
-	const count = Object.values(state.resultGroups).reduce((acc, group) => {
-		return acc + group.total;
-	}, 0);
-
-	const [message, setMessage] = useState("");
-
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			if (terms.trim()) {
-				setMessage(t("sr-result-count", { count, terms }));
-			} else {
-				setMessage("");
-			}
-		}, 2000);
-
-		return () => {
-			clearTimeout(timer);
-		};
-	}, [count, t, terms]);
-
-	return (
-		<>
-			<View cn="sr-only" aria-live="polite">
-				{message}
-			</View>
-		</>
 	);
 }
 
@@ -588,6 +503,63 @@ function Style(props: { css?: string; layer?: string; href?: string }) {
 	);
 }
 
+/*
+ * CSS must be fully loaded before we can show the modal
+ * for the scroll restoration to work as css affects element
+ * sizes and positions and thus scroll positions
+ *
+ * This component waits for the CSS to be loaded and then renders
+ * the children.
+ */
+function CSSLoadWaiter(props: { children: React.ReactNode; skip: boolean }) {
+	const [loaded, setLoaded] = useState(props.skip ?? false);
+	const ref = useRef<HTMLDivElement>(null);
+
+	useLayoutEffect(() => {
+		if (!ref.current) {
+			return;
+		}
+
+		if (loaded) {
+			return;
+		}
+
+		const isLoaded = getComputedStyle(ref.current).getPropertyValue(
+			"--findkit--loaded",
+		);
+
+		if (isLoaded) {
+			setLoaded(true);
+			return;
+		}
+
+		// Just using a dummy animation which is provided by the css we load
+		// on a hidden element to detect when the CSS is loaded. Because we
+		// use css layers and the css @import statement the standard onload
+		// event on the link element does not work.
+		return listen(ref.current, "animationstart", () => {
+			setLoaded(true);
+		});
+	}, [loaded]);
+
+	return (
+		<>
+			{loaded ? (
+				props.children
+			) : (
+				<View
+					style={{
+						opacity: 0,
+						pointerEvents: "none",
+					}}
+					cn="css-load-detection"
+					ref={ref}
+				/>
+			)}
+		</>
+	);
+}
+
 export type LayeredCSS = {
 	css?: string;
 	href?: string;
@@ -598,12 +570,12 @@ function supportsCSSLayers() {
 	const style = document.createElement("style");
 	style.id = "findkit-test";
 	style.textContent = `
-        @layer findkit-test {
-			#findkit-test {
-				--findkit--test: 1
+            @layer findkit-test {
+                #findkit-test {
+                --findkit--test: 1
 			}
         }
-	`;
+            `;
 
 	document.head.appendChild(style);
 
@@ -632,39 +604,30 @@ export function init(_options: {
 	searchEndpoint?: string;
 	params?: SearchParams;
 	forceHistoryReplace?: boolean;
+	closeOnOutsideClick?: boolean;
 	groups?: GroupDefinition[];
-	pageScroll?: boolean;
-	modal?: boolean;
 	fetchCount?: number;
 	container?: Element;
 	lockScroll?: boolean;
+	builtinStyles?: boolean;
 	infiniteScroll?: boolean;
 	backdrop?: boolean;
+	inert?: string | boolean;
+	modal?: boolean;
 	header?: boolean;
 	router?: SearchEngineOptions["router"];
 	groupOrder?: GroupOrder;
 	fontDivisor?: number;
-	manageScroll?: boolean;
-	ui?: {
-		lang?: string;
-		overrides?: Partial<TranslationStrings>;
-	};
 }) {
 	const options = { ..._options };
-	const hasCustomContainer = Boolean(options.container);
 
-	if (hasCustomContainer && typeof options.modal !== "boolean") {
-		options.modal = false;
+	if (typeof options.modal !== "boolean") {
+		options.modal = !options.container;
 	}
 
-	if (hasCustomContainer && typeof options.forceHistoryReplace !== "boolean") {
+	// Default to use history.replaceState when not using modal
+	if (!options.modal && typeof options.forceHistoryReplace !== "boolean") {
 		options.forceHistoryReplace = true;
-	}
-
-	if (options.ui) {
-		deprecationNotice(
-			"Using deprecated `ui` constructor option. Use `translations` and `lang`instead.",
-		);
 	}
 
 	const hasGroups = options.groups && options.groups.length > 0;
@@ -676,24 +639,11 @@ export function init(_options: {
 
 	let dynamicCSS = "";
 
-	if (options.modal === false) {
-		options.pageScroll = true;
-		options.lockScroll = false;
+	if (options.modal && typeof options.lockScroll !== "boolean") {
+		options.lockScroll = true;
 	}
 
-	if (options.pageScroll) {
-		options.lockScroll = false;
-		dynamicCSS = `
-			.${cn("modal-container")} {
-				inset: initial;
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-			}
-		`;
-	}
-
+	// options.backdrop = true;
 	if (options.backdrop) {
 		dynamicCSS += `
 			@media (min-width: 900px) and (min-height: 600px) {
@@ -706,41 +656,7 @@ export function init(_options: {
 		`;
 	}
 
-	let container =
-		options.shadowDom !== false
-			? options.container?.attachShadow({ mode: "open" })
-			: options.container;
-
-	if (!container) {
-		container = document.createElement("div");
-		container.classList.add("findkit");
-		document.body.appendChild(container);
-
-		if (options.shadowDom !== false) {
-			container.classList.add(cn("shadow-host"));
-			container = container.attachShadow({ mode: "open" });
-		}
-	}
-
-	const host = container instanceof ShadowRoot ? container.host : container;
-
-	const engine = new SearchEngine({
-		...options,
-		container: container,
-	});
-
-	options.events.on("dispose", () => {
-		if (container) {
-			ReactDOM.unmountComponentAtNode(container);
-		}
-
-		// Bailout from removing the container if we didn't create it
-		if (hasCustomContainer) {
-			return;
-		}
-
-		host.remove();
-	});
+	const engine = new SearchEngine(options);
 
 	const fontDivisor = options.fontDivisor ?? getHtmlFontSize();
 
@@ -781,12 +697,35 @@ export function init(_options: {
 				})}
 
 				<FindkitProvider engine={engine} slots={options.slots ?? {}}>
-					{options.modal === false ? <Plain /> : <Modal />}
+					<CSSLoadWaiter skip={options.builtinStyles === false}>
+						{options.modal ? (
+							<View
+								as="dialog"
+								cn="dialog"
+								// Only firefox moves focus to the dialog element. We actually never
+								// want the dialog to be focused but the first focusable element inside it.
+								tabIndex={-1}
+							>
+								<Modal />
+							</View>
+						) : (
+							<Plain />
+						)}
+					</CSSLoadWaiter>
 				</FindkitProvider>
 			</>
 		</StrictMode>,
-		container,
+		engine.container,
 	);
+
+	options.events.on("dispose", () => {
+		ReactDOM.unmountComponentAtNode(engine.container);
+	});
+
+	const host =
+		engine.container instanceof ShadowRoot
+			? engine.container.host
+			: engine.container;
 
 	return { engine, host };
 }

@@ -1,59 +1,8 @@
 import { Page, expect, test } from "@playwright/test";
-import { staticEntry } from "./helpers";
+import { routeMocks, scrollToHit, staticEntry } from "./helpers";
 
 declare const MOD: typeof import("../src/cdn-entries/index");
 declare const ui: InstanceType<typeof MOD.FindkitUI>;
-
-async function routeMocks(page: Page) {
-	await page.route(
-		(url) => url.hostname === "shop.findkit.invalid",
-		(route) => {
-			void route.fulfill({
-				status: 200,
-				contentType: "text/html",
-				body: "<html><body><h1>Shop</h1></body></html>",
-			});
-		},
-	);
-
-	await page.route(
-		(url) => url.hostname === "other.invalid",
-		(route) => {
-			void route.fulfill({
-				status: 200,
-				contentType: "text/html",
-				body: "<html><body><h1>Other</h1></body></html>",
-			});
-		},
-	);
-}
-
-async function scrollToHit(page: Page, text: string) {
-	return await test.step(`finds hit "${text}" by scrolling`, async () => {
-		const hits = page.locator(".findkit--hit");
-		await hits.first().waitFor({ state: "visible" });
-
-		// Ensure mouse is over the first hit so the scroll wheel works
-		await hits.first().hover();
-
-		const theHit = hits.filter({ hasText: text }).first();
-
-		let i = 20;
-
-		while (i--) {
-			await page.mouse.wheel(0, 800);
-			await page.waitForTimeout(200);
-			if (await theHit.isVisible()) {
-				break;
-			}
-		}
-
-		expect(await theHit.isVisible()).toBe(true);
-
-		await theHit.scrollIntoViewIfNeeded();
-		return theHit;
-	});
-}
 
 async function testModal(page: Page) {
 	await page.locator("text=open").first().click();
@@ -84,7 +33,6 @@ async function testModal(page: Page) {
 }
 
 async function testContainer(page: Page) {
-	await page.locator("text=open").first().click();
 	await page.locator("input").fill("a");
 
 	const hits = page.locator(".findkit--hit");
@@ -326,6 +274,7 @@ test("external link in page header saves scroll position", async ({ page }) => {
 			const ui = new FindkitUI({
 				publicToken: "pW1D0p0Dg",
 				minTerms: 0,
+				inert: false,
 				css: `
 					.findkit--modal-container {
 						top: 100px;
@@ -337,8 +286,6 @@ test("external link in page header saves scroll position", async ({ page }) => {
 			ui.on("fetch", () => {
 				uiEvents.push("fetch");
 			});
-
-			ui.trapFocus(header);
 
 			Object.assign(window, { ui, uiEvents });
 		});
@@ -405,7 +352,6 @@ test("modal: reload makes a new search", async ({ page }) => {
 test("container: reload makes a new search", async ({ page }) => {
 	await page.goto(staticEntry("/slowly-loading"));
 
-	await page.locator("text=open").first().click();
 	await page.locator("input").fill("a");
 
 	const theHit = await scrollToHit(page, "Running Shoes");
@@ -424,72 +370,6 @@ test("container: reload makes a new search", async ({ page }) => {
 	await expect(theHit).toBeHidden();
 
 	expect(await page.evaluate(() => (window as any).uiEvents.length)).toBe(1);
-});
-
-test("can disable scroll restoration with `manageScroll: false`", async ({
-	page,
-	browserName,
-}) => {
-	// Huh, firefox restores natively too. Not sure this option makes any sense...
-	if (browserName === "firefox") {
-		return;
-	}
-
-	await routeMocks(page);
-
-	await page.goto(staticEntry("/dummy"));
-
-	async function initUI() {
-		await page.evaluate(async () => {
-			const { FindkitUI } = MOD;
-
-			const ui = new FindkitUI({
-				publicToken: "pW1D0p0Dg",
-				minTerms: 1,
-				manageScroll: false,
-			});
-
-			const uiEvents: any[] = [];
-
-			ui.on("fetch", () => {
-				uiEvents.push("fetch");
-			});
-
-			Object.assign(window, { ui, uiEvents });
-		});
-	}
-
-	await initUI();
-
-	await page.evaluate(async () => {
-		ui.open();
-	});
-
-	await page.locator("input").fill("a");
-
-	const theHit = await scrollToHit(page, "Running Shoes");
-
-	await theHit.locator("a").first().click();
-
-	await page.waitForLoadState("domcontentloaded");
-
-	await page.goBack();
-
-	await page.waitForLoadState("domcontentloaded");
-
-	await initUI();
-
-	// wait for animations etc.
-	await page.waitForTimeout(500);
-
-	await expect(page.locator(".findkit--hit").first()).toBeInViewport();
-
-	// Loaded but not scrolled to
-	await expect(theHit).not.toBeInViewport();
-	await expect(theHit).toBeVisible();
-
-	// No fetches should have been made after the reload
-	expect(await page.evaluate(() => (window as any).uiEvents)).toEqual([]);
 });
 
 test("can restore modified and created dates from sessionStorage on back", async ({

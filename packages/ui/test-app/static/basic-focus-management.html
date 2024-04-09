@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Search UI Test</title>
+
+		<link rel="stylesheet" href="/shared.css" />
+
+		<script type="module">
+			import { FindkitUI, css } from "/build/esm/index.js";
+			const qs = new URLSearchParams(location.search);
+
+			const ui = new FindkitUI({
+				publicToken: "po8GK3G0r",
+				shadowDom: !qs.has("no-shadow-dom"),
+				inert: qs.get("inert"),
+				params: {
+					tagQuery: [["domain/valu.fi"]],
+				},
+				css: css`
+					.findkit--container {
+						top: 50px;
+					}
+				`,
+			});
+
+			Object.assign(window, { ui });
+
+			ui.openFrom("#open-button");
+		</script>
+	</head>
+	<body>
+		<button id="open-button" type="button">open</button>
+	</body>
+</html>

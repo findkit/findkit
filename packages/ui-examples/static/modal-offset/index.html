@@ -44,9 +44,16 @@
 			<input placeholder="Search..." type="text" class="search" />
 			<button type="button" class="close">X</button>
 			<div class="loading">Loading...</div>
-			<!-- A link which is skipped from tab navigation when the search UI
-			is open because it is not in the focus trap -->
-			<a href="#">Header link</a>
+			<!--
+			Links are skipped from tab navigation when the search UI
+			is open because they are selected with the `inert` option
+			-->
+			<nav>
+				<a href="#">Header link1</a>
+				<a href="#">Header link2</a>
+				<a href="#">Header link3</a>
+				<a href="#">Header link4</a>
+			</nav>
 		</header>
 
 		<main>
@@ -57,14 +64,13 @@
 			import {
 				FindkitUI,
 				html,
-			} from "https://cdn.findkit.com/ui/v0.20.0/esm/index.js";
+			} from "https://cdn.findkit.com/ui/v0.22.0-dev.ae10d645fb/esm/index.js";
 
 			const ui = new FindkitUI({
 				publicToken: "p68GxRvaA",
 				// We use the site header so no need for the build-in one
 				header: false,
-				// Scroll the full page and not the container
-				pageScroll: true,
+				inert: "main, header nav",
 				css: `
 					.findkit--modal-container {
 						/* The header height as offset */
@@ -75,9 +81,6 @@
 
 			// Bind the external input
 			ui.bindInput("input.search");
-
-			// Include the close button in the focus trap when the modal is open
-			ui.trapFocus("button.close");
 
 			// Close the modal when the close button is clicked
 			document.querySelector("button.close").addEventListener("click", () => {

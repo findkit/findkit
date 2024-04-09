@@ -12,6 +12,7 @@ test("closes the modal when a 'openFrom' button is clicked again", async ({
 		const { FindkitUI, css } = MOD;
 		const ui = new FindkitUI({
 			publicToken: "pW1D0p0Dg",
+			inert: false,
 			css: css`
 				.findkit--container {
 					top: 2rem;

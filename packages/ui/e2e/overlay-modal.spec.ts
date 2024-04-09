@@ -71,7 +71,12 @@ test("keyboard navigation scrolls", async ({ page }) => {
 
 	await expect
 		.poll(async () => {
-			return page.evaluate(() => document.documentElement.scrollTop);
+			return page.evaluate(
+				() =>
+					document
+						.querySelector(".findkit-overlay-container")
+						?.shadowRoot?.querySelector(".findkit--modal")?.scrollTop,
+			);
 		})
 		.toBeGreaterThan(50);
 });

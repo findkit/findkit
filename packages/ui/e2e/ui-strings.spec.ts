@@ -13,7 +13,7 @@ test("can set ui language", async ({ page }) => {
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
 			publicToken: "po8GK3G0r",
-			ui: { lang: "fi" },
+			lang: "fi",
 			params: {
 				tagQuery: [],
 			},
@@ -45,7 +45,7 @@ test("can change ui language on the fly", async ({ page }) => {
 	await expect(closeButton).toHaveText("Close");
 
 	await page.evaluate(async () => {
-		ui.setUIStrings("fi");
+		ui.setLang("fi");
 	});
 
 	await expect(closeButton).toHaveText("Sulje");
@@ -59,17 +59,15 @@ test("can customize ui language", async ({ page }) => {
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
 			publicToken: "po8GK3G0r",
-			ui: {
-				lang: "fi",
-				overrides: {
-					close: "CUSTOM",
-				},
-			},
+			lang: "fi",
 			params: {
 				tagQuery: [],
 			},
 		});
 
+		ui.addTranslation("fi", {
+			close: "CUSTOM",
+		});
 		ui.open();
 	});
 
@@ -96,7 +94,8 @@ test("can customize ui language on the fly", async ({ page }) => {
 	await expect(closeButton).toHaveText("Close");
 
 	await page.evaluate(async () => {
-		ui.setUIStrings("fi", {
+		ui.setLang("fi");
+		ui.addTranslation("fi", {
 			close: "CUSTOM",
 		});
 	});
