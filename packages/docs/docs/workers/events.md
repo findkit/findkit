@@ -99,7 +99,10 @@ export default {
 Emitted when the crawler has parsed a 200 status HTML page to a DOM document.
 Returns the result for indexing. Can be used to modify the result. For example
 by adding tags, custom fields or clean up the title or content. It is also possible
-to skip page from indexing by setting `status` to `"skipped"`.
+to skip page from indexing by setting `status` to `"skipped"`. The `next()` call
+executes the clean up selectors on the DOM document. So custom DOM operations should
+be done before the `next()` call in order to have them to be executed in the original
+DOM document.
 
 **Params**
 
