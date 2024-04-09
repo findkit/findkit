@@ -1,3 +1,11 @@
+## v1.0.1
+
+2024-04-09
+
+- Fix focus restoring with custom container [de3c194](https://github.com/findkit/findkit/commit/de3c194) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v1.0.0...ui/v1.0.1
+
 ## v1.0.0
 
 2024-04-09
