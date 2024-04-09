@@ -258,6 +258,10 @@ Possible values:
 
 See [Routing](/ui/advanced/routing).
 
+:::warning
+If you use WordPress `router: "hash"` is recommended as query string routing collides with the Interactivity API routing. See the [issue 60455](https://github.com/WordPress/gutenberg/issues/60455) for details.
+:::
+
 <Api page="ui.findkituioptions.router" />
 
 ### `fetchCount: number` {#fetchCount}
