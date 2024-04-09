@@ -39,7 +39,7 @@ importers:
         specifier: 2.1.0
         version: 2.1.0(@algolia/client-search@4.22.1)(@types/react@17.0.69)(eslint@8.21.0)(react-dom@17.0.2)(react@17.0.2)(typescript@4.8.2)
       '@findkit/ui':
-        specifier: '*'
+        specifier: ^1.0.0
         version: link:../ui
       '@mdx-js/react':
         specifier: ^1.6.22
@@ -249,8 +249,8 @@ importers:
   packages/ui-examples:
     dependencies:
       '@findkit/ui':
-        specifier: '*'
-        version: 0.22.0-dev.ae10d645fb
+        specifier: ^1.0.0
+        version: link:../ui
       '@types/react':
         specifier: ^18.0.21
         version: 18.0.21
@@ -2803,10 +2803,6 @@ packages:
       strip-json-comments: 3.1.1
     transitivePeerDependencies:
       - supports-color
-
-  /@findkit/ui@0.22.0-dev.ae10d645fb:
-    resolution: {integrity: sha512-IfW0Ydj5MfS7HllphnkGQ2GphDIVxXVYj97AiHfLeGYfX6qCWeleq6uJ2bjQ7YJRjrUn35YEM9aLVknVZ71bFQ==}
-    dev: false
 
   /@hapi/hoek@9.3.0:
     resolution: {integrity: sha512-/c6rf4UJlmHlC9b5BaNvzAcFv7HZ2QHaV0D4/HNlBdvFnvQq8RI4kYdhyPCl7Xj+oWvTWQ8ujhqS53LIgAe6KQ==}
