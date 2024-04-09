@@ -11,7 +11,7 @@
 		"/selectors": "https://docs.findkit.com/crawler/indexing",
 		"/cli": "https://docs.findkit.com/crawler/getting-started/",
 		"/translations": "https://docs.findkit.com/ui/translations",
-		"/strings": "https://docs.findkit.com/ui-api/ui.translationstrings/",
+		"/strings": "https://github.com/findkit/findkit/blob/main/packages/ui/src/translations.ts",
 		"/max_pages": "https://docs.findkit.com/toml/options#max_pages",
 		"/instanceid": "https://docs.findkit.com/ui/api/#instanceId",
 		"/pricing": "https://www.findkit.com/#pricing",

@@ -577,9 +577,7 @@ Args
 - `custom: {[key: string]: string}`: Add custom translation keys
 
 Add a new UI translation. Can be used to override existing translation strings
-as well. See <Api
-page="ui.translationstrings">TranslationStrings</Api> for the
-available transtion strings.
+as well. See available translation strings [here](https://findk.it/strings).
 
 See [`translations`](#translations).
 
