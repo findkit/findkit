@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { routeMocks, scrollToHit, staticEntry } from "./helpers";
+import {
+	mockSearchResponses,
+	routeMocks,
+	scrollToHit,
+	staticEntry,
+} from "./helpers";
 declare const MOD: typeof import("../src/cdn-entries/index");
 
 test.describe("focuses the input when coming back to search results", () => {
@@ -167,5 +172,35 @@ test.describe("focuses the input when coming back to search results", () => {
 		await page.reload();
 
 		await expect(input).toBeFocused();
+	});
+
+	test("with custom container", async ({ page }) => {
+		await routeMocks(page);
+		await mockSearchResponses(page);
+		await page.goto(staticEntry("/custom-container"));
+
+		const input = page.locator("input");
+
+		await input.fill("test");
+
+		const hit = page.locator(".findkit--hit-title-link").nth(2);
+
+		await hit.click();
+
+		await page.waitForLoadState("domcontentloaded");
+
+		await page.goBack();
+
+		await page.waitForLoadState("domcontentloaded");
+
+		await expect(hit).toBeFocused();
+
+		await page.reload();
+
+		await hit.waitFor({ state: "visible" });
+
+		// Custom container should not focus the input
+		await expect(hit).not.toBeFocused();
+		await expect(input).not.toBeFocused();
 	});
 });
