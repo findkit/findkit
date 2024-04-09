@@ -10,6 +10,7 @@ Read the [announcement blog post](https://www.findkit.com/findkit-ui-v1-0-a-leap
   - BREAKING: If you use [offset](https://docs.findkit.com/ui/patterns/embedding/offset/) or [overlay modal](https://docs.findkit.com/ui/patterns/embedding/content-overlay) patterns. You need to add `inert` option to allow focus outside the modal
 - Use semantic elements for landmarks
   - BREAKING: Possibly if you have lot of custom css since this changes the DOM structure
+- Use `type=search` for the search input
 - Read results counts on form submit with aria-live
 - Announce multi group navigations with aria-live=polite
 - Focus the search hit when returning to the search using the back button

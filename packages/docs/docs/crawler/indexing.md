@@ -5,9 +5,9 @@ relevant content for indexing. Eg. avoid adding text which is repeated on
 multiple pages like menus, footers etc.
 
 :::tip
-Findkit crawler automatically extracts the relevant page content but for
-production use cases it is recommended to explicitly select the relevant content
-for indexing with following methods.
+Findkit crawler automatically extracts the relevant page content on best effort basis but for
+production use cases it is recommended to explicitly select the content
+for indexing with the following methods.
 :::
 
 ## Data Attribute
