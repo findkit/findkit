@@ -2,6 +2,8 @@
 
 2024-04-09
 
+Read the [announcement blog post](https://www.findkit.com/findkit-ui-v1-0-a-leap-in-accessibility/) as well
+
 - Wrap modal in `<dialog>` with `.showModal()` for proper screen reader trapping
 - Remove `.trapFocus()` replace it with [`inert`](https://docs.findkit.com/ui/api/#inert) option for setting elements as inert when the modal is open
   - BREAKING: If you use the the method
@@ -24,6 +26,7 @@
 - Do not emit hit-click events for external links in Hit slots [154effb](https://github.com/findkit/findkit/commit/154effb)
 - Consistently use instance id based body class with the modal [161edf3](https://github.com/findkit/findkit/commit/161edf3)
 - remove deprecated ui option [dffff7e](https://github.com/findkit/findkit/commit/dffff7e) - Esa-Matti Suuronen
+- Add visually hidden submit button for screen readers next to the search input
 
 All changes https://github.com/findkit/findkit/compare/ui/v0.22.0...ui/v1.0.0
 
