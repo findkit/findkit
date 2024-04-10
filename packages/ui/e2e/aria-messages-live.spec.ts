@@ -61,6 +61,35 @@ test("read results on enter press when using external input", async ({
 	await expect(ariaLive).not.toBeAttached();
 });
 
+test("read results on enter press when using custom container", async ({
+	page,
+}) => {
+	await mockSearchResponses(page);
+
+	await page.goto(staticEntry("/custom-container"));
+
+	const input = page.locator("input");
+	const ariaLive = page.locator(
+		".findkit--results-aria-live-message[aria-live]",
+	);
+	const hit = page.locator(".findkit--hit a").first();
+
+	await input.pressSequentially("test");
+	await hit.waitFor({ state: "visible" });
+
+	await expect(ariaLive).not.toBeAttached();
+
+	await page.keyboard.press("Enter");
+
+	await expect(ariaLive).toHaveText(
+		"3 results found. Focus first result with shift enter",
+	);
+
+	await pressTab(page);
+
+	await expect(ariaLive).not.toBeAttached();
+});
+
 test("reads loading message", async ({ page }) => {
 	await mockSearchResponses(page, { slowDown: 500 });
 
