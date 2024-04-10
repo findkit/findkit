@@ -1,3 +1,12 @@
+## v1.0.2
+
+2024-04-10
+
+- Do not make .findkit--host inert ever [dae2bd0](https://github.com/findkit/findkit/commit/dae2bd0) - Esa-Matti Suuronen
+- Fix screen reader annoucements with an external input [b6fd8ce](https://github.com/findkit/findkit/commit/b6fd8ce) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v1.0.1...ui/v1.0.2
+
 ## v1.0.1
 
 2024-04-09
