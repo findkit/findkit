@@ -923,6 +923,11 @@ export class SearchEngine {
 					continue;
 				}
 
+				// The findkit host element itself should not ever be made inert
+				if (element.classList.contains(cn("host"))) {
+					continue;
+				}
+
 				// Do not add user managed inert elements to the set so they
 				// can be made non-inert on the close event
 				if (element.inert) {

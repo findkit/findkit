@@ -6,6 +6,8 @@ import {
 	staticEntry,
 } from "./helpers";
 
+declare const MOD: typeof import("../src/cdn-entries/index");
+
 fixFirefoxTab();
 
 async function gotoTestPage(
@@ -91,4 +93,36 @@ test.describe("basic focus management", () => {
 		});
 		await testFocusManagement(page);
 	});
+});
+
+test("do not make the findkit host element inert", async ({ page }) => {
+	// when using a common pattern of setting non-header elements to inert
+	// So users don't have to add :not(.findkit--host)
+	await page.goto(staticEntry("/dummy"));
+	await mockSearchResponses(page);
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+
+		document.body.innerHTML = `
+			<header></header>
+			<main></main>
+			<footer></footer>
+		`;
+
+		const ui = new FindkitUI({
+			publicToken: "test",
+			inert: "body > *:not(header)",
+		});
+
+		ui.open();
+	});
+
+	const input = page.locator("input").first();
+	await input.waitFor({ state: "visible" });
+
+	await expect(page.locator("header")).not.toHaveAttribute("inert");
+	await expect(page.locator("main")).toHaveAttribute("inert");
+	await expect(page.locator("footer")).toHaveAttribute("inert");
+	await expect(page.locator(".findkit--host")).not.toHaveAttribute("inert");
 });
