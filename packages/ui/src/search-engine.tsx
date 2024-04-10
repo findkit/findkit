@@ -1713,6 +1713,24 @@ export class SearchEngine {
 		}
 	}
 
+	/**
+	 * In some cases the form might be submitted multiple times
+	 * in a same tick. Ensure that we only submit once.
+	 */
+	private PRIVATE_submitting = false;
+
+	private PRIVATE_submitAction() {
+		if (this.PRIVATE_submitting) {
+			return;
+		}
+		this.PRIVATE_submitting = true;
+		this.PRIVATE_searchNow();
+		this.PRIVATE_announceResults();
+		setTimeout(() => {
+			this.PRIVATE_submitting = false;
+		}, 0);
+	}
+
 	private PRIVATE_handleInputChange(terms: string) {
 		if (this.PRIVATE_throttlingTerms === terms.trim()) {
 			return;
@@ -2475,8 +2493,7 @@ export class SearchEngine {
 			listeners.create(() =>
 				listen(this.container, "submit", (e) => {
 					e.preventDefault();
-					this.PRIVATE_searchNow();
-					this.PRIVATE_announceResults();
+					this.PRIVATE_submitAction();
 				}),
 			);
 
@@ -2502,6 +2519,15 @@ export class SearchEngine {
 						scrollIntoViewIfNeeded(input);
 					} else if (e.key === "Enter") {
 						assertInputEvent(e);
+
+						const form = this.container.querySelector(
+							"#" + this.getUniqId("form"),
+						);
+						if (!form?.contains(input)) {
+							// Manually invoke the submit action if the input is not inside the form
+							// and does not naturally trigger the submit action
+							this.PRIVATE_submitAction();
+						}
 
 						if (e.shiftKey) {
 							this.focusFirstHit();
