@@ -13,9 +13,9 @@ const ui = new FindkitUI({
 	// We use the site header so no need for the build-in one
 	header: false,
 
-	// Allow focus to the header but not to the main content
-	// and footer when the modal is open
-	inert: "main, footer",
+	// Allow focus only to the header when the search modal is open.
+	// Eg. set all direct children of the body except the header to be inert
+	inert: "body > *:not(header)",
 
 	css: `
 		.findkit--modal-container {
