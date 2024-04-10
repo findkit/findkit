@@ -70,7 +70,12 @@
 				publicToken: "p68GxRvaA",
 				// We use the site header so no need for the build-in one
 				header: false,
-				inert: "main, header nav",
+
+				// Allow focus only to the header when the search modal is open.
+				// Eg. set all direct children of the body except the header to be inert.
+				// Also make the nav inert too so it is easier to navigate to the
+				// search results with the keyboard
+				inert: "body > *:not(header), header nav",
 				css: `
 					.findkit--modal-container {
 						/* The header height as offset */
