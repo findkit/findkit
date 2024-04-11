@@ -929,7 +929,7 @@ export class SearchEngine {
 				}
 
 				// Do not add user managed inert elements to the set so they
-				// can be made non-inert on the close event
+				// won't be made non-inert on the close event
 				if (element.inert) {
 					continue;
 				}
@@ -973,6 +973,10 @@ export class SearchEngine {
 	 * back button is pressed from a search result page
 	 */
 	private PRIVATE_setInitialFocus() {
+		if (this.state.status === "closed") {
+			return;
+		}
+
 		const active = this.PRIVATE_getActiveElement();
 		if (
 			active instanceof HTMLAnchorElement &&
@@ -1014,6 +1018,23 @@ export class SearchEngine {
 	}
 
 	PRIVATE_createContainer(customContainer: Element | undefined) {
+		// A "pageshow" event with e.persisted === true is fired when
+		// the paged is restored from the bfcache (back-forward cache).
+		// Ensure the focus is updated in that case too.
+		this.events.on("open", () => {
+			// no types for pageshow event :(
+			const unbind = listen(
+				window,
+				"pageshow" as any,
+				(e: { persisted: boolean }) => {
+					if (e.persisted) {
+						this.PRIVATE_setInitialFocus();
+					}
+				},
+			);
+			this.events.once("close", unbind);
+		});
+
 		if (!this.modal && customContainer) {
 			this.events.once("open", () => {
 				this.PRIVATE_setInitialFocus();

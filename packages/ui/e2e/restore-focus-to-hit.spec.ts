@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { chromium, expect, test } from "@playwright/test";
 import {
 	mockSearchResponses,
 	routeMocks,
@@ -202,5 +202,46 @@ test.describe("focuses the input when coming back to search results", () => {
 		// Custom container should not focus the input
 		await expect(hit).not.toBeFocused();
 		await expect(input).not.toBeFocused();
+	});
+
+	test("with back/forward cache (bfcache) enabled", async ({ browser }) => {
+		if (browser.browserType().name() !== "chromium") {
+			return;
+		}
+
+		const browser2 = await chromium.launch({
+			ignoreDefaultArgs: ["--disable-back-forward-cache"],
+		});
+
+		const page = await browser2.newPage();
+
+		await routeMocks(page);
+		await mockSearchResponses(page);
+		await page.goto(staticEntry("/single-group-v2"));
+
+		await page.locator("button").click();
+
+		const input = page.locator("input");
+
+		await input.fill("test");
+
+		const hit = page.locator(".findkit--hit-title-link").nth(2);
+
+		await hit.click();
+
+		await page.waitForLoadState("domcontentloaded");
+
+		await page.goBack();
+
+		await page.waitForLoadState("domcontentloaded");
+
+		await expect(hit).toBeFocused();
+
+		await page.reload();
+
+		await hit.waitFor({ state: "visible" });
+
+		await expect(hit).not.toBeFocused();
+		await expect(input).toBeFocused();
 	});
 });
