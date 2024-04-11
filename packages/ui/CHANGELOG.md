@@ -1,3 +1,11 @@
+## v1.0.3
+
+2024-04-11
+
+- Fix hit focus restoring with bfcache [ff0c600](https://github.com/findkit/findkit/commit/ff0c600) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v1.0.2...ui/v1.0.3
+
 ## v1.0.2
 
 2024-04-10
