@@ -929,7 +929,7 @@ export class SearchEngine {
 				}
 
 				// Do not add user managed inert elements to the set so they
-				// can be made non-inert on the close event
+				// won't be made non-inert on the close event
 				if (element.inert) {
 					continue;
 				}
