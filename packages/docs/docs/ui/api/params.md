@@ -113,7 +113,7 @@ drop the score to half.
 _New in v0.9.0_
 
 Use alternative sorting. By default search results are sorted by the relevancy
-score but it can be forced to be sorted by created or modified dates or by any
+score but it can be forced to be sorted by created or modified dates, keywords or by any
 custom field.
 
 Example
@@ -154,6 +154,12 @@ const ui = new FindkitUI({
 ```
 
 If sorting values are the same, the search results are sorted by the relevance score.
+
+:::warning
+It is not possible to sort by the build-in title field. If you need
+to sort by the title, copy it to a keyword custom field and sort using
+it.
+:::
 
 <Api page="ui.searchparams.sort" />
 
