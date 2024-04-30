@@ -185,6 +185,21 @@ concurrency = 1
 crawl_delay = 500
 ```
 
+### `request_timeout: number` {#request_timeout}
+
+Set request timeout in milliseconds. Defaults to `10000` (10 seconds).
+Generally you should avoid setting this to a very high value as it can cause
+the crawler to burn through your crawl time if your website is very slow
+to respond.
+
+Example
+
+```toml
+[[targets]]
+host = "example.com"
+request_timeout = 60000
+```
+
 ## `[search-endpoint]` {#search-endpoint}
 
 Search endpoint configuration.
