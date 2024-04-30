@@ -2,9 +2,9 @@
 
 When crawling and indexing pages the Findkit Crawler uses the page's
 language to better understand the text on the page: A language aware stemmer is
-used to convert the words to the root form. For example "crawling" to "crawl".
-This allows users search for text in any form and it will be always matched
-using the root form.
+used to convert the words to a stem. For example "crawling" to "crawl".
+This allows users search for text in any form and it will be matched
+using the stem.
 
 The language is picked from these sources in this order
 
@@ -24,7 +24,7 @@ If you are looking for UI translations, see the UI Library [translations](/ui/tr
 
 ## Supported Languages
 
-Following languages are supported.
+Following languages have stemming support:
 
 - Arabic (`ar`)
 - Armenian (`hy`)
