@@ -1,6 +1,6 @@
 # Testing Crawls
 
-When working with crawlers you need to be able able to check that crawler works
+When working with crawlers you need to be able to check that crawler works
 correctly on your site without actually updating the production index.
 
 For this we provide the `findkit crawl test` subcommand. Example

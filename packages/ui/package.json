@@ -1,6 +1,6 @@
 {
   "name": "@findkit/ui",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Findkit Search UI",
   "main": "./cjs/index.js",
   "typings": "./main.d.ts",
