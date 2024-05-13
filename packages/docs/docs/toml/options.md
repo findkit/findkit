@@ -98,6 +98,8 @@ Respect robots meta tags like
 <meta name="robots" content="noindex, nofollow" />
 ```
 
+Pages get "Denied by robots meta" message when they are not indexed because of this tag.
+
 Defaults to `true`.
 
 ### `respect_robots_txt: boolean` {#respect_robots_txt}
