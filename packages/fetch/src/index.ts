@@ -269,6 +269,11 @@ export interface FindkitSearchGroupParams {
 	modifiedDecay?: number;
 	decayScale?: string;
 	highlightLength?: number;
+	semantic?: {
+		mode: "only" | "hybrid" | "hybrid2";
+		weight?: number;
+		k?: number;
+	};
 	size?: number;
 	from?: number;
 	lang?: string;
