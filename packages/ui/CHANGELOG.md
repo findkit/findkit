@@ -44,6 +44,7 @@ Read the [announcement blog post](https://www.findkit.com/findkit-ui-v1-0-a-leap
 - Turn `<em>` highlights into clickable links
   - the `<em>`s are converted to `<a>`
   - BREAKING: If you styled the `<em>` element elements using `em` selector
+    - Switch to `.findkit--em` class selector
 - Add [`separator`](https://docs.findkit.com/ui/api/#separator) option for defining the query string separator
   - eg. the `_` in `fdk_q`
 - Use `_` as the default separator for custom router fields used to be `.`
