@@ -123,6 +123,11 @@ export type Sort = {
  */
 export interface SearchParams {
 	/**
+	 * https://docs.findkit.com/ui/api/params#operator
+	 */
+	operator?: "and" | "or";
+
+	/**
 	 * https://docs.findkit.com/ui/api/params#tagQuery
 	 */
 	tagQuery?: string[][];
@@ -187,6 +192,15 @@ export interface SearchParams {
 	 *
 	 */
 	filter?: Filter;
+
+	/**
+	 * Execute semantic search
+	 */
+	semantic?: {
+		mode: "only" | "hybrid" | "hybrid2";
+		weight?: number;
+		k?: number;
+	};
 
 	/**
 	 * New in v0.9.0
@@ -1979,15 +1993,8 @@ export class SearchEngine {
 				}
 
 				return cleanUndefined({
-					filter: group.params.filter,
-					sort: group.params.sort,
+					...group.params,
 					tagQuery: group.params.tagQuery ?? [],
-					tagBoost: group.params.tagBoost,
-					content: group.params.content,
-					skip: group.params.skip,
-					createdDecay: group.params.createdDecay,
-					modifiedDecay: group.params.modifiedDecay,
-					decayScale: group.params.decayScale,
 					highlightLength:
 						group.params.highlightLength ?? DEFAULT_HIGHLIGHT_LENGTH,
 					lang,
