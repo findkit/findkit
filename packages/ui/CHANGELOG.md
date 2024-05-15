@@ -1,3 +1,12 @@
+## v1.1.0
+
+2024-05-15
+
+- Add [`operator`](https://docs.findkit.com/ui/api/params#operator) search param configuring how the search terms are required to appear in a page.
+- Add experimental support for semantic search. In private testing. You are interested in trying it out, [contact us](https://www.findkit.com/contact/)!
+
+All changes https://github.com/findkit/findkit/compare/ui/v1.0.3...ui/v1.1.0
+
 ## v1.0.3
 
 2024-04-11
