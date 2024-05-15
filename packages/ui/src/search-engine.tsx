@@ -123,6 +123,11 @@ export type Sort = {
  */
 export interface SearchParams {
 	/**
+	 * https://docs.findkit.com/ui/api/params#operator
+	 */
+	operator?: "and" | "or";
+
+	/**
 	 * https://docs.findkit.com/ui/api/params#tagQuery
 	 */
 	tagQuery?: string[][];

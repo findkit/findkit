@@ -263,6 +263,7 @@ export interface FindkitSearchParams {
  * @public
  */
 export interface FindkitSearchGroupParams {
+	operator?: "and" | "or";
 	tagQuery?: string[][];
 	tagBoost?: Record<string, number>;
 	createdDecay?: number;

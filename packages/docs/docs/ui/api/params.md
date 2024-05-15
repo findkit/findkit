@@ -8,7 +8,7 @@ const ui = new FindkitUI({
 	// highlight-next-line
 	params: {
 		// Limit results to example.com domain
-		filter: {tags: "domain/example.com"},
+		filter: { tags: "domain/example.com" },
 	},
 });
 ```
@@ -55,9 +55,8 @@ language.
 
 ### `tagQuery: string[][]` {#tagQuery}
 
-Legacy tags only filtering method. Please prefer the [filter](#filter) option which 
+Legacy tags only filtering method. Please prefer the [filter](#filter) option which
 is more intuitive and flexible to use.
-
 
 Logical AND and OR operators are supported.
 
@@ -179,3 +178,9 @@ _New in v0.15.0_
 
 Skip the search and always return an empty response. Can be used to optimize the
 search request when visually hiding some of the groups.
+
+### `operator: "and" | "or"` {#skip}
+
+_New in v1.1.0_
+
+Whether to require all terms to appear in a page or any of them. Default is `and`.
