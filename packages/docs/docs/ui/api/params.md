@@ -183,4 +183,18 @@ search request when visually hiding some of the groups.
 
 _New in v1.1.0_
 
-Whether to require all terms to appear in a page or any of them. Default is `and`.
+Whether to require all terms to appear in a page or any of them.
+
+- `and`: All terms must appear in a page.
+- `or`: Only one term must appear in a page. Addional terms will increase the score.
+
+Default is `and`.
+
+Example
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	params: { operator: "and" },
+});
+```
