@@ -179,7 +179,7 @@ _New in v0.15.0_
 Skip the search and always return an empty response. Can be used to optimize the
 search request when visually hiding some of the groups.
 
-### `operator: "and" | "or"` {#skip}
+### `operator: "and" | "or"` {#operator}
 
 _New in v1.1.0_
 
