@@ -130,13 +130,12 @@ function Codesandbox(props: {
 			<a href={githubLink} target="_blank">
 				Github
 			</a>{" "}
-			or edit online in
+			or edit online in{" "}
 			{props.example.startsWith("static/") ? (
 				<>
-					{" "}
 					<JSBinOpener example={props.example} /> or{" "}
 				</>
-			) : null}
+			) : null}{" "}
 			<a href={codesandboxLink} target="_blank">
 				Codesandbox
 			</a>
