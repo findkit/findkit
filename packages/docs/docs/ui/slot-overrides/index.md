@@ -39,7 +39,7 @@ render our custom UI and finally the
 [`useInput()`](/ui/slot-overrides/hooks#useinput) hook is used to bind the input
 to the search UI.
 
-Try it on Codesandbox
+Here's live demo
 
 <Codesandbox example="static/custom-input" />
 
