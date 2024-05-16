@@ -375,8 +375,10 @@ Example:
 ```ts
 const ui = new FindkitUI({
 	publicToken: "<token>",
-	inert: ".content",
+	inert: "main, footer",
 });
+
+ui.bindInput("header input[type=search]");
 ```
 
 <Api page="ui.findkituioptions.inert" />
