@@ -32,6 +32,30 @@ function Api(props: { page: string; children: any }) {
 	);
 }
 
+function JSBinOpener(props: { example: string }) {
+	const [loading, setLoading] = useState(false);
+
+	const onClick = async (e: { preventDefault: () => void }) => {
+		const rawUserContentURL = `https://raw.githubusercontent.com/findkit/findkit/main/packages/ui-examples/${props.example}/index.html`;
+		e.preventDefault();
+		setLoading(true);
+		const html = await fetch(rawUserContentURL).then((response) =>
+			response.text(),
+		);
+
+		const url = new URL("https://jsbin.com/?live");
+		url.searchParams.set("html", html);
+		window.open(url.toString(), "_blank");
+		setLoading(false);
+	};
+
+	return (
+		<a href="https://jsbin.com/404" onClick={onClick}>
+			{loading ? "Loading..." : "JSBin"}
+		</a>
+	);
+}
+
 function Codesandbox(props: {
 	example: string;
 	link?: boolean;
@@ -58,7 +82,6 @@ function Codesandbox(props: {
 
 	const githubLink = `https://github.com/findkit/findkit/tree/main/packages/ui-examples/${props.example}/${openFile}`;
 	const codesandboxLink = `https://codesandbox.io/s/github/findkit/findkit/tree/main/packages/ui-examples/${props.example}`;
-	const embedSrc = `https://codesandbox.io/embed/github/findkit/findkit/tree/main/packages/ui-examples/${props.example}?${query}`;
 	const newTabUrl = `https://docs.findkit.com/ui-examples/${props.example}`;
 
 	if (props.link) {
@@ -71,7 +94,7 @@ function Codesandbox(props: {
 	}
 
 	return (
-		<div className="codesandbox-example">
+		<div className="live-example">
 			<script
 				id="findkit"
 				type="application/json"
@@ -99,36 +122,44 @@ function Codesandbox(props: {
 					}),
 				}}
 			></script>
-			Open in a
+			Open in a{" "}
 			<a href={newTabUrl} target="_blank">
 				new tab
-			</a>
-			view source code in
+			</a>{" "}
+			view source code in{" "}
 			<a href={githubLink} target="_blank">
 				Github
-			</a>
+			</a>{" "}
 			or edit online in
+			{props.example.startsWith("static/") ? (
+				<>
+					{" "}
+					<JSBinOpener example={props.example} /> or{" "}
+				</>
+			) : null}
 			<a href={codesandboxLink} target="_blank">
 				Codesandbox
 			</a>
-			{!open ? (
-				<div ref={ref} className="codesandbox-placehoder">
-					<button onClick={() => setOpen(true)}>Load Codesandbox</button>
-				</div>
-			) : (
-				<iframe
-					src={embedSrc}
-					style={{
-						width: "100%",
-						height: "500px",
-						border: 0,
-						borderRadius: "4px",
-						overflow: "hidden",
-					}}
-					title={`findkit/findkit: ${props.example}`}
-					sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-				/>
-			)}
+			<div className="live-example-wrap">
+				{!open ? (
+					<div ref={ref} className="iframe-embed">
+						<button onClick={() => setOpen(true)}>Load example</button>
+					</div>
+				) : (
+					<iframe
+						src={newTabUrl}
+						className="iframe-embed"
+						style={{
+							width: "100%",
+							height: "500px",
+							border: "0",
+							overflow: "hidden",
+						}}
+						title={`findkit/findkit: ${props.example}`}
+						sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+					/>
+				)}
+			</div>
 		</div>
 	);
 }

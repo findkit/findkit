@@ -54,20 +54,21 @@
 	color: white;
 }
 
-.codesandbox-example {
+.live-example {
 	font-size: 10pt;
 	margin-bottom: 1rem;
-}
-
-.codesandbox-example a {
 	margin-left: 4px;
 	margin-right: 4px;
 }
 
-.codesandbox-placehoder {
+.live-example-wrap {
+	border: 4px dashed var(--ifm-color-primary-lightest);
+	border-radius: 5px;
+}
+
+.iframe-embed {
 	height: 200px;
 	background-color: var(--ifm-color-primary-light);
-	border: 8px dashed var(--ifm-color-primary-lightest);
 	display: flex;
 	align-items: center;
 	justify-content: center;
