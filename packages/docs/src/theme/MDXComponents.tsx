@@ -69,7 +69,7 @@ function Codesandbox(props: {
 
 	const openFile = props.example.startsWith("static/")
 		? "index.html"
-		: "src/index.tsx";
+		: "src/index.ts";
 
 	const query = new URLSearchParams({
 		codesandbox: "1",
