@@ -21,6 +21,7 @@ fi
 
 # Update imports in docs
 ./tools/update-import ${version} ./packages/docs/docs/ui/setup.md
+./tools/update-import ${version} ./packages/docs/docs/ui/params.md
 
 # In static file examples
 git ls-files 'packages/ui-examples/static/*/index.html' | xargs -L 1 ./tools/update-import ${version}
