@@ -204,7 +204,8 @@ request_timeout = 60000
 
 ## `[search-endpoint]` {#search-endpoint}
 
-Search endpoint configuration.
+Search endpoint configuration. Search endpoint configurations changes
+might take up 10 minutes to propagate.
 
 ### `origin_domains: string[]` {#origin_domains}
 
@@ -238,3 +239,16 @@ JWT tokens in the search requests.
 See our [WordPress
 plugin](https://github.com/findkit/wp-findkit#jwt-authentication) for full
 integration.
+
+### `allow_content: boolean` {#allow_content}
+
+Allow usage of the [`content`](/ui/api/params#content) field in the search params.
+
+Defaults to `false`.
+
+Example
+
+```toml
+[search-endpoint]
+allow_content = true
+```

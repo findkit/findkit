@@ -198,3 +198,30 @@ const ui = new FindkitUI({
 	params: { operator: "and" },
 });
 ```
+
+### `content: boolean` {#content}
+
+Return stored content text with the search results. This is a protected query and
+must be enabled in using the
+[`allow_content`](/toml/options#allow_content) TOML option.
+
+Default is `false`.
+
+Example
+
+```ts
+import {
+	FindkitUI,
+	html,
+} from "https://cdn.findkit.com/ui/v1.0.2/esm/index.js";
+
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	params: { content: true },
+	slots: {
+		Hit(props) {
+			return html`${props.hit.content} `;
+		},
+	},
+});
+```
