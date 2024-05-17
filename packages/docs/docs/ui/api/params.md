@@ -205,6 +205,8 @@ Return stored content text with the search results. This is a protected query an
 must be enabled in using the
 [`allow_content`](/toml/options#allow_content) TOML option.
 
+The content will be returned in the `content` field in `hit` objects of the search results.
+
 Default is `false`.
 
 Example
