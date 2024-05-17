@@ -5,6 +5,8 @@ arbitrary JavaScript code to be executed within the crawler. The API is
 inspired by Cloudflare Workers and uses Browser APIs such as the Fetch API and
 DOM.
 
+Read the [announcement blog post](https://www.findkit.com/announcing-findkit-workers/) for an overview.
+
 ## Example
 
 A simple Findkit Worker looks like this:
