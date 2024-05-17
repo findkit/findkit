@@ -72,7 +72,7 @@ cleanup_selector = ".author-bio"
 
 ## Title Selector
 
-Findkit tries to determine page title automatically using default selectors,
+Findkit tries to determine page title automatically using the built-in default selectors,
 but its behaviour can be customized via options listed below.
 
 Default title selectors in the order of importance:
