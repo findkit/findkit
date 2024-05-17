@@ -242,7 +242,7 @@ integration.
 
 ### `allow_content: boolean` {#allow_content}
 
-Allow usage of the [`content`](/ui/api/params#content) field in the search params.
+Allow usage of the [`content`](/ui/api/params#content) query in the search params.
 
 Defaults to `false`.
 
