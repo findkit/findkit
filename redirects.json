@@ -21,6 +21,6 @@
 		"/schedules": "https://docs.findkit.com/toml/options#schedule_full_crawl",
 		"/logo": "https://www.findkit.com/wp-content/uploads/2023/08/findkit-favicon.png",
 		"/nomodule": "https://docs.findkit.com/ui/setup#nomodule",
-		"/content": "https://docs.findkit.com/toml/options#content_allow"
+		"/content": "https://docs.findkit.com/toml/options#allow_content"
 	}
 }
