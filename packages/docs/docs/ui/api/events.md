@@ -48,6 +48,12 @@ When the modal is opened
 
 <Api page="ui.openevent">Event Object Interface</Api>
 
+### `loaded`
+
+When the implentation code has been lazy loaded.
+
+<Api page="ui.loadedevent">Event Object Interface</Api>
+
 ### `request-open`
 
 When the modal is requested to open. Used to add loading indicators when the
