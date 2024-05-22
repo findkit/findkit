@@ -635,8 +635,21 @@ The current search terms used on the last completed search request
 
 _New in v1.2.0_
 
-The current custom router data. Read only, use [`setCustomRouterData`](#setCustomRouterData) to update it. Readable only
-after the [`custom-router-data`](/ui/api/events#custom-router-data) event.
+The current custom router data. Read only, use [`setCustomRouterData`](#setCustomRouterData) to update it.
+
+Readable only
+after the [`loaded`](/ui/api/events#loaded) event.
 Throws before that. Force the event by calling [`preload`](#preload).
+You may check [`.loaded`](#loaded) to see if it has been loaded already.
 
 <Api page="ui.findkitui.customRouterData" />
+
+### `.loaded` {#loaded}
+
+_New in v1.2.0_
+
+True when the implementation code and css are loaded. The [`loaded`](/ui/api/events#loaded) event is fired when this turn to true.
+
+Force loading [`preload`](#preload).
+
+<Api page="ui.findkitui.loaded" />
