@@ -1,3 +1,12 @@
+## v1.2.0
+
+2024-05-22
+
+- Add ui.customRouterData getter [0c65302](https://github.com/findkit/findkit/commit/0c65302) - Esa-Matti Suuronen
+- Add loaded prop [a80bc63](https://github.com/findkit/findkit/commit/a80bc63) - Esa-Matti Suuronen
+
+All changes https://github.com/findkit/findkit/compare/ui/v1.1.0...ui/v1.2.0
+
 ## v1.1.0
 
 2024-05-15
