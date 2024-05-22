@@ -630,3 +630,13 @@ The current [Groups](/ui/api/groups)
 ### `.terms` {#terms-prop}
 
 The current search terms used on the last completed search request
+
+### `.customRouterData` {#customRouterData-prop}
+
+_New in v1.2.0_
+
+The current custom router data. Read only, use [`setCustomRouterData`](#setCustomRouterData) to update it. Readable only
+after the [`custom-router-data`](/ui/api/events#custom-router-data) event.
+Throws before that. Force the event by calling [`preload`](#preload).
+
+<Api page="ui.findkitui.customRouterData" />

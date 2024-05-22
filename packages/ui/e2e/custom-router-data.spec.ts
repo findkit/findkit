@@ -508,3 +508,137 @@ test("useCustomRouterData() inits with default data", async ({ page }) => {
 
 	await expect(button).toHaveText("6");
 });
+
+test.describe("ui.customRouterData property", () => {
+	test("default value can be read", async ({ page }) => {
+		await page.goto(staticEntry("/dummy"));
+
+		const defaultCRD = await page.evaluate(async () => {
+			const { FindkitUI } = MOD;
+			const ui = new FindkitUI({
+				publicToken: "na",
+				defaultCustomRouterData: {
+					price: "999",
+				},
+			});
+
+			ui.open();
+
+			await new Promise<void>((resolve) => {
+				ui.on("custom-router-data", () => {
+					resolve();
+				});
+			});
+
+			return ui.customRouterData;
+		});
+
+		expect(defaultCRD).toEqual({ price: "999" });
+	});
+
+	test(".customRouterData can be updated before implementation load but read only after loading", async ({
+		page,
+	}) => {
+		await page.goto(staticEntry("/dummy"));
+
+		const crd = await page.evaluate(async () => {
+			const { FindkitUI } = MOD;
+			const ui = new FindkitUI({
+				publicToken: "na",
+				defaultCustomRouterData: {
+					price: "999",
+				},
+			});
+			(window as any).ui = ui;
+
+			ui.setCustomRouterData({
+				price: "444",
+			});
+
+			await ui.preload();
+
+			return ui.customRouterData;
+		});
+
+		expect(crd).toEqual({ price: "444" });
+	});
+
+	test(".customRouterData is updated from url after preload", async ({
+		page,
+	}) => {
+		await page.goto(staticEntry("/dummy?fdk_c_price=33"));
+
+		const crd = await page.evaluate(async () => {
+			const { FindkitUI } = MOD;
+			const ui = new FindkitUI({
+				publicToken: "na",
+			});
+			(window as any).ui = ui;
+
+			await ui.preload();
+
+			return ui.customRouterData;
+		});
+
+		expect(crd).toEqual({ price: "33" });
+	});
+
+	test(".customRouterData is updated after custom-router-data event", async ({
+		page,
+	}) => {
+		await page.goto(staticEntry("/dummy?fdk_c_price=33"));
+
+		const crd = await page.evaluate(async () => {
+			const { FindkitUI } = MOD;
+			const ui = new FindkitUI({
+				publicToken: "na",
+			});
+			(window as any).ui = ui;
+
+			ui.open();
+
+			let crd;
+
+			await new Promise<void>((resolve) => {
+				ui.on("custom-router-data", () => {
+					resolve();
+					crd = ui.customRouterData;
+				});
+			});
+
+			return crd;
+		});
+
+		expect(crd).toEqual({ price: "33" });
+	});
+
+	test("after custom-route-data event the .customRouterData is updated immediately", async ({
+		page,
+	}) => {
+		await page.goto(staticEntry("/dummy"));
+
+		const crd = await page.evaluate(async () => {
+			const { FindkitUI } = MOD;
+			const ui = new FindkitUI({
+				publicToken: "na",
+			});
+			(window as any).ui = ui;
+
+			ui.open();
+
+			await new Promise<void>((resolve) => {
+				ui.on("custom-router-data", () => {
+					resolve();
+				});
+			});
+
+			ui.setCustomRouterData({
+				price: "44",
+			});
+
+			return ui.customRouterData;
+		});
+
+		expect(crd).toEqual({ price: "44" });
+	});
+});

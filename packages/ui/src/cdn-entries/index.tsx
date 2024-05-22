@@ -728,6 +728,20 @@ export class FindkitUI<
 	setCustomRouterData: (data: NonNullable<G["customRouterData"]>) => void =
 		this.PRIVATE_createShellMethod("setCustomRouterData");
 
+	get customRouterData(): G["customRouterData"] {
+		const engine = this.PRIVATE_lazyEngine.get();
+		if (!engine) {
+			throwImplementationNotLoaded(
+				".customRouterData — See https://findk.it/customRouterData",
+			);
+		}
+
+		return (
+			engine?.getCustomRouterData() ??
+			this.PRIVATE_options.defaultCustomRouterData
+		);
+	}
+
 	get groups(): GroupsOrDefault<G, O> {
 		return (this.PRIVATE_lazyEngine.get()?.getGroups() ??
 			this.PRIVATE_options.groups ??
