@@ -596,6 +596,11 @@ export class FindkitUI<
 	 */
 	container?: Element;
 
+	/**
+	 * True when the implementation has been loaded
+	 */
+	loaded = false;
+
 	constructor(options: O) {
 		const initialInstanceId = options.instanceId ?? "fdk";
 		this.PRIVATE_options = options;
@@ -722,6 +727,20 @@ export class FindkitUI<
 
 	setCustomRouterData: (data: NonNullable<G["customRouterData"]>) => void =
 		this.PRIVATE_createShellMethod("setCustomRouterData");
+
+	get customRouterData(): G["customRouterData"] {
+		const engine = this.PRIVATE_lazyEngine.get();
+		if (!engine) {
+			throwImplementationNotLoaded(
+				".customRouterData — See https://findk.it/customRouterData",
+			);
+		}
+
+		return (
+			engine?.getCustomRouterData() ??
+			this.PRIVATE_options.defaultCustomRouterData
+		);
+	}
 
 	get groups(): GroupsOrDefault<G, O> {
 		return (this.PRIVATE_lazyEngine.get()?.getGroups() ??
@@ -996,6 +1015,7 @@ export class FindkitUI<
 
 				this.PRIVATE_loading = true;
 				this.container = host;
+				this.loaded = true;
 				this.PRIVATE_lazyEngine.provide(engine);
 				this.PRIVATE_events.emit("loaded", { container: host });
 				engine.start();
