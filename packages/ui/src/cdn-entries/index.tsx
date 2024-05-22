@@ -596,6 +596,11 @@ export class FindkitUI<
 	 */
 	container?: Element;
 
+	/**
+	 * True when the implementation has been loaded
+	 */
+	loaded = false;
+
 	constructor(options: O) {
 		const initialInstanceId = options.instanceId ?? "fdk";
 		this.PRIVATE_options = options;
@@ -996,6 +1001,7 @@ export class FindkitUI<
 
 				this.PRIVATE_loading = true;
 				this.container = host;
+				this.loaded = true;
 				this.PRIVATE_lazyEngine.provide(engine);
 				this.PRIVATE_events.emit("loaded", { container: host });
 				engine.start();
