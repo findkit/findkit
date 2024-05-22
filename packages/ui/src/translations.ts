@@ -258,7 +258,7 @@ export const TRANSLATIONS: Record<string, TranslationStrings> = {
 		"aria-label-highlights": "Hakutulosten osumien korostukset",
 		"aria-label-hit-url": "Hakutuloksen URL: {{href}}",
 		"aria-label-hit": "Hakutulos {{number}}",
-		"aria-label-group-hit-total": "Hakutulosryhmä joss on {{total}} osumaa",
+		"aria-label-group-hit-total": "Hakutulosryhmä jossa on {{total}} osumaa",
 		"aria-label-findkit-messages": "Findkit-viestit",
 
 		"single-search-results-heading": "Haun tulokset",
