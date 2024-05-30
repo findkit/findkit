@@ -803,14 +803,28 @@ export class FindkitUI<
 	/**
 	 * The search terms used on the last search
 	 */
-	terms() {
+	get usedTerms() {
 		return this.PRIVATE_lazyEngine.get()?.state.usedTerms ?? "";
+	}
+
+	/**
+	 * @deprecated Use `usedTerms` instead
+	 */
+	get terms() {
+		return this.usedTerms;
+	}
+
+	/**
+	 * Get the possible pending terms that will be used in the next search
+	 */
+	get nextTerms() {
+		return this.PRIVATE_lazyEngine.get()?.getNextTerms() ?? "";
 	}
 
 	/**
 	 * https://docs.findkit.com/ui/api/#status
 	 */
-	status(): Status {
+	get status(): Status {
 		return this.PRIVATE_lazyEngine.get()?.state.status ?? "waiting";
 	}
 

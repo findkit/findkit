@@ -1459,6 +1459,14 @@ export class SearchEngine {
 		return this.PRIVATE_router.formatHref(params.toString());
 	}
 
+	getNextTerms(): string {
+		return (
+			this.PRIVATE_throttlingTerms ??
+			this.PRIVATE_getfindkitParams().getTerms() ??
+			""
+		);
+	}
+
 	private PRIVATE_debouncedSearchTimer?: ReturnType<typeof setTimeout>;
 
 	private PRIVATE_emitDebouncedSearchEvent(terms: string) {
