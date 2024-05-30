@@ -629,14 +629,14 @@ The current [Groups](/ui/api/groups)
 
 ### `.usedTerms` {#usedTerms-prop}
 
-**New in v1.3.0**
+_New in v1.3.0_
 
 The search terms used on the last completed search request. For next terms see
 [`.nextTerms`](#nextTerms-prop).
 
 ### `.nextTerms` {#nextTerms-prop}
 
-**New in v1.3.0**
+_New in v1.3.0_
 
 The next terms the search will be performed with. Updated immediately on input changes and on [`.search()`](#search) calls. Once the search completes and they are no longer pending search terms, and this will be the same as the [`.usedTerms`](#usedTerms-prop) prop.
 
