@@ -808,6 +808,13 @@ export class FindkitUI<
 	}
 
 	/**
+	 * Get the possible pending terms that will be used in the next search
+	 */
+	get nextTerms() {
+		return this.PRIVATE_lazyEngine.get()?.getNextTerms() ?? "";
+	}
+
+	/**
 	 * https://docs.findkit.com/ui/api/#status
 	 */
 	get status(): Status {
