@@ -1,3 +1,15 @@
+## v1.3.0
+
+2024-05-30
+
+-   Add `.usedTerms` alias for `.terms` and deprecate `.terms` [ca1630f](https://github.com/findkit/findkit/commit/ca1630f) - Esa-Matti Suuronen
+-   Add `.nextTerms` [37cfa3f](https://github.com/findkit/findkit/commit/37cfa3f) - Esa-Matti Suuronen
+-   Make undocumented status into a getter [cfed666](https://github.com/findkit/findkit/commit/cfed666) - Esa-Matti Suuronen
+-   Fix .terms to be getter as documented [85d6ea7](https://github.com/findkit/findkit/commit/85d6ea7) - Esa-Matti Suuronen
+-   Typo fix [2aae3c1](https://github.com/findkit/findkit/commit/2aae3c1) - Joonas Varis
+
+All changes https://github.com/findkit/findkit/compare/ui/v1.2.0...ui/v1.3.0
+
 ## v1.2.0
 
 2024-05-22
