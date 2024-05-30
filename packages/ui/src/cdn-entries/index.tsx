@@ -810,7 +810,7 @@ export class FindkitUI<
 	/**
 	 * https://docs.findkit.com/ui/api/#status
 	 */
-	status(): Status {
+	get status(): Status {
 		return this.PRIVATE_lazyEngine.get()?.state.status ?? "waiting";
 	}
 
