@@ -650,6 +650,6 @@ _New in v1.2.0_
 
 True when the implementation code and css are loaded. The [`loaded`](/ui/api/events#loaded) event is fired when this turn to true.
 
-Force loading [`preload`](#preload).
+Force loading with the [`preload`](#preload) method.
 
 <Api page="ui.findkitui.loaded" />
