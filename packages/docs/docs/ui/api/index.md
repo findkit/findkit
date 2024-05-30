@@ -627,14 +627,14 @@ The current [Groups](/ui/api/groups)
 
 <Api page="ui.findkitui.groups" />
 
-### `.terms` {#terms-prop}
+### `.usedTerms` {#usedTerms-prop}
 
 The search terms used on the last completed search request. For next terms see
 [`.nextTerms`](#nextTerms-prop).
 
 ### `.nextTerms` {#nextTerms-prop}
 
-The next terms the search will be performed with. Updated immediately on input changes and on [`.search()`](#search) calls. Once the search completes and they are no new pending search terms this will be the same as the [`.terms`](#terms-prop) prop.
+The next terms the search will be performed with. Updated immediately on input changes and on [`.search()`](#search) calls. Once the search completes and they are no new pending search terms this will be the same as the [`.usedTerms`](#usedTerms-prop) prop.
 
 The search terms in the URL are populated to this value on initialization. Readable after [`loaded`](/ui/api/events#loaded) or [`custom-router-data`](/ui/api/events#custom-router-data) events.
 

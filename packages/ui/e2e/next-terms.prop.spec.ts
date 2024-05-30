@@ -51,16 +51,16 @@ test("ui.nextTerms is updated immediately after calling .search()", async ({
 
 		await ui.preload();
 		nextTerms.push(ui.nextTerms);
-		usedTerms.push(ui.terms);
+		usedTerms.push(ui.usedTerms);
 
 		ui.search("first");
 		nextTerms.push(ui.nextTerms);
-		usedTerms.push(ui.terms);
+		usedTerms.push(ui.usedTerms);
 
 		ui.search("second");
 
 		nextTerms.push(ui.nextTerms);
-		usedTerms.push(ui.terms);
+		usedTerms.push(ui.usedTerms);
 
 		return { nextTerms, usedTerms };
 	});
@@ -71,7 +71,7 @@ test("ui.nextTerms is updated immediately after calling .search()", async ({
 	await page.locator(".findkit--hit").first().waitFor({ state: "visible" });
 
 	const usedTerms = await page.evaluate(async () => {
-		return ui.terms;
+		return ui.usedTerms;
 	});
 
 	expect(usedTerms).toEqual("second");

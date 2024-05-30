@@ -803,8 +803,15 @@ export class FindkitUI<
 	/**
 	 * The search terms used on the last search
 	 */
-	get terms() {
+	get usedTerms() {
 		return this.PRIVATE_lazyEngine.get()?.state.usedTerms ?? "";
+	}
+
+	/**
+	 * @deprecated Use `usedTerms` instead
+	 */
+	get terms() {
+		return this.usedTerms;
 	}
 
 	/**
