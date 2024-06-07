@@ -22,6 +22,44 @@ to update from [Slot Overrides](/ui/slot-overrides).
 
 <Api page="ui.searchparams" />
 
+### `semantic: object` {#semantic}
+
+_New in 1.4.0_
+
+Make AI powered semantic search using text embedding vectors.
+Requires [`ml_model`](/toml/options#ml_model) option in the TOML configuration
+for the vectors to be generated.
+
+Parameters:
+
+- `mode: string`
+  - `"only"`: Use only the semantic search, no keyword search
+  - `"hybrid"`: Use both semantic and keyword search
+- `weight: number`
+  - Numerical value for the weight of the semantic search in the hybrid mode
+- `k`: number
+  - Number of nearest neighbors to fetch from the semantic search
+  - Defaults to 5
+
+Since semantic search cannot completely filter out results it is recommended to set [`operator: "or"`](#operator) with the hybrid mode.
+
+Example
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	params: {
+		operator: "or",
+		semantic: {
+			mode: "hybrid",
+			weight: 50,
+			k: 5,
+		},
+	},
+});
+```
+
+
 ### `createdDecay: number` {#createdDecay}
 
 0-1 numerical value for demoting old pages
