@@ -54,7 +54,7 @@ language changes. You must update them with
 [`updateGroups`](/ui/api/#updateGroups).
 
 FindkitUI provides a [`lang`](/ui/api/events#lang) event which is
-emitted when the language changes which can be used to dynamically set the
+emitted when the UI language changes which can be used to dynamically set the
 params.
 
 ```ts
