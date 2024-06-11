@@ -500,7 +500,7 @@ function HitList(props: {
 				const last = index === props.hits.length - 1;
 				return (
 					<Hit
-						key={hit.url}
+						key={hit.url + hit.score}
 						hit={hit}
 						groupId={props.groupId}
 						containerRef={last ? hitRef : undefined}
