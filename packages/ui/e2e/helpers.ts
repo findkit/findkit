@@ -156,7 +156,8 @@ export async function mockSearchResponses(
 	},
 ) {
 	await page.route(
-		(url) => url.hostname === "search.findkit.com",
+		(url) =>
+			url.hostname === "search.findkit.com" && !url.searchParams.has("warmup"),
 		// eslint-disable-next-line @typescript-eslint/no-misused-promises
 		async (route) => {
 			if (options?.slowDown) {
