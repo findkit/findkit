@@ -94,7 +94,7 @@ export default {
 };
 ```
 
-## `html(page, context, next)` {#fetch}
+## `html(page, context, next)` {#html}
 
 Emitted when the crawler has parsed a 200 status HTML page to a DOM document.
 Returns the result for indexing. Can be used to modify the result. For example
