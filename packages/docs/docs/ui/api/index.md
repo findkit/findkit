@@ -655,7 +655,7 @@ You may check [`.loaded`](#loaded) to see if it has been loaded already.
 
 <Api page="ui.findkitui.customRouterData" />
 
-### `.loaded` {#loaded}
+### `.loaded` {#loaded-prop}
 
 _New in v1.2.0_
 
