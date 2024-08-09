@@ -18,7 +18,7 @@ on_match = "tag" # the tag to apply
 
 The tag in the `on_match` field will be applied when the matcher matches.
 
-### Matchers
+## Matchers
 
 ### `css`
 
