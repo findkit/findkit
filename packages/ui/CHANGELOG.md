@@ -1,3 +1,12 @@
+## v1.3.1
+
+2024-06-11
+
+-   Fix rare hit ordering bug  [46ece49](https://github.com/findkit/findkit/commit/46ece49) - Esa-Matti Suuronen
+    - When the same search hit comes back in a subsequent search, it was not always ordered correctly
+
+All changes https://github.com/findkit/findkit/compare/ui/v1.3.0...ui/v1.3.1
+
 ## v1.3.0
 
 2024-05-30
