@@ -1,4 +1,15 @@
 // @ts-check
+
+/**
+ * @param {any} element
+ * @returns {element is HTMLElement}
+ */
+function isHTMLElement(element) {
+	return (
+		element && element.constructor && element.constructor.name === "HTMLElement"
+	);
+}
+
 /**
  * @typedef {Object} Fragment
  * @property {string} h1Title
@@ -76,7 +87,10 @@ class Fragmenter {
 			return custom;
 		}
 
-		let text = this.currentElement.textContent ?? "";
+		let text = isHTMLElement(this.currentElement)
+			? this.currentElement?.innerText ?? ""
+			: this.currentElement?.textContent ?? "";
+
 		if (["P", "DIV"].includes(this.currentElement.tagName)) {
 			// ensure text in block elements are separated by space
 			text += " ";
@@ -256,7 +270,7 @@ export default {
 				h1Fragment: true,
 			});
 		} else if (url.pathname === "/crawler/meta-tag/") {
-			fragments = createFragments(window.document, {});
+			fragments = createFragments(window.document, { h1Fragment: true });
 		} else if (url.pathname === "/workers/events/") {
 			fragments = createFragments(window.document, {
 				h1Title: "FindkitUI Worker Event",
