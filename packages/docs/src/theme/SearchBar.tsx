@@ -15,9 +15,10 @@ const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const ui = new FindkitUI({
 	inert: ".main-wrapper,footer",
-	publicToken: tz.startsWith("America/")
-		? "pP9OykWDd:us-west-1"
-		: "p68GxRvaA:eu-north-1",
+	publicToken:
+		tz.startsWith("America/") || localStorage.getItem("use_us")
+			? "pP9OykWDd:us-west-1"
+			: "p68GxRvaA:eu-north-1",
 
 	// Show search results even without search terms so we can get the blog
 	// posts
@@ -57,6 +58,11 @@ const ui = new FindkitUI({
 		}
 		.view-source:hover {
 			text-decoration: underline;
+		}
+
+		.subtitle {
+			font-size: 10pt;
+			color: gray;
 		}
 	`,
 
@@ -159,6 +165,10 @@ const ui = new FindkitUI({
 		Hit(props) {
 			const terms = useTerms();
 
+			if (props.hit.tags.includes("api")) {
+				return html`<${ApiHit} ...${props} />`;
+			}
+
 			// Render custom view for the findkitcom group when no terms are entered
 			if (terms.trim() === "" && props.groupId === "blog") {
 				return html`<${BlogHit} ...${props} />`;
@@ -203,6 +213,23 @@ function BlogHit(props: HitSlotProps) {
 			highlight=${props.hit.customFields.excerpt?.value ?? ""}
 		/>
 		<div class="blog-created">${createdFormatted}</div>
+	`;
+}
+
+function ApiHit(props: HitSlotProps) {
+	const h1Title = props.hit.customFields.h1Title?.value;
+	const h2Title = props.hit.customFields.h2Title?.value;
+	const h3Title = props.hit.customFields.h3Title?.value;
+
+	return html`
+		<${props.parts.TitleLink}>
+		  <span class="subtitle">${h1Title} ${h2Title ? ` – ${h2Title}` : ""}</span>
+		  ${h3Title}
+		</${props.parts.TitleLink}>
+
+		<${props.parts.Highlight} />
+
+		<${props.parts.URLLink} />
 	`;
 }
 
