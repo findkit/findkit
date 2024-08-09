@@ -23,7 +23,7 @@ export default {
 };
 ```
 
-### `end(target)` {#start}
+### `end(target)` {#end}
 
 Emitted when a target crawl end.
 
