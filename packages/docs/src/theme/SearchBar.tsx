@@ -16,7 +16,8 @@ const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const ui = new FindkitUI({
 	inert: ".main-wrapper,footer",
 	publicToken:
-		tz.startsWith("America/") || localStorage.getItem("use_us")
+		tz.startsWith("America/") ||
+		(typeof localStorage !== "undefined" && localStorage.getItem("use_us"))
 			? "pP9OykWDd:us-west-1"
 			: "p68GxRvaA:eu-north-1",
 
