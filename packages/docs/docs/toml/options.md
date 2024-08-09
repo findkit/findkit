@@ -25,7 +25,8 @@ ml_model = "openai"
 Available only in some subscription plans. See pricing for details.
 
 :::caution
-This option must be set before the first crawl since it is used when initializing the index. Afterwards the index must be reset in the project settings to change the model.
+This option must be set before the first crawl since it is used when initializing the index. 
+If project is crawled before setting this option the index must be reset in the project settings to change the model.
 :::
 
 ### `schedule_full_crawl: string` {#schedule_full_crawl}
