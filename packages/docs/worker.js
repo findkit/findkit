@@ -255,6 +255,8 @@ export default {
 				h1Title: "findkit.toml tags",
 				h1Fragment: true,
 			});
+		} else if (url.pathname === "/crawler/meta-tag/") {
+			fragments = createFragments(window.document, {});
 		} else if (url.pathname === "/workers/events/") {
 			fragments = createFragments(window.document, {
 				h1Title: "FindkitUI Worker Event",
