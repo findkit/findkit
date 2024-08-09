@@ -1,6 +1,6 @@
 # Worker Events
 
-## `start(target)` {#start}
+### `start(target)` {#start}
 
 Emitted when a target crawl starts. The crawl is stopped if the handler throws
 an error.
@@ -23,7 +23,7 @@ export default {
 };
 ```
 
-## `end(target)` {#start}
+### `end(target)` {#start}
 
 Emitted when a target crawl end.
 
@@ -45,7 +45,7 @@ export default {
 };
 ```
 
-## `fetch(request, context, next)` {#fetch}
+### `fetch(request, context, next)` {#fetch}
 
 Emitted on every request made by the crawler. Can be used to modify or skip the
 outgoing request and the incoming response.
@@ -94,7 +94,7 @@ export default {
 };
 ```
 
-## `html(page, context, next)` {#fetch}
+### `html(page, context, next)` {#fetch}
 
 Emitted when the crawler has parsed a 200 status HTML page to a DOM document.
 Returns the result for indexing. Can be used to modify the result. For example
@@ -146,7 +146,7 @@ export default {
 };
 ```
 
-## `pdf(pdf, context, next)` {#pdf}
+### `pdf(pdf, context, next)` {#pdf}
 
 Emitted when the crawler has parsed a PDF request with 200 status
 
@@ -184,7 +184,7 @@ export default {
 };
 ```
 
-## `index(result, context, next)` {#fetch}
+### `index(result, context, next)` {#fetch}
 
 Emitted before the document is added to the index. Not called on test crawls.
 
