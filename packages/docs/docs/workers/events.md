@@ -131,7 +131,7 @@ DOM document.
 - `content: string` Content used to index the page
 - `language: string` Language of the page. Language analyzer is picked using this value
 - `tags: string[]`
-- `links: string[]` Links found on the page. Used with [`walk_links`](/toml/options#walk_links)
+- `links: string[]` Links found on the page. The [`walk_links`](/toml/options#walk_links) option uses this array for link walking. The array can be modified to include only the links you want to walk.
 - `customFields: CustomFields` A [CustomFields](/crawler/meta-tag#customFields) object
 - `fragments: Fragments[]` See [Fragment Pages](/workers/fragments)
 
