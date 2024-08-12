@@ -154,6 +154,11 @@ export default {
 };
 ```
 
+:::caution
+The Worker DOM API does not support the `instanceof` operator eg. `element instanceof HTMLDivElement`
+check for the element tag name using `element.tagName === "DIV"` instead.
+:::
+
 ### `pdf(pdf, context, next)` {#pdf}
 
 Emitted when the crawler has parsed a PDF request with 200 status
