@@ -1,4 +1,8 @@
+<Fragmented h1Content />
+
 # API
+
+<FragmentOverride text="Findkit UI API (2)" />
 
 The `FindkitUI` constructor supports following options for customization
 
@@ -12,6 +16,8 @@ const ui = new FindkitUI({
 ```
 
 ## Constructor Options
+
+<FragmentOverride text="Constructor Option (2)" />
 
 <Api page="ui.findkituioptions" />
 

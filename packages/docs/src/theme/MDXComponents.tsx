@@ -18,6 +18,32 @@ function checkExists(example: string) {
 	fs.statSync("../ui-examples/" + example);
 }
 
+/**
+ * Mark to be indexed as fragment pages in Findkit
+ */
+function Fragmented(props: { h1Override?: string; h1Content?: boolean }) {
+	return (
+		<script
+			className="findkit-fragmented"
+			data-h1-override={props.h1Override}
+			data-h1-content={props.h1Content}
+		></script>
+	);
+}
+
+/**
+ * Overide the previous element text content in Findkit Fragment Pages.
+ * Used for custom titles in the search interface
+ */
+function FragmentOverride(props: { text: string }) {
+	return (
+		<script
+			className="findkit-fragment-override"
+			data-text={props.text}
+		></script>
+	);
+}
+
 function Api(props: { page: string; children: any }) {
 	return (
 		<>
@@ -167,4 +193,6 @@ export default {
 	...MDXComponents,
 	Codesandbox,
 	Api,
+	Fragmented,
+	FragmentOverride,
 };
