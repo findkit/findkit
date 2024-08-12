@@ -163,6 +163,15 @@ class Fragmenter {
 }
 
 /**
+ * Convert camelCase to spaces. Ex. `camelCaseToSpaces("helloWorld")` -> "hello world"
+ *
+ * @param {string} str
+ */
+function camelCaseToSpaces(str) {
+	return str.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
+}
+
+/**
  * @param {Element} container
  */
 function createFragments(container) {
@@ -217,11 +226,18 @@ function createFragments(container) {
 			},
 		};
 
+		let extraText = [
+			f.h1Title,
+			f.h2Title,
+			// ensure the function and option names are searchable with indivudual words
+			camelCaseToSpaces(cleanedTitle).replace(/_/g, " "),
+		];
+
 		return {
 			id: f.id,
 			title: cleanedTitle,
 			content: f.content,
-			contentNoHighlight: f.h1Title + " " + f.h2Title,
+			contentNoHighlight: extraText.join(" "),
 			customFields,
 			tags: [
 				"api",
