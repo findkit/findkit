@@ -1,6 +1,6 @@
 # Events
 
-<FragmentOverride text="FindkitUI Event" />
+<FragmentOverride text="FindkitUI API" />
 
 <Fragmented h1Content />
 
@@ -19,6 +19,8 @@ The events are also emitted as [DOM events](#dom-events) on the `window`
 object.
 
 ## Event Names
+
+<FragmentOverride text="Event" />
 
 The available event names.
 
