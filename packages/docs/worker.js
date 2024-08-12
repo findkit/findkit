@@ -256,7 +256,7 @@ function createFragments(container) {
 	if (isHTMLElement(configEl) && configEl.dataset.withH1) {
 		fragments.unshift({
 			id: "top",
-			title: fragmenter.h1Title,
+			title: container.querySelector("h1")?.innerText ?? "",
 			content: fragmenter.h1Content,
 			contentNoHighlight: "",
 			tags: [],
