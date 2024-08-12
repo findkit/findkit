@@ -1,5 +1,9 @@
 # Events
 
+<FragmentOverride text="FindkitUI Event" />
+
+<Fragmented h1Content />
+
 Events emitted by the `FindkitUI` instance. See [`on()`](/ui/api/#on) and
 [`once()`](/ui/api/#once).
 

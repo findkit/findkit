@@ -1,6 +1,14 @@
 # Options
 
+<FragmentOverride text="Crawler Option" />
+
+<Fragmented h1Content />
+
+Options for the `findkit.toml` configuration file.
+
 ## Top-Level Options
+
+<FragmentOverride text="Top-Level" />
 
 ### `id: string` {#id}
 
@@ -25,7 +33,7 @@ ml_model = "openai"
 Available only in some subscription plans. See pricing for details.
 
 :::caution
-This option must be set before the first crawl since it is used when initializing the index. 
+This option must be set before the first crawl since it is used when initializing the index.
 If project is crawled before setting this option the index must be reset in the project settings to change the model.
 :::
 
@@ -218,6 +226,8 @@ request_timeout = 60000
 ```
 
 ## `[search-endpoint]` {#search-endpoint}
+
+<FragmentOverride text="Search Endpoint" />
 
 Search endpoint configuration. Search endpoint configurations changes
 might take up 10 minutes to propagate.

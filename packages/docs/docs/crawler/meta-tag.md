@@ -1,5 +1,7 @@
 # Meta Tag
 
+<Fragmented h1Content />
+
 The meta tag is way to pass instructions to the crawler on per page basis.
 
 It is a `script` tag with `"findkit"` id and type of `application/json`:

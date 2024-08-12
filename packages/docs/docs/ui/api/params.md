@@ -1,5 +1,9 @@
 # Search Params
 
+<FragmentOverride text="FindkitUI Search Param" />
+
+<Fragmented h1Content />
+
 The search request can be customized with the `params` option
 
 ```ts

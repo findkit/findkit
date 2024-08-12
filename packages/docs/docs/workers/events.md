@@ -1,4 +1,11 @@
+
 # Worker Events
+
+<FragmentOverride text="Worker Event" />
+
+<Fragmented h1Content />
+
+Events you can add handlers to when the worker runs.
 
 ### `start(target)` {#start}
 

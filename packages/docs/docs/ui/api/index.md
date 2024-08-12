@@ -1,7 +1,7 @@
 
 # API
 
-<FragmentOverride text="Findkit UI API (2)" />
+<FragmentOverride text="Findkit UI API" />
 
 <Fragmented h1Content />
 

@@ -1,5 +1,11 @@
 # Utils
 
+<FragmentOverride text="FindkitUI Util" />
+
+<Fragmented h1Content />
+
+Standalone utility functions for FindkitUI.
+
 ### `select(selector, HTMLElement, callback)` {#select}
 
 Like `document.querySelectoAll()` but runs the given CSS selector after the
