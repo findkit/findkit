@@ -2,7 +2,7 @@
 
 <FragmentOverride text="FindkitUI API" />
 
-<Fragmented h1Content />
+<Fragmented withH1 />
 
 Events emitted by the `FindkitUI` instance. See [`on()`](/ui/api/#on) and
 [`once()`](/ui/api/#once).

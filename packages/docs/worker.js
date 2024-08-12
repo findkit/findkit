@@ -239,7 +239,9 @@ function createFragments(container) {
 		};
 	});
 
-	if (configEl.classList.contains("h1Content")) {
+	// Create a fragment from the text after the <h1> element
+	// when the <Fragmented withH1> set
+	if (isHTMLElement(configEl) && configEl.classList.contains("withH1")) {
 		fragments.unshift({
 			id: "top",
 			title: fragmenter.h1Title,

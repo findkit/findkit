@@ -2,7 +2,7 @@
 
 <FragmentOverride text="FindkitUI Search Param" />
 
-<Fragmented h1Content />
+<Fragmented withH1 />
 
 The search request can be customized with the `params` option
 

@@ -2,7 +2,7 @@
 
 <FragmentOverride text="Crawler Option" />
 
-<Fragmented h1Content />
+<Fragmented withH1 />
 
 Options for the `findkit.toml` configuration file.
 

@@ -2,7 +2,7 @@
 
 <FragmentOverride text="FindkitUI Util" />
 
-<Fragmented h1Content />
+<Fragmented withH1 />
 
 Standalone utility functions for FindkitUI.
 

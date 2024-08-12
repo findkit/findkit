@@ -3,7 +3,7 @@
 
 <FragmentOverride text="Worker Event" />
 
-<Fragmented h1Content />
+<Fragmented withH1 />
 
 Events you can add handlers to when the worker runs.
 

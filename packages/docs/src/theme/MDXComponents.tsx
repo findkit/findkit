@@ -21,12 +21,16 @@ function checkExists(example: string) {
 /**
  * Mark to be indexed as fragment pages in Findkit
  */
-function Fragmented(props: { h1Override?: string; h1Content?: boolean }) {
+function Fragmented(props: {
+	/**
+	 * Create fragment page from the content after h1 tag
+	 */
+	withH1?: boolean;
+}) {
 	return (
 		<script
 			className="findkit-fragmented"
-			data-h1-override={props.h1Override}
-			data-h1-content={props.h1Content}
+			data-h1-content={props.withH1}
 		></script>
 	);
 }

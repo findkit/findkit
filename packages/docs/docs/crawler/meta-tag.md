@@ -1,6 +1,6 @@
 # Meta Tag
 
-<Fragmented h1Content />
+<Fragmented withH1 />
 
 The meta tag is way to pass instructions to the crawler on per page basis.
 
