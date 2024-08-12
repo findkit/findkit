@@ -8,17 +8,15 @@
  * @returns {el is HTMLElement}
  */
 function isHTMLElement(el) {
-	const name = el?.constructor?.name;
-
-	if (!name) {
-		return false;
+	while (el) {
+		const name = el?.constructor?.name;
+		if (name === "HTMLElement") {
+			return true;
+		}
+		el = Object.getPrototypeOf(el);
 	}
 
-	if (name === "HTMLElement") {
-		return true;
-	}
-
-	return isHTMLElement(Object.getPrototypeOf(el));
+	return false;
 }
 
 /**
