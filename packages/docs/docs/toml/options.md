@@ -90,6 +90,12 @@ Find site pages by walking the links.
 Disabled by default but automatically enabled if no sitemaps are found.
 Fallback behaviour can be disabled by setting to `false`.
 
+### `walk_query_strings: boolean` {#walk_links}
+
+Walk links with query strings as unique pages when [`walk_links`](#walk_links) is enabled.
+
+Defaults to `true`.
+
 ### `start_paths: string[]` {#start_paths}
 
 List of pages where to start link walking when [`walk_links`](#walk_links) is
