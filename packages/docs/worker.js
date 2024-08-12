@@ -6,21 +6,16 @@
  */
 function isHTMLElement(el) {
 	const name = el?.constructor?.name;
+
+	if (!name) {
+		return false;
+	}
+
 	if (name === "HTMLElement") {
 		return true;
 	}
 
-	if (
-		!name ||
-		name === "Node" ||
-		name === "Element" ||
-		name === "EventTarget" ||
-		name === "Object"
-	) {
-		return false;
-	}
-
-	return Object.getPrototypeOf(el);
+	return isHTMLElement(Object.getPrototypeOf(el));
 }
 
 /**
