@@ -54,11 +54,11 @@ export default {
 		const res = await next();
 
 		if (pricing) {
-			res.fragments.push(pricing);
+			res.fragments.push({ ...pricing, tags: res.tags });
 		}
 
 		if (features) {
-			res.fragments.push(features);
+			res.fragments.push({ ...features, tags: res.tags });
 		}
 
 		return res;
