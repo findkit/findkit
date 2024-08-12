@@ -30,7 +30,7 @@ function Fragmented(props: {
 	return (
 		<script
 			className="findkit-fragmented"
-			data-h1-content={props.withH1}
+			data-h1-with-h1={props.withH1}
 		></script>
 	);
 }
