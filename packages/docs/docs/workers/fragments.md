@@ -141,7 +141,7 @@ res.fragments.push({
 });
 ```
 
-## Removing Framgent Pages
+## Removing Fragment Pages
 
 The fragment pages in the index follow the parent page: When the parent page responds with a 404 status code, the fragment pages are removed from the index too.
 
