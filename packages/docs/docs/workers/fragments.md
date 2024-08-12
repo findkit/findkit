@@ -32,6 +32,14 @@ It just adds a single static fragment for every page.
 
 For real use cases you'll want to check `request.url` that you are on a page you want to add fragments to, and generate fragments based on the page document `window.document`.
 
+## Testing
+
+Use the Findkit CLI to run [test crawls](/crawler/testing-crawls) to see how the fragments are generated.
+
+```sh
+findkit crawl test "https://docs.findkit.com/crawler/running-crawls/"
+```
+
 ## Staff Directory Example
 
 Let's image following staff listing page
