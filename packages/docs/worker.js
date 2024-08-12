@@ -1,13 +1,26 @@
 // @ts-check
 
 /**
- * @param {any} element
- * @returns {element is HTMLElement}
+ * @param {any} el
+ * @returns {el is HTMLElement}
  */
-function isHTMLElement(element) {
-	return (
-		element && element.constructor && element.constructor.name === "HTMLElement"
-	);
+function isHTMLElement(el) {
+	const name = el?.constructor?.name;
+	if (name === "HTMLElement") {
+		return true;
+	}
+
+	if (
+		!name ||
+		name === "Node" ||
+		name === "Element" ||
+		name === "EventTarget" ||
+		name === "Object"
+	) {
+		return false;
+	}
+
+	return Object.getPrototypeOf(el);
 }
 
 /**
@@ -120,37 +133,30 @@ class Fragmenter {
 		};
 	}
 
+	parseElement() {
+		if (this.tagName === "H1") {
+			this.level = "h1";
+			this.h1Title = this.getCurrentText();
+		} else if (this.tagName === "H2") {
+			this.level = "h2";
+			this.h2title = this.getCurrentText();
+		} else if (this.tagName === "H3") {
+			this.level = "h3";
+			// <h3> starts a new fragment
+			this.nextFragment();
+		} else if (this.level === "h1") {
+			this.h1Content += this.getCurrentText();
+		} else if (this.currentFragment && this.level === "h3") {
+			this.currentFragment.content += this.getCurrentText();
+		}
+	}
+
 	parse() {
 		this.currentElement = this.container.querySelector("h1");
 
 		while (this.currentElement) {
-			if (this.tagName === "H1") {
-				this.level = "h1";
-				this.h1Title = this.getCurrentText();
-				this.intoNextElement();
-				continue;
-			} else if (this.tagName === "H2") {
-				this.level = "h2";
-				this.h2title = this.getCurrentText();
-				this.intoNextElement();
-				continue;
-			} else if (this.tagName === "H3") {
-				this.level = "h3";
-				// <h3> starts a new fragment
-				this.nextFragment();
-				this.intoNextElement();
-				continue;
-			} else if (this.level === "h1") {
-				this.h1Content += this.getCurrentText();
-				this.intoNextElement();
-			} else if (this.currentFragment && this.level === "h3") {
-				this.currentFragment.content += this.getCurrentText();
-				this.intoNextElement();
-				continue;
-			} else {
-				this.intoNextElement();
-				continue;
-			}
+			this.parseElement();
+			this.intoNextElement();
 		}
 
 		// push the last fragment too
@@ -162,16 +168,29 @@ class Fragmenter {
 
 /**
  * @param {Element} container
- * @param {Object} [options]
- * @param {string} [options.h1Title]
- * @param {string} [options.h2Title]
- * @param {boolean} [options.h1Fragment]
  */
-function createFragments(container, options) {
+function createFragments(container) {
+	// Presense of <script class="findkit-fragmented"> indicates that the page
+	// content should be indexed as fragment pages
+	const configEl = container.querySelector(".findkit-fragmented");
+	if (!configEl) {
+		return [];
+	}
+
 	const fragmenter = new Fragmenter(container, {
 		getText: (el) => {
 			if (el.classList.contains("theme-code-block")) {
 				return "";
+			}
+
+			const next = el.nextElementSibling;
+
+			if (
+				isHTMLElement(next) &&
+				next.classList.contains("findkit-fragment-override") &&
+				next.dataset.text
+			) {
+				return next.dataset.text;
 			}
 		},
 	});
@@ -190,11 +209,11 @@ function createFragments(container, options) {
 		const customFields = {
 			h1Title: {
 				type: "keyword",
-				value: options?.h1Title ?? f.h1Title,
+				value: f.h1Title,
 			},
 			h2Title: {
 				type: "keyword",
-				value: options?.h2Title ?? f.h2Title,
+				value: f.h2Title,
 			},
 			h3Title: {
 				type: "keyword",
@@ -220,7 +239,7 @@ function createFragments(container, options) {
 		};
 	});
 
-	if (options?.h1Fragment) {
+	if (configEl.classList.contains("h1Content")) {
 		fragments.unshift({
 			id: "top",
 			title: fragmenter.h1Title,
@@ -236,46 +255,9 @@ function createFragments(container, options) {
 
 export default {
 	async html({ window }, { request }, next) {
-		const url = new URL(request.url);
-		let fragments = [];
-
-		if (url.pathname === "/ui/api/") {
-			fragments = createFragments(window.document.querySelector(".markdown"), {
-				h1Title: "FindkitUI API",
-			});
-		} else if (url.pathname === "/ui/api/groups/") {
-			fragments = createFragments(window.document, {
-				h1Title: "FindkitUI Group",
-			});
-		} else if (url.pathname === "/ui/api/events/") {
-			fragments = createFragments(window.document, {
-				h1Title: "FindkitUI",
-			});
-		} else if (url.pathname === "/ui/api/utils/") {
-			fragments = createFragments(window.document, {
-				h1Title: "FindkitUI Util",
-			});
-		} else if (url.pathname === "/ui/api/params/") {
-			fragments = createFragments(window.document, {
-				h1Title: "FindkitUI Search Param",
-				h1Fragment: true,
-			});
-		} else if (url.pathname === "/toml/options/") {
-			fragments = createFragments(window.document, {
-				h1Title: "findkit.toml",
-			});
-		} else if (url.pathname === "/toml/tags/") {
-			fragments = createFragments(window.document, {
-				h1Title: "findkit.toml tags",
-				h1Fragment: true,
-			});
-		} else if (url.pathname === "/crawler/meta-tag/") {
-			fragments = createFragments(window.document, { h1Fragment: true });
-		} else if (url.pathname === "/workers/events/") {
-			fragments = createFragments(window.document, {
-				h1Title: "FindkitUI Worker Event",
-			});
-		}
+		const fragments = createFragments(
+			window.document.querySelector(".markdown"),
+		);
 
 		const res = await next();
 
