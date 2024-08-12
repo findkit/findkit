@@ -1,9 +1,10 @@
 
 # API
 
+<FragmentOverride text="Findkit UI API (2)" />
+
 <Fragmented h1Content />
 
-<FragmentOverride text="Findkit UI API (2)" />
 
 The `FindkitUI` constructor supports following options for customization
 
