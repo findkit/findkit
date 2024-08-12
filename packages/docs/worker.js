@@ -253,7 +253,7 @@ function createFragments(container) {
 
 	// Create a fragment from the text after the <h1> element
 	// when the <Fragmented withH1> set
-	if (isHTMLElement(configEl) && configEl.classList.contains("withH1")) {
+	if (isHTMLElement(configEl) && configEl.dataset.withH1) {
 		fragments.unshift({
 			id: "top",
 			title: fragmenter.h1Title,
