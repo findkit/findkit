@@ -41,7 +41,7 @@ For real use cases you'll want to check `request.url` that you are on a page you
 Use the Findkit CLI to run [test crawls](/crawler/testing-crawls) to see how the fragments are generated.
 
 ```sh
-findkit crawl test "https://docs.findkit.com/crawler/running-crawls/"
+findkit crawl test "https://docs.findkit.com/workers/events/"
 ```
 
 ## Staff Directory Example
