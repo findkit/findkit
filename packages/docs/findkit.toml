@@ -39,6 +39,7 @@ on_match = "root"
 
 [[targets]]
 host = "www.findkit.com"
+workers = ["workers/findkitcom.js"]
 
 use_sitemap = true
 walk_links = false
