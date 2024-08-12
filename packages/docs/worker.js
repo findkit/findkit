@@ -100,7 +100,7 @@ class Fragmenter {
 
 		let text = isHTMLElement(this.currentElement)
 			? this.currentElement?.innerText ?? ""
-			: this.currentElement?.textContent ?? "";
+			: "";
 
 		if (["P", "DIV"].includes(this.currentElement.tagName)) {
 			// ensure text in block elements are separated by space
