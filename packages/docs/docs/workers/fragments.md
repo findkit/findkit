@@ -78,13 +78,13 @@ export default {
 		).map((el) => {
 			return {
 				id: el.id,
-				title: el.querySelector(".name")?.textContent,
-				content: el.querySelector(".title")?.textContent,
+				title: el.querySelector(".name")?.innerText,
+				content: el.querySelector(".title")?.innerText,
 				tags: ["employee"],
 				customFields: {
 					email: {
 						type: "email",
-						value: el.querySelector(".email")?.textContent,
+						value: el.querySelector(".email")?.innerText,
 					},
 				},
 			};
