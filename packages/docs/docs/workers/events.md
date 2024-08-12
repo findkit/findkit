@@ -133,6 +133,7 @@ DOM document.
 - `tags: string[]`
 - `links: string[]` Links found on the page. Used with [`walk_links`](/toml/options#walk_links)
 - `customFields: CustomFields` A [CustomFields](/crawler/meta-tag#customFields) object
+- `fragments: Fragments[]` See [Fragment Pages](/workers/fragments)
 
 Example
 
