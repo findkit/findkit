@@ -1,6 +1,9 @@
 // @ts-check
 
 /**
+ * The DOM API in Findkit Worker does not support the `instanceof` for DOM element.
+ * This function manually checks it using prototype chain.
+ *
  * @param {any} el
  * @returns {el is HTMLElement}
  */
