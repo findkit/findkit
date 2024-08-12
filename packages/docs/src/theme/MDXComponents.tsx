@@ -28,10 +28,7 @@ function Fragmented(props: {
 	withH1?: boolean;
 }) {
 	return (
-		<script
-			className="findkit-fragmented"
-			data-h1-with-h1={props.withH1}
-		></script>
+		<script className="findkit-fragmented" data-with-h1={props.withH1}></script>
 	);
 }
 
