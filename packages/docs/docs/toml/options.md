@@ -90,6 +90,8 @@ Find site pages by walking the links.
 Disabled by default but automatically enabled if no sitemaps are found.
 Fallback behaviour can be disabled by setting to `false`.
 
+For full control of what links to walk it is possible to modify the `links` array in the [`html`](/workers/events/#html) worker event.
+
 ### `walk_query_strings: boolean` {#walk_links}
 
 Walk links with query strings as unique pages when [`walk_links`](#walk_links) is enabled.

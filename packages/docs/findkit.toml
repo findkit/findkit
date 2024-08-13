@@ -13,7 +13,7 @@ description = "Deploy US version with findkit deploy -P pP9OykWDd:us-west-1"
 # Target websites to crawl
 [[targets]]
 host = "docs.findkit.com"
-workers = ["worker.js"]
+workers = ["workers/docs.js"]
 
 # Docusaurus has no sitemaps so we must walk the site manually
 use_sitemap = false
@@ -39,6 +39,7 @@ on_match = "root"
 
 [[targets]]
 host = "www.findkit.com"
+workers = ["workers/findkitcom.js"]
 
 use_sitemap = true
 walk_links = false

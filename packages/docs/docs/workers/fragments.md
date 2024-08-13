@@ -111,7 +111,7 @@ This would add following urls to the index
 It is also possible to generate fragments from heading elements. It's bit more involved. This documentation site generates
 fragments for the `<h3>` elements. Checkout the code here:
 
-https://github.com/findkit/findkit/blob/main/packages/docs/worker.js
+https://github.com/findkit/findkit/blob/main/packages/docs/workers/docs.js
 
 ## Meta Tag {#metatag}
 
