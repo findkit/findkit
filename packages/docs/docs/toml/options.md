@@ -79,7 +79,10 @@ Target host to crawl. Just a plain domain name without the `https://` prefix.
 
 ### `use_sitemap: boolean` {#use_sitemap}
 
-Read the site sitemap.
+Use sitemaps for the site crawling. Reads `Sitemap:` entries from `/robots.txt`
+and if no entries are found `/sitemap.xml` is used.
+
+Follows sitemap index files and http redirects.
 
 Defaults to `true`.
 
@@ -88,7 +91,10 @@ Defaults to `true`.
 Find site pages by walking the links.
 
 Disabled by default but automatically enabled if no sitemaps are found.
-Fallback behaviour can be disabled by setting to `false`.
+This behaviour can be explictly disabled by setting to `false`.
+
+Setting this to true disables [sitemap reading](#use_sitemap) if not explicitly set to `use_sitemap = true`.
+Eg. if you want both sitemap and link walking you need to set `use_sitemap = true` and `walk_links = true`.
 
 For full control of what links to walk it is possible to modify the `links` array in the [`html`](/workers/events/#html) worker event.
 
