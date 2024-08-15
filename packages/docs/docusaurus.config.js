@@ -19,7 +19,10 @@ const config = {
 	organizationName: "findkit", // Usually your GitHub org/user name.
 	projectName: "findkit", // Usually your repo name.
 
-	clientModules: [require.resolve("./src/css-target-fix.ts")],
+	clientModules: [
+		require.resolve("./src/css-target-fix.ts"),
+		require.resolve("./src/redirects.ts"),
+	],
 
 	// Even if you don't use internalization, you can use this field to set useful
 	// metadata like html lang. For example, if your site is Chinese, you may want
