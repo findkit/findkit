@@ -1,5 +1,9 @@
 # Operators
 
+<FragmentOverride text="FindkitUI Filter Operator" />
+
+<Fragmented withH1 />
+
 Operators available for the [`filter` search param](/ui/api/params#filter)
 
 ### `$eq` {#$eq}
