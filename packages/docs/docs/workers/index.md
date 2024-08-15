@@ -16,9 +16,9 @@ A simple Findkit Worker looks like this:
 // my-worker.js
 // Workers are ESM modules with a default export
 export default {
-	// The worker can handle one or more events
+	// The worker can have one or more handlers
 	async fetch(request, context, next) {
-		// The fetch event allows you to hook into every http request the
+		// The fetch handler allows you to hook into every http request the
 		// crawler sends out. The request and response objects implement
 		// the WHATWG Fetch Standard aka the Fetch API
 		console.log("Worker running in ", request.url);
@@ -26,7 +26,7 @@ export default {
 		// You can modify the request before it is sent
 		request.headers.set("Authorization", "***");
 
-		// The fetch event is handled as a middleware. Calling next() passes
+		// The fetch handler is invoked as a middleware. Calling next() passes
 		// the request to the next worker and on the last worker the request is
 		// made and it returns the response.
 		const response = await next(request);
@@ -38,7 +38,7 @@ export default {
 	},
 
 	async html(page, context, next) {
-		// The html event is emitted for all 200 status text/html responses where
+		// The html hanlder is invoked for all 200 status text/html responses where
 		// the response html is parsed to DOM.
 
 		// The `page.window` property is like the `window` object in a browser
@@ -89,7 +89,7 @@ To remove the worker just remove the `workers` entry and run deploy again.
 
 ## Middleware
 
-Most worker events are executed in a "middleware stack" meaning you can define
+Most worker handlers are executed in a "middleware stack" meaning you can define
 multiple workers where the first worker passes the value to the next one using
 the `next()` function
 

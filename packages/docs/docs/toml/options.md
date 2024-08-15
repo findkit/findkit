@@ -96,7 +96,7 @@ This behaviour can be explictly disabled by setting to `false`.
 Setting this to true disables [sitemap reading](#use_sitemap) if not explicitly set to `use_sitemap = true`.
 Eg. if you want both sitemap and link walking you need to set `use_sitemap = true` and `walk_links = true`.
 
-For full control of what links to walk it is possible to modify the `links` array in the [`html`](/workers/events/#html) worker event.
+For full control of what links to walk it is possible to modify the `links` array in the [`html`](/workers/handlers/#html) worker handler.
 
 ### `start_paths: string[]` {#start_paths}
 

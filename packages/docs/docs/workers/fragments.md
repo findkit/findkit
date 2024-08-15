@@ -9,7 +9,7 @@ Fragment Pages is a way to generate multiple pages to the index from a single HT
 Fragment refers to the part of the URL after the hash (#) symbol. For example, in the URL `https://example.com/page#fragment`, the fragment is `fragment`.
 The fragment pages always have the fragment in their url.
 
-The fragments are generated inside the [`html`](/workers/events/#html) worker event. Each fragment must have an `id`, `title` and `content` fields.
+The fragments are generated inside the [`html`](/workers/handlers/#html) worker handler. Each fragment must have an `id`, `title` and `content` fields.
 They can also have [subset of the meta tag fields](#metatag).
 
 ## Simple Example
@@ -41,7 +41,7 @@ For real use cases you'll want to check `request.url` that you are on a page you
 Use the Findkit CLI to run [test crawls](/crawler/testing-crawls) to see how the fragments are generated.
 
 ```sh
-findkit crawl test "https://docs.findkit.com/workers/events/"
+findkit crawl test "https://docs.findkit.com/workers/handlers/"
 ```
 
 ## Staff Directory Example

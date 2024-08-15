@@ -44,7 +44,7 @@ const sidebars = {
 			type: "category",
 			label: "Workers",
 			link: { type: "doc", id: "workers/index" },
-			items: ["workers/events", "workers/runtime", "workers/fragments"],
+			items: ["workers/handlers", "workers/runtime", "workers/fragments"],
 		},
 		{
 			type: "category",
