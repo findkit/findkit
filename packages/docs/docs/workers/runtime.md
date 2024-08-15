@@ -49,7 +49,7 @@ CSS styles.
 
 ### `.innerText` {#innerText}
 
-The `innerText` property available on `Element` nodes is the way to extract
+The `innerText` property available on `HTMLElement` nodes is the way to extract
 text for indexing. Findkit Crawler internally uses this too.
 It will generate line breaks between block level elements but not
 for between inline elements.
