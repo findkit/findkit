@@ -62,7 +62,7 @@ correct HTML elements on the page.
 If it is not possible to use real block elements you may use the Worker DOM API to manually add
 spaces or line breaks between elements.
 
-## Cleanup selector
+### Cleanup selector
 
 The [`cleanup_selector`](/toml/options/#cleanup_selector) actually removes the matched elements
 from the DOM. So when the worker code needs to access these elements be sure to read the DOM
