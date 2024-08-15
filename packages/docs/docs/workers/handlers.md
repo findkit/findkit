@@ -1,15 +1,15 @@
 
-# Worker Events
+# Worker Handlers
 
-<FragmentOverride text="Worker Event" />
+<FragmentOverride text="Worker Handler" />
 
 <Fragmented withH1 />
 
-Events you can add handlers to when the worker runs.
+A worker Javascript file can define following handlers to control the crawling process.
 
 ### `start(target)` {#start}
 
-Emitted when a target crawl starts. The crawl is stopped if the handler throws
+Invoked when a target crawl starts. The crawl is stopped if the handler throws
 an error.
 
 **Params**
@@ -172,7 +172,7 @@ Emitted when the crawler has parsed a PDF request with 200 status
 
 **Result**
 
-The result object is the same as in `html` event.
+The result object is the same as in `html` handler.
 
 Example
 
@@ -203,7 +203,7 @@ Use cases
 
 **Params**
 
-- `result: Result` Result returned from `html` or `pdf` event handlers
+- `result: Result` Result returned from `html` or `pdf` handlers
 - `context`
   - `url: string` The request url
   - `mode: string` The crawl mode (full, partial, manual)
