@@ -111,7 +111,7 @@ Get value for [`contentNoHighlight`](/crawler/meta-tag#contentNoHighlight) using
 
 ### `cleanup_selector: string` {#cleanup_selector}
 
-CSS selector used to skip elements from indexing.
+Remove elements matching this selector from the DOM tree before extracting text.
 
 Read more from the [Indexing Content](/crawler/indexing) page.
 
