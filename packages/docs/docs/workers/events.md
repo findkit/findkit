@@ -114,7 +114,7 @@ DOM document.
 **Params**
 
 - `page`
-  - `window`: Browser like Window object with [DOM document](https://developer.mozilla.org/en-US/docs/Web/API/Document)
+  - `window`: Browser like Window object with a DOM document. Read more [here](/workers/runtime/#worker-dom)
 - `context`
   - `url: string`
   - `request`: [Request][request]

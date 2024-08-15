@@ -41,8 +41,8 @@ browser APIs:
 
 ## Worker DOM
 
-In the [`html`](/workers/events#html) Worker event you get access to the a brower like
-`window` object which contains `document` with `.querySelector()` and `.innerText` and
+In the [`html`](/workers/events#html) Worker event you get access to a brower like
+`window` object which contains `document` with `.querySelector()`, `.innerText` and
 other common DOM APIs. This DOM implementation is not full browser DOM but a subset
 for Findkit Workers. For example it does not execute `<script>` tags or intrepret
 CSS styles.
