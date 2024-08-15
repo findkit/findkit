@@ -119,10 +119,15 @@ Fragments support following subset of the Meta Tag values in the object definiti
 
 - [`title`](/crawler/meta-tag#title)
 - [`customFields`](/crawler/meta-tag#customFields)
-- [`language`](/crawler/meta-tag#tags)
 - [`superwords`](/crawler/meta-tag#superwords)
-- [`tags`](/crawler/meta-tag#tags)
 - [`contentNoHighlight`](/crawler/meta-tag#contentNoHighlight)
+- [`tags`](/crawler/meta-tag#tags)
+    - All fragments will automatically get the `fragment`, `domain/${domain}` and `language/${language}` tags
+- [`language`](/crawler/meta-tag#tags)
+    - The language tag is automatically set to the language of the parent page but it can be overridden
+      if the page is authored in a multiple languages
+    - Tip: The [`lang`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/lang) attribute can be added to any HTML element, not just the `<html>` element.
+
 
 ## Parent Page
 
