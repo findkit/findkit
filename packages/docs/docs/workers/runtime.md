@@ -91,6 +91,11 @@ export default {
 ```
 
 
+### Limitations
+
+The Worker DOM API does not support the `instanceof` operator for DOM nodes.
+Ex. `element instanceof HTMLDivElement`. Instead check for the element tag name using `element.tagName === "DIV"`.
+
 ## Using npm modules
 
 If you need to use a npm module you can use a bundler to include it
