@@ -79,7 +79,7 @@ export default {
 				tags: ["employee"],
 				customFields: {
 					email: {
-						type: "email",
+						type: "keyword",
 						value: el.querySelector(".email")?.innerText,
 					},
 				},
