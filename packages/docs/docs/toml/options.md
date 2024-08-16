@@ -98,7 +98,7 @@ Eg. if you want both sitemap and link walking you need to set `use_sitemap = tru
 
 For full control of what links to walk it is possible to modify the `links` array in the [`html`](/workers/handlers/#html) worker handler.
 
-### `walk_query_strings: boolean` {#walk_links}
+### `walk_query_strings: boolean` {#walk_query_strings}
 
 Walk links with query strings as unique pages when [`walk_links`](#walk_links) is enabled.
 
