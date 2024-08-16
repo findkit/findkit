@@ -70,7 +70,7 @@ export default {
 		}
 
 		const fragments = Array.from(
-			window.document.querySelector(".employee"),
+			window.document.querySelectorAll(".employee"),
 		).map((el) => {
 			return {
 				id: el.id,
