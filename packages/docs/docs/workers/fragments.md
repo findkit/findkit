@@ -1,9 +1,5 @@
 # Fragment Pages
 
-:::caution
-This feature is in preview and not yet available for all organizations.
-:::
-
 Fragment Pages is a way to generate multiple pages to the index from a single HTML page using [Findkit Workers](/workers/).
 
 Fragment refers to the part of the URL after the hash (#) symbol. For example, in the URL `https://example.com/page#fragment`, the fragment is `fragment`.
