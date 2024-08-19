@@ -5,6 +5,7 @@ if (typeof navigation !== "undefined") {
 	let fixingCSSTarget = false;
 
 	navigation.addEventListener("navigate", (event) => {
+		return; // breaks fragment navigation in search
 		const current = new URL(location.href.toString());
 		const dest = new URL(event.destination.url);
 
