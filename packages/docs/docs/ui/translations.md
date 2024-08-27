@@ -21,7 +21,7 @@ ui.addTranslation("fi-savo", {
 ui.setLang("fi-savo");
 ```
 
-The language will always fallback to the less spefic translations. For example
+The language will always fallback to the less specific translations. For example
 `fi-savo` will use the `fi-savo` translation added in the example but
 `fi-rauma` will use the internal `fi` translation. If a completely unknown
 language is provided Findkit UI will fallback to english. Also if a partial
