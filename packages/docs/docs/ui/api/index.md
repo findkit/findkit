@@ -19,7 +19,7 @@ const ui = new FindkitUI({
 
 ## Constructor Options
 
-<FragmentOverride text="Constructor Option (2)" />
+<FragmentOverride text="Constructor Option" />
 
 <Api page="ui.findkituioptions" />
 
