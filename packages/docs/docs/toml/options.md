@@ -157,6 +157,21 @@ Example
 sitemaps = ["/custom/sitemap.xml", "/another/sitemap.xml"]
 ```
 
+
+:::caution
+When possible it is recommended to use the `Sitemap:` entries in the `robots.txt` file instead of this option.
+It is the de facto standard for sitemap discovery and is
+supported by other crawlers, like Google, as well.
+
+Note that the `Sitemap:` entries can be defined multiple times in the `robots.txt` file.
+
+```txt
+User-agent: *
+Sitemap: https://example.com/sitemap.xml
+Sitemap: https://example.com/sitemap2.xml
+```
+:::
+
 ### `deny_patterns: string[]` {#deny_patterns}
 
 Skip paths matching the given pattern.
