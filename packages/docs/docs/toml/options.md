@@ -167,6 +167,8 @@ Note that the `Sitemap:` entries can be defined multiple times in the `robots.tx
 
 ```txt
 User-agent: *
+Disallow: /api/
+
 Sitemap: https://example.com/sitemap.xml
 Sitemap: https://example.com/sitemap2.xml
 ```
