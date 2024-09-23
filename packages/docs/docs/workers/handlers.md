@@ -32,7 +32,7 @@ export default {
 
 ### `end(target)` {#end}
 
-Emitted when a target crawl end.
+Emitted when a target crawl ends.
 
 **Params**
 
