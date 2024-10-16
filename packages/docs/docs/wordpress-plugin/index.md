@@ -23,7 +23,7 @@ The PHP API enables following use cases:
 
 ## Functions
 
-Following global functions are avaible when the plugin is active
+Following global functions are available when the plugin is active
 
 ### `findkit_search($terms, $search_params, $options)` {#findkit_search}
 
