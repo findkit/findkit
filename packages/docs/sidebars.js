@@ -107,6 +107,12 @@ const sidebars = {
 			],
 		},
 		"fetch",
+		{
+			type: "category",
+			label: "WordPress Plugin",
+			link: { type: "doc", id: "wordpress-plugin/index" },
+			items: ["wordpress-plugin/jwt"],
+		},
 	],
 };
 
