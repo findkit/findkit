@@ -66,7 +66,7 @@ using your own `API_KEY` and `PUBLIC_TOKEN`.
 
 Or just manually build the request for your favorite HTTP client replacing `{{API_KEY}}` and `{{PUBLIC_TOKEN}}` with your own values.
 
-Here'a an example in curl:
+Here's an example with curl:
 
 ```sh
 curl --fail-with-body --data '{"mode": "full"}' -H 'content-type: application/json' -H "Authorization: Bearer aJxryVb:sJLe5Crb2op5Bld2hTqdvlj7y"  https://api.findkit.com/v1/projects/p2nGrEaD7:eu-north-1/crawls
