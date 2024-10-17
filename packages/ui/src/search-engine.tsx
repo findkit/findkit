@@ -120,7 +120,7 @@ export type Sort = {
  *
  * New in v1.4.0
  */
-export type RandomOrder = boolean | { seed: number };
+export type RandomSort = boolean | { seed: number };
 
 /**
  * @public
@@ -226,11 +226,11 @@ export interface SearchParams {
 	 *
 	 * Return search results in random order
 	 *
-	 * See {@link RandomOrder}
+	 * See {@link RandomSort}
 	 *
-	 * https://docs.findkit.com/ui/api/params#randomOrder
+	 * https://docs.findkit.com/ui/api/params#randomSort
 	 */
-	randomOrder?: RandomOrder;
+	randomSort?: RandomSort;
 }
 
 export interface SearchParamsWithDefaults extends SearchParams {

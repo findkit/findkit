@@ -203,11 +203,11 @@ it.
 
 <Api page="ui.searchparams.sort" />
 
-### `randomOrder: RandomOrder` {#randomOrder}
+### `randomSort: RandomSort` {#randomSort}
 
 _New in v1.4.0_
 
-Give matching search results random relevancy scores.
+Give matching search results random relevancy scores, causing random result order.
 
 Example
 
@@ -215,24 +215,24 @@ Example
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
 	params: {
-		randomOrder: true,
+		randomSort: true,
 	},
 });
 ```
 
-Normal pagination is possible, by passing a seed value to random
+Normal pagination is possible, by passing a seed value to randomSort
 
 ```ts
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
 	params: {
-		randomOrder: { seed: 123456789 },
+		randomSort: { seed: 123456789 },
 	},
 });
 ```
 
 :::warning
-It is not possible to use `sort` and `randomOrder` together.
+It is not possible to use `sort` and `randomSort` together.
 Using both together will cause a search error.
 :::
 
