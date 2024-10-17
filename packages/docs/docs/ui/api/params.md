@@ -63,7 +63,6 @@ const ui = new FindkitUI({
 });
 ```
 
-
 ### `createdDecay: number` {#createdDecay}
 
 0-1 numerical value for demoting old pages
@@ -203,6 +202,39 @@ it.
 :::
 
 <Api page="ui.searchparams.sort" />
+
+### `randomOrder: RandomOrder` {#randomOrder}
+
+_New in v1.4.0_
+
+Give matching search results random relevancy scores.
+
+Example
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	params: {
+		randomOrder: true,
+	},
+});
+```
+
+Normal pagination is possible, by passing a seed value to random
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	params: {
+		randomOrder: { seed: 123456789 },
+	},
+});
+```
+
+:::warning
+It is not possible to use `sort` and `randomOrder` together.
+Using both together will cause a search error.
+:::
 
 ### `filter: Filter` {#filter}
 

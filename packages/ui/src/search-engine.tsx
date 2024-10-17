@@ -118,6 +118,13 @@ export type Sort = {
 /**
  * @public
  *
+ * New in v1.4.0
+ */
+export type RandomOrder = boolean | { seed: number };
+
+/**
+ * @public
+ *
  * Same as FindkitSearchGroupParams but without "from" field since it is managed
  * by the SearchEngine
  */
@@ -213,6 +220,17 @@ export interface SearchParams {
 	 *
 	 */
 	sort?: Sort | Sort[];
+
+	/**
+	 * New in v.1.4.0
+	 *
+	 * Return search results in random order
+	 *
+	 * See {@link RandomOrder}
+	 *
+	 * https://docs.findkit.com/ui/api/params#randomOrder
+	 */
+	randomOrder?: RandomOrder;
 }
 
 export interface SearchParamsWithDefaults extends SearchParams {
@@ -2736,7 +2754,7 @@ function deepEqual(x: any, y: any) {
  * Ensure that groups have default objects/arrays so it will be easy to update
  * them in updateGroups(fn) without having to check if they exist.
  *
- * Uses mutatation!
+ * Uses mutation!
  */
 function ensureDefaults(
 	groups: GroupDefinition[],
