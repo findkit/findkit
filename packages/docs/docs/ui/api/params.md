@@ -63,7 +63,6 @@ const ui = new FindkitUI({
 });
 ```
 
-
 ### `createdDecay: number` {#createdDecay}
 
 0-1 numerical value for demoting old pages
@@ -204,6 +203,45 @@ it.
 
 <Api page="ui.searchparams.sort" />
 
+### `randomSort: RandomSort` {#randomSort}
+
+_New in v1.4.0_
+
+Give matching search results random relevancy scores, causing random result order.
+Same seed generates same random result order, meaning pagination works normally.
+
+Example
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	params: {
+		randomSort: { seed: Date.now() },
+	},
+});
+```
+
+With seed you can define "shared randoms" based on some value that is shared between users.
+
+Example
+
+```ts
+const ui = new FindkitUI({
+	publicToken: "<TOKEN>",
+	params: {
+		// set the random seed based on day of the month
+		// meaning the results change every day
+		// while all the users see the same results each day
+		randomSort: { seed: new Date().getUTCDate() },
+	},
+});
+```
+
+:::warning
+It is not possible to use `sort` and `randomSort` together.
+Using both together will cause a search error.
+:::
+<Api page="ui.randomSort" />
 ### `filter: Filter` {#filter}
 
 _New in v0.9.0_
