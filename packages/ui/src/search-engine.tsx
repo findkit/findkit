@@ -119,6 +119,7 @@ export type Sort = {
  * @public
  *
  * New in v1.4.0
+ *
  */
 export type RandomSort = { seed: number };
 
