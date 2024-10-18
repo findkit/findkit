@@ -119,6 +119,8 @@ export type Sort = {
  * @public
  *
  * New in v1.4.0
+ *
+ * foobar
  */
 export type RandomSort = { seed: number };
 
