@@ -242,7 +242,7 @@ It is not possible to use `sort` and `randomSort` together.
 Using both together will cause a search error.
 :::
 
-<Api page="ui.randomSort" />
+<Api page="ui.searchparams.randomsort" />
 
 ### `filter: Filter` {#filter}
 
