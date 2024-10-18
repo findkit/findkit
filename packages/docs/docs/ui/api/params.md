@@ -241,7 +241,7 @@ const ui = new FindkitUI({
 It is not possible to use `sort` and `randomSort` together.
 Using both together will cause a search error.
 :::
-
+<Api page="ui.randomSort" />
 ### `filter: Filter` {#filter}
 
 _New in v0.9.0_
