@@ -120,7 +120,7 @@ export type Sort = {
  *
  * New in v1.4.0
  */
-export type RandomSort = boolean | { seed: number };
+export type RandomSort = { seed: number };
 
 /**
  * @public

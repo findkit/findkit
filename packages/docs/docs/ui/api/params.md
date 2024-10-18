@@ -208,6 +208,7 @@ it.
 _New in v1.4.0_
 
 Give matching search results random relevancy scores, causing random result order.
+Same seed generates same random result order, meaning pagination works normally.
 
 Example
 
@@ -215,18 +216,23 @@ Example
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
 	params: {
-		randomSort: true,
+		randomSort: { seed: Date.now() },
 	},
 });
 ```
 
-Normal pagination is possible, by passing a seed value to randomSort
+With seed you can define "shared randoms" based on some value that is shared between users.
+
+Example
 
 ```ts
 const ui = new FindkitUI({
 	publicToken: "<TOKEN>",
 	params: {
-		randomSort: { seed: 123456789 },
+		// set the random seed based on day of the month
+		// meaning the results change every day
+		// while all the users see the same results each day
+		randomSort: { seed: new Date().getUTCDate() },
 	},
 });
 ```
