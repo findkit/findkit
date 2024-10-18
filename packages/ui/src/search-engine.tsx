@@ -120,7 +120,6 @@ export type Sort = {
  *
  * New in v1.4.0
  *
- * foobar
  */
 export type RandomSort = { seed: number };
 
