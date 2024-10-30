@@ -1,3 +1,11 @@
+## v1.4.0
+
+2024-10-18
+
+-   Add [randomSort](https://docs.findkit.com/ui/api/params#randomSort) for fetching results in random order
+
+All changes https://github.com/findkit/findkit/compare/ui/v1.3.1...ui/v1.4.0
+
 ## v1.3.1
 
 2024-06-11
