@@ -479,13 +479,7 @@ async function loadScriptFromGlobal<T>(
  */
 export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	publicToken: string;
-	/**
-	 *
-	 */
 	instanceId?: string;
-	/**
-	 *
-	 */
 	separator?: string;
 	/**
 	 * See {@link GroupDefinition}
