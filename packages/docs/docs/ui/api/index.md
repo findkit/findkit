@@ -366,6 +366,18 @@ _New in v1.0.0_
 
 Set namespacing separator for the query string. Eg. the `_` in `?fdk_q=`. Defaults to `"_"`. Used in the custom router keys as well.
 
+### `searchKey: string` {#searchKey}
+
+_New in v1.5.0_
+
+Set namespacing search key for the query string. Eg. the `q` in `?fdk_q=`. Defaults to `"q"`.
+
+### `groupKey: string` {#groupKey}
+
+_New in v1.5.0_
+
+Set namespacing group key for the query string. Eg. the `id` in `?fdk_id=group-1`. Defaults to `"id"`.
+
 ### `inert: string | boolean` {#inert}
 
 _New in v1.0.0_

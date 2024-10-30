@@ -82,8 +82,16 @@ export function useFindkitURLSearchParams(): FindkitURLSearchParams {
 				instanceId: engine.instanceId,
 				search: state.searchParams,
 				separator: engine.separator,
+				searchKey: engine.searchKey,
+				groupKey: engine.groupKey,
 			}),
-		[engine.instanceId, state.searchParams, engine.separator],
+		[
+			engine.instanceId,
+			state.searchParams,
+			engine.separator,
+			engine.searchKey,
+			engine.groupKey,
+		],
 	);
 }
 

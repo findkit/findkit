@@ -503,6 +503,8 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	backdrop?: boolean;
 	inert?: string | boolean;
 	separator?: string;
+	groupKey?: string;
+	searchKey?: string;
 
 	/**
 	 * See {@link Slots}

@@ -263,3 +263,85 @@ test("container only replaces the url", async ({ page }) => {
 	await expect.poll(() => new URL(page.url()).search).toEqual("");
 	await expect.poll(() => new URL(page.url()).pathname).toEqual("/start");
 });
+
+test("can change search and group keys", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			searchKey: "search",
+			groupKey: "group",
+			minTerms: 1,
+			groups: [
+				{
+					title: "All",
+				},
+				{
+					title: "Electronics",
+					params: {
+						filter: {
+							category: "Electronics",
+						},
+					},
+				},
+			],
+		});
+
+		ui.open("a");
+	});
+
+	const hits = page.locator(".findkit--hit a");
+
+	await hits.first().waitFor({ state: "visible" });
+	await expect.poll(() => new URL(page.url()).search).toEqual("?fdk_search=a");
+
+	const allLink = page.locator("text=Show more search results");
+	await allLink.first().click();
+
+	await expect
+		.poll(() => new URL(page.url()).search)
+		.toEqual("?fdk_search=a&fdk_group=group-1");
+});
+
+test("can use very short keys without separators or instance ids", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			instanceId: "",
+			separator: "",
+			searchKey: "s",
+			groupKey: "g",
+			minTerms: 1,
+			groups: [
+				{
+					title: "All",
+				},
+				{
+					title: "Electronics",
+					params: {
+						filter: {
+							category: "Electronics",
+						},
+					},
+				},
+			],
+		});
+
+		ui.open("a");
+	});
+
+	const hits = page.locator(".findkit--hit a");
+
+	await hits.first().waitFor({ state: "visible" });
+	await expect.poll(() => new URL(page.url()).search).toEqual("?s=a");
+
+	const allLink = page.locator("text=Show more search results");
+	await allLink.first().click();
+
+	await expect.poll(() => new URL(page.url()).search).toEqual("?s=a&g=group-1");
+});

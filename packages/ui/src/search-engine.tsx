@@ -459,15 +459,21 @@ export class FindkitURLSearchParams {
 	private PRIVATE_instanceId: string;
 	private PRIVATE_customDataPrefix: string;
 	private PRIVATE_separator: string;
+	private PRIVATE_groupKey: string;
+	private PRIVATE_searchKey: string;
 
 	constructor(options: {
 		instanceId: string;
 		search: string;
 		separator: string;
+		groupKey: string;
+		searchKey: string;
 	}) {
 		this.PRIVATE_instanceId = options.instanceId;
 		this.PRIVATE_params = new URLSearchParams(options.search);
 		this.PRIVATE_separator = options.separator;
+		this.PRIVATE_groupKey = options.groupKey;
+		this.PRIVATE_searchKey = options.searchKey;
 
 		// ex. fdk_c_
 		this.PRIVATE_customDataPrefix =
@@ -477,7 +483,7 @@ export class FindkitURLSearchParams {
 			this.PRIVATE_separator;
 	}
 
-	private PRIVATE_key(key: "id" | "q") {
+	private PRIVATE_key(key: string) {
 		return this.PRIVATE_instanceId + this.PRIVATE_separator + key;
 	}
 
@@ -523,7 +529,11 @@ export class FindkitURLSearchParams {
 	}
 
 	getGroupId() {
-		return this.PRIVATE_params.get(this.PRIVATE_key("id"))?.trim() || undefined;
+		return (
+			this.PRIVATE_params.get(
+				this.PRIVATE_key(this.PRIVATE_groupKey),
+			)?.trim() || undefined
+		);
 	}
 
 	next(fn: (params: FindkitURLSearchParams) => void) {
@@ -531,6 +541,8 @@ export class FindkitURLSearchParams {
 			instanceId: this.PRIVATE_instanceId,
 			search: this.PRIVATE_params.toString(),
 			separator: this.PRIVATE_separator,
+			groupKey: this.PRIVATE_groupKey,
+			searchKey: this.PRIVATE_searchKey,
 		});
 		fn(next);
 		return next;
@@ -538,7 +550,7 @@ export class FindkitURLSearchParams {
 
 	clearGroupId() {
 		return this.next((next) => {
-			next.PRIVATE_params.delete(next.PRIVATE_key("id"));
+			next.PRIVATE_params.delete(next.PRIVATE_key(this.PRIVATE_groupKey));
 		});
 	}
 
@@ -557,22 +569,27 @@ export class FindkitURLSearchParams {
 
 	setGroupId(id: string) {
 		return this.next((next) => {
-			next.PRIVATE_params.set(next.PRIVATE_key("id"), id);
+			next.PRIVATE_params.set(next.PRIVATE_key(this.PRIVATE_groupKey), id);
 		});
 	}
 
 	setTerms(terms: string) {
 		return this.next((next) => {
-			next.PRIVATE_params.set(next.PRIVATE_key("q"), terms.trim());
+			next.PRIVATE_params.set(
+				next.PRIVATE_key(this.PRIVATE_searchKey),
+				terms.trim(),
+			);
 		});
 	}
 
 	isActive() {
-		return this.PRIVATE_params.has(this.PRIVATE_key("q"));
+		return this.PRIVATE_params.has(this.PRIVATE_key(this.PRIVATE_searchKey));
 	}
 
 	getTerms(): string | undefined {
-		return this.PRIVATE_params.get(this.PRIVATE_key("q"))?.trim();
+		return this.PRIVATE_params.get(
+			this.PRIVATE_key(this.PRIVATE_searchKey),
+		)?.trim();
 	}
 
 	toString() {
@@ -610,6 +627,8 @@ export interface SearchEngineOptions {
 	closeOnOutsideClick?: boolean;
 	router?: "memory" | "querystring" | "hash" | RouterBackend<{}>;
 	separator?: string;
+	searchKey?: string;
+	groupKey?: string;
 
 	/**
 	 * Monitor <html lang> changes
@@ -675,7 +694,12 @@ export class SearchEngine {
 
 	private readonly PRIVATE_router: RouterBackend<GlobalHistoryState>;
 	private PRIVATE_fetcher: FindkitFetch;
+
 	readonly instanceId: string;
+	readonly separator: string;
+	readonly searchKey: string;
+	readonly groupKey: string;
+
 	readonly state: State;
 	readonly publicToken: string;
 	private PRIVATE_searchEndpoint: string | undefined;
@@ -698,7 +722,6 @@ export class SearchEngine {
 	private PRIVATE_inert: string | boolean;
 	private PRIVATE_monitorDocumentLangActive: boolean | undefined;
 	private PRIVATE_manageScroll: boolean | undefined;
-	readonly separator: string;
 
 	private PRIVATE_defaultCustomRouteData: CustomRouterData;
 
@@ -720,6 +743,9 @@ export class SearchEngine {
 		// Ex. https://wordpress.org/?what.the.fak
 		// WordPress is so popular that we must choose the defaults to work with it.
 		this.separator = options.separator ?? "_";
+
+		this.searchKey = options.searchKey ?? "q";
+		this.groupKey = options.groupKey ?? "id";
 
 		if (typeof window === "undefined") {
 			this.PRIVATE_router = {
@@ -1249,6 +1275,8 @@ export class SearchEngine {
 			instanceId: this.instanceId,
 			search: this.PRIVATE_router.getSearchParamsString(),
 			separator: this.separator,
+			searchKey: this.searchKey,
+			groupKey: this.groupKey,
 		});
 
 		this.state.currentGroupId = initialSearchParams.getGroupId();
@@ -1464,6 +1492,8 @@ export class SearchEngine {
 			instanceId: this.instanceId,
 			search: this.state.searchParams,
 			separator: this.separator,
+			searchKey: this.searchKey,
+			groupKey: this.groupKey,
 		});
 
 		this.PRIVATE_findkitParamsCache = {
