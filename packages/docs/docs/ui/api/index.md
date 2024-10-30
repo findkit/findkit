@@ -370,11 +370,16 @@ _New in v1.5.0_
 
 Set namespacing search key for the query string. Eg. the `q` in `?fdk_q=`. Defaults to `"q"`.
 
+:::warning
+Findkit prefixes query parameters by default to prevent clashing with other systems.
+E.g. WordPress will capture `?s=` query string if the default search is not disabled.
+::
+
 ### `groupKey: string` {#groupKey}
 
 _New in v1.5.0_
 
-Set namespacing group key for the query string. Eg. the `id` in `?fdk_id=group-1`. Defaults to `"id"`.
+Set namespacing group key for the query string. Eg. the `id` in `?fdk_q=test&fdk_id=group-1`. Defaults to `"id"`.
 
 ### `inert: string | boolean` {#inert}
 
