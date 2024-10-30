@@ -2,7 +2,7 @@
 
 <Fragmented withH1 />
 
-The meta tag is way to pass instructions to the crawler on per page basis.
+The meta tag is way to pass page meta to the Findkit Crawler on per page basis.
 
 It is a `script` tag with `"findkit"` id and type of `application/json`:
 
