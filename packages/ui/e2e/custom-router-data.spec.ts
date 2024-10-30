@@ -146,7 +146,7 @@ test("can clear custom prefixed data on close", async ({ page }) => {
 		const { FindkitUI } = MOD;
 		const ui = new FindkitUI({
 			publicToken: "pW1D0p0Dg",
-			customRouterDataPrefix: "custom",
+			customRouterDataPrefix: "custom_",
 		});
 		ui.open("boots");
 		Object.assign(window, { ui });
