@@ -470,6 +470,51 @@ export class FindkitURLSearchParams {
 		searchKey?: string;
 		customRouterDataPrefix?: string;
 	}) {
+		if (
+			typeof options.instanceId === "string" &&
+			options.instanceId.trim().length === 0
+		) {
+			throw new Error(
+				`[findkit] Empty instanceId. See https://findk.it/instanceid`,
+			);
+		}
+
+		if (
+			typeof options.separator === "string" &&
+			options.separator.trim().length === 0
+		) {
+			throw new Error(
+				`[findkit] Empty separator. See https://findk.it/separator`,
+			);
+		}
+
+		if (
+			typeof options.searchKey === "string" &&
+			options.searchKey.trim().length === 0
+		) {
+			throw new Error(
+				`[findkit] Empty searchKey. See https://findk.it/searchKey`,
+			);
+		}
+
+		if (
+			typeof options.groupKey === "string" &&
+			options.groupKey.trim().length === 0
+		) {
+			throw new Error(
+				`[findkit] Empty groupKey. See https://findk.it/groupKey`,
+			);
+		}
+
+		if (
+			typeof options.customRouterDataPrefix === "string" &&
+			options.customRouterDataPrefix.trim().length === 0
+		) {
+			throw new Error(
+				`[findkit] Empty customRouterDataPrefix. See https://findk.it/customRouterDataPrefix`,
+			);
+		}
+
 		this.PRIVATE_instanceId = options.instanceId;
 		this.PRIVATE_params = new URLSearchParams(options.search);
 		this.PRIVATE_separator = options.separator;

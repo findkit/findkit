@@ -479,7 +479,14 @@ async function loadScriptFromGlobal<T>(
  */
 export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	publicToken: string;
+	/**
+	 *
+	 */
 	instanceId?: string;
+	/**
+	 *
+	 */
+	separator?: string;
 	/**
 	 * See {@link GroupDefinition}
 	 */
@@ -502,7 +509,7 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	closeOnOutsideClick?: boolean;
 	backdrop?: boolean;
 	inert?: string | boolean;
-	separator?: string;
+
 	groupKey?: string;
 	searchKey?: string;
 	customRouterDataPrefix?: string;

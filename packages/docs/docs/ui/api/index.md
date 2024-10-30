@@ -176,11 +176,15 @@ When using multiple `FindkitUI` instances you must provide a custom
 names. This is needed for example when you have global site search and a more
 specific search running on the same page.
 
+Empty string in instanceId or instanceId consisting of only whitespace characters will cause an error.
+If you would like to remove instanceId from the query parameters see [searchKey](#searchKey).
+
 :::note
 If you have only one search setup and you are getting an error about a
 conflicting instance id it means you are accidentally doing multiple `new
 Findkit()` calls without calling [`.dispose()`](#dispose) on the previous
 instance.
+:::
 
 ### Hot Module Reloading
 
@@ -368,18 +372,28 @@ Set namespacing separator for the query string. Eg. the `_` in `?fdk_q=`. Defaul
 
 _New in v1.5.0_
 
-Set namespacing search key for the query string. Eg. the `q` in `?fdk_q=`. Defaults to `"q"`.
+Set namespacing search key for the query string. `searchKey` replaces the default `instanceId + separator + q` e.g. `?fdk_q=`.
 
 :::warning
 Findkit prefixes query parameters by default to prevent clashing with other systems.
 E.g. WordPress will capture `?s=` query string if the default search is not disabled.
-::
+:::
 
 ### `groupKey: string` {#groupKey}
 
 _New in v1.5.0_
 
-Set namespacing group key for the query string. Eg. the `id` in `?fdk_q=test&fdk_id=group-1`. Defaults to `"id"`.
+Set namespacing group key for the query string. `groupKey` replaces the deault `instanceId + separator + id` Eg. the `?fdk_id=group-1`.
+
+### `customRouterDataPrefix: string` {#groupKey}
+
+_New in v1.5.0_
+
+Set namespacing custom data key for the query string. `customRouterDataPrefix` replaces the deault `instanceId + separator + c + separator`.
+
+:::warning
+Findkit deletes all matching query parameters on close. Do not use clashing prefixes.
+:::
 
 ### `inert: string | boolean` {#inert}
 
