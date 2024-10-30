@@ -487,7 +487,7 @@ export class FindkitURLSearchParams {
 
 	private PRIVATE_search_key() {
 		return (
-			this.PRIVATE_groupKey ??
+			this.PRIVATE_searchKey ??
 			this.PRIVATE_instanceId + this.PRIVATE_separator + "q"
 		);
 	}
@@ -1286,6 +1286,7 @@ export class SearchEngine {
 			separator: this.separator,
 			searchKey: this.searchKey,
 			groupKey: this.groupKey,
+			customRouterDataPrefix: this.customRouterDataPrefix,
 		});
 
 		this.state.currentGroupId = initialSearchParams.getGroupId();
@@ -1503,6 +1504,7 @@ export class SearchEngine {
 			separator: this.separator,
 			searchKey: this.searchKey,
 			groupKey: this.groupKey,
+			customRouterDataPrefix: this.customRouterDataPrefix,
 		});
 
 		this.PRIVATE_findkitParamsCache = {

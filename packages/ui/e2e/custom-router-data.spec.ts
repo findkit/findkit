@@ -72,6 +72,99 @@ test("can serialize data from params event to customRouteData", async ({
 	await expect.poll(async () => page.url()).toContain("fdk_c_price=100");
 });
 
+test("can serialize data using custom prefix", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+		const ui = new FindkitUI<{
+			params: {
+				filter: {
+					price: {
+						$lt: number;
+					};
+				};
+			};
+			customRouterData: {
+				price: string;
+			};
+		}>({
+			publicToken: "pW1D0p0Dg",
+			customRouterDataPrefix: "custom_",
+			defaultCustomRouterData: {
+				price: "999",
+			},
+			params: {
+				filter: {
+					price: { $lt: 999 },
+				},
+			},
+		});
+
+		Object.assign(window, { ui });
+
+		ui.on("params", () => {
+			ui.setCustomRouterData({
+				price: String(ui.params.filter?.price.$lt),
+			});
+		});
+
+		ui.on("custom-router-data", (e) => {
+			ui.updateParams((params) => {
+				params.filter = {
+					price: { $lt: Number(e.data.price) },
+				};
+			});
+		});
+
+		ui.open("boots");
+	});
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	await expect.poll(async () => page.url()).toContain("custom_price=999");
+
+	await page.evaluate(async () => {
+		ui.updateParams((params) => {
+			params.filter.price = { $lt: 100 };
+		});
+	});
+
+	await expect.poll(async () => page.url()).toContain("custom_price=100");
+
+	await page.reload();
+	await page.waitForLoadState("domcontentloaded");
+
+	await expect.poll(async () => page.url()).toContain("custom_price=100");
+});
+
+test("can clear custom prefixed data on close", async ({ page }) => {
+	await page.goto(staticEntry("/dummy?secret=donttouchme"));
+
+	await page.evaluate(async () => {
+		const { FindkitUI } = MOD;
+		const ui = new FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			customRouterDataPrefix: "custom",
+		});
+		ui.open("boots");
+		Object.assign(window, { ui });
+	});
+
+	await page.evaluate(async () => {
+		ui.setCustomRouterData({ ding: "a" });
+		ui.open("diamond");
+	});
+
+	await expect.poll(async () => page.url()).toContain("custom_ding=a");
+	await page.evaluate(async () => {
+		ui.close();
+	});
+	await expect.poll(async () => page.url()).not.toContain("custom_ding=a");
+	await expect.poll(async () => page.url()).toContain("secret=donttouchme");
+});
+
 test("can change back to previous custom router data", async ({ page }) => {
 	await page.goto(staticEntry("/dummy"));
 

@@ -505,6 +505,7 @@ export interface FindkitUIOptions<T extends FindkitUIGenerics> {
 	separator?: string;
 	groupKey?: string;
 	searchKey?: string;
+	customRouterDataPrefix?: string;
 
 	/**
 	 * See {@link Slots}
@@ -873,6 +874,21 @@ export class FindkitUI<
 		return this.PRIVATE_options.instanceId ?? "fdk";
 	}
 
+	/**
+	 * The separator
+	 */
+	get separator() {
+		return this.PRIVATE_options.separator ?? "_";
+	}
+
+	/**
+	 * InstanceId + separator + q
+	 * or searchKey if defined
+	 */
+	get searchKey() {
+		return this.PRIVATE_options.searchKey ?? this.id + this.separator + "q";
+	}
+
 	private PRIVATE_isAlreadyOpened() {
 		if (typeof window === "undefined") {
 			return false;
@@ -883,8 +899,7 @@ export class FindkitUI<
 		}
 
 		const params = new URLSearchParams(search);
-		const sep = this.PRIVATE_options.separator ?? "_";
-		return params.has(this.id + sep + "q");
+		return params.has(this.searchKey);
 	}
 
 	preload = async () => {
