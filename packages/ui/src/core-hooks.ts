@@ -84,6 +84,7 @@ export function useFindkitURLSearchParams(): FindkitURLSearchParams {
 				separator: engine.separator,
 				searchKey: engine.searchKey,
 				groupKey: engine.groupKey,
+				customRouterDataPrefix: engine.customRouterDataPrefix,
 			}),
 		[
 			engine.instanceId,
@@ -91,6 +92,7 @@ export function useFindkitURLSearchParams(): FindkitURLSearchParams {
 			engine.separator,
 			engine.searchKey,
 			engine.groupKey,
+			engine.customRouterDataPrefix,
 		],
 	);
 }

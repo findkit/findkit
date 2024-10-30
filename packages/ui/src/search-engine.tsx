@@ -459,15 +459,16 @@ export class FindkitURLSearchParams {
 	private PRIVATE_instanceId: string;
 	private PRIVATE_customDataPrefix: string;
 	private PRIVATE_separator: string;
-	private PRIVATE_groupKey: string;
-	private PRIVATE_searchKey: string;
+	private PRIVATE_groupKey?: string;
+	private PRIVATE_searchKey?: string;
 
 	constructor(options: {
 		instanceId: string;
 		search: string;
 		separator: string;
-		groupKey: string;
-		searchKey: string;
+		groupKey?: string;
+		searchKey?: string;
+		customRouterDataPrefix?: string;
 	}) {
 		this.PRIVATE_instanceId = options.instanceId;
 		this.PRIVATE_params = new URLSearchParams(options.search);
@@ -477,14 +478,25 @@ export class FindkitURLSearchParams {
 
 		// ex. fdk_c_
 		this.PRIVATE_customDataPrefix =
+			options.customRouterDataPrefix ??
 			this.PRIVATE_instanceId +
-			this.PRIVATE_separator +
-			"c" +
-			this.PRIVATE_separator;
+				this.PRIVATE_separator +
+				"c" +
+				this.PRIVATE_separator;
 	}
 
-	private PRIVATE_key(key: string) {
-		return this.PRIVATE_instanceId + this.PRIVATE_separator + key;
+	private PRIVATE_search_key() {
+		return (
+			this.PRIVATE_groupKey ??
+			this.PRIVATE_instanceId + this.PRIVATE_separator + "q"
+		);
+	}
+
+	private PRIVATE_group_key() {
+		return (
+			this.PRIVATE_groupKey ??
+			this.PRIVATE_instanceId + this.PRIVATE_separator + "id"
+		);
 	}
 
 	setCustomData(data: CustomRouterData) {
@@ -530,9 +542,7 @@ export class FindkitURLSearchParams {
 
 	getGroupId() {
 		return (
-			this.PRIVATE_params.get(
-				this.PRIVATE_key(this.PRIVATE_groupKey),
-			)?.trim() || undefined
+			this.PRIVATE_params.get(this.PRIVATE_group_key())?.trim() || undefined
 		);
 	}
 
@@ -543,6 +553,7 @@ export class FindkitURLSearchParams {
 			separator: this.PRIVATE_separator,
 			groupKey: this.PRIVATE_groupKey,
 			searchKey: this.PRIVATE_searchKey,
+			customRouterDataPrefix: this.PRIVATE_customDataPrefix,
 		});
 		fn(next);
 		return next;
@@ -550,7 +561,7 @@ export class FindkitURLSearchParams {
 
 	clearGroupId() {
 		return this.next((next) => {
-			next.PRIVATE_params.delete(next.PRIVATE_key(this.PRIVATE_groupKey));
+			next.PRIVATE_params.delete(next.PRIVATE_group_key());
 		});
 	}
 
@@ -569,27 +580,22 @@ export class FindkitURLSearchParams {
 
 	setGroupId(id: string) {
 		return this.next((next) => {
-			next.PRIVATE_params.set(next.PRIVATE_key(this.PRIVATE_groupKey), id);
+			next.PRIVATE_params.set(next.PRIVATE_group_key(), id);
 		});
 	}
 
 	setTerms(terms: string) {
 		return this.next((next) => {
-			next.PRIVATE_params.set(
-				next.PRIVATE_key(this.PRIVATE_searchKey),
-				terms.trim(),
-			);
+			next.PRIVATE_params.set(next.PRIVATE_search_key(), terms.trim());
 		});
 	}
 
 	isActive() {
-		return this.PRIVATE_params.has(this.PRIVATE_key(this.PRIVATE_searchKey));
+		return this.PRIVATE_params.has(this.PRIVATE_search_key());
 	}
 
 	getTerms(): string | undefined {
-		return this.PRIVATE_params.get(
-			this.PRIVATE_key(this.PRIVATE_searchKey),
-		)?.trim();
+		return this.PRIVATE_params.get(this.PRIVATE_search_key())?.trim();
 	}
 
 	toString() {
@@ -629,6 +635,7 @@ export interface SearchEngineOptions {
 	separator?: string;
 	searchKey?: string;
 	groupKey?: string;
+	customRouterDataPrefix?: string;
 
 	/**
 	 * Monitor <html lang> changes
@@ -697,8 +704,9 @@ export class SearchEngine {
 
 	readonly instanceId: string;
 	readonly separator: string;
-	readonly searchKey: string;
-	readonly groupKey: string;
+	readonly searchKey?: string;
+	readonly groupKey?: string;
+	readonly customRouterDataPrefix?: string;
 
 	readonly state: State;
 	readonly publicToken: string;
@@ -744,8 +752,9 @@ export class SearchEngine {
 		// WordPress is so popular that we must choose the defaults to work with it.
 		this.separator = options.separator ?? "_";
 
-		this.searchKey = options.searchKey ?? "q";
-		this.groupKey = options.groupKey ?? "id";
+		this.searchKey = options.searchKey;
+		this.groupKey = options.groupKey;
+		this.customRouterDataPrefix = options.customRouterDataPrefix;
 
 		if (typeof window === "undefined") {
 			this.PRIVATE_router = {

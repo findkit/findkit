@@ -312,8 +312,6 @@ test("can use very short keys without separators or instance ids", async ({
 	await page.evaluate(async () => {
 		const ui = new MOD.FindkitUI({
 			publicToken: "pW1D0p0Dg",
-			instanceId: "",
-			separator: "",
 			searchKey: "s",
 			groupKey: "g",
 			minTerms: 1,
