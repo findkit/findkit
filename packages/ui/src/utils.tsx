@@ -154,3 +154,18 @@ export function deprecationNotice(message: string) {
 		console.warn(`[Findkit] DEPRECATED ${message}`);
 	}
 }
+
+/**
+ * Throws on empty strings and when string consists of just whitespace characters
+ * Prefixes error messages with "[findkit] "
+ * @param testString
+ * @param errorMessage
+ */
+export function assertNonZeroString(
+	testString: string | undefined,
+	errorMessage: string,
+) {
+	if (typeof testString === "string" && testString.trim().length === 0) {
+		throw new Error(`[findkit] ${errorMessage}`);
+	}
+}

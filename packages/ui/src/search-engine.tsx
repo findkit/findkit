@@ -1,6 +1,7 @@
 // import { devtools } from "valtio/utils";
 import {
 	assertNonNullable,
+	assertNonZeroString,
 	cleanUndefined,
 	cn,
 	getScrollContainer,
@@ -428,6 +429,9 @@ export type UpdateParamsArgument<T extends SearchParams> =
 	| ((params: T) => T | undefined | void);
 
 const instanceIds = new Set<string>();
+const searchKeys = new Set<string>();
+const groupKeys = new Set<string>();
+const customRouterDataPrefixes = new Set<string>();
 
 /**
  * Object clone with poor man's fallback for old browsers
@@ -470,50 +474,26 @@ export class FindkitURLSearchParams {
 		searchKey?: string;
 		customRouterDataPrefix?: string;
 	}) {
-		if (
-			typeof options.instanceId === "string" &&
-			options.instanceId.trim().length === 0
-		) {
-			throw new Error(
-				`[findkit] Empty instanceId. See https://findk.it/instanceid`,
-			);
-		}
-
-		if (
-			typeof options.separator === "string" &&
-			options.separator.trim().length === 0
-		) {
-			throw new Error(
-				`[findkit] Empty separator. See https://findk.it/separator`,
-			);
-		}
-
-		if (
-			typeof options.searchKey === "string" &&
-			options.searchKey.trim().length === 0
-		) {
-			throw new Error(
-				`[findkit] Empty searchKey. See https://findk.it/searchKey`,
-			);
-		}
-
-		if (
-			typeof options.groupKey === "string" &&
-			options.groupKey.trim().length === 0
-		) {
-			throw new Error(
-				`[findkit] Empty groupKey. See https://findk.it/groupKey`,
-			);
-		}
-
-		if (
-			typeof options.customRouterDataPrefix === "string" &&
-			options.customRouterDataPrefix.trim().length === 0
-		) {
-			throw new Error(
-				`[findkit] Empty customRouterDataPrefix. See https://findk.it/customRouterDataPrefix`,
-			);
-		}
+		assertNonZeroString(
+			options.instanceId,
+			"Empty instanceId. See https://findk.it/instanceid",
+		);
+		assertNonZeroString(
+			options.separator,
+			"Empty separator. See https://findk.it/separator",
+		);
+		assertNonZeroString(
+			options.searchKey,
+			"Empty searchKey. See https://findk.it/searchkey",
+		);
+		assertNonZeroString(
+			options.groupKey,
+			"Empty groupKey. See https://findk.it/groupkey",
+		);
+		assertNonZeroString(
+			options.customRouterDataPrefix,
+			"Empty customRouterDataPrefix. See https://findk.it/customrouterdataprefix",
+		);
 
 		this.PRIVATE_instanceId = options.instanceId;
 		this.PRIVATE_params = new URLSearchParams(options.search);
@@ -836,8 +816,34 @@ export class SearchEngine {
 				`[findkit] Conflicting instance id "${this.instanceId}". See https://findk.it/instanceid`,
 			);
 		}
-
 		instanceIds.add(this.instanceId);
+
+		if (this.searchKey) {
+			if (searchKeys.has(this.searchKey)) {
+				throw new Error(
+					`[findkit] Conflicting search key "${this.searchKey}". See https://findk.it/searchkey`,
+				);
+			}
+			searchKeys.add(this.searchKey);
+		}
+
+		if (this.groupKey) {
+			if (groupKeys.has(this.groupKey)) {
+				throw new Error(
+					`[findkit] Conflicting group key "${this.groupKey}". See https://findk.it/groupkey`,
+				);
+			}
+			groupKeys.add(this.groupKey);
+		}
+
+		if (this.customRouterDataPrefix) {
+			if (customRouterDataPrefixes.has(this.customRouterDataPrefix)) {
+				throw new Error(
+					`[findkit] Conflicting custom router data prefix "${this.customRouterDataPrefix}". See https://findk.it/customrouterdataprefix`,
+				);
+			}
+			customRouterDataPrefixes.add(this.customRouterDataPrefix);
+		}
 
 		let groups = options.groups;
 
@@ -2790,6 +2796,19 @@ export class SearchEngine {
 	dispose = () => {
 		this.events.emit("dispose", {});
 		instanceIds.delete(this.instanceId);
+
+		if (this.searchKey) {
+			searchKeys.delete(this.searchKey);
+		}
+
+		if (this.groupKey) {
+			groupKeys.delete(this.groupKey);
+		}
+
+		if (this.customRouterDataPrefix) {
+			customRouterDataPrefixes.delete(this.customRouterDataPrefix);
+		}
+
 		this.close();
 		this.PRIVATE_resources.dispose();
 
