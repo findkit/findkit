@@ -12,5 +12,5 @@ consists of three main components:
 3. Hot linkable / npm installable open source Javascript UI-library
 
 There is also an optional [WordPress
-Plugin](https://github.com/findkit/wp-findkit) for WordPress users but Findkit
+Plugin](/wordpress-plugin/) for WordPress users but Findkit
 can work with any website without any Findkit specific code.

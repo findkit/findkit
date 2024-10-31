@@ -2,7 +2,7 @@
 	"mapping": {
 		"/": "https://www.findkit.com",
 		"/docs": "https://docs.findkit.com",
-		"/wp": "https://github.com/findkit/wp-findkit",
+		"/wp": "https://docs.findkit.com/wordpress-plugin",
 		"/wp/changelog": "https://github.com/findkit/wp-findkit/blob/main/CHANGELOG.md",
 		"/api": "https://docs.findkit.com/crawler/rest-api",
 		"/ui": "https://docs.findkit.com/ui",
