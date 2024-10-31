@@ -389,7 +389,14 @@ Set namespacing group key for the query string. `groupKey` replaces the deault `
 
 _New in v1.5.0_
 
-Set namespacing custom data key for the query string. `customRouterDataPrefix` replaces the deault `instanceId + separator + c + separator`.
+Set namespacing prefix for the [custom router data](/ui/custom-router-data/) keys in the query string.
+
+The prefix is used detect which keys belong to the FindkitUI instance if there
+are multiple FindkitUI instances or other code using query string keys for other purposes.
+
+Default `instanceId + separator + c + separator`
+
+Example: By default custom data keys are like `fdk_c_mykey` but if you set this to  `ns-` it will became `ns-mykey`. 
 
 :::warning
 Findkit deletes all matching query parameters on close. Do not use clashing prefixes.
