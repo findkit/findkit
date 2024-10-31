@@ -629,6 +629,34 @@ test.describe("ui.customRouterData property", () => {
 		expect(defaultCRD).toEqual({ price: "999" });
 	});
 
+	test("clashing searchKey and custom router data", async ({ page }) => {
+		await page.goto(staticEntry("/dummy"));
+
+		const defaultCRD = await page.evaluate(async () => {
+			const { FindkitUI } = MOD;
+			const ui = new FindkitUI({
+				publicToken: "na",
+				searchKey: "ns-foo",
+				customRouterDataPrefix: "ns-",
+				defaultCustomRouterData: {
+					bar: "123",
+				},
+			});
+
+			ui.open("abc");
+
+			await new Promise<void>((resolve) => {
+				ui.on("custom-router-data", () => {
+					resolve();
+				});
+			});
+
+			return ui.customRouterData;
+		});
+
+		expect(defaultCRD).toEqual({ bar: "123" });
+	});
+
 	test(".customRouterData can be updated before implementation load but read only after loading", async ({
 		page,
 	}) => {

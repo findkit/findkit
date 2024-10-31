@@ -428,10 +428,11 @@ export type UpdateParamsArgument<T extends SearchParams> =
 	| Partial<T>
 	| ((params: T) => T | undefined | void);
 
-const instanceIds = new Set<string>();
-const searchKeys = new Set<string>();
-const groupKeys = new Set<string>();
-const customRouterDataPrefixes = new Set<string>();
+/**
+ * InstanceIds, searchKeys, groupKeys, customRouterDataPrefixes
+ * Reserved keys cannot clash within Findkit instance or instances
+ */
+const reservedKeys = new Set<string>();
 
 /**
  * Object clone with poor man's fallback for old browsers
@@ -556,6 +557,10 @@ export class FindkitURLSearchParams {
 		const customData: CustomRouterData = {};
 
 		for (const [key, value] of this.PRIVATE_params.entries()) {
+			// never return the search key as custom data
+			if (key === this.PRIVATE_search_key()) {
+				continue;
+			}
 			if (key.startsWith(this.PRIVATE_customDataPrefix)) {
 				const cleaned = key.slice(this.PRIVATE_customDataPrefix.length);
 				customData[cleaned] = value;
@@ -811,38 +816,43 @@ export class SearchEngine {
 		this.PRIVATE_monitorDocumentLangActive = options.monitorDocumentLang;
 		this.PRIVATE_forceHistoryReplace = options.forceHistoryReplace ?? false;
 
-		if (instanceIds.has(this.instanceId)) {
+		if (reservedKeys.has(this.instanceId)) {
 			throw new Error(
 				`[findkit] Conflicting instance id "${this.instanceId}". See https://findk.it/instanceid`,
 			);
 		}
-		instanceIds.add(this.instanceId);
+		reservedKeys.add(this.instanceId);
+
+		// reserve the defaults too
+		reservedKeys.add(this.instanceId + this.separator + "q");
+		reservedKeys.add(this.instanceId + this.separator + "id");
+		reservedKeys.add(this.instanceId + this.separator + "c" + this.separator);
 
 		if (this.searchKey) {
-			if (searchKeys.has(this.searchKey)) {
+			if (reservedKeys.has(this.searchKey)) {
 				throw new Error(
 					`[findkit] Conflicting search key "${this.searchKey}". See https://findk.it/searchkey`,
 				);
 			}
-			searchKeys.add(this.searchKey);
+			reservedKeys.add(this.searchKey);
 		}
 
 		if (this.groupKey) {
-			if (groupKeys.has(this.groupKey)) {
+			if (reservedKeys.has(this.groupKey)) {
 				throw new Error(
 					`[findkit] Conflicting group key "${this.groupKey}". See https://findk.it/groupkey`,
 				);
 			}
-			groupKeys.add(this.groupKey);
+			reservedKeys.add(this.groupKey);
 		}
 
 		if (this.customRouterDataPrefix) {
-			if (customRouterDataPrefixes.has(this.customRouterDataPrefix)) {
+			if (reservedKeys.has(this.customRouterDataPrefix)) {
 				throw new Error(
 					`[findkit] Conflicting custom router data prefix "${this.customRouterDataPrefix}". See https://findk.it/customrouterdataprefix`,
 				);
 			}
-			customRouterDataPrefixes.add(this.customRouterDataPrefix);
+			reservedKeys.add(this.customRouterDataPrefix);
 		}
 
 		let groups = options.groups;
@@ -2795,18 +2805,25 @@ export class SearchEngine {
 
 	dispose = () => {
 		this.events.emit("dispose", {});
-		instanceIds.delete(this.instanceId);
+		reservedKeys.delete(this.instanceId);
+
+		// release the default values too
+		reservedKeys.delete(this.instanceId + this.separator + "q");
+		reservedKeys.delete(this.instanceId + this.separator + "id");
+		reservedKeys.delete(
+			this.instanceId + this.separator + "c" + this.separator,
+		);
 
 		if (this.searchKey) {
-			searchKeys.delete(this.searchKey);
+			reservedKeys.delete(this.searchKey);
 		}
 
 		if (this.groupKey) {
-			groupKeys.delete(this.groupKey);
+			reservedKeys.delete(this.groupKey);
 		}
 
 		if (this.customRouterDataPrefix) {
-			customRouterDataPrefixes.delete(this.customRouterDataPrefix);
+			reservedKeys.delete(this.customRouterDataPrefix);
 		}
 
 		this.close();
