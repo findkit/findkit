@@ -398,9 +398,6 @@ Default `instanceId + separator + c + separator`
 
 Example: By default custom data keys are like `fdk_c_mykey` but if you set this to  `ns-` it will became `ns-mykey`. 
 
-:::warning
-Findkit deletes all matching query parameters on close. Do not use clashing prefixes.
-:::
 
 ### `inert: string | boolean` {#inert}
 
