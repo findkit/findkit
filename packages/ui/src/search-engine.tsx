@@ -1,6 +1,7 @@
 // import { devtools } from "valtio/utils";
 import {
 	assertNonNullable,
+	assertAndReserveKey,
 	assertNonZeroString,
 	cleanUndefined,
 	cn,
@@ -816,72 +817,58 @@ export class SearchEngine {
 		this.PRIVATE_monitorDocumentLangActive = options.monitorDocumentLang;
 		this.PRIVATE_forceHistoryReplace = options.forceHistoryReplace ?? false;
 
-		const existingId = reservedKeys
-			.keys()
-			.find((reserved) => reserved.key === this.instanceId);
-		if (existingId) {
-			throw new Error(
-				`[findkit] Conflicting instance id "${this.instanceId}". Key was already reserved for ${existingId.key} earlier. See https://findk.it/instanceid`,
-			);
-		}
-		reservedKeys.add({ type: "instanceId", key: this.instanceId });
+		assertAndReserveKey({
+			reservedKeys: reservedKeys,
+			type: "instanceId",
+			key: this.instanceId,
+			documentationLink: "https://findk.it/instanceid",
+		});
 
-		// reserve the defaults too
-		reservedKeys.add({
+		assertAndReserveKey({
+			reservedKeys: reservedKeys,
 			type: "defaultSearchKey",
 			key: this.instanceId + this.separator + "q",
+			documentationLink: "https://findk.it/searchkey",
 		});
-		reservedKeys.add({
+
+		assertAndReserveKey({
+			reservedKeys: reservedKeys,
 			type: "defaultGroupKey",
 			key: this.instanceId + this.separator + "id",
+			documentationLink: "https://findk.it/groupkey",
 		});
-		reservedKeys.add({
+
+		assertAndReserveKey({
+			reservedKeys: reservedKeys,
 			type: "defaultCustomRouterDataPrefix",
 			key: this.instanceId + this.separator + "c" + this.separator,
+			documentationLink: "https://findk.it/customrouterdataprefix",
 		});
 
 		if (this.searchKey) {
-			const existingKey = reservedKeys
-				.keys()
-				.find((reserved) => reserved.key === this.searchKey);
-			if (existingKey) {
-				throw new Error(
-					`[findkit] Conflicting search key "${this.searchKey}". Key was already reserved for ${existingKey.type}. See https://findk.it/searchkey`,
-				);
-			}
-			reservedKeys.add({
+			assertAndReserveKey({
+				reservedKeys: reservedKeys,
 				type: "searchKey",
 				key: this.searchKey,
+				documentationLink: "https://findk.it/searchkey",
 			});
 		}
 
 		if (this.groupKey) {
-			const existingKey = reservedKeys
-				.keys()
-				.find((reserved) => reserved.key === this.groupKey);
-			if (existingKey) {
-				throw new Error(
-					`[findkit] Conflicting group key "${this.groupKey}". Key was already reserved for ${existingKey.type}. See https://findk.it/groupkey`,
-				);
-			}
-			reservedKeys.add({
+			assertAndReserveKey({
+				reservedKeys: reservedKeys,
 				type: "groupKey",
 				key: this.groupKey,
+				documentationLink: "https://findk.it/groupkey",
 			});
 		}
 
 		if (this.customRouterDataPrefix) {
-			const existingKey = reservedKeys
-				.keys()
-				.find((reserved) => reserved.key === this.customRouterDataPrefix);
-			if (existingKey) {
-				throw new Error(
-					`[findkit] Conflicting custom router data prefix "${this.customRouterDataPrefix}". Key was already reserved for ${existingKey.type}. See https://findk.it/customrouterdataprefix`,
-				);
-			}
-			reservedKeys.add({
+			assertAndReserveKey({
+				reservedKeys: reservedKeys,
 				type: "customRouterDataPrefix",
 				key: this.customRouterDataPrefix,
+				documentationLink: "https://findk.it/customrouterdataprefix",
 			});
 		}
 
