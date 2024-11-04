@@ -432,7 +432,7 @@ export type UpdateParamsArgument<T extends SearchParams> =
  * InstanceIds, searchKeys, groupKeys, customRouterDataPrefixes
  * Reserved keys cannot clash within Findkit instance or instances
  */
-const reservedKeys = new Set<string>();
+const reservedKeys = new Set<{ type: string; key: string }>();
 
 /**
  * Object clone with poor man's fallback for old browsers
@@ -816,43 +816,73 @@ export class SearchEngine {
 		this.PRIVATE_monitorDocumentLangActive = options.monitorDocumentLang;
 		this.PRIVATE_forceHistoryReplace = options.forceHistoryReplace ?? false;
 
-		if (reservedKeys.has(this.instanceId)) {
+		const existingId = reservedKeys
+			.keys()
+			.find((reserved) => reserved.key === this.instanceId);
+		if (existingId) {
 			throw new Error(
-				`[findkit] Conflicting instance id "${this.instanceId}". See https://findk.it/instanceid`,
+				`[findkit] Conflicting instance id "${this.instanceId}". Key was already reserved for ${existingId.key} earlier. See https://findk.it/instanceid`,
 			);
 		}
-		reservedKeys.add(this.instanceId);
+		reservedKeys.add({ type: "instanceId", key: this.instanceId });
 
 		// reserve the defaults too
-		reservedKeys.add(this.instanceId + this.separator + "q");
-		reservedKeys.add(this.instanceId + this.separator + "id");
-		reservedKeys.add(this.instanceId + this.separator + "c" + this.separator);
+		reservedKeys.add({
+			type: "defaultSearchKey",
+			key: this.instanceId + this.separator + "q",
+		});
+		reservedKeys.add({
+			type: "defaultGroupKey",
+			key: this.instanceId + this.separator + "id",
+		});
+		reservedKeys.add({
+			type: "defaultCustomRouterDataPrefix",
+			key: this.instanceId + this.separator + "c" + this.separator,
+		});
 
 		if (this.searchKey) {
-			if (reservedKeys.has(this.searchKey)) {
+			const existingKey = reservedKeys
+				.keys()
+				.find((reserved) => reserved.key === this.searchKey);
+			if (existingKey) {
 				throw new Error(
-					`[findkit] Conflicting search key "${this.searchKey}". See https://findk.it/searchkey`,
+					`[findkit] Conflicting search key "${this.searchKey}". Key was already reserved for ${existingKey.type}. See https://findk.it/searchkey`,
 				);
 			}
-			reservedKeys.add(this.searchKey);
+			reservedKeys.add({
+				type: "searchKey",
+				key: this.searchKey,
+			});
 		}
 
 		if (this.groupKey) {
-			if (reservedKeys.has(this.groupKey)) {
+			const existingKey = reservedKeys
+				.keys()
+				.find((reserved) => reserved.key === this.groupKey);
+			if (existingKey) {
 				throw new Error(
-					`[findkit] Conflicting group key "${this.groupKey}". See https://findk.it/groupkey`,
+					`[findkit] Conflicting group key "${this.groupKey}". Key was already reserved for ${existingKey.type}. See https://findk.it/groupkey`,
 				);
 			}
-			reservedKeys.add(this.groupKey);
+			reservedKeys.add({
+				type: "groupKey",
+				key: this.groupKey,
+			});
 		}
 
 		if (this.customRouterDataPrefix) {
-			if (reservedKeys.has(this.customRouterDataPrefix)) {
+			const existingKey = reservedKeys
+				.keys()
+				.find((reserved) => reserved.key === this.customRouterDataPrefix);
+			if (existingKey) {
 				throw new Error(
-					`[findkit] Conflicting custom router data prefix "${this.customRouterDataPrefix}". See https://findk.it/customrouterdataprefix`,
+					`[findkit] Conflicting custom router data prefix "${this.customRouterDataPrefix}". Key was already reserved for ${existingKey.type}. See https://findk.it/customrouterdataprefix`,
 				);
 			}
-			reservedKeys.add(this.customRouterDataPrefix);
+			reservedKeys.add({
+				type: "customRouterDataPrefix",
+				key: this.customRouterDataPrefix,
+			});
 		}
 
 		let groups = options.groups;
@@ -2805,25 +2835,32 @@ export class SearchEngine {
 
 	dispose = () => {
 		this.events.emit("dispose", {});
-		reservedKeys.delete(this.instanceId);
 
-		// release the default values too
-		reservedKeys.delete(this.instanceId + this.separator + "q");
-		reservedKeys.delete(this.instanceId + this.separator + "id");
-		reservedKeys.delete(
-			this.instanceId + this.separator + "c" + this.separator,
-		);
+		const deleteReservedKey = (key: string) => {
+			const reserved = reservedKeys.keys().find((r) => r.key === key);
+			if (reserved) {
+				reservedKeys.delete(reserved);
+			}
+		};
 
+		deleteReservedKey(this.instanceId);
+
+		// Delete default values
+		deleteReservedKey(this.instanceId + this.separator + "q");
+		deleteReservedKey(this.instanceId + this.separator + "id");
+		deleteReservedKey(this.instanceId + this.separator + "c" + this.separator);
+
+		// Delete optional keys
 		if (this.searchKey) {
-			reservedKeys.delete(this.searchKey);
+			deleteReservedKey(this.searchKey);
 		}
 
 		if (this.groupKey) {
-			reservedKeys.delete(this.groupKey);
+			deleteReservedKey(this.groupKey);
 		}
 
 		if (this.customRouterDataPrefix) {
-			reservedKeys.delete(this.customRouterDataPrefix);
+			deleteReservedKey(this.customRouterDataPrefix);
 		}
 
 		this.close();
