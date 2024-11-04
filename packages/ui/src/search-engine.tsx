@@ -2824,7 +2824,9 @@ export class SearchEngine {
 		this.events.emit("dispose", {});
 
 		const deleteReservedKey = (key: string) => {
-			const reserved = reservedKeys.keys().find((r) => r.key === key);
+			const reserved = Array.from(reservedKeys.keys()).find(
+				(r) => r.key === key,
+			);
 			if (reserved) {
 				reservedKeys.delete(reserved);
 			}
