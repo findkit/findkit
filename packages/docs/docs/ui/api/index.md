@@ -372,9 +372,9 @@ Set namespacing separator for the query string. Eg. the `_` in `?fdk_q=`. Defaul
 
 _New in v1.5.0_
 
-Set namespacing search key for the query string. `searchKey` replaces the default `instanceId + separator + q` e.g. `?fdk_q=`.
+Set namespacing search key for the query string. `searchKey` replaces the default `instanceId + separator + q` e.g. the `fdk_q` in `?fdk_q=test`.
 
-:::warning
+:::note
 Findkit prefixes query parameters by default to prevent clashing with other systems.
 E.g. WordPress will capture `?s=` query string if the default search is not disabled.
 :::
@@ -383,7 +383,7 @@ E.g. WordPress will capture `?s=` query string if the default search is not disa
 
 _New in v1.5.0_
 
-Set namespacing group key for the query string. `groupKey` replaces the deault `instanceId + separator + id` Eg. the `?fdk_id=group-1`.
+Set namespacing group key for the query string. `groupKey` replaces the deault `instanceId + separator + id` Eg. the `fdk_id` in `?fdk_q=test&fdk_id=group-1`.
 
 ### `customRouterDataPrefix: string` {#groupKey}
 
@@ -396,8 +396,7 @@ are multiple FindkitUI instances or other code using query string keys for other
 
 Default `instanceId + separator + c + separator`
 
-Example: By default custom data keys are like `fdk_c_mykey` but if you set this to  `ns-` it will became `ns-mykey`. 
-
+Example: By default, custom data keys follow the format `fdk_c_mykey`. If you set the prefix to `ns-`, the keys will be formatted as `ns-mykey`.
 
 ### `inert: string | boolean` {#inert}
 
