@@ -305,3 +305,44 @@ test("can overwrite fdk_q with searchKey and fdk_id with groupKey", async ({
 		.poll(() => new URL(page.url()).search)
 		.toEqual("?search=a&group=group-1");
 });
+
+test("search key and group key work with hash router", async ({ page }) => {
+	await page.goto(staticEntry("/dummy"));
+
+	await page.evaluate(async () => {
+		const ui = new MOD.FindkitUI({
+			publicToken: "pW1D0p0Dg",
+			router: "hash",
+			searchKey: "search",
+			groupKey: "group",
+			minTerms: 1,
+			groups: [
+				{
+					title: "All",
+				},
+				{
+					title: "Electronics",
+					params: {
+						filter: {
+							category: "Electronics",
+						},
+					},
+				},
+			],
+		});
+
+		ui.open("a");
+	});
+
+	const hits = page.locator(".findkit--hit a");
+
+	await hits.first().waitFor({ state: "visible" });
+	await expect.poll(() => new URL(page.url()).hash).toEqual("#search=a");
+
+	const allLink = page.locator("text=Show more search results");
+	await allLink.first().click();
+
+	await expect
+		.poll(() => new URL(page.url()).hash)
+		.toEqual("#search=a&group=group-1");
+});

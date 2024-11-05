@@ -385,7 +385,7 @@ _New in v1.5.0_
 
 Set namespacing group key for the query string. `groupKey` replaces the deault `instanceId + separator + id` Eg. the `fdk_id` in `?fdk_q=test&fdk_id=group-1`.
 
-### `customRouterDataPrefix: string` {#groupKey}
+### `customRouterDataPrefix: string` {#customRouterDataPrefix}
 
 _New in v1.5.0_
 
