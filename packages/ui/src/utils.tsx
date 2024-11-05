@@ -190,7 +190,7 @@ export function assertAndReserveKey(params: {
 
 	if (existing) {
 		throw new Error(
-			`[findkit] Conflicting ${params.type} "${params.key}". Key was already reserved for ${existing.type}. See ${params.documentationLink} and https://findk.it/reservedQueryParameters`,
+			`[findkit] Conflicting ${params.type} "${params.key}". Key was already reserved for ${existing.type}. See ${params.documentationLink} and https://findk.it/reservedURLParameters`,
 		);
 	}
 

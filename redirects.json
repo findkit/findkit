@@ -26,6 +26,6 @@
 		"/searchKey": "https://docs.findkit.com/ui/api/#searchKey",
 		"/groupKey": "https://docs.findkit.com/ui/api/#groupKey",
 		"/customRouterDataPrefix": "https://docs.findkit.com/ui/api/#customRouterDataPrefix",
-		"/reservedQueryParameters": "https://docs.findkit.com/ui/advanced/routing#reserved-query-parameters"
+		"/reservedURLParameters": "https://docs.findkit.com/ui/advanced/routing#reserved-url-parameters"
 	}
 }

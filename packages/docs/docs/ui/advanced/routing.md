@@ -25,7 +25,7 @@ page="ui.routerbackend" >RouterBackend </Api> implementation.
 
 TODO: full example of the custom backend usage
 
-## Reserved query parameters {#reserved-query-parameters}
+## Reserved URL-parameters {#reserved-url-parameters}
 
 Because Findkit state is stored in URL, the param keys need to be unambiguous.
 Because there can be one or more Findkits in a page this is also true between instances.
