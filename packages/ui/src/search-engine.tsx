@@ -1,6 +1,8 @@
 // import { devtools } from "valtio/utils";
 import {
 	assertNonNullable,
+	assertAndReserveKey,
+	assertNonZeroString,
 	cleanUndefined,
 	cn,
 	getScrollContainer,
@@ -427,7 +429,11 @@ export type UpdateParamsArgument<T extends SearchParams> =
 	| Partial<T>
 	| ((params: T) => T | undefined | void);
 
-const instanceIds = new Set<string>();
+/**
+ * InstanceIds, searchKeys, groupKeys, customRouterDataPrefixes
+ * Reserved keys cannot clash within Findkit instance or instances
+ */
+const reservedKeys = new Set<{ type: string; key: string }>();
 
 /**
  * Object clone with poor man's fallback for old browsers
@@ -459,26 +465,65 @@ export class FindkitURLSearchParams {
 	private PRIVATE_instanceId: string;
 	private PRIVATE_customDataPrefix: string;
 	private PRIVATE_separator: string;
+	private PRIVATE_groupKey?: string;
+	private PRIVATE_searchKey?: string;
 
 	constructor(options: {
 		instanceId: string;
 		search: string;
 		separator: string;
+		groupKey?: string;
+		searchKey?: string;
+		customRouterDataPrefix?: string;
 	}) {
+		assertNonZeroString(
+			options.instanceId,
+			"Empty instanceId. See https://findk.it/instanceid",
+		);
+		assertNonZeroString(
+			options.separator,
+			"Empty separator. See https://findk.it/separator",
+		);
+		assertNonZeroString(
+			options.searchKey,
+			"Empty searchKey. See https://findk.it/searchkey",
+		);
+		assertNonZeroString(
+			options.groupKey,
+			"Empty groupKey. See https://findk.it/groupkey",
+		);
+		assertNonZeroString(
+			options.customRouterDataPrefix,
+			"Empty customRouterDataPrefix. See https://findk.it/customrouterdataprefix",
+		);
+
 		this.PRIVATE_instanceId = options.instanceId;
 		this.PRIVATE_params = new URLSearchParams(options.search);
 		this.PRIVATE_separator = options.separator;
+		this.PRIVATE_groupKey = options.groupKey;
+		this.PRIVATE_searchKey = options.searchKey;
 
 		// ex. fdk_c_
 		this.PRIVATE_customDataPrefix =
+			options.customRouterDataPrefix ??
 			this.PRIVATE_instanceId +
-			this.PRIVATE_separator +
-			"c" +
-			this.PRIVATE_separator;
+				this.PRIVATE_separator +
+				"c" +
+				this.PRIVATE_separator;
 	}
 
-	private PRIVATE_key(key: "id" | "q") {
-		return this.PRIVATE_instanceId + this.PRIVATE_separator + key;
+	private PRIVATE_search_key() {
+		return (
+			this.PRIVATE_searchKey ??
+			this.PRIVATE_instanceId + this.PRIVATE_separator + "q"
+		);
+	}
+
+	private PRIVATE_group_key() {
+		return (
+			this.PRIVATE_groupKey ??
+			this.PRIVATE_instanceId + this.PRIVATE_separator + "id"
+		);
 	}
 
 	setCustomData(data: CustomRouterData) {
@@ -513,6 +558,10 @@ export class FindkitURLSearchParams {
 		const customData: CustomRouterData = {};
 
 		for (const [key, value] of this.PRIVATE_params.entries()) {
+			// never return the search key as custom data
+			if (key === this.PRIVATE_search_key()) {
+				continue;
+			}
 			if (key.startsWith(this.PRIVATE_customDataPrefix)) {
 				const cleaned = key.slice(this.PRIVATE_customDataPrefix.length);
 				customData[cleaned] = value;
@@ -523,7 +572,9 @@ export class FindkitURLSearchParams {
 	}
 
 	getGroupId() {
-		return this.PRIVATE_params.get(this.PRIVATE_key("id"))?.trim() || undefined;
+		return (
+			this.PRIVATE_params.get(this.PRIVATE_group_key())?.trim() || undefined
+		);
 	}
 
 	next(fn: (params: FindkitURLSearchParams) => void) {
@@ -531,6 +582,9 @@ export class FindkitURLSearchParams {
 			instanceId: this.PRIVATE_instanceId,
 			search: this.PRIVATE_params.toString(),
 			separator: this.PRIVATE_separator,
+			groupKey: this.PRIVATE_groupKey,
+			searchKey: this.PRIVATE_searchKey,
+			customRouterDataPrefix: this.PRIVATE_customDataPrefix,
 		});
 		fn(next);
 		return next;
@@ -538,7 +592,7 @@ export class FindkitURLSearchParams {
 
 	clearGroupId() {
 		return this.next((next) => {
-			next.PRIVATE_params.delete(next.PRIVATE_key("id"));
+			next.PRIVATE_params.delete(next.PRIVATE_group_key());
 		});
 	}
 
@@ -557,22 +611,22 @@ export class FindkitURLSearchParams {
 
 	setGroupId(id: string) {
 		return this.next((next) => {
-			next.PRIVATE_params.set(next.PRIVATE_key("id"), id);
+			next.PRIVATE_params.set(next.PRIVATE_group_key(), id);
 		});
 	}
 
 	setTerms(terms: string) {
 		return this.next((next) => {
-			next.PRIVATE_params.set(next.PRIVATE_key("q"), terms.trim());
+			next.PRIVATE_params.set(next.PRIVATE_search_key(), terms.trim());
 		});
 	}
 
 	isActive() {
-		return this.PRIVATE_params.has(this.PRIVATE_key("q"));
+		return this.PRIVATE_params.has(this.PRIVATE_search_key());
 	}
 
 	getTerms(): string | undefined {
-		return this.PRIVATE_params.get(this.PRIVATE_key("q"))?.trim();
+		return this.PRIVATE_params.get(this.PRIVATE_search_key())?.trim();
 	}
 
 	toString() {
@@ -610,6 +664,9 @@ export interface SearchEngineOptions {
 	closeOnOutsideClick?: boolean;
 	router?: "memory" | "querystring" | "hash" | RouterBackend<{}>;
 	separator?: string;
+	searchKey?: string;
+	groupKey?: string;
+	customRouterDataPrefix?: string;
 
 	/**
 	 * Monitor <html lang> changes
@@ -675,7 +732,13 @@ export class SearchEngine {
 
 	private readonly PRIVATE_router: RouterBackend<GlobalHistoryState>;
 	private PRIVATE_fetcher: FindkitFetch;
+
 	readonly instanceId: string;
+	readonly separator: string;
+	readonly searchKey?: string;
+	readonly groupKey?: string;
+	readonly customRouterDataPrefix?: string;
+
 	readonly state: State;
 	readonly publicToken: string;
 	private PRIVATE_searchEndpoint: string | undefined;
@@ -698,7 +761,6 @@ export class SearchEngine {
 	private PRIVATE_inert: string | boolean;
 	private PRIVATE_monitorDocumentLangActive: boolean | undefined;
 	private PRIVATE_manageScroll: boolean | undefined;
-	readonly separator: string;
 
 	private PRIVATE_defaultCustomRouteData: CustomRouterData;
 
@@ -720,6 +782,10 @@ export class SearchEngine {
 		// Ex. https://wordpress.org/?what.the.fak
 		// WordPress is so popular that we must choose the defaults to work with it.
 		this.separator = options.separator ?? "_";
+
+		this.searchKey = options.searchKey;
+		this.groupKey = options.groupKey;
+		this.customRouterDataPrefix = options.customRouterDataPrefix;
 
 		if (typeof window === "undefined") {
 			this.PRIVATE_router = {
@@ -751,13 +817,60 @@ export class SearchEngine {
 		this.PRIVATE_monitorDocumentLangActive = options.monitorDocumentLang;
 		this.PRIVATE_forceHistoryReplace = options.forceHistoryReplace ?? false;
 
-		if (instanceIds.has(this.instanceId)) {
-			throw new Error(
-				`[findkit] Conflicting instance id "${this.instanceId}". See https://findk.it/instanceid`,
-			);
+		assertAndReserveKey({
+			reservedKeys: reservedKeys,
+			type: "instanceId",
+			key: this.instanceId,
+			documentationLink: "https://findk.it/instanceid",
+		});
+
+		assertAndReserveKey({
+			reservedKeys: reservedKeys,
+			type: "defaultSearchKey",
+			key: this.instanceId + this.separator + "q",
+			documentationLink: "https://findk.it/searchkey",
+		});
+
+		assertAndReserveKey({
+			reservedKeys: reservedKeys,
+			type: "defaultGroupKey",
+			key: this.instanceId + this.separator + "id",
+			documentationLink: "https://findk.it/groupkey",
+		});
+
+		assertAndReserveKey({
+			reservedKeys: reservedKeys,
+			type: "defaultCustomRouterDataPrefix",
+			key: this.instanceId + this.separator + "c" + this.separator,
+			documentationLink: "https://findk.it/customrouterdataprefix",
+		});
+
+		if (this.searchKey) {
+			assertAndReserveKey({
+				reservedKeys: reservedKeys,
+				type: "searchKey",
+				key: this.searchKey,
+				documentationLink: "https://findk.it/searchkey",
+			});
 		}
 
-		instanceIds.add(this.instanceId);
+		if (this.groupKey) {
+			assertAndReserveKey({
+				reservedKeys: reservedKeys,
+				type: "groupKey",
+				key: this.groupKey,
+				documentationLink: "https://findk.it/groupkey",
+			});
+		}
+
+		if (this.customRouterDataPrefix) {
+			assertAndReserveKey({
+				reservedKeys: reservedKeys,
+				type: "customRouterDataPrefix",
+				key: this.customRouterDataPrefix,
+				documentationLink: "https://findk.it/customrouterdataprefix",
+			});
+		}
 
 		let groups = options.groups;
 
@@ -1249,6 +1362,9 @@ export class SearchEngine {
 			instanceId: this.instanceId,
 			search: this.PRIVATE_router.getSearchParamsString(),
 			separator: this.separator,
+			searchKey: this.searchKey,
+			groupKey: this.groupKey,
+			customRouterDataPrefix: this.customRouterDataPrefix,
 		});
 
 		this.state.currentGroupId = initialSearchParams.getGroupId();
@@ -1464,6 +1580,9 @@ export class SearchEngine {
 			instanceId: this.instanceId,
 			search: this.state.searchParams,
 			separator: this.separator,
+			searchKey: this.searchKey,
+			groupKey: this.groupKey,
+			customRouterDataPrefix: this.customRouterDataPrefix,
 		});
 
 		this.PRIVATE_findkitParamsCache = {
@@ -2703,7 +2822,36 @@ export class SearchEngine {
 
 	dispose = () => {
 		this.events.emit("dispose", {});
-		instanceIds.delete(this.instanceId);
+
+		const deleteReservedKey = (key: string) => {
+			const reserved = Array.from(reservedKeys.keys()).find(
+				(r) => r.key === key,
+			);
+			if (reserved) {
+				reservedKeys.delete(reserved);
+			}
+		};
+
+		deleteReservedKey(this.instanceId);
+
+		// Delete default values
+		deleteReservedKey(this.instanceId + this.separator + "q");
+		deleteReservedKey(this.instanceId + this.separator + "id");
+		deleteReservedKey(this.instanceId + this.separator + "c" + this.separator);
+
+		// Delete optional keys
+		if (this.searchKey) {
+			deleteReservedKey(this.searchKey);
+		}
+
+		if (this.groupKey) {
+			deleteReservedKey(this.groupKey);
+		}
+
+		if (this.customRouterDataPrefix) {
+			deleteReservedKey(this.customRouterDataPrefix);
+		}
+
 		this.close();
 		this.PRIVATE_resources.dispose();
 

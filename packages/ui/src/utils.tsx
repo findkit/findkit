@@ -154,3 +154,45 @@ export function deprecationNotice(message: string) {
 		console.warn(`[Findkit] DEPRECATED ${message}`);
 	}
 }
+
+/**
+ * Throws on empty strings and when string consists of just whitespace characters
+ * Prefixes error messages with "[findkit] "
+ * @param testString
+ * @param errorMessage
+ */
+export function assertNonZeroString(
+	testString: string | undefined,
+	errorMessage: string,
+) {
+	if (typeof testString === "string" && testString.trim().length === 0) {
+		throw new Error(`[findkit] ${errorMessage}`);
+	}
+}
+
+/**
+ * Checks that reservedKeys does not have a matching key value,
+ * if a clashing key exists this will throw with the existing keys type
+ * and documentation link of the passed key
+ *
+ * Otherwise adds the key & type to reserved keys
+ * @param params
+ */
+export function assertAndReserveKey(params: {
+	reservedKeys: Set<{ type: string; key: string }>;
+	type: string;
+	key: string;
+	documentationLink: string;
+}) {
+	const existing = Array.from(params.reservedKeys.keys()).find(
+		(reserved) => reserved.key === params.key,
+	);
+
+	if (existing) {
+		throw new Error(
+			`[findkit] Conflicting ${params.type} "${params.key}". Key was already reserved for ${existing.type}. See ${params.documentationLink}`,
+		);
+	}
+
+	params.reservedKeys.add({ type: params.type, key: params.key });
+}

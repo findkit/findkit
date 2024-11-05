@@ -1,10 +1,8 @@
-
 # API
 
 <FragmentOverride text="Findkit UI API" />
 
 <Fragmented withH1 />
-
 
 The `FindkitUI` constructor supports following options for customization
 
@@ -178,11 +176,15 @@ When using multiple `FindkitUI` instances you must provide a custom
 names. This is needed for example when you have global site search and a more
 specific search running on the same page.
 
+Empty string in instanceId or instanceId consisting of only whitespace characters will cause an error.
+If you would like to remove instanceId from the query parameters see [searchKey](#searchKey).
+
 :::note
 If you have only one search setup and you are getting an error about a
 conflicting instance id it means you are accidentally doing multiple `new
 Findkit()` calls without calling [`.dispose()`](#dispose) on the previous
 instance.
+:::
 
 ### Hot Module Reloading
 
@@ -365,6 +367,36 @@ Defaults to `true`
 _New in v1.0.0_
 
 Set namespacing separator for the query string. Eg. the `_` in `?fdk_q=`. Defaults to `"_"`. Used in the custom router keys as well.
+
+### `searchKey: string` {#searchKey}
+
+_New in v1.5.0_
+
+Set namespacing search key for the query string. `searchKey` replaces the default `instanceId + separator + q` e.g. the `fdk_q` in `?fdk_q=test`.
+
+:::note
+Findkit prefixes query parameters by default to prevent clashing with other systems.
+E.g. WordPress will capture `?s=` query string if the default search is not disabled.
+:::
+
+### `groupKey: string` {#groupKey}
+
+_New in v1.5.0_
+
+Set namespacing group key for the query string. `groupKey` replaces the deault `instanceId + separator + id` Eg. the `fdk_id` in `?fdk_q=test&fdk_id=group-1`.
+
+### `customRouterDataPrefix: string` {#customRouterDataPrefix}
+
+_New in v1.5.0_
+
+Set namespacing prefix for the [custom router data](/ui/custom-router-data/) keys in the query string.
+
+The prefix is used detect which keys belong to the FindkitUI instance if there
+are multiple FindkitUI instances or other code using query string keys for other purposes.
+
+Default `instanceId + separator + c + separator`
+
+Example: By default, custom data keys follow the format `fdk_c_mykey`. If you set the prefix to `ns-`, the keys will be formatted as `ns-mykey`.
 
 ### `inert: string | boolean` {#inert}
 

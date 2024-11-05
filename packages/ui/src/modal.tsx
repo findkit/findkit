@@ -595,6 +595,7 @@ if (typeof document !== "undefined") {
 export function init(_options: {
 	publicToken: string;
 	instanceId: string;
+	separator?: string;
 	shadowDom?: boolean;
 	cssLayers?: boolean;
 	minTerms?: number;
@@ -615,6 +616,9 @@ export function init(_options: {
 	inert?: string | boolean;
 	modal?: boolean;
 	header?: boolean;
+	searchKey?: string;
+	groupKey?: string;
+	customRouterDataPrefix?: string;
 	router?: SearchEngineOptions["router"];
 	groupOrder?: GroupOrder;
 	fontDivisor?: number;
