@@ -1,3 +1,15 @@
+## v1.5.0
+
+2024-11-05
+
+Configureable URL-parameters!
+
+-   Add [searchKey](https://docs.findkit.com/ui/api/#searchKey) for overwriting search key
+-   Add [groupKey](https://docs.findkit.com/ui/api/#groupKey) for overwriting group key
+-   Add [customRouterDataPrefix](https://docs.findkit.com/ui/api/customRouterDataPrefix) for overwriting custom router data prefix
+
+All changes https://github.com/findkit/findkit/compare/ui/v1.4.0...ui/v1.5.0
+
 ## v1.4.0
 
 2024-10-18
