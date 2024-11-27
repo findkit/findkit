@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Static Template</title>
+		<style>
+			.loading {
+				opacity: 0.5;
+			}
+		</style>
+		<script type="module">
+			import {
+				FindkitUI,
+				html,
+				css,
+			} from "https://cdn.findkit.com/ui/v1.5.0/esm/index.js";
+
+			const cats = [
+				"neo",
+				"millie",
+				"millie_neo",
+				"neo_banana",
+				"neo_2",
+				"bella",
+			];
+
+			function urlToNumber(url) {
+				const sum = url
+					.split("")
+					.reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
+				return sum % 6;
+			}
+
+			const ui = new FindkitUI({
+				publicToken: "p68GxRvaA",
+				searchKey: "s",
+				slots: {
+					Hit(props) {
+						return html`
+							<div class="search-result">
+								<div class="image">
+									<img
+										src="https://placecats.com/${cats[
+											urlToNumber(props.hit.url)
+										]}/300/150"
+										alt="Placeholder cat"
+									/>
+								</div>
+								<div class="info">
+									<h2>
+										<a href=${props.hit.url}>${props.hit.title}</a>
+									</h2>
+									<${props.parts.Highlight} />
+									<a href=${props.hit.url}>${props.hit.url}</a>
+								</div>
+							</div>
+						`;
+					},
+					Header(props) {
+						return html` <div class="findkit--header-wrap">
+							<div class="findkit--logo-close-wrap">
+								<span class="emoji-logo">🐱</span>
+								<span class="logo-title">Documentation with cats</span>
+								<${props.parts.CloseButton} />
+							</div>
+							<${props.parts.Input} />
+						</div>`;
+					},
+					Layout(props) {
+						return html`<div class="findkit--layout">
+							${props.children}
+							<div class="findkit--branding">
+								<a
+									href="https://www.findkit.com"
+									target="_blank"
+									rel="noopener noreferrer"
+									class="findkit--branding-link"
+								>
+									Powered by Purring and Catnip
+								</a>
+							</div>
+						</div>`;
+					},
+				},
+				css: css`
+					.findkit--container {
+						--findkit--brand-color: #2563eb;
+						--primary-color: #2563eb;
+						--text-primary: #1f2937;
+						--text-secondary: #6b7280;
+						--bg-color: #ffffff;
+						--border-radius: 12px;
+						--shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+							0 2px 4px -2px rgb(0 0 0 / 0.1);
+						--transition: all 0.3s ease;
+					}
+
+					.search-result {
+						display: grid;
+						grid-template-columns: 280px 1fr;
+						gap: 24px;
+						padding: 24px;
+						background: var(--bg-color);
+						border-radius: var(--border-radius);
+						box-shadow: var(--shadow);
+						transition: var(--transition);
+						margin-bottom: 24px;
+					}
+
+					.search-result:hover {
+						transform: translateY(-2px);
+						box-shadow:
+							0 10px 15px -3px rgb(0 0 0 / 0.1),
+							0 4px 6px -4px rgb(0 0 0 / 0.1);
+					}
+
+					.image {
+						width: 100%;
+						height: 150px;
+						overflow: hidden;
+						border-radius: calc(var(--border-radius) - 4px);
+					}
+
+					.image img {
+						width: 100%;
+						height: 100%;
+						object-fit: cover;
+						transition: var(--transition);
+					}
+
+					.search-result:hover .image img {
+						transform: scale(1.05);
+					}
+
+					.findkit--highlight {
+						margin: 0;
+						color: var(--text-secondary);
+						line-height: 1.6;
+						font-size: 1rem;
+						padding: 0;
+					}
+
+					.info h2 {
+						margin: 0;
+						font-size: 1.5rem;
+						color: var(--text-primary);
+						font-weight: 600;
+						line-height: 1.4;
+					}
+
+					.findkit--header-wrap {
+						padding: 1rem;
+					}
+
+					.findkit--logo-close-wrap {
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						margin-bottom: 1rem;
+					}
+
+					.logo-container {
+						display: flex;
+						align-items: center;
+						gap: 0.5rem;
+					}
+
+					.emoji-logo {
+						font-size: 4rem;
+						line-height: 1;
+						transition: transform 0.3s ease;
+					}
+
+					.emoji-logo:hover {
+						transform: scale(1.1);
+					}
+
+					.logo-title {
+						font-size: 1.25rem;
+						font-weight: 600;
+					}
+
+					.findkit--layout {
+						display: flex;
+						flex-direction: column;
+						min-height: 100%;
+					}
+
+					.findkit--branding {
+						position: sticky;
+						bottom: 0;
+						left: 0;
+						right: 0;
+						z-index: 1;
+						padding: var(--findkit--space-4);
+						text-align: center;
+						background-color: var(--findkit--background-color);
+						box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+						transition: box-shadow 0.3s ease;
+					}
+
+					.findkit--branding-link {
+						color: var(--findkit--brand-color);
+						text-decoration: none;
+						font-size: var(--findkit--font-14);
+						opacity: 0.9;
+						transition: opacity 0.2s ease;
+					}
+
+					.findkit--branding-link:hover {
+						opacity: 1;
+						text-decoration: underline;
+					}
+
+					@media (max-width: 600px) {
+						.search-result {
+							grid-template-columns: 1fr;
+						}
+
+						.image {
+							height: 200px;
+						}
+					}
+				`,
+			});
+
+			const button = document.querySelector("button.open");
+
+			// https://docs.findkit.com/ui/api/#openFrom
+			ui.openFrom(button);
+
+			// https://docs.findkit.com/ui/api/events#loading
+			ui.on("loading", () => {
+				button.classList.add("loading");
+			});
+
+			ui.on("loading-done", () => {
+				button.classList.remove("loading");
+			});
+		</script>
+	</head>
+
+	<body>
+		<button class="open" type="button" onclick="this.dataset.clicked=true">
+			Open Search
+		</button>
+	</body>
+</html>
