@@ -62,6 +62,6 @@ test("can customize footer elements", async ({ page }) => {
 		.not.toBe("Custom all results shown");
 
 	await expect(page.locator(".findkit--all-results-shown")).toHaveText(
-		"Custom all results shown",
+		"Custom no results",
 	);
 });
