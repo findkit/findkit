@@ -680,6 +680,7 @@ const ResultsSlot = createSlotComponent("Results", {
 						allResultsLoaded={allResultsLoaded}
 						loadMore={props.loadMore}
 						allResultsShown={props.allResultsShown}
+						noResults={props.noResults}
 					/>
 					<View cn="footer-spinner">
 						<Spinner spinning={slot.fetchedHits !== 0} />
@@ -757,10 +758,11 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
  */
 function FooterContent(props: {
 	allResultsLoaded: boolean;
-	noResults: boolean;
+	total: number;
 	groupId: string;
 	allResultsShown: any;
 	loadMore: any;
+	noResults: any;
 }) {
 	const state = useSearchEngineState();
 	const t = useTranslator();
@@ -772,8 +774,10 @@ function FooterContent(props: {
 		return null;
 	}
 
-	if (props.noResults) {
-		return <View cn="all-results-shown">{t("no-results")}</View>;
+	if (props.total === 0) {
+		return (
+			<View cn="all-results-shown">{props.noResults ?? t("no-results")}</View>
+		);
 	}
 
 	if (props.allResultsLoaded) {
