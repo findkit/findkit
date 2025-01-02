@@ -299,3 +299,24 @@ test("can click url link after scrolling", async ({ page }) => {
 	await hitUrlLink.nth(5).click();
 	await expect(page).toHaveURL(hitUrl + "/");
 });
+
+test("single group without results displayes 'no search results' text", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/single-group"));
+
+	const button = page.locator("text=open");
+	const input = page.locator('[aria-label="Search input"]');
+	const footer = page.locator(".findkit--footer");
+
+	await button.click();
+	await input.fill("foobarbazfoobarbazfoobarbazfoobarbaz");
+
+	await footer.first().waitFor({ state: "visible" });
+	assertNotNil(footer);
+
+	// takes some time for the UI to update
+	await expect.poll(async () => footer.innerText()).not.toBe("");
+	const text = await footer.innerText();
+	expect(text).toBe("No results");
+});

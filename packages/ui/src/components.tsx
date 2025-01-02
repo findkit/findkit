@@ -676,6 +676,7 @@ const ResultsSlot = createSlotComponent("Results", {
 				<View as="nav" cn="footer" aria-label={t("load-more")}>
 					<FooterContent
 						groupId={slot.id}
+						noResults={slot.total === 0}
 						allResultsLoaded={allResultsLoaded}
 						loadMore={props.loadMore}
 						allResultsShown={props.allResultsShown}
@@ -756,6 +757,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
  */
 function FooterContent(props: {
 	allResultsLoaded: boolean;
+	noResults: boolean;
 	groupId: string;
 	allResultsShown: any;
 	loadMore: any;
@@ -768,6 +770,10 @@ function FooterContent(props: {
 
 	if (!firstSearchMade) {
 		return null;
+	}
+
+	if (props.noResults) {
+		return <View cn="all-results-shown">{t("no-results")}</View>;
 	}
 
 	if (props.allResultsLoaded) {
