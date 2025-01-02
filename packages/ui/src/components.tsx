@@ -676,7 +676,7 @@ const ResultsSlot = createSlotComponent("Results", {
 				<View as="nav" cn="footer" aria-label={t("load-more")}>
 					<FooterContent
 						groupId={slot.id}
-						noResults={slot.total === 0}
+						total={slot.total}
 						allResultsLoaded={allResultsLoaded}
 						loadMore={props.loadMore}
 						allResultsShown={props.allResultsShown}
