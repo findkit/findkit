@@ -316,7 +316,7 @@ test("single group without results displayes 'no search results' text", async ({
 	assertNotNil(footer);
 
 	// takes some time for the UI to update
-	await expect.poll(async () => footer.innerText()).not.toBe("");
+	await page.waitForTimeout(300);
 	const text = await footer.innerText();
 	expect(text).toBe("No results");
 });
