@@ -310,13 +310,14 @@ test("single group without results displayes 'no search results' text", async ({
 	const footer = page.locator(".findkit--footer");
 
 	await button.click();
-	await input.fill("foobarbazfoobarbazfoobarbazfoobarbaz");
+	await input.fill("foobarbazfoobarbazfoobarbaz");
 
 	await footer.first().waitFor({ state: "visible" });
 	assertNotNil(footer);
 
 	// takes some time for the UI to update
-	await page.waitForTimeout(300);
+	await expect.poll(async () => footer.innerText()).not.toBe("");
+	await page.waitForTimeout(600);
 	const text = await footer.innerText();
 	expect(text).toBe("No results");
 });
