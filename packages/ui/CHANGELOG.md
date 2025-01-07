@@ -2,8 +2,8 @@
 
 2025-01-07
 
--   Add "noResults" to Footer slot, for configuring "No results" message
 -   Display "No results" instead of "All results shown" in single group, if it didnt have any results
+-   Add "noResults" to Result slot parts "Footer", for configuring "No results" message
 
 All changes https://github.com/findkit/findkit/compare/ui/v1.5.0...ui/v1.6.0
 
