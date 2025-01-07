@@ -289,14 +289,19 @@ export interface ResultSlotParts {
 	Hits(props: {}): any;
 	Footer(props: {
 		/**
-		 * Render when there more results to be loaded
+		 * Render when there are more results to be loaded
 		 */
 		loadMore?: any;
 
 		/**
-		 * Render when all resuls are already shown
+		 * Render when all results are already shown
 		 */
 		allResultsShown?: any;
+
+		/**
+		 * Render when there are no results for the query
+		 */
+		noResults?: any;
 	}): any;
 }
 

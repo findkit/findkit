@@ -22,6 +22,7 @@ test("can customize footer elements", async ({ page }) => {
 						<${props.parts.Footer}
 							loadMore=${html`<i>Custom More</i>`}
 							allResultsShown=${html`<i>Custom all results shown</i>`}
+							noResults=${html`<i>Custom no results</i>`}
 						/>
 					`;
 				},
@@ -40,14 +41,27 @@ test("can customize footer elements", async ({ page }) => {
 
 	await page.mouse.wheel(0, 300);
 
+	const footer = page.locator(".findkit--footer");
+
 	await expect(page.locator(".findkit--load-more-button")).toHaveText(
 		"Custom More",
 	);
 
-	await input.fill("do not find anything with this");
-	await hit.waitFor({ state: "hidden" });
+	await input.fill("running shoes");
+
+	await expect.poll(async () => footer.innerText()).not.toBe("Custom More");
 
 	await expect(page.locator(".findkit--all-results-shown")).toHaveText(
 		"Custom all results shown",
+	);
+
+	await input.fill("do not find anything with this");
+
+	await expect
+		.poll(async () => footer.innerText())
+		.not.toBe("Custom all results shown");
+
+	await expect(page.locator(".findkit--all-results-shown")).toHaveText(
+		"Custom no results",
 	);
 });
