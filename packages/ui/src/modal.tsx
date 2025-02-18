@@ -356,8 +356,8 @@ function Modal() {
 		>
 			<View
 				// Do not allow focus to the scrolling container.
-				// The focus on on the scrolling container is confusing as it
-				// is not annouced for screen readers and it is not visible.
+				// The focus on the scrolling container is confusing as it
+				// is not announced for screen readers, and it is not visible.
 				// This makes sure the focus jumps to the first result
 				// after a search when hitting tab key
 				// The container is scrollable from the result element too
@@ -404,7 +404,7 @@ function useScrollRestore(containerRef: React.RefObject<Element | null>) {
 			el.scrollTop = engine.scrollPositionRestore;
 
 			// Clear the restoring value only when we manage to scroll to it.
-			// The content might be still loading so we need to wait for it to
+			// The content might be still loading, so we need to wait for it to
 			// load fully
 			if (el.scrollTop === engine.scrollPositionRestore) {
 				engine.scrollPositionRestore = undefined;

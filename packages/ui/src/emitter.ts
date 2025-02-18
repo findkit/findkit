@@ -186,7 +186,7 @@ export interface FetchDoneEvent {
 	id: string;
 
 	/**
-	 * Whether this request was stale eg. a new request was made before this one finished
+	 * Whether this request was stale e.g. a new request was made before this one finished
 	 */
 	stale: boolean;
 
@@ -196,8 +196,8 @@ export interface FetchDoneEvent {
 	total: number;
 
 	/**
-	 * User is appending additional results to an group which already has
-	 * results. Eg. user is paginating for more results. This is false when the
+	 * User is appending additional results to a group which already has
+	 * results. E.g. user is paginating for more results. This is false when the
 	 * user is searching for something new with news terms or filters.
 	 */
 	append: boolean;
@@ -499,7 +499,7 @@ export function lazyValue<T>() {
 /**
  * @public
  *
- * Union of all FindkitUI events tranformed to:
+ * Union of all FindkitUI events transformed to:
  *
  *  { eventName: "fetch", data: FetchEvent } | { eventName: "fetch-done", data: FetchDoneEvent } | ...
  *

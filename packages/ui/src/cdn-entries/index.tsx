@@ -369,7 +369,7 @@ export const useTotalHitCount = createShellFunction("useTotalHitCount");
 export const useLoading = createShellFunction("useLoading");
 
 /**
- * Returns a ref for binding a inputs to the search
+ * Returns a ref for binding an inputs to the search
  *
  * Example:
  *
@@ -1102,7 +1102,7 @@ export class FindkitUI<
 		const resources = this.PRIVATE_resources.child();
 
 		select(selector, HTMLElement, (...elements) => {
-			// Use `Resources` to create the the bindings. This ensures that
+			// Use `Resources` to create the bindings. This ensures that
 			// bindings are not created if the unbind function is called before
 			// the DOMContentLoaded event.
 			for (const el of elements) {
@@ -1110,7 +1110,7 @@ export class FindkitUI<
 					listen(el, "click", this.PRIVATE_handleOpenClick),
 				);
 
-				// Div element with role=button does not emit click events
+				// Div element with role=button does not emit click events,
 				// so we must manually listen to the enter key down event
 				resources.create(() =>
 					listen(el, "keydown", (e) => {
