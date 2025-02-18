@@ -9,7 +9,7 @@ runs:
   using: composite
   steps:
     - name: Use Node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
         node-version: 18
 
@@ -22,7 +22,7 @@ runs:
       run: echo "PNPM_STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
 
     - name: Cache pnpm modules
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ env.PNPM_STORE_PATH }}
         key: pnpm7-${{ runner.os }}-${{ inputs.cache-key }}-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -31,7 +31,7 @@ runs:
           pnpm7-${{ runner.os }}-
 
     - name: Cache turborepo
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: node_modules/.cache/turbo/
         key: turbo2-${{ runner.os }}-${{ inputs.cache-key }}-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -40,7 +40,7 @@ runs:
           turbo2-${{ runner.os }}-
 
     - name: Cache playwright browsers
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.cache/ms-playwright
         key: playwright-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
