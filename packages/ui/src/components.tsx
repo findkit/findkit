@@ -389,7 +389,7 @@ function ClickableHighlights(props: {
 						// cumbersome to navigate the results with the keyboard tab key
 						// as there can be many highlights in a single hit.
 						//
-						// Also this is visual only feature, so it is not so important to
+						// Also, this is visual only feature, so it is not so important to
 						// be reachable by keyboard. That being said this is still reachable
 						// with screen readers by using normal "next" operation or the "links
 						// navigation" feature.
@@ -736,7 +736,7 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 		group.previewSize,
 		focusRef,
 
-		// Not used in the effect but we need to check on every hit change when
+		// Not used in the effect, but we need to check on every hit change when
 		// the focusable index appears in the results.
 		group.hits,
 	]);

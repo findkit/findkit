@@ -131,7 +131,7 @@ export interface TranslationStrings {
 	"aria-label-search-controls": string;
 
 	/**
-	 * Aria label on the <nav> land mark which contains "ShowAllLink"
+	 * Aria label on the <nav> landmark which contains "ShowAllLink"
 	 */
 	"aria-label-search-group-nav": string;
 
@@ -146,7 +146,7 @@ export interface TranslationStrings {
 	"aria-label-hit-url": string;
 
 	/**
-	 * Aria label on the Hit group elemement
+	 * Aria label on the Hit group element
 	 */
 	"aria-label-hit": string;
 

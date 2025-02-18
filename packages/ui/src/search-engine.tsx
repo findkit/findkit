@@ -378,7 +378,7 @@ export interface State {
 }
 
 /**
- * Fethcer is almost like ResultsWithTotal but it does not have the
+ * Fetcher is almost like ResultsWithTotal, but it does not have the
  * "tagGroupId" property which is added on the client-side
  */
 export interface FetcherResponse {
@@ -715,13 +715,13 @@ interface GlobalHistoryState {
  *   - User types in the input
  *   - The input events are throttled and the search term is copied to the query
  *    string (fdk_q by default)
- *   - A query string change is deteted and the search is triggered
+ *   - A query string change is detected and the search is triggered
  *   - Once the search completes the results are put into the Valtio state with
  *     the used search terms
  *
- * Eg. the search is always triggered from the query string change. This means
+ * E.g. the search triggers from the query string change. This means
  * it is also possible to trigger the search with history.pushState() or
- * history.replaceState() and input value will updated to match it unless the
+ * history.replaceState() and input value will update to match it unless the
  * input is focused.
  *
  */
@@ -2614,7 +2614,7 @@ export class SearchEngine {
 
 			if (currentTerms) {
 				// Enable search results linking by copying the terms to the input
-				// from url bar but skip if if the input is active so we wont mess
+				// from url bar but skip if the input is active, so we won't mess
 				// with the user too much
 				if (
 					input.value.trim() === "" ||
