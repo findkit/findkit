@@ -2,6 +2,9 @@
 	"name": "@findkit/root",
 	"private": true,
 	"repository": "github:findkit/findkit",
+	"volta": {
+		"node": "18.20.2"
+	},
 	"scripts": {
 		"test": "true",
 		"update-imports": "./tools/update-all-imports"
@@ -18,5 +21,6 @@
 		"overrides": {
 			"prettier": "3.0.3"
 		}
-	}
+	},
+	"packageManager": "pnpm@8.14.1"
 }
