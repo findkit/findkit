@@ -337,8 +337,8 @@ export interface Slots {
 	Group(props: GroupSlotProps): any;
 
 	/**
-	 * The results view view. WHen using multiple groups, this is rendered when
-	 * users naviages to a group.
+	 * The results view. When using multiple groups, this is rendered when
+	 * users navigates to a group.
 	 */
 	Results(props: ResultSlotProps): any;
 }

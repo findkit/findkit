@@ -244,7 +244,7 @@ export interface GroupResults {
 	hits: ReadonlyArray<SearchResultHit>;
 
 	/**
-	 * How many results are shown on the initial groupped view
+	 * How many results are shown on the initial grouped view
 	 */
 	previewSize: number;
 

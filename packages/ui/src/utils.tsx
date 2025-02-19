@@ -1,7 +1,7 @@
 import { createClassNameScoper } from "./scoper";
 
 /**
- * @param ob Remove undefied keys from object. Just makes things cleaner for
+ * @param ob Remove undefined keys from object. Just makes things cleaner for
  * tests
  */
 export function cleanUndefined<T extends {}>(ob: T): T {
@@ -175,7 +175,7 @@ export function assertNonZeroString(
  * if a clashing key exists this will throw with the existing keys type
  * and documentation link of the passed key
  *
- * Otherwise adds the key & type to reserved keys
+ * Otherwise, adds the key & type to reserved keys
  * @param params
  */
 export function assertAndReserveKey(params: {

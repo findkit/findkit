@@ -1,5 +1,5 @@
 /**
- * Reserve one or multiple resouces that can be disposed at once with
+ * Reserve one or multiple resources that can be disposed at once with
  * `.dispose()`.
  */
 export class Resources {
