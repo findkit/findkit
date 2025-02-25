@@ -1,122 +1,122 @@
 {
-	"name": "@findkit/ui",
-	"version": "1.6.0",
-	"description": "Findkit Search UI",
-	"main": "./cjs/index.js",
-	"typings": "./main.d.ts",
-	"sideEffects": false,
-	"homepage": "https://docs.findkit.com/ui",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/findkit/findkit"
-	},
-	"exports": {
-		".": {
-			"types": "./main.d.ts",
-			"import": "./esm/index.js",
-			"require": "./cjs/index.js"
-		},
-		"./implementation": {
-			"types": "./dist/cdn-entries/implementation.d.ts",
-			"import": "./esm/implementation-with-css.js",
-			"require": "./implementation.js"
-		},
-		"./package.json": "./package.json"
-	},
-	"files": [
-		"styles.css",
-		"main.d.ts",
-		"cjs",
-		"dist",
-		"esm",
-		"src",
-		"implementation.js",
-		"implementation.d.ts"
-	],
-	"scripts": {
-		"dev:js": "jake watch-js",
-		"dev:css": "postcss --watch styles/index.css --output test-app/build/styles.css",
-		"css": "postcss styles/index.css --output e2e/build/styles.css",
-		"dev:serve": "serve -p 28104 test-app",
-		"dev:vite": "cd test-app && vite dev",
-		"tsc": "tsc",
-		"build": "jake build-all",
-		"eslint": "../../node_modules/.bin/eslint 'src/**/*.{ts,tsx}' 'e2e*/**/*.{ts,tsx}' --max-warnings 0",
-		"build-test-app": "jake build-test-app",
-		"vitest": "vitest run",
-		"test": "tsc && pnpm run eslint && pnpm run vitest",
-		"size-limit": "size-limit",
-		"playwright-test": "playwright test",
-		"playwright-visual": "PLAYWRIGHT_VISUAL=1 playwright test",
-		"playwright-update": "PLAYWRIGHT_VISUAL=1 ALL_PLAYWRIGHT_BROWSERS=1 playwright test --update-snapshots",
-		"publish-build": "(cd ../../ && ./node_modules/.bin/turbo run build --filter @findkit/ui) && size-limit && jake upload",
-		"build-ui-api-docs": "jake build-ui-api-docs",
-		"serve-ui-api-docs": "cd api-docs-html && python3 -m http.server",
-		"prettier-write": "prettier --write src __tests__ e2e e2e-visual *.js *.ts",
-		"dev": "run-p 'dev:*'"
-	},
-	"author": "Valu Digital Oy",
-	"size-limit": [
-		{
-			"path": "esm/implementation.js",
-			"limit": "33kb"
-		},
-		{
-			"path": "esm/index.js",
-			"limit": "3.2kb"
-		}
-	],
-	"browserslist": [
-		"last 1 chrome version"
-	],
-	"alias": {
-		"react": "preact/compat",
-		"react-dom": "preact/compat"
-	},
-	"devDependencies": {
-		"@findkit/eslint-config": "workspace:*",
-		"@findkit/fetch": "workspace:*",
-		"@microsoft/api-documenter": "^7.23.9",
-		"@microsoft/api-extractor": "^7.38.0",
-		"@parcel/watcher": "^2.0.5",
-		"@playwright/test": "^1.50.1",
-		"@size-limit/preset-small-lib": "^8.0.1",
-		"@types/node": "^16.0.0",
-		"@types/react": "^18.0.17",
-		"@types/react-dom": "^18.0.6",
-		"@types/react-redux": "^7.1.21",
-		"@typescript-eslint/eslint-plugin": "5.36.0",
-		"@typescript-eslint/parser": "^5.36.0",
-		"@valu/assert": "^1.3.1",
-		"@valu/npm-tools": "^1.5.0",
-		"esbuild": "^0.20.1",
-		"esbuild-plugin-alias": "^0.2.1",
-		"findkit": "0.0.0-dev.cf0ec780d0",
-		"htm": "^3.1.1",
-		"jake": "10.8.5",
-		"npm-run-all": "^4.1.5",
-		"postcss": "^8.4.14",
-		"postcss-cli": "^10.0.0",
-		"postcss-import": "^14.1.0",
-		"postcss-import-ext-glob": "^2.0.1",
-		"postcss-minify": "^1.1.0",
-		"postcss-ts-classnames": "^0.3.0",
-		"postcss-variables-prefixer": "^1.2.0",
-		"preact": "^10.18.1",
-		"prettier": "2.7.1",
-		"react": "18.2.0",
-		"react-dom": "18.2.0",
-		"serve": "^14.0.1",
-		"sh-thunk": "^0.3.2",
-		"size-limit": "^8.0.1",
-		"tilg": "^0.1.1",
-		"typescript": "5.4.2",
-		"valtio": "^1.6.4",
-		"vite": "^3.1.3",
-		"vitest": "^0.21.1"
-	},
-	"license": "MIT",
-	"volta": {
-		"node": "18.20.0"
-	}
+  "name": "@findkit/ui",
+  "version": "1.6.1",
+  "description": "Findkit Search UI",
+  "main": "./cjs/index.js",
+  "typings": "./main.d.ts",
+  "sideEffects": false,
+  "homepage": "https://docs.findkit.com/ui",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/findkit/findkit"
+  },
+  "exports": {
+    ".": {
+      "types": "./main.d.ts",
+      "import": "./esm/index.js",
+      "require": "./cjs/index.js"
+    },
+    "./implementation": {
+      "types": "./dist/cdn-entries/implementation.d.ts",
+      "import": "./esm/implementation-with-css.js",
+      "require": "./implementation.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "styles.css",
+    "main.d.ts",
+    "cjs",
+    "dist",
+    "esm",
+    "src",
+    "implementation.js",
+    "implementation.d.ts"
+  ],
+  "scripts": {
+    "dev:js": "jake watch-js",
+    "dev:css": "postcss --watch styles/index.css --output test-app/build/styles.css",
+    "css": "postcss styles/index.css --output e2e/build/styles.css",
+    "dev:serve": "serve -p 28104 test-app",
+    "dev:vite": "cd test-app && vite dev",
+    "tsc": "tsc",
+    "build": "jake build-all",
+    "eslint": "../../node_modules/.bin/eslint 'src/**/*.{ts,tsx}' 'e2e*/**/*.{ts,tsx}' --max-warnings 0",
+    "build-test-app": "jake build-test-app",
+    "vitest": "vitest run",
+    "test": "tsc && pnpm run eslint && pnpm run vitest",
+    "size-limit": "size-limit",
+    "playwright-test": "playwright test",
+    "playwright-visual": "PLAYWRIGHT_VISUAL=1 playwright test",
+    "playwright-update": "PLAYWRIGHT_VISUAL=1 ALL_PLAYWRIGHT_BROWSERS=1 playwright test --update-snapshots",
+    "publish-build": "(cd ../../ && ./node_modules/.bin/turbo run build --filter @findkit/ui) && size-limit && jake upload",
+    "build-ui-api-docs": "jake build-ui-api-docs",
+    "serve-ui-api-docs": "cd api-docs-html && python3 -m http.server",
+    "prettier-write": "prettier --write src __tests__ e2e e2e-visual *.js *.ts",
+    "dev": "run-p 'dev:*'"
+  },
+  "author": "Valu Digital Oy",
+  "size-limit": [
+    {
+      "path": "esm/implementation.js",
+      "limit": "33kb"
+    },
+    {
+      "path": "esm/index.js",
+      "limit": "3.2kb"
+    }
+  ],
+  "browserslist": [
+    "last 1 chrome version"
+  ],
+  "alias": {
+    "react": "preact/compat",
+    "react-dom": "preact/compat"
+  },
+  "devDependencies": {
+    "@findkit/eslint-config": "workspace:*",
+    "@findkit/fetch": "workspace:*",
+    "@microsoft/api-documenter": "^7.23.9",
+    "@microsoft/api-extractor": "^7.38.0",
+    "@parcel/watcher": "^2.0.5",
+    "@playwright/test": "^1.50.1",
+    "@size-limit/preset-small-lib": "^8.0.1",
+    "@types/node": "^16.0.0",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "@types/react-redux": "^7.1.21",
+    "@typescript-eslint/eslint-plugin": "5.36.0",
+    "@typescript-eslint/parser": "^5.36.0",
+    "@valu/assert": "^1.3.1",
+    "@valu/npm-tools": "^1.5.0",
+    "esbuild": "^0.20.1",
+    "esbuild-plugin-alias": "^0.2.1",
+    "findkit": "0.0.0-dev.cf0ec780d0",
+    "htm": "^3.1.1",
+    "jake": "10.8.5",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.14",
+    "postcss-cli": "^10.0.0",
+    "postcss-import": "^14.1.0",
+    "postcss-import-ext-glob": "^2.0.1",
+    "postcss-minify": "^1.1.0",
+    "postcss-ts-classnames": "^0.3.0",
+    "postcss-variables-prefixer": "^1.2.0",
+    "preact": "^10.18.1",
+    "prettier": "2.7.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "serve": "^14.0.1",
+    "sh-thunk": "^0.3.2",
+    "size-limit": "^8.0.1",
+    "tilg": "^0.1.1",
+    "typescript": "5.4.2",
+    "valtio": "^1.6.4",
+    "vite": "^3.1.3",
+    "vitest": "^0.21.1"
+  },
+  "license": "MIT",
+  "volta": {
+    "node": "18.20.0"
+  }
 }
