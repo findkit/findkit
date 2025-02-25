@@ -1,3 +1,11 @@
+## v1.6.1
+
+2025-02-25
+
+This release is maintenance release containing only fixes in typos and pipeline action upgrades.
+
+All changes https://github.com/findkit/findkit/compare/ui/v1.6.0...ui/v1.6.1
+
 ## v1.6.0
 
 2025-01-07
