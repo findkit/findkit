@@ -47,6 +47,7 @@ jobs:
           allowed_users: |
             esamattis
             JoonasVaris
+            saarnilauri
           slack_access_token: "${{ secrets.SLACK_ACCESS_TOKEN }}"
           slack_channel: "${{ secrets.SLACK_CHANNEL }}"
           npm_token: "${{ secrets.NPM_TOKEN }}"
