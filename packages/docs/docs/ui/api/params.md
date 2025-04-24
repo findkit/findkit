@@ -56,7 +56,7 @@ const ui = new FindkitUI({
 		operator: "or",
 		semantic: {
 			mode: "hybrid",
-			weight: 50,
+			weight: 10,
 			k: 5,
 		},
 	},
