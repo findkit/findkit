@@ -6,6 +6,10 @@ See
 
 <https://docs.findkit.com/>
 
+Or ask question from DeepWiki
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/findkit/findkit)
+
 Repo shortcuts:
 
 - [`@findkit/ui`](/packages/ui#readme)
