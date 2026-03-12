@@ -254,10 +254,7 @@ test("can show 'All results shown' and 'No results' on group view", async ({
 ["no-shadow", "with-shadow"].forEach((qs) => {
 	test(`move focus the next item when navigating into a group (${qs})`, async ({
 		page,
-		browserName,
 	}) => {
-		const tab = browserName === "webkit" ? "Alt+Tab" : "Tab";
-
 		const getFocusedHitUrl = async () => {
 			return await page.evaluate(() => {
 				let activeElement = document.activeElement;
