@@ -147,6 +147,7 @@ test.describe("focuses the input when coming back to search results", () => {
 
 	test("highlight link restores too", async ({ page }) => {
 		await routeMocks(page);
+		await mockSearchResponses(page);
 		await page.goto(staticEntry("/single-group-v2"));
 
 		const input = page.locator("input");
@@ -154,7 +155,7 @@ test.describe("focuses the input when coming back to search results", () => {
 		await page.locator("button").click();
 		await input.fill("a");
 
-		const hitContainer = await scrollToHit(page, "Running Shoes");
+		const hitContainer = await scrollToHit(page, "Suede Boots");
 
 		const titleLink = hitContainer.locator("a").first();
 		const emLink = hitContainer.locator(".findkit--em").first();
