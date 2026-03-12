@@ -157,3 +157,63 @@ test("subsequent highlights searated by special character (leading)", async ({
 	const title = await highlightLink.getAttribute("title");
 	expect(title).toEqual('Highlight page content around "ding foo.bar dong"');
 });
+
+test("skip highlights button is present and hidden by default", async ({
+	page,
+}) => {
+	const hit = await getHitWithHighlight(
+		page,
+		"Hello <em>world</em>! Another word.",
+	);
+
+	const skipBtn = hit.locator(".findkit--skip-highlights");
+	await expect(skipBtn).toBeAttached();
+
+	const isClipped = await skipBtn.evaluate((el) => {
+		const style = window.getComputedStyle(el);
+		return style.clipPath === "inset(50%)";
+	});
+	expect(isClipped).toBe(true);
+});
+
+test("skip highlights button becomes visible on focus", async ({ page }) => {
+	const hit = await getHitWithHighlight(
+		page,
+		"Hello <em>world</em>! Another word.",
+	);
+
+	const skipBtn = hit.locator(".findkit--skip-highlights");
+	await skipBtn.focus();
+
+	const isClipped = await skipBtn.evaluate((el) => {
+		const style = window.getComputedStyle(el);
+		return style.clipPath === "inset(50%)";
+	});
+	expect(isClipped).toBe(false);
+});
+
+test("skip highlights button jumps focus to next hit title", async ({
+	page,
+}) => {
+	await page.goto(staticEntry("/two-groups-v2"));
+	await mockSearchResponses(page, {
+		customizeResponse(res) {
+			res.groups[0]!.hits[0]!.highlight = "Hello <em>world</em>!";
+			res.groups[0]!.hits[1]!.highlight = "Second <em>result</em>.";
+			return res;
+		},
+	});
+
+	await page.locator("button", { hasText: "open" }).click();
+	await page.locator("input").fill("test");
+
+	const hits = page.locator(".findkit--hit");
+	await hits.first().waitFor({ state: "visible" });
+
+	const skipBtn = hits.first().locator(".findkit--skip-highlights");
+	await skipBtn.focus();
+	await page.keyboard.press("Enter");
+
+	const secondHitTitleLink = hits.nth(1).locator("[data-kb-action]");
+	await expect(secondHitTitleLink).toBeFocused();
+});
