@@ -199,6 +199,31 @@
 	text-decoration: underline;
 }
 
+.em:focus-visible {
+	outline: 2px solid white;
+	outline-offset: 2px;
+	text-decoration: underline;
+}
+
+.skip-highlights {
+	display: block;
+	background-color: var(--brand-color);
+	color: white;
+	border: none;
+	padding: var(--space-2) var(--space-3);
+	margin-bottom: var(--space-2);
+	cursor: pointer;
+	font-size: var(--font-16);
+	font-family: inherit;
+	border-radius: 2px;
+	font-style: normal;
+	text-align: left;
+}
+
+.skip-highlights:hover {
+	opacity: 0.9;
+}
+
 .hit-title {
 	font-size: var(--font-16);
 	margin: 0;

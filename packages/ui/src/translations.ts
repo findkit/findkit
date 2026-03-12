@@ -141,6 +141,11 @@ export interface TranslationStrings {
 	"aria-label-highlights": string;
 
 	/**
+	 * Text on the skip highlights button for keyboard users
+	 */
+	"skip-highlights": string;
+
+	/**
 	 * Aria label on the Hit URL
 	 */
 	"aria-label-hit-url": string;
@@ -210,6 +215,7 @@ export const BASE_TRANSLATIONS: TranslationStrings = {
 	"aria-label-search-controls": "Search controls",
 	"aria-label-search-group-nav": "Search group",
 	"aria-label-highlights": "Search hit highlights",
+	"skip-highlights": "Skip highlights",
 	"aria-label-hit-url": "Search hit URL: {{href}}",
 	"aria-label-hit": "Search result {{number}}",
 	"aria-label-group-hit-total": "Search result group with {{total}} hits",
@@ -256,6 +262,7 @@ export const TRANSLATIONS: Record<string, TranslationStrings> = {
 		"aria-label-search-controls": "Hakutoiminnot",
 		"aria-label-search-group-nav": "Hakuryhmä",
 		"aria-label-highlights": "Hakutulosten osumien korostukset",
+		"skip-highlights": "Ohita korostukset",
 		"aria-label-hit-url": "Hakutuloksen URL: {{href}}",
 		"aria-label-hit": "Hakutulos {{number}}",
 		"aria-label-group-hit-total": "Hakutulosryhmä jossa on {{total}} osumaa",
