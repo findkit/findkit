@@ -51,6 +51,7 @@ type ClassNames =
   | "findkit--search-input-icon-container-hide"
   | "findkit--search-input-wrap"
   | "findkit--single-group-link"
+  | "findkit--skip-highlights"
   | "findkit--spinner"
   | "findkit--spinning"
   | "findkit--sr-only"

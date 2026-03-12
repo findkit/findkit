@@ -259,9 +259,15 @@ const HitSlot = createSlotComponent("Hit", {
 			const t = useTranslator();
 			const context = useSlotContext("Hit");
 			const highlight = props.highlight ?? context.hit.highlight;
+			const hasHighlightLinks = highlight.includes("<em>");
 
 			return (
-				<View cn="highlight" aria-label={t("aria-label-highlights")}>
+				<View
+					role="group"
+					cn="highlight"
+					aria-label={t("aria-label-highlights")}
+				>
+					{hasHighlightLinks && <SkipHighlightsButton />}
 					<ClickableHighlights
 						higlights={highlight}
 						href={context.hit.url}
@@ -350,6 +356,48 @@ function getHighlightContext(node: ChildNode, contextSize: number) {
 }
 
 /**
+ * Visually hidden skip link that appears on focus, letting keyboard users
+ * bypass all highlight links and jump directly to the next search result.
+ */
+function SkipHighlightsButton() {
+	const t = useTranslator();
+
+	const handleSkip = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+		const hitEl = (e.currentTarget as HTMLElement).closest("[data-kb]");
+		if (!hitEl) return;
+
+		const scope = hitEl.getRootNode() as Document | ShadowRoot;
+		// In multi-group view, scope hit search to the current group section so
+		// the skip button doesn't jump across group boundaries.
+		const groupEl = hitEl.closest("[data-group-id]");
+		const allItems = Array.from(
+			(groupEl ?? scope).querySelectorAll<HTMLElement>(".findkit--hit[data-kb]"),
+		);
+		const currentIndex = allItems.indexOf(hitEl as HTMLElement);
+
+		const nextItem = allItems[currentIndex + 1];
+		if (nextItem) {
+			const action = nextItem.querySelector<HTMLElement>("[data-kb-action]");
+			action?.focus();
+		} else {
+			const input = scope.querySelector<HTMLElement>("input");
+			input?.focus();
+		}
+	}, []);
+
+	return (
+		<View
+			as="button"
+			type="button"
+			cn={["skip-highlights", "visible-when-focused"]}
+			onClick={handleSkip}
+		>
+			{t("skip-highlights")}
+		</View>
+	);
+}
+
+/**
  * Parse <em> highlighted string to clickable links
  */
 function ClickableHighlights(props: {
@@ -384,16 +432,6 @@ function ClickableHighlights(props: {
 						rel="noopener"
 						cn="em"
 						href={url.toString()}
-						//
-						// We want tab to just to go between search hits. This would make it
-						// cumbersome to navigate the results with the keyboard tab key
-						// as there can be many highlights in a single hit.
-						//
-						// Also, this is visual only feature, so it is not so important to
-						// be reachable by keyboard. That being said this is still reachable
-						// with screen readers by using normal "next" operation or the "links
-						// navigation" feature.
-						tabIndex={-1}
 					>
 						{current.textContent}
 					</View>,
