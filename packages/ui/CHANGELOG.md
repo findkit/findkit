@@ -1,3 +1,11 @@
+## v1.6.2
+
+2026-03-12
+
+- This release includes accessibility improvements for search results highlighting. Highlighted words are now accessible via keyboard navigation. Users can bypass highlights using the "Skip highlight" button, which becomes visible when it receives focus.
+
+All changes https://github.com/findkit/findkit/compare/ui/v1.6.0...ui/v1.6.2
+
 ## v1.6.1
 
 2025-02-25
@@ -10,8 +18,8 @@ All changes https://github.com/findkit/findkit/compare/ui/v1.6.0...ui/v1.6.1
 
 2025-01-07
 
--   Display "No results" instead of "All results shown" in single group, if it didnt have any results
--   Add "noResults" to Result slot parts "Footer", for configuring "No results" message
+- Display "No results" instead of "All results shown" in single group, if it didnt have any results
+- Add "noResults" to Result slot parts "Footer", for configuring "No results" message
 
 All changes https://github.com/findkit/findkit/compare/ui/v1.5.0...ui/v1.6.0
 
@@ -21,9 +29,9 @@ All changes https://github.com/findkit/findkit/compare/ui/v1.5.0...ui/v1.6.0
 
 Configureable URL-parameters!
 
--   Add [searchKey](https://docs.findkit.com/ui/api/#searchKey) for overwriting search key
--   Add [groupKey](https://docs.findkit.com/ui/api/#groupKey) for overwriting group key
--   Add [customRouterDataPrefix](https://docs.findkit.com/ui/api/customRouterDataPrefix) for overwriting custom router data prefix
+- Add [searchKey](https://docs.findkit.com/ui/api/#searchKey) for overwriting search key
+- Add [groupKey](https://docs.findkit.com/ui/api/#groupKey) for overwriting group key
+- Add [customRouterDataPrefix](https://docs.findkit.com/ui/api/customRouterDataPrefix) for overwriting custom router data prefix
 
 All changes https://github.com/findkit/findkit/compare/ui/v1.4.0...ui/v1.5.0
 
@@ -31,7 +39,7 @@ All changes https://github.com/findkit/findkit/compare/ui/v1.4.0...ui/v1.5.0
 
 2024-10-18
 
--   Add [randomSort](https://docs.findkit.com/ui/api/params#randomSort) for fetching results in random order
+- Add [randomSort](https://docs.findkit.com/ui/api/params#randomSort) for fetching results in random order
 
 All changes https://github.com/findkit/findkit/compare/ui/v1.3.1...ui/v1.4.0
 
@@ -39,8 +47,8 @@ All changes https://github.com/findkit/findkit/compare/ui/v1.3.1...ui/v1.4.0
 
 2024-06-11
 
--   Fix rare hit ordering bug  [46ece49](https://github.com/findkit/findkit/commit/46ece49) - Esa-Matti Suuronen
-    - When the same search hit comes back in a subsequent search, it was not always ordered correctly
+- Fix rare hit ordering bug [46ece49](https://github.com/findkit/findkit/commit/46ece49) - Esa-Matti Suuronen
+  - When the same search hit comes back in a subsequent search, it was not always ordered correctly
 
 All changes https://github.com/findkit/findkit/compare/ui/v1.3.0...ui/v1.3.1
 
@@ -48,9 +56,9 @@ All changes https://github.com/findkit/findkit/compare/ui/v1.3.0...ui/v1.3.1
 
 2024-05-30
 
--   Add [`ui.usedTerms`](https://docs.findkit.com/ui/api/#usedTerms-prop) alias for `.terms`,  deprecate it and remove from docs
--   Add [`ui.nextTerms`](https://docs.findkit.com/ui/api/#nextTerms-prop) [37cfa3f](https://github.com/findkit/findkit/commit/37cfa3f) - Esa-Matti Suuronen
--   Fix .terms to be getter as it was documented [85d6ea7](https://github.com/findkit/findkit/commit/85d6ea7) - Esa-Matti Suuronen
+- Add [`ui.usedTerms`](https://docs.findkit.com/ui/api/#usedTerms-prop) alias for `.terms`, deprecate it and remove from docs
+- Add [`ui.nextTerms`](https://docs.findkit.com/ui/api/#nextTerms-prop) [37cfa3f](https://github.com/findkit/findkit/commit/37cfa3f) - Esa-Matti Suuronen
+- Fix .terms to be getter as it was documented [85d6ea7](https://github.com/findkit/findkit/commit/85d6ea7) - Esa-Matti Suuronen
 
 All changes https://github.com/findkit/findkit/compare/ui/v1.2.0...ui/v1.3.0
 
