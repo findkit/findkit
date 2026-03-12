@@ -41,7 +41,7 @@ test("highlights have scroll links", async ({ page }) => {
 		'Highlight page content around "Hello world! Another"',
 	);
 
-	await expect(highlightLink).toHaveAttribute("tabindex", "-1");
+	await expect(highlightLink).not.toHaveAttribute("tabindex");
 
 	const href = await highlightLink.getAttribute("href");
 	assertNonNullable(href, "has href");
