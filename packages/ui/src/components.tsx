@@ -384,16 +384,6 @@ function ClickableHighlights(props: {
 						rel="noopener"
 						cn="em"
 						href={url.toString()}
-						//
-						// We want tab to just to go between search hits. This would make it
-						// cumbersome to navigate the results with the keyboard tab key
-						// as there can be many highlights in a single hit.
-						//
-						// Also, this is visual only feature, so it is not so important to
-						// be reachable by keyboard. That being said this is still reachable
-						// with screen readers by using normal "next" operation or the "links
-						// navigation" feature.
-						tabIndex={-1}
 					>
 						{current.textContent}
 					</View>,
