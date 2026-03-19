@@ -380,8 +380,16 @@ function SkipHighlightsButton() {
 			const action = nextItem.querySelector<HTMLElement>("[data-kb-action]");
 			action?.focus();
 		} else {
-			const input = scope.querySelector<HTMLElement>("input");
-			input?.focus();
+			const container = groupEl ?? scope;
+			const loadMoreBtn = container.querySelector<HTMLElement>(
+				".findkit--load-more-button",
+			);
+			if (loadMoreBtn) {
+				loadMoreBtn.focus();
+			} else {
+				const input = scope.querySelector<HTMLElement>("input");
+				input?.focus();
+			}
 		}
 	}, []);
 
@@ -719,6 +727,7 @@ const ResultsSlot = createSlotComponent("Results", {
 						loadMore={props.loadMore}
 						allResultsShown={props.allResultsShown}
 						noResults={props.noResults}
+						fetchedHits={slot.fetchedHits}
 					/>
 					<View cn="footer-spinner">
 						<Spinner spinning={slot.fetchedHits !== 0} />
@@ -779,6 +788,27 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 		group.hits,
 	]);
 
+	useEffect(() => {
+		const focusIndex = state.loadMoreFocusIndex;
+		if (focusIndex === undefined) {
+			return;
+		}
+
+		const links = engine.container.querySelectorAll(
+			"." + cn("hit-title-link"),
+		);
+		const el = links[focusIndex];
+
+		if (el instanceof HTMLAnchorElement) {
+			el.focus();
+			el.scrollIntoView({
+				behavior: "smooth",
+				block: "center",
+			});
+			engine.state.loadMoreFocusIndex = undefined;
+		}
+	}, [engine, state.loadMoreFocusIndex, group.hits]);
+
 	return (
 		<ResultsSlot
 			hits={group.hits}
@@ -801,6 +831,7 @@ function FooterContent(props: {
 	allResultsShown: any;
 	loadMore: any;
 	noResults: any;
+	fetchedHits: number;
 }) {
 	const state = useSearchEngineState();
 	const t = useTranslator();
@@ -833,7 +864,11 @@ function FooterContent(props: {
 			type="button"
 			{...kbAttrs}
 			disabled={state.status === "fetching"}
-			onClick={() => {
+			onClick={(e) => {
+				// detail === 0 means the click was triggered via keyboard (Enter/Space)
+				if (e.detail === 0) {
+					engine.state.loadMoreFocusIndex = props.fetchedHits;
+				}
 				engine.searchMore({ now: true });
 			}}
 		>
