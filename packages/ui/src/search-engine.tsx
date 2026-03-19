@@ -331,6 +331,12 @@ export interface State {
 	keyboardCursor: string | undefined;
 
 	/**
+	 * Index of the first new hit to focus after "Load more".
+	 * Set when load more is triggered via keyboard, consumed by SingleGroupResults.
+	 */
+	loadMoreFocusIndex: number | undefined;
+
+	/**
 	 * Search params lang filter
 	 */
 	lang: string | undefined;
@@ -915,6 +921,7 @@ export class SearchEngine {
 			resultGroups: {},
 			header: options.header ?? true,
 			keyboardCursor: undefined,
+			loadMoreFocusIndex: undefined,
 			groupOrder: options.groupOrder ?? "static",
 			ui: {
 				lang,
@@ -1467,6 +1474,10 @@ export class SearchEngine {
 			peek instanceof HTMLElement &&
 			peek.className.includes("load-more-button")
 		) {
+			this.state.loadMoreFocusIndex =
+				this.PRIVATE_getFetchedGroupHitCount(
+					this.PRIVATE_getSelectedGroup("used")?.id ?? "",
+				);
 			this.searchMore({ now: true });
 		}
 
