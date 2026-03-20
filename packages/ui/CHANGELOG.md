@@ -1,3 +1,11 @@
+## v1.6.3
+
+2026-03-20
+
+- This release includes accessibility improvements for the "Load more"-button in the search results.
+
+All changes https://github.com/findkit/findkit/compare/ui/v1.6.2...ui/v1.6.3
+
 ## v1.6.2
 
 2026-03-12
