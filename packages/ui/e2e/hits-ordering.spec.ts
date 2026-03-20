@@ -52,7 +52,7 @@ test("ordering is correct when the same hit is returned with different score in 
 	await input.fill("la pi");
 
 	await wait;
-	await page.waitForTimeout(100);
+	await expect(hit).toHaveCount(11);
 
 	const ariaLabels = await hit.evaluateAll((elements) =>
 		elements.map((element) => element.getAttribute("aria-label")),
