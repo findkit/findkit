@@ -1,3 +1,11 @@
+## v1.6.4
+
+2026-08-03
+
+- Use darker brand color shade for white text elements to meet WCAG 1.4.3 contrast [34ddc0b](https://github.com/findkit/findkit/commit/34ddc0b) - Lauri Saarni
+
+All changes https://github.com/findkit/findkit/compare/ui/v1.6.3...ui/v1.6.4
+
 ## v1.6.3
 
 2026-03-20
