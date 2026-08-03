@@ -37,6 +37,21 @@ This will serve the files from the [e2e](e2e) directory.
 
 Try <http://localhost:28104/static/single-group?fdk_q=wordpress> for example.
 
+It also starts a Vite server at <http://127.0.0.1:5173> serving the demo pages
+from the [test-app/vite](test-app/vite) directory.
+
+#### Testing against a specific Findkit project
+
+To manually verify changes against a real Findkit project, open the
+[custom token demo page](test-app/vite/custom-token.html) and pass the
+project's public token in the `token` query parameter:
+
+```
+http://127.0.0.1:5173/vite/custom-token.html?token=pXXXXXXXX:eu-north-1
+```
+
+Without the parameter it uses the same test project as the other demo pages.
+
 ### E2E Tests with Playwright
 
 While the development server is running you can execute the Playwright tests

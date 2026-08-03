@@ -190,7 +190,7 @@
 	padding-right: var(--space-1);
 	margin: 0;
 	color: white;
-	background-color: var(--brand-color);
+	background-color: var(--brand-color-dark);
 	text-decoration: none;
 	font-style: italic;
 }
@@ -207,7 +207,7 @@
 
 .skip-highlights {
 	display: block;
-	background-color: var(--brand-color);
+	background-color: var(--brand-color-dark);
 	color: white;
 	border: none;
 	padding: var(--space-2) var(--space-3);

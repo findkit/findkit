@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Custom token demo</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<script type="module">
+			import { FindkitUI } from "/build/esm/index.js";
+
+			// Test against any Findkit project by passing its public token in
+			// the url: /vite/custom-token.html?token=pXXXXXXXX:eu-north-1
+			const token = new URLSearchParams(location.search).get("token");
+
+			const ui = new FindkitUI({
+				publicToken: token || "p68GxRvaA",
+				styleSheet: "/build/styles.css",
+				async load() {
+					return import("/build/esm/implementation.js");
+				},
+			});
+
+			ui.openFrom("#open-button");
+		</script>
+	</head>
+	<body>
+		<h1>Custom token demo</h1>
+		<p>
+			Pass a project public token with <code>?token=...</code> to test
+			against any Findkit project. Type a query and navigate the results
+			with the keyboard (Tab / arrow keys) to reveal the "skip
+			highlights" button.
+		</p>
+		<button id="open-button" type="button">Open search</button>
+	</body>
+</html>
