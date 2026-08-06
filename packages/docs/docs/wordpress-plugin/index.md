@@ -267,7 +267,7 @@ Following fields are automatically added to the `$meta` array:
 - `title`: Clean page title
 - `created`: Created time
 - `modified`: Modified time
-- `langugage`: Language from the post or Polylang
+- `language`: Language from the post or Polylang
 - `tags`: Some basic tags including public taxonomies
 
 
