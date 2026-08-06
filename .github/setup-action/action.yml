@@ -14,8 +14,6 @@ runs:
         node-version: 22
 
     - uses: pnpm/action-setup@v6
-      with:
-        version: 8.15.3
 
     - name: Set pnpm store path
       shell: bash
