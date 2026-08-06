@@ -1,3 +1,12 @@
+## v1.6.5
+
+2026-08-06
+
+- Replace --brand-color-dark with a darker default brand color [cb2bcb2](https://github.com/findkit/findkit/commit/cb2bcb2) - Lauri Saarni
+- Maintenance update for CI
+
+All changes https://github.com/findkit/findkit/compare/ui/v1.6.4...ui/v1.6.5
+
 ## v1.6.4
 
 2026-08-03
