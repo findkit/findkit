@@ -21,13 +21,13 @@ jobs:
     timeout-minutes: 10
     if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '!release') }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
         with:
           # Fetch full history to get all tags so we can get PREV_VERSION
           fetch-depth: 0
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_WORKFLOW_ROLE_ARN }}
           aws-region: eu-north-1
