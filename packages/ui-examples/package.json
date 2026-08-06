@@ -10,7 +10,7 @@
 		"build": "vite build"
 	},
 	"volta": {
-		"node": "18.9.0"
+		"node": "22.23.2"
 	},
 	"dependencies": {
 		"@findkit/ui": "workspace:^",

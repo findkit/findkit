@@ -7,6 +7,6 @@
 	"author": "",
 	"license": "MIT",
 	"volta": {
-		"node": "14.19.2"
+		"node": "22.23.2"
 	}
 }

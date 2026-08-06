@@ -5,13 +5,11 @@
 	* The variables are automatically prefixed with "findkit--" in the build.
 	* For example --brand-color actually is --findkit--brand-color
 	*/
-	--brand-color: #c828d2;
 	/*
-	* Slightly darkened brand color for elements with white text on top,
-	* so the text has a WCAG 1.4.3 compliant contrast ratio
-	* (4.88:1, required 4.5:1)
+	* Dark enough for white text on top to have a WCAG 1.4.3 compliant
+	* contrast ratio (4.84:1, required 4.5:1)
 	*/
-	--brand-color-dark: #be26c8;
+	--brand-color: #bf26c9;
 	--input-bg: rgb(249, 248, 248);
 	--background-color: white;
 	--modal-animation-duration: 200ms;

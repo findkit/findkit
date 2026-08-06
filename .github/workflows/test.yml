@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - uses: ./.github/setup-action
 
       - name: Run @findkit/fetch tests
@@ -37,7 +37,7 @@ jobs:
       matrix:
         shard: [1, 2, 3]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - uses: ./.github/setup-action
 
       - name: Install Playwright Browsers
@@ -55,7 +55,7 @@ jobs:
           pnpm run build-test-app
           pnpm run playwright-test --shard=${{ matrix.shard }}/${{ strategy.job-total }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report-${{ matrix.shard }}
@@ -69,7 +69,7 @@ jobs:
       matrix:
         shard: [1, 2]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - uses: ./.github/setup-action
 
       - name: Install Playwright Browsers
@@ -87,7 +87,7 @@ jobs:
           pnpm run build-test-app
           pnpm run playwright-test --shard=${{ matrix.shard }}/${{ strategy.job-total }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report-macos-${{ matrix.shard }}
@@ -101,7 +101,7 @@ jobs:
       matrix:
         shard: [1, 2]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - uses: ./.github/setup-action
 
       - name: Install Playwright Browsers
@@ -121,7 +121,7 @@ jobs:
           pnpm run playwright-visual --shard=${{ matrix.shard }}/${{ strategy.job-total }}
 
       - name: Remove visual fail label if success
-        uses: actions/github-script@v6
+        uses: actions/github-script@v9
         if: ${{ github.event_name == 'pull_request' }}
         with:
           script: |
@@ -152,7 +152,7 @@ jobs:
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
         with:
           # gonna commit and push, so need all history
           fetch-depth: 0
@@ -195,7 +195,7 @@ jobs:
           echo "DIFF_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
       - name: Comment about snapshot changes
-        uses: actions/github-script@v6
+        uses: actions/github-script@v9
         if: ${{ env.DIFF_SHA != '' }}
         with:
           script: |
