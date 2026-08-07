@@ -9,7 +9,7 @@
 		"build": "docusaurus build",
 		"findkit-deploy": "findkit deploy && findkit deploy -P pP9OykWDd:us-west-1",
 		"swizzle": "docusaurus swizzle",
-		"deploy": "netlify deploy --prod --dir=build",
+		"deploy": "netlify deploy --prod --no-build --dir=build",
 		"clear": "docusaurus clear",
 		"serve": "docusaurus serve",
 		"write-translations": "docusaurus write-translations",
@@ -33,7 +33,7 @@
 		"@types/node": "^16.0.0",
 		"@types/react": "17",
 		"@types/react-dom": "17",
-		"netlify-cli": "^11.5.1",
+		"netlify-cli": "^27.1.0",
 		"prettier": "^3.0.3"
 	},
 	"browserslist": {
