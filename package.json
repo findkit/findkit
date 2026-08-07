@@ -19,7 +19,8 @@
 	},
 	"pnpm": {
 		"overrides": {
-			"prettier": "3.0.3"
+			"prettier": "3.0.3",
+			"node-forge": "^1.4.0"
 		}
 	},
 	"packageManager": "pnpm@8.15.3"
