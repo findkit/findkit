@@ -9,7 +9,7 @@
 		"build": "docusaurus build",
 		"findkit-deploy": "findkit deploy && findkit deploy -P pP9OykWDd:us-west-1",
 		"swizzle": "docusaurus swizzle",
-		"deploy": "netlify deploy --prod --no-build --dir=build",
+		"deploy": "netlify deploy --prod --no-build --dir=\"$PWD/build\"",
 		"clear": "docusaurus clear",
 		"serve": "docusaurus serve",
 		"write-translations": "docusaurus write-translations",
