@@ -265,6 +265,7 @@ Possible values:
 - `"querystring"` (default)
 - `"hash"`
 - `"memory"`
+- Custom `RouterBackend` implementation (_New in v1.7.0_)
 
 See [Routing](/ui/advanced/routing).
 

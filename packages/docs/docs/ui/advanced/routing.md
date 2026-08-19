@@ -45,8 +45,12 @@ links and the back button does not close the search.
 
 ## Custom Router {#custom}
 
+_New in v1.7.0_
+
 The router backend can be also completely customized by passing in a custom <Api
-page="ui.routerbackend" >RouterBackend </Api> implementation.
+page="ui.routerbackend" >RouterBackend </Api> implementation. Note that older
+versions silently ignore custom backends and fall back to the query string
+router, so make sure you are using v1.7.0 or later.
 
 A common real world use case is a web app built on a framework with its own
 client-side router such as Next.js, React Router or Vue Router. These routers
