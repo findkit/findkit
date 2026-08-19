@@ -456,6 +456,30 @@ const SINGLE_GROUP_NAME = Object.freeze({
 	title: "Default",
 });
 
+function assertValidRouterBackend(
+	backend: object,
+): asserts backend is RouterBackend<{}> {
+	const methods = [
+		"listen",
+		"getSearchParamsString",
+		"formatHref",
+		"update",
+		"getState",
+	] as const;
+
+	const missing = methods.filter(
+		(method) => typeof (backend as any)[method] !== "function",
+	);
+
+	if (missing.length > 0) {
+		throw new Error(
+			`[findkit] Invalid custom router backend. Missing method(s): ${missing.join(
+				", ",
+			)}. See https://docs.findkit.com/ui-api/ui.routerbackend/`,
+		);
+	}
+}
+
 /**
  * @public
  */
@@ -805,6 +829,9 @@ export class SearchEngine {
 			this.PRIVATE_router = createMemoryBackend();
 		} else if (options.router === "hash") {
 			this.PRIVATE_router = createURLHashBackend();
+		} else if (typeof options.router === "object") {
+			assertValidRouterBackend(options.router);
+			this.PRIVATE_router = options.router as RouterBackend<GlobalHistoryState>;
 		} else {
 			this.PRIVATE_router = createQueryStringBackend();
 		}
@@ -1474,10 +1501,9 @@ export class SearchEngine {
 			peek instanceof HTMLElement &&
 			peek.className.includes("load-more-button")
 		) {
-			this.state.loadMoreFocusIndex =
-				this.PRIVATE_getFetchedGroupHitCount(
-					this.PRIVATE_getSelectedGroup("used")?.id ?? "",
-				);
+			this.state.loadMoreFocusIndex = this.PRIVATE_getFetchedGroupHitCount(
+				this.PRIVATE_getSelectedGroup("used")?.id ?? "",
+			);
 			this.searchMore({ now: true });
 		}
 

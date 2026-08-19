@@ -897,6 +897,8 @@ export class FindkitUI<
 		let search = location.search;
 		if (this.PRIVATE_options.router === "hash") {
 			search = location.hash.slice(1);
+		} else if (typeof this.PRIVATE_options.router === "object") {
+			search = this.PRIVATE_options.router.getSearchParamsString();
 		}
 
 		const params = new URLSearchParams(search);
