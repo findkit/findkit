@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Static Template</title>
+		<style>
+			.url {
+				font-family: monospace;
+				background-color: #eee;
+				padding: 0.5rem;
+				margin-top: 1rem;
+				word-break: break-all;
+			}
+		</style>
+		<script type="module">
+			import { FindkitUI } from "https://cdn.findkit.com/ui/v1.1.0/esm/index.js";
+
+			const ui = new FindkitUI({
+				publicToken: "p68GxRvaA",
+				// "querystring" is the default so this line could be omitted.
+				// The search terms are saved to the query string as ?fdk_q=
+				// https://docs.findkit.com/ui/api/#router
+				router: "querystring",
+			});
+
+			ui.openFrom("#open");
+
+			// Display the current URL so the router behaviour is visible.
+			// The query string is updated with history.replaceState() which
+			// does not emit any events, so we just poll it.
+			const url = document.querySelector("#url");
+			setInterval(() => {
+				url.textContent = location.pathname + location.search + location.hash;
+			}, 250);
+		</script>
+	</head>
+	<body>
+		<button id="open" type="button">Open Search</button>
+		<p>The current URL is:</p>
+		<div class="url" id="url"></div>
+		<p>
+			Type some search terms and watch the <code>?fdk_q=</code> parameter appear
+			in the URL.
+		</p>
+	</body>
+</html>

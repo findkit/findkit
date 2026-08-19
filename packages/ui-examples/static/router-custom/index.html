@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Static Template</title>
+		<style>
+			.url {
+				font-family: monospace;
+				background-color: #eee;
+				padding: 0.5rem;
+				margin-top: 1rem;
+				word-break: break-all;
+			}
+		</style>
+		<script type="module">
+			// Custom router backends require v1.7.0 or later
+			import { FindkitUI } from "https://cdn.findkit.com/ui/v1.7.0/esm/index.js";
+
+			/**
+			 * Custom router backend saving the search state to sessionStorage
+			 * instead of the URL. The URL is never touched but the search
+			 * state still survives page refreshes, unlike with the "memory"
+			 * router.
+			 *
+			 * https://docs.findkit.com/ui-api/ui.routerbackend/
+			 */
+			function createSessionStorageBackend() {
+				const storageKey = "findkit-search";
+				const listeners = new Set();
+
+				// Corresponds to history.state in the built-in routers.
+				// Used for scroll position restoring etc.
+				let state = {};
+
+				return {
+					// Return the current search state as a query string
+					// (without the leading "?")
+					getSearchParamsString: () => sessionStorage.getItem(storageKey) ?? "",
+
+					// Persist the new params and notify the UI of the change.
+					// The search is triggered from these change events, not
+					// directly from the input.
+					update: (next, options) => {
+						// The UI replaces the state without changing the
+						// params when it saves the scroll position etc. The
+						// listeners must be called for these updates too.
+						const replacingState = options?.push === false && options.state;
+
+						if (options?.state) {
+							state = options.state;
+						}
+
+						if (
+							sessionStorage.getItem(storageKey) === next &&
+							!replacingState
+						) {
+							return;
+						}
+
+						sessionStorage.setItem(storageKey, next);
+
+						for (const listener of listeners) {
+							listener();
+						}
+					},
+
+					// The UI subscribes to the search state changes
+					listen: (cb) => {
+						listeners.add(cb);
+						return () => listeners.delete(cb);
+					},
+
+					// Used for hrefs in the group "show more" links. There is
+					// no URL to point to with sessionStorage so return a
+					// placeholder. The UI intercepts the clicks anyway.
+					formatHref: () => "#",
+
+					getState: () => state,
+				};
+			}
+
+			const ui = new FindkitUI({
+				publicToken: "p68GxRvaA",
+				router: createSessionStorageBackend(),
+			});
+
+			ui.openFrom("#open");
+
+			// Display the current URL so the router behaviour is visible
+			const url = document.querySelector("#url");
+			setInterval(() => {
+				url.textContent = location.pathname + location.search + location.hash;
+			}, 250);
+		</script>
+	</head>
+	<body>
+		<button id="open" type="button">Open Search</button>
+		<p>The current URL is:</p>
+		<div class="url" id="url"></div>
+		<p>
+			Type some search terms and note that the URL never changes — but unlike
+			with the <code>memory</code> router, the search state survives a page
+			refresh because the custom backend saves it to
+			<code>sessionStorage</code>. Try refreshing this page while the search is
+			open.
+		</p>
+	</body>
+</html>
