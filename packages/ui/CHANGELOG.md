@@ -1,3 +1,12 @@
+## v1.7.0
+
+2026-08-19
+
+- Support for custom RouterBackend option [d248898](https://github.com/findkit/findkit/commit/d248898) - Lauri Saarni
+- Build tools updates [f4bab70](https://github.com/findkit/findkit/commit/f4bab70) - Lauri Saarni
+
+All changes https://github.com/findkit/findkit/compare/ui/v1.6.5...ui/v1.7.0
+
 ## v1.6.5
 
 2026-08-06
