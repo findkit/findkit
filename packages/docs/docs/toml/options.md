@@ -111,6 +111,33 @@ enabled.
 
 Defaults to `/`
 
+### `track_links: string` {#track_links}
+
+Store the links found on the crawled pages. The stored links are used to build
+the link report which lists the links pointing at pages that are missing,
+forbidden, failing or redirected. The report is available in the Findkit Hub
+under _Inspect_ and over the [REST API](/crawler/rest-api#link-report).
+
+Allowed values
+
+- `all`
+- `pdf`
+- `none`
+
+Defaults to `pdf`, which stores only the links pointing at PDF files. Those are
+needed even when the report is not used, because PDF files are commonly not
+listed in sitemaps. See the [PDF docs](/crawler/pdf) for details.
+
+Setting this to `all` is available only in the Pro subscription plan. See
+pricing for details.
+
+:::caution
+A link can be reported only when the crawler has actually fetched the page it
+points to. Sitemap crawling does not follow links, so a link pointing at a page
+which is missing from the sitemap is never fetched and cannot be reported.
+Enable [`walk_links`](#walk_links) to find those.
+:::
+
 ### `content_selector: string` {#content_selector}
 
 CSS selector used to select the text content for indexing.
@@ -157,7 +184,6 @@ Example
 sitemaps = ["/custom/sitemap.xml", "/another/sitemap.xml"]
 ```
 
-
 :::caution
 When possible it is recommended to use the `Sitemap:` entries in the `robots.txt` file instead of this option.
 It is the de facto standard for sitemap discovery and is
@@ -172,6 +198,7 @@ Disallow: /api/
 Sitemap: https://example.com/sitemap.xml
 Sitemap: https://example.com/sitemap2.xml
 ```
+
 :::
 
 ### `deny_patterns: string[]` {#deny_patterns}

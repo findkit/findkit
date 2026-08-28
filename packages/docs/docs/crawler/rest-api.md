@@ -1,6 +1,6 @@
 # REST API
 
-The REST API can be used to start crawls.
+The REST API can be used to start crawls and to read the link report.
 
 ## API Keys
 
@@ -52,6 +52,56 @@ Authorization: Bearer {{API_KEY}}
     "urls": ["https://www.example.com/page"]
 }
 ```
+
+### Link Report {#link-report}
+
+Read the links pointing at pages that are missing, forbidden, failing or
+redirected. Requires [`track_links = "all"`](/toml/options#track_links) on the
+target. The report is built from the data collected during the crawl, so
+reading it sends no requests to your site.
+
+```
+GET https://api.findkit.com/v1/projects/{{PUBLIC_TOKEN}}/link-report
+Authorization: Bearer {{API_KEY}}
+```
+
+Optional query parameters
+
+- `target` limit the report to a single target host
+- `limit` how many links to return at most. From 1 to 5000, defaults to 1000
+
+The links are grouped by the page they were found on, in one section per
+reason. Trimmed example response:
+
+```json
+{
+	"notFound": {
+		"count": 1,
+		"pages": [
+			{
+				"url": "https://www.example.com/about",
+				"links": [
+					{
+						"url": "https://www.example.com/old-page",
+						"httpStatus": 404,
+						"message": "Gone"
+					}
+				]
+			}
+		]
+	},
+	"forbidden": { "count": 0, "pages": [] },
+	"serverError": { "count": 0, "pages": [] },
+	"redirect": { "count": 0, "pages": [] },
+	"unknown": { "count": 0, "pages": [] },
+	"targets": [{ "host": "www.example.com", "linkTracking": "all" }],
+	"truncated": false
+}
+```
+
+`redirect` entries also carry `redirectsTo` with the url the link leads to.
+`unknown` lists links the crawler found but did not fetch, which happens only
+when the crawl stopped early, for example when `max_pages` was reached.
 
 ## Usage
 
