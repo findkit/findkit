@@ -58,6 +58,10 @@ const config = {
 				logo: {
 					alt: "Findkit logo",
 					src: "img/logo.svg",
+					// The brand color only reaches 3.17:1 on the dark navbar,
+					// so dark mode gets the lightened variant, same as the
+					// primary color in custom.css
+					srcDark: "img/logo-dark.svg",
 				},
 				items: [
 					{

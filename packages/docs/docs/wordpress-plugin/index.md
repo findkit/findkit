@@ -8,7 +8,6 @@ integrate Findkit. The plugin is avaible on the [WordPress Plugin
 Directory](https://wordpress.org/plugins/findkit/) and
 [Github](https://github.com/findkit/wp-findkit)
 
-
 The plugin extends the WordPress admin interface and exposes a PHP API. This
 documentation focuses on the PHP API. For more information on the WordPress
 admin extensions read this [page](https://www.findkit.com/wordpress/).
@@ -20,6 +19,8 @@ The PHP API enables following use cases:
 - [Private search results for logged in users using JWT](/wordpress-plugin/jwt)
 - Start crawls
 - Server-side search
+- [Expose the PHP API to AI agents and other tools as WordPress
+  Abilities](/wordpress-plugin/abilities)
 
 ## Functions
 
@@ -31,63 +32,63 @@ Make server-side search request
 
 Args
 
-- `$terms: string`:  Search terms
+- `$terms: string`: Search terms
 - `$search_params: array`: [Search params](/ui/api/params#options) like in the UI Library
 - `$options?: array`: Options
-    - `publicToken: string`: The project public token. If not defined read from the `findkit_project_id` option
+  - `publicToken: string`: The project public token. If not defined read from the `findkit_project_id` option
 
 Returns `Array`
-
 
 <details>
   <summary>Example return value</summary>
 
-  ```php
- [
- 	'total' => 1,
- 	'duration' => 7,
- 	'hits' => [
- 		[
- 			'score' => 65.79195,
- 			'superwordsMatch' => false,
- 			'title' => 'How Findkit Scores Search Results?',
- 			'language' => 'en',
- 			'url' =>
- 				'https://www.findkit.com/how-findkit-scores-search-results/',
- 			'highlight' =>
- 				'But what is an index and <em>how</em> the pages are <em>scored</em> when searching?',
- 			'tags' => [
- 				'wordpress',
- 				'domain/www.findkit.com/wordpress',
- 				'wp_blog_name/findkit',
- 				'domain/www.findkit.com/wp_blog_name/findkit',
- 				'public',
- 				'wp_post_type/post',
- 				'domain/www.findkit.com/wp_post_type/post',
- 				'domain/www.findkit.com/wp_taxonomy/category/article',
- 				'wp_taxonomy/category/article',
- 				'domain/www.findkit.com',
- 				'domain/findkit.com',
- 				'language/en',
- 			],
- 			'created' => '2024-05-20T07:44:47.000Z',
- 			'modified' => '2024-05-20T10:49:11.000Z',
- 			'customFields' => [
- 				'wpPostId' => 34,
- 				'author' => [
- 					'type' => 'keyword',
- 					'value' => 'Esa-Matti Suuronen',
- 				],
- 				'excerpt' => [
- 					'type' => 'keyword',
- 					'value' =>
- 						'Findkit is crawler based search toolkit which stores web pages to a search index. But what is an index and how the pages are scored when searching?',
- 				],
- 			],
- 		],
- 	],
- ]
-  ```
+```php
+[
+	'total' => 1,
+	'duration' => 7,
+	'hits' => [
+		[
+			'score' => 65.79195,
+			'superwordsMatch' => false,
+			'title' => 'How Findkit Scores Search Results?',
+			'language' => 'en',
+			'url' =>
+				'https://www.findkit.com/how-findkit-scores-search-results/',
+			'highlight' =>
+				'But what is an index and <em>how</em> the pages are <em>scored</em> when searching?',
+			'tags' => [
+				'wordpress',
+				'domain/www.findkit.com/wordpress',
+				'wp_blog_name/findkit',
+				'domain/www.findkit.com/wp_blog_name/findkit',
+				'public',
+				'wp_post_type/post',
+				'domain/www.findkit.com/wp_post_type/post',
+				'domain/www.findkit.com/wp_taxonomy/category/article',
+				'wp_taxonomy/category/article',
+				'domain/www.findkit.com',
+				'domain/findkit.com',
+				'language/en',
+			],
+			'created' => '2024-05-20T07:44:47.000Z',
+			'modified' => '2024-05-20T10:49:11.000Z',
+			'customFields' => [
+				'wpPostId' => 34,
+				'author' => [
+					'type' => 'keyword',
+					'value' => 'Esa-Matti Suuronen',
+				],
+				'excerpt' => [
+					'type' => 'keyword',
+					'value' =>
+						'Findkit is crawler based search toolkit which stores web pages to a search index. But what is an index and how the pages are scored when searching?',
+				],
+			],
+		],
+	],
+]
+```
+
 </details>
 
 Example
@@ -107,67 +108,68 @@ Make multiple server-side search requests using a single request.
 
 Args
 
-- `$terms: string`:  Search terms
+- `$terms: string`: Search terms
 - `$groups: array`: Array of [search params](/ui/api/params#options) like in the UI Library
 - `$options?: array`: Options
-    - `publicToken: string`: The project public token. If not defined read from the `findkit_project_id` option
+  - `publicToken: string`: The project public token. If not defined read from the `findkit_project_id` option
 
 Returns `Array`
 
 <details>
   <summary>Example return value</summary>
 
-  ```php
-  [
-   'duration' => 32,
-   'groups' => [
-   	[
-   		'total' => 1,
-   		'duration' => 7,
-   		'hits' => [
-   			[
-   				'score' => 65.79195,
-   				'superwordsMatch' => false,
-   				'title' => 'How Findkit Scores Search Results?',
-   				'language' => 'en',
-   				'url' =>
-   					'https://www.findkit.com/how-findkit-scores-search-results/',
-   				'highlight' =>
-   					'But what is an index and <em>how</em> the pages are <em>scored</em> when searching?',
-   				'tags' => [
-   					'wordpress',
-   					'domain/www.findkit.com/wordpress',
-   					'wp_blog_name/findkit',
-   					'domain/www.findkit.com/wp_blog_name/findkit',
-   					'public',
-   					'wp_post_type/post',
-   					'domain/www.findkit.com/wp_post_type/post',
-   					'domain/www.findkit.com/wp_taxonomy/category/article',
-   					'wp_taxonomy/category/article',
-   					'domain/www.findkit.com',
-   					'domain/findkit.com',
-   					'language/en',
-   				],
-   				'created' => '2024-05-20T07:44:47.000Z',
-   				'modified' => '2024-05-20T10:49:11.000Z',
-   				'customFields' => [
-   					'wpPostId' => 34,
-   					'author' => [
-   						'type' => 'keyword',
-   						'value' => 'Esa-Matti Suuronen',
-   					],
-   					'excerpt' => [
-   						'type' => 'keyword',
-   						'value' =>
-   							'Findkit is crawler based search toolkit which stores web pages to a search index. But what is an index and how the pages are scored when searching?',
-   					],
-   				],
-   			],
-   		],
-   	],
-     ],
-   ];
-  ```
+```php
+[
+ 'duration' => 32,
+ 'groups' => [
+ 	[
+ 		'total' => 1,
+ 		'duration' => 7,
+ 		'hits' => [
+ 			[
+ 				'score' => 65.79195,
+ 				'superwordsMatch' => false,
+ 				'title' => 'How Findkit Scores Search Results?',
+ 				'language' => 'en',
+ 				'url' =>
+ 					'https://www.findkit.com/how-findkit-scores-search-results/',
+ 				'highlight' =>
+ 					'But what is an index and <em>how</em> the pages are <em>scored</em> when searching?',
+ 				'tags' => [
+ 					'wordpress',
+ 					'domain/www.findkit.com/wordpress',
+ 					'wp_blog_name/findkit',
+ 					'domain/www.findkit.com/wp_blog_name/findkit',
+ 					'public',
+ 					'wp_post_type/post',
+ 					'domain/www.findkit.com/wp_post_type/post',
+ 					'domain/www.findkit.com/wp_taxonomy/category/article',
+ 					'wp_taxonomy/category/article',
+ 					'domain/www.findkit.com',
+ 					'domain/findkit.com',
+ 					'language/en',
+ 				],
+ 				'created' => '2024-05-20T07:44:47.000Z',
+ 				'modified' => '2024-05-20T10:49:11.000Z',
+ 				'customFields' => [
+ 					'wpPostId' => 34,
+ 					'author' => [
+ 						'type' => 'keyword',
+ 						'value' => 'Esa-Matti Suuronen',
+ 					],
+ 					'excerpt' => [
+ 						'type' => 'keyword',
+ 						'value' =>
+ 							'Findkit is crawler based search toolkit which stores web pages to a search index. But what is an index and how the pages are scored when searching?',
+ 					],
+ 				],
+ 			],
+ 		],
+ 	],
+   ],
+ ];
+```
+
 </details>
 
 Example
@@ -203,6 +205,33 @@ Args
 
 Start a partial crawl. Findkit API key must be configured the wp-admin.
 
+### `findkit_delete_pages($urls)` {#findkit_delete_pages}
+
+Delete pages from the search index by their exact urls, without crawling them.
+Use this to remove pages that no longer exist or have moved. Findkit API key
+must be configured in the wp-admin.
+
+Args
+
+- `$urls: array`: Array of URLs (strings) to delete, at most 50 per call
+
+### `findkit_get_link_report($options): array` {#findkit_get_link_report}
+
+Get the links on the site which point at pages that are missing, forbidden,
+failing or redirected. Built from data collected during the crawl, so it sends
+no requests to the site. Requires [`track_links =
+"all"`](/toml/options#track_links) on the crawler target, which is a Pro plan
+feature.
+
+Args
+
+- `$options: array`: `target` to limit to a single crawler target host, `limit`
+  for how many links to return (1-5000, defaults to 1000) and `refresh` to skip
+  the 15 minute cache
+
+The response is documented with the [`findkit/link-report`
+ability](/wordpress-plugin/abilities#link-report).
+
 ### `findkit_get_page_meta($post): array` {#findkit_get_page_meta}
 
 Get the Findkit Page Meta for a post object.
@@ -212,40 +241,41 @@ Returns `Array`
 <details>
   <summary>Example return value</summary>
 
-  ```php
-  [
-      'showInSearch' => 1,
-      'title' => 'How Findkit Scores Search Results?',
-      'created' => '2024-05-20T10:44:47+03:00',
-      'modified' => '2024-08-15T14:19:34+03:00',
-      'customFields' => [
-          'wpPostId' => [
-              'type' => 'number',
-              'value' => 1185
-          ],
-          'excerpt' => [
-              'type' => 'keyword',
-              'value' => 'Findkit is crawler based search toolkit which stores web pages to a search index. But what is an index and how the pages are scored when searching? Lets take a look. In short index is a mapping in a database of every word on every page to the page URLs where the words are seen. [&hellip;]'
-          ],
-          'author' => [
-              'type' => 'keyword',
-              'value' => 'Esa-Matti Suuronen'
-          ]
-      ],
-      'language' => 'en',
-      'tags' => [
-          'wordpress',
-          'domain/www.findkit.com/wordpress',
-          'wp_blog_name/findkit',
-          'domain/www.findkit.com/wp_blog_name/findkit',
-          'public',
-          'wp_post_type/post',
-          'domain/www.findkit.com/wp_post_type/post',
-          'domain/www.findkit.com/wp_taxonomy/category/article',
-          'wp_taxonomy/category/article'
-      ]
-  ]
-  ```
+```php
+[
+    'showInSearch' => 1,
+    'title' => 'How Findkit Scores Search Results?',
+    'created' => '2024-05-20T10:44:47+03:00',
+    'modified' => '2024-08-15T14:19:34+03:00',
+    'customFields' => [
+        'wpPostId' => [
+            'type' => 'number',
+            'value' => 1185
+        ],
+        'excerpt' => [
+            'type' => 'keyword',
+            'value' => 'Findkit is crawler based search toolkit which stores web pages to a search index. But what is an index and how the pages are scored when searching? Lets take a look. In short index is a mapping in a database of every word on every page to the page URLs where the words are seen. [&hellip;]'
+        ],
+        'author' => [
+            'type' => 'keyword',
+            'value' => 'Esa-Matti Suuronen'
+        ]
+    ],
+    'language' => 'en',
+    'tags' => [
+        'wordpress',
+        'domain/www.findkit.com/wordpress',
+        'wp_blog_name/findkit',
+        'domain/www.findkit.com/wp_blog_name/findkit',
+        'public',
+        'wp_post_type/post',
+        'domain/www.findkit.com/wp_post_type/post',
+        'domain/www.findkit.com/wp_taxonomy/category/article',
+        'wp_taxonomy/category/article'
+    ]
+]
+```
+
 </details>
 
 ## Filters
@@ -270,7 +300,6 @@ Following fields are automatically added to the `$meta` array:
 - `language`: Language from the post or Polylang
 - `tags`: Some basic tags including public taxonomies
 
-
 Example
 
 ```php
@@ -280,7 +309,6 @@ add_filter('findkit_page_meta', function ($meta, $post) {
 }, 10, 2);
 ```
 
-
 ### `findkit_sidebar_post_types`
 
 For which post types to enable the Findkit sidebar.
@@ -288,7 +316,7 @@ For which post types to enable the Findkit sidebar.
 Callback parameters
 
 - `$post_types: array`: Post types
-    - Default: `['post', 'page']`
+  - Default: `['post', 'page']`
 
 ### `findkit_can_live_update_post`
 
@@ -297,7 +325,7 @@ Whether to allow live updates for a post
 Callback parameters
 
 - `$can: bool`: Can live update
-    - Defaults to `true` on web `false` on CLI
+  - Defaults to `true` on web `false` on CLI
 - `$post: object`: The post object
 
 ### `findkit_allow_jwt`
@@ -305,8 +333,7 @@ Callback parameters
 Allow JWT search authentication. This allows customizations on who can use the search.
 See the [JWT docs](/wordpress-plugin/jwt) for more information.
 
-
 Callback parameters
 
 - `$allow: bool`: Allow JWT
-    - Default: `true` when a user is logged in
+  - Default: `true` when a user is logged in

@@ -111,7 +111,7 @@ const sidebars = {
 			type: "category",
 			label: "WordPress Plugin",
 			link: { type: "doc", id: "wordpress-plugin/index" },
-			items: ["wordpress-plugin/jwt"],
+			items: ["wordpress-plugin/abilities", "wordpress-plugin/jwt"],
 		},
 	],
 };
