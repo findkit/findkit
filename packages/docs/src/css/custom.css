@@ -6,26 +6,30 @@
 
 /* You can override the default Infima variables here. */
 :root {
-	--ifm-color-primary: #c55e98;
-	--ifm-color-primary-dark: #b05588;
-	--ifm-color-primary-darker: #904670;
-	--ifm-color-primary-darkest: #6c3353;
-	--ifm-color-primary-light: #d969a9;
-	--ifm-color-primary-lighter: #eb71b6;
-	--ifm-color-primary-lightest: #ff78c4;
+	/* The @findkit/ui brand color, --findkit--brand-color in that package.
+	   Dark enough for 4.84:1 on white, so it passes WCAG AA as link text. */
+	--ifm-color-primary: #bf26c9;
+	--ifm-color-primary-dark: #ab22b4;
+	--ifm-color-primary-darker: #961e9e;
+	--ifm-color-primary-darkest: #6d1673;
+	--ifm-color-primary-light: #ce31d8;
+	--ifm-color-primary-lighter: #d346dc;
+	--ifm-color-primary-lightest: #dd71e4;
 	--ifm-code-font-size: 95%;
 	--docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme="dark"] {
-	--ifm-color-primary: #c55e98;
-	--ifm-color-primary-dark: #b05588;
-	--ifm-color-primary-darker: #904670;
-	--ifm-color-primary-darkest: #6c3353;
-	--ifm-color-primary-light: #d969a9;
-	--ifm-color-primary-lighter: #eb71b6;
-	--ifm-color-primary-lightest: #ff78c4;
+	/* The brand color lightened, because #bf26c9 only reaches 3.55:1 on the
+	   dark background. This is 5.32:1 and the same hue. */
+	--ifm-color-primary: #d85be0;
+	--ifm-color-primary-dark: #d346dc;
+	--ifm-color-primary-darker: #ce30d8;
+	--ifm-color-primary-darkest: #aa22b3;
+	--ifm-color-primary-light: #dd70e4;
+	--ifm-color-primary-lighter: #e286e8;
+	--ifm-color-primary-lightest: #ecb1f0;
 	--docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
