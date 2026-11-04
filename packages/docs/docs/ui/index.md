@@ -26,7 +26,7 @@ npm-package. See the [setup](/ui/setup) page for details.
 
 The library changelog is available on the Github repository:
 
-<https://github.com/findkit/findkit/blob/main/packages/ui/CHANGELOG.md>
+[https://github.com/findkit/findkit/blob/main/packages/ui/CHANGELOG.md](https://github.com/findkit/findkit/blob/main/packages/ui/CHANGELOG.md)
 
 If you want to get notified of new releses you can watch the releases on
 Github: Watch -> Custom -> Releases.
