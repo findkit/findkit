@@ -59,11 +59,11 @@
   "size-limit": [
     {
       "path": "esm/implementation.js",
-      "limit": "33kb"
+      "limit": "28.7kb"
     },
     {
       "path": "esm/index.js",
-      "limit": "3.2kb"
+      "limit": "3kb"
     }
   ],
   "browserslist": [
@@ -80,7 +80,7 @@
     "@microsoft/api-extractor": "^7.38.0",
     "@parcel/watcher": "^2.0.5",
     "@playwright/test": "^1.50.1",
-    "@size-limit/preset-small-lib": "^8.0.1",
+    "@size-limit/preset-small-lib": "^14.3.0",
     "@types/node": "^16.0.0",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
@@ -108,7 +108,7 @@
     "react-dom": "18.2.0",
     "serve": "^14.0.1",
     "sh-thunk": "^0.3.2",
-    "size-limit": "^8.0.1",
+    "size-limit": "^14.3.0",
     "tilg": "^0.1.1",
     "typescript": "5.4.2",
     "valtio": "^1.6.4",
