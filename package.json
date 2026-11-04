@@ -20,7 +20,9 @@
 	"pnpm": {
 		"overrides": {
 			"prettier": "3.0.3",
-			"node-forge": "^1.4.0"
+			"node-forge": "^1.4.0",
+			"@types/react": "^18.3.0",
+			"@types/react-dom": "^18.3.0"
 		}
 	},
 	"packageManager": "pnpm@8.15.3"
