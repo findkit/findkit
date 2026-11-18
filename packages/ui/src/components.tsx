@@ -928,17 +928,19 @@ export function ResultsContent() {
 					<SingleOrGroupResults />
 				</SlotCatchBoundary>
 
-				{Boolean(
-					state.canAnnounceResults && state.announceResultsMessage.text,
-				) ? (
-					<View
-						key={state.announceResultsMessage.key}
-						cn={["sr-only", "results-aria-live-message"]}
-						aria-live="assertive"
-					>
-						{state.announceResultsMessage.text}
-					</View>
-				) : null}
+				{/*
+				 * The live region must stay in the DOM permanently. Screen readers
+				 * (VoiceOver especially) only announce changes to live regions that
+				 * already existed. Only the text content is updated.
+				 * https://github.com/findkit/findkit/issues/80
+				 */}
+				<View
+					cn={["sr-only", "results-aria-live-message"]}
+					aria-live="polite"
+					aria-atomic="true"
+				>
+					{state.canAnnounceResults ? state.announceResultsMessage.text : ""}
+				</View>
 			</View>
 		</>
 	);

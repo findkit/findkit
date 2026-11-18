@@ -198,10 +198,14 @@ function SearchInput(props: { placeholder?: string; icon?: ReactNode }) {
 	const t = useTranslator();
 	const state = useSearchEngineState();
 	const engine = useSearchEngine();
-	let description = t("sr-search-instructions");
-	if (engine.modal) {
-		description = t("sr-search-instructions-modal");
-	}
+	const descriptionId = engine.getUniqId("search-instructions");
+	// The modal instructions are additional to the general ones
+	const description = [
+		t("sr-search-instructions"),
+		engine.modal ? t("sr-search-instructions-modal") : "",
+	]
+		.filter(Boolean)
+		.join(" ");
 
 	return (
 		<View cn="search-input-wrap">
@@ -209,12 +213,17 @@ function SearchInput(props: { placeholder?: string; icon?: ReactNode }) {
 				as="input"
 				autoFocus={engine.modal}
 				placeholder={props.placeholder}
-				aria-description={description}
+				// aria-description is an ARIA 1.3 draft attribute with inconsistent
+				// screen reader support. Reference a visually hidden element instead.
+				aria-describedby={descriptionId}
 				cn="search-input"
 				type="search"
 				ref={inputRef}
 				aria-label={t("aria-label-search-input")}
 			/>
+			<View id={descriptionId} cn="sr-only">
+				{description}
+			</View>
 			<View
 				tabIndex={-1}
 				as="button"
