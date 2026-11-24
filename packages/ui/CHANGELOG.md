@@ -1,3 +1,11 @@
+## v1.7.1
+
+2026-11-24
+
+- ui: make results aria-live announcements reliable for screen readers (#228) [c6611dd](https://github.com/findkit/findkit/commit/c6611dd) - Lauri Saarni
+
+All changes https://github.com/findkit/findkit/compare/ui/v1.7.0...ui/v1.7.1
+
 ## v1.7.0
 
 2026-08-19
