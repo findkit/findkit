@@ -32,7 +32,7 @@ jobs:
 
   playwright-test:
     timeout-minutes: 20
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         shard: [1, 2, 3]
@@ -96,7 +96,7 @@ jobs:
 
   playwright-visual:
     timeout-minutes: 20
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         shard: [1, 2]
@@ -150,7 +150,7 @@ jobs:
     if: failure() && github.event_name == 'pull_request'
     needs: [playwright-visual]
     timeout-minutes: 20
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
         with:

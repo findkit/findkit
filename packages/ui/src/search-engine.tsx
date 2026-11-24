@@ -44,6 +44,18 @@ import { assertNotNil } from "@valu/assert";
 export const DEFAULT_HIGHLIGHT_LENGTH = 250;
 export const DEFAULT_PREVIEW_SIZE = 5;
 
+/**
+ * How long to wait after the last keystroke before announcing the results to
+ * screen readers
+ */
+const TYPING_ANNOUNCE_DELAY = 1000;
+
+/**
+ * How long the live region stays empty before the new announcement is set.
+ * Clearing first makes screen readers announce identical messages again.
+ */
+const ANNOUNCE_CLEAR_DELAY = 100;
+
 function renderTranslation(
 	msg: string,
 	data?: Record<string, string | number>,
@@ -314,7 +326,14 @@ export interface State {
 
 	canAnnounceResults: boolean;
 
-	announceResultsMessage: { key: number; text: string };
+	announceResultsMessage: {
+		/**
+		 * @deprecated Incremented on each announcement but no longer used for
+		 * rendering. The live region is kept in the DOM permanently.
+		 */
+		key: number;
+		text: string;
+	};
 
 	currentGroupId: string | undefined;
 
@@ -1139,7 +1158,12 @@ export class SearchEngine {
 	}
 
 	getUniqId(
-		id: "form" | "error" | "results-heading" | `hit-${string}-${number}`,
+		id:
+			| "form"
+			| "error"
+			| "results-heading"
+			| "search-instructions"
+			| `hit-${string}-${number}`,
 	) {
 		return this.instanceId + "-" + id;
 	}
@@ -1947,6 +1971,9 @@ export class SearchEngine {
 			return;
 		}
 		this.PRIVATE_submitting = true;
+		// Explicit submit announces immediately so the debounced typing
+		// announcement is not needed
+		clearTimeout(this.PRIVATE_typingAnnounceTimer);
 		this.PRIVATE_searchNow();
 		this.PRIVATE_announceResults();
 		setTimeout(() => {
@@ -1962,6 +1989,8 @@ export class SearchEngine {
 		this.PRIVATE_throttleId++;
 
 		this.PRIVATE_throttlingTerms = terms.trim();
+
+		this.PRIVATE_scheduleTypingAnnouncement();
 
 		if (this.PRIVATE_termsThrottleTimer) {
 			return;
@@ -2529,7 +2558,9 @@ export class SearchEngine {
 			);
 
 			if (!read) {
-				this.state.announceResultsMessage.text = "";
+				// Drop also the pending announcements so they won't be read when
+				// the focus returns to the input
+				this.PRIVATE_cancelAnnouncements();
 			}
 
 			this.state.canAnnounceResults = read;
@@ -2548,7 +2579,52 @@ export class SearchEngine {
 		this.PRIVATE_checkBouncingTimer = setTimeout(check, 5);
 	}
 
-	private PRIVATE_announceResults() {
+	/**
+	 * Incremented whenever pending announcements become obsolete, eg. when
+	 * the user types more or a new announcement is started
+	 */
+	private PRIVATE_announceGeneration = 0;
+
+	private PRIVATE_typingAnnounceTimer?: ReturnType<typeof setTimeout>;
+
+	/**
+	 * Announce results after the user has stopped typing. Screen reader users
+	 * get notified about the automatically updated results (WCAG 4.1.3) without
+	 * being flooded on every keystroke.
+	 */
+	private PRIVATE_scheduleTypingAnnouncement() {
+		this.PRIVATE_cancelAnnouncements();
+		clearTimeout(this.PRIVATE_typingAnnounceTimer);
+		this.PRIVATE_typingAnnounceTimer = setTimeout(() => {
+			this.PRIVATE_announceResults({ typing: true });
+		}, TYPING_ANNOUNCE_DELAY);
+	}
+
+	/**
+	 * Drop pending and visible announcements so outdated results are not read
+	 */
+	private PRIVATE_cancelAnnouncements() {
+		this.PRIVATE_announceGeneration++;
+		this.PRIVATE_announceMessages = [];
+		clearTimeout(this.PRIVATE_announceTimer);
+		if (this.state.announceResultsMessage.text) {
+			this.state.announceResultsMessage.text = "";
+		}
+	}
+
+	private PRIVATE_announceResults(options?: {
+		typing?: boolean;
+		generation?: number;
+	}) {
+		if (options?.generation === undefined) {
+			this.PRIVATE_announceGeneration++;
+		} else if (options.generation !== this.PRIVATE_announceGeneration) {
+			// Superseded by newer input or announcement
+			return;
+		}
+
+		const generation = this.PRIVATE_announceGeneration;
+		const typing = options?.typing ?? false;
 		const t = this.createTranslator(this.state.ui);
 
 		this.PRIVATE_checkIfCanAnnounceResults({ now: true });
@@ -2558,15 +2634,31 @@ export class SearchEngine {
 
 		const terms = (this.PRIVATE_throttlingTerms || this.state.usedTerms) ?? "";
 
-		if (this.state.status === "fetching") {
-			this.PRIVATE_announce(t("aria-live-loading-results"));
+		if (typing && terms === "") {
+			return;
+		}
+
+		const waitForFetch = () => {
 			this.events.once("fetch-done", () => {
 				// fetch-done fires while still in fetching state.
 				// Fire after a timeout to avoid infinite loop
 				setTimeout(() => {
-					this.PRIVATE_announceResults();
+					this.PRIVATE_announceResults({ typing, generation });
 				});
 			});
+		};
+
+		if (typing && terms.length >= this.PRIVATE_minTerms) {
+			// The search for the typed terms might not have started yet
+			if (this.PRIVATE_termsThrottleTimer || this.state.status === "fetching") {
+				waitForFetch();
+				return;
+			}
+		}
+
+		if (this.state.status === "fetching") {
+			this.PRIVATE_announce(t("aria-live-loading-results"));
+			waitForFetch();
 			return;
 		}
 
@@ -2616,6 +2708,7 @@ export class SearchEngine {
 
 	PRIVATE_announceMessages: string[] = [];
 	PRIVATE_announcePending = false;
+	private PRIVATE_announceTimer?: ReturnType<typeof setTimeout>;
 	private PRIVATE_announce(message: string) {
 		this.PRIVATE_announceMessages.push(message);
 		if (this.PRIVATE_announcePending) {
@@ -2626,10 +2719,23 @@ export class SearchEngine {
 
 		queueMicrotask(() => {
 			this.PRIVATE_announcePending = false;
-			this.state.announceResultsMessage.key++;
-			this.state.announceResultsMessage.text =
-				this.PRIVATE_announceMessages.join(" ");
+
+			const text = this.PRIVATE_announceMessages.join(" ");
 			this.PRIVATE_announceMessages = [];
+
+			if (!text) {
+				return;
+			}
+
+			// Clear the live region first and set the message after a short
+			// delay so that screen readers detect a change even when the message
+			// is identical to the previous one.
+			clearTimeout(this.PRIVATE_announceTimer);
+			this.state.announceResultsMessage.text = "";
+			this.PRIVATE_announceTimer = setTimeout(() => {
+				this.state.announceResultsMessage.key++;
+				this.state.announceResultsMessage.text = text;
+			}, ANNOUNCE_CLEAR_DELAY);
 		});
 	}
 
@@ -2890,6 +2996,8 @@ export class SearchEngine {
 		}
 
 		this.close();
+		clearTimeout(this.PRIVATE_typingAnnounceTimer);
+		clearTimeout(this.PRIVATE_announceTimer);
 		this.PRIVATE_resources.dispose();
 
 		for (const input of this.PRIVATE_inputs) {
