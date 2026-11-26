@@ -22,6 +22,7 @@ import {
 	useTranslator,
 	useView,
 } from "./core-hooks";
+import { htmlToElements } from "./safe-html";
 import { SearchEngine, SearchResultHit } from "./search-engine";
 import { Slots } from "./slots";
 import {
@@ -405,6 +406,11 @@ function SkipHighlightsButton() {
 	);
 }
 
+function Message(props: { html: string }) {
+	const elements = useMemo(() => htmlToElements(props.html), [props.html]);
+	return <View cn="message">{elements}</View>;
+}
+
 /**
  * Parse <em> highlighted string to clickable links
  */
@@ -764,7 +770,9 @@ function SingleGroupResults(props: { groupId: string; groupIndex: number }) {
 
 		const focusIndex = group.previewSize;
 
-		const links = engine.container.querySelectorAll("." + cn("hit-title-link"));
+		const links = engine.container.querySelectorAll(
+			"." + cn("hit-title-link"),
+		);
 
 		for (const [index, el] of Object.entries(links)) {
 			if (focusIndex.toString() === index && el instanceof HTMLAnchorElement) {
@@ -917,11 +925,7 @@ export function ResultsContent() {
 					{state.messages.length > 0 && (
 						<section aria-label={t("aria-label-findkit-messages")}>
 							{state.messages.map((m) => (
-								<View
-									cn="message"
-									key={m.id}
-									dangerouslySetInnerHTML={{ __html: m.message }}
-								/>
+								<Message key={m.id} html={m.message} />
 							))}
 						</section>
 					)}

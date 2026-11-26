@@ -23,6 +23,7 @@ import {
 	createURLHashBackend,
 	createMemoryBackend,
 } from "./router";
+import { isWebUrl } from "./safe-html";
 import { Emitter, FindkitUIEvents, lazyValue } from "./emitter";
 import {
 	BASE_TRANSLATIONS,
@@ -2468,6 +2469,8 @@ export class SearchEngine {
 				const { created, modified, ...rest } = hit;
 				return ref({
 					...rest,
+					// Hits are links to web pages
+					url: isWebUrl(rest.url) ? rest.url : "about:blank",
 					index: startIndex + index,
 					created: new Date(created),
 					modified: new Date(modified),

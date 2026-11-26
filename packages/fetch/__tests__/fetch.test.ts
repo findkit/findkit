@@ -7,6 +7,7 @@ import fetch from "node-fetch";
 import { setupServer } from "msw/node";
 import {
 	createFindkitFetcher,
+	createSearchEndpoint,
 	FindkitSearchResponse,
 	FindkitErrorResponse,
 } from "../src/index";
@@ -226,5 +227,40 @@ describe("fetch", () => {
 
 			expect(spy).toBeCalledTimes(2);
 		});
+	});
+});
+
+describe("createSearchEndpoint", () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+	});
+
+	test("uses the default search host", () => {
+		expect(createSearchEndpoint("ptoken")).toBe(
+			"https://search.findkit.com/c/ptoken/search?p=ptoken",
+		);
+	});
+
+	test("does not set the default region explicitly", () => {
+		expect(createSearchEndpoint("ptoken:eu-north-1")).toBe(
+			"https://search.findkit.com/c/ptoken:eu-north-1/search?p=ptoken:eu-north-1",
+		);
+	});
+
+	test("uses the region of the public token", () => {
+		expect(createSearchEndpoint("ptoken:us-east-1")).toBe(
+			"https://search-us-east-1.findkit.com/c/ptoken:us-east-1/search?p=ptoken:us-east-1",
+		);
+	});
+
+	test("is built only from the public token", () => {
+		vi.stubGlobal("location", {
+			hash: "#__findkit_subdomain=other.invalid/x&__findkit_version=z",
+			search: "?__findkit_subdomain=other.invalid/x&__findkit_version=z",
+		});
+
+		expect(createSearchEndpoint("ptoken")).toBe(
+			"https://search.findkit.com/c/ptoken/search?p=ptoken",
+		);
 	});
 });
